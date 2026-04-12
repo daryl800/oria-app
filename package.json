@@ -1,0 +1,21 @@
+{
+  "name": "@oria/shared-config",
+  "version": "0.0.1",
+  "private": true,
+  "files": [
+    "tsconfig.base.json",
+    "eslint-base.js"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.0"
+}
