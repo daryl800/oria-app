@@ -1,0 +1,16 @@
+{
+  "app_name": "Oria",
+  "tagline": "Nudge your choices, never dictate your fate.",
+  "auth": {
+    "email_placeholder": "your@email.com",
+    "send_magic_link": "Send magic link",
+    "check_email": "Check your email for a magic link.",
+    "logged_in_as": "Logged in as",
+    "user_id": "User ID",
+    "sign_out": "Sign out"
+  },
+  "disclaimer": "This is a reflection, not a prediction. You hold the decisions.",
+  "errors": {
+    "generic": "Something went wrong. Please try again."
+  }
+}

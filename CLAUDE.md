@@ -4,10 +4,10 @@
 Oria
 
 ## Brand
-Oria – Nudge your choices, never dictate your fate.
+Oria – Wisdom at hand, fate in your hands.
 When you need a light on your path, I’m here.
 
-Oria —— 無論你走到哪個路口，明燈都在照著你。讓你看清前路。
+Oria —— “智囊在侧，命由你改。”
 
 ## Product Philosophy
 Oria is a gentle personal guidance app.
