@@ -246,3 +246,31 @@ Respond in English.${SAFETY_CLAUSE_EN}`;
 
   return messages;
 }
+
+export function summarizationPrompt(messages: { role: string; content: string }[], lang: string = 'en'): Messages {
+  const formatted = messages.map(m => `${m.role === 'user' ? 'User' : 'Oria'}: ${m.content}`).join('\n\n');
+
+  if (lang === 'zh-TW') {
+    return [
+      {
+        role: 'system',
+        content: '你是一個對話摘要助手。請將以下對話濃縮成150字以內的摘要，重點記錄用戶探討的主題、模式和洞察。用繁體中文回應。',
+      },
+      {
+        role: 'user',
+        content: `請摘要以下對話：\n\n${formatted}`,
+      },
+    ];
+  }
+
+  return [
+    {
+      role: 'system',
+      content: 'You are a conversation summarizer. Condense the following conversation into a summary of under 150 words, focusing on the themes, patterns, and insights the user explored.',
+    },
+    {
+      role: 'user',
+      content: `Summarize this conversation:\n\n${formatted}`,
+    },
+  ];
+}

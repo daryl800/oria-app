@@ -1,18 +1,101 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
 import { complete } from '../lib/llm';
-import { chatPrompt } from '../lib/prompts';
+import { chatPrompt, summarizationPrompt } from '../lib/prompts';
 import { containsCrisisLanguage, getCrisisResponse } from '../lib/safety';
 
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
+
+// analysis service uses 'cn' not 'zh-TW'
+
+const SUMMARIZE_AT = 30;   // trigger summarization at this message count
+const SUMMARIZE_OLDEST = 15; // summarize this many oldest messages
+
+async function maybeSummarize(conversationId: string, userId: string, lang: string) {
+  try {
+    const { count } = await supabase
+      .from('messages')
+      .select('*', { count: 'exact', head: true })
+      .eq('conversation_id', conversationId);
+
+    if (!count || count < SUMMARIZE_AT) return;
+
+    const { data: existingSummaries } = await supabase
+      .from('conversation_summaries')
+      .select('id, summary_text')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true });
+
+    // wrap-around: if 3 summaries exist, compress into 1 super summary
+    if (existingSummaries && existingSummaries.length >= 3) {
+      const combined = existingSummaries
+        .map((s, i) => `Period ${i + 1}: ${s.summary_text}`)
+        .join('\n\n');
+
+      const superMessages = [
+        {
+          role: 'system' as const,
+          content: lang === 'zh-TW'
+            ? '你是一個對話摘要助手。請將以下多個階段的對話摘要壓縮成一個200字以內的總摘要，保留最重要的主題和洞察。用繁體中文回應。'
+            : 'You are a conversation summarizer. Compress these summaries into one coherent summary under 200 words, preserving the most important themes and insights.',
+        },
+        {
+          role: 'user' as const,
+          content: lang === 'zh-TW'
+            ? `請壓縮以下摘要：\n\n${combined}`
+            : `Compress these summaries:\n\n${combined}`,
+        },
+      ];
+
+      const superSummary = await complete(superMessages);
+
+      const oldIds = existingSummaries.map(s => s.id);
+      await supabase.from('conversation_summaries').delete().in('id', oldIds);
+      await supabase.from('conversation_summaries').insert({
+        conversation_id: conversationId,
+        summary_text: superSummary,
+        covers_message_ids: [],
+        token_estimate: superSummary.split(' ').length,
+      });
+
+      return;
+    }
+
+    // normal summarization — load oldest messages
+    const { data: oldMessages } = await supabase
+      .from('messages')
+      .select('id, role, content')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true })
+      .limit(SUMMARIZE_OLDEST);
+
+    if (!oldMessages || oldMessages.length < SUMMARIZE_OLDEST) return;
+
+    const messages = summarizationPrompt(oldMessages, lang);
+    const summaryText = await complete(messages);
+
+    const messageIds = oldMessages.map(m => m.id);
+    await supabase.from('conversation_summaries').insert({
+      conversation_id: conversationId,
+      summary_text: summaryText,
+      covers_message_ids: messageIds,
+      token_estimate: summaryText.split(' ').length,
+    });
+
+    await supabase.from('messages').delete().in('id', messageIds);
+
+  } catch (err) {
+    console.error('Summarization error:', err);
+  }
+}
 
 router.post('/send', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
     const { message, conversation_id, lang = 'en' } = req.body;
 
-    // crisis check first — before anything else
+    // crisis check first
     if (containsCrisisLanguage(message)) {
       return res.json({
         response: getCrisisResponse(lang),
@@ -22,10 +105,7 @@ router.post('/send', async (req: Request, res: Response) => {
     }
 
     // load user name + profile in parallel
-    const [
-      { data: userData },
-      { data: userProfile },
-    ] = await Promise.all([
+    const [{ data: userData }, { data: userProfile }] = await Promise.all([
       supabase.from('users').select('display_name').eq('id', userId).single(),
       supabase.from('user_profiles').select('current_bazi_version_id, current_mbti_version_id').eq('user_id', userId).single(),
     ]);
@@ -36,18 +116,23 @@ router.post('/send', async (req: Request, res: Response) => {
 
     const userName = userData?.display_name ?? '';
 
-    // load bazi + mbti versions in parallel
+    // load bazi + mbti in parallel
     const [{ data: bazi }, { data: mbti }] = await Promise.all([
       supabase.from('bazi_profile_versions').select('*').eq('id', userProfile.current_bazi_version_id).single(),
       supabase.from('mbti_profile_versions').select('*').eq('id', userProfile.current_mbti_version_id).single(),
     ]);
 
-    // get mbti profile data from Python (pure data, no LLM)
+
+    // get mbti profile from Python
     const mbtiRes = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/profile`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mbti_type: mbti.mbti_type, lang }),
     });
+    if (!mbtiRes.ok) {
+      const text = await mbtiRes.text();
+      throw new Error(`MBTI fetch failed: ${text}`);
+    }
     const mbtiProfile = await mbtiRes.json();
 
     // load or create conversation
@@ -100,7 +185,7 @@ router.post('/send', async (req: Request, res: Response) => {
 
     const response = await complete(messages);
 
-    // save messages in parallel
+    // save messages + trigger summarization in parallel
     await Promise.all([
       supabase.from('messages').insert({
         conversation_id: conversationId,
@@ -116,17 +201,23 @@ router.post('/send', async (req: Request, res: Response) => {
       }),
     ]);
 
+    // run summarization check asynchronously — don't block the response
+    setTimeout(() => {
+      maybeSummarize(conversationId, userId, lang).catch(err => {
+        console.error('Summarization background error:', err);
+      });
+    }, 0);
+
     return res.json({
       response,
       conversation_id: conversationId,
       crisis_detected: false,
     });
   } catch (err: any) {
+    console.error('CHAT SEND ERROR:', err);
     return res.status(500).json({ error: err.message });
   }
 });
-
-export default router;
 
 router.get('/history', async (req: Request, res: Response) => {
   try {
@@ -144,6 +235,7 @@ router.get('/history', async (req: Request, res: Response) => {
 
     return res.json({ conversations: conversations ?? [] });
   } catch (err: any) {
+    console.error('CHAT SEND ERROR:', err);
     return res.status(500).json({ error: err.message });
   }
 });
@@ -153,7 +245,6 @@ router.get('/history/:conversationId', async (req: Request, res: Response) => {
     const userId = (req as any).userId;
     const { conversationId } = req.params;
 
-    // verify ownership
     const { data: conversation } = await supabase
       .from('conversations')
       .select('id, title')
@@ -173,6 +264,9 @@ router.get('/history/:conversationId', async (req: Request, res: Response) => {
 
     return res.json({ conversation, messages: messages ?? [] });
   } catch (err: any) {
+    console.error('CHAT SEND ERROR:', err);
     return res.status(500).json({ error: err.message });
   }
 });
+
+export default router;

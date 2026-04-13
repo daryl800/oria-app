@@ -444,6 +444,7 @@ MBTI_PROFILES: Dict[str, Dict] = {
 
 def get_mbti_profile(mbti_type: str, lang: str = "en") -> Dict:
     mbti_type = mbti_type.upper().strip()
+    lang = "cn" if lang in ("zh-TW", "zh-HK", "zh") else "en"
     if mbti_type not in MBTI_PROFILES:
         raise ValueError(f"Invalid MBTI type: {mbti_type}. Must be one of {MBTI_TYPES}")
     

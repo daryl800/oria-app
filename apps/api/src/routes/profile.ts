@@ -6,6 +6,11 @@ import { profileSummaryPrompt } from '../lib/prompts';
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
 
+// analysis service uses 'cn' not 'zh-TW'
+function toAnalysisLang(lang: string): string {
+  return lang === 'zh-TW' ? 'cn' : 'en';
+}
+
 // GET /api/profile/me
 router.get('/me', async (req: Request, res: Response) => {
   try {
