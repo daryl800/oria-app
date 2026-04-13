@@ -1,28 +1,20 @@
 import { Router } from 'express';
-
 import Paths from '@src/common/constants/Paths';
-
 import UserRoutes from './UserRoutes';
-
-/******************************************************************************
-                                Setup
-******************************************************************************/
+import dailyGuidanceRouter from './dailyGuidance';
+import { authMiddleware } from '../middleware/auth';
 
 const apiRouter = Router();
 
-// ----------------------- Add UserRouter --------------------------------- //
-
+// existing users router
 const userRouter = Router();
-
 userRouter.get(Paths.Users.Get, UserRoutes.getAll);
 userRouter.post(Paths.Users.Add, UserRoutes.add);
 userRouter.put(Paths.Users.Update, UserRoutes.update);
 userRouter.delete(Paths.Users.Delete, UserRoutes.delete);
-
 apiRouter.use(Paths.Users._, userRouter);
 
-/******************************************************************************
-                                Export
-******************************************************************************/
+// daily guidance router (auth protected)
+apiRouter.use(Paths.DailyGuidance._, authMiddleware, dailyGuidanceRouter);
 
 export default apiRouter;
