@@ -49,7 +49,33 @@ from a blank slate.
 B. Information Architecture
 Screens and sections
 1. Onboarding Purpose: Explain Oria's philosophy, gather essential profile data (birth date/time/location for BaZi; MBTI type or questionnaire), and create the account. This screen sets expectations — users must understand Oria suggests, not prescribes. Main UI elements: philosophy statement, step-by-step form (date/time/place, MBTI entry or short questionnaire), soft progress indicator. Navigation: Completes by landing the user on Home.
-2. Home Purpose: The daily anchor. Shows a gentle "nudge of the day" based on current BaZi luck cycle, a shortcut to the Guidance Chat, and a summary of recent activity. Main UI elements: greeting with user's name, nudge card (one short contextual insight), quick-access button to chat, recent conversation snippets. Navigation: Links to Profile Summary, Chat, People.
+
+**2. Daily Guidance / 每日明燈**
+Purpose: The default post-login landing screen. Gives the user a fast,
+practical daily overview based on their BaZi profile and today's date.
+Designed to be read in under 30 seconds — a light on the day ahead,
+not a deep reading. Naturally leads into the Guidance Chat for users
+who want to explore further.
+
+Main UI elements:
+- Date header (today's date + lunar date equivalent)
+- Today's tone badge (e.g. "Balanced", "Active", "Inward", "Reflective")
+- Suggested pace (one short sentence, e.g. "A good day to finish
+  things rather than start new ones")
+- Helpful element card (a symbolic colour, mood, or environment
+  suggestion drawn from the day's BaZi interaction with the user's
+  chart)
+- 2 short tips — one for work, one for relationships
+- 1 gentle daily nudge sentence (the "明燈 moment")
+- 2–3 suggested prompt chips that open the Guidance Chat
+  pre-filled with today's context (e.g. "How should I approach a
+  difficult conversation today?")
+- CTA button: "Open Guidance Chat →" pre-filled with a daily question
+
+Navigation: Default screen after login. Accessible from bottom nav
+at any time. CTA and prompt chips navigate to Guidance Chat with
+context pre-loaded. "My Profile" link in top corner for profile access.
+
 3. My Profile Purpose: View and edit the main user's BaZi and MBTI data. Shows current profile version with a changelog if edits have been made. Main UI elements: BaZi pillars display (year/month/day/hour with elements), MBTI type badge, edit controls, version history indicator. Navigation: Opens Profile Summary; links to detailed BaZi and MBTI analysis modals.
 4. Profile Summary Purpose: A synthesised, human-readable narrative combining BaZi tendencies with MBTI traits. This is the primary "who am I in this system" view. Main UI elements: combined summary paragraph, element balance visual, MBTI-BaZi interaction highlights, disclaimer banner, buttons for "Detailed BaZi Analysis" and "Detailed MBTI Analysis." Navigation: Accessible from Home and My Profile; detail buttons open dedicated analysis views.
 5. Guidance Chat Purpose: The core experience. A conversation grounded in the user's current profile and history. The AI master responds with reflection and gentle suggestion, never directives. Main UI elements: chat thread, input bar, "session context" indicator (which profile version is active), conversation history sidebar or dropdown, credit balance indicator. Navigation: Accessible from Home and nav bar; new sessions deduct credits.
@@ -78,6 +104,27 @@ mbti_profile_versions Immutable append-only. PK: id (UUID). FK: user_id → user
 conversations One row per conversation session. PK: id (UUID). FK: user_id → users.id. Key fields: bazi_version_id (FK, snapshot of which profile was active), mbti_version_id (FK), title (text, auto-generated from first message), status (enum: active | archived), created_at, updated_at. RLS: owner only.
 messages Individual messages in a conversation. PK: id (UUID). FK: conversation_id → conversations.id. Key fields: role (enum: user | assistant), content (text), token_count (integer), created_at (timestamptz). Ordered by created_at. RLS: accessible only if the parent conversation belongs to the authenticated user (policy joins to conversations).
 conversation_summaries Compacted summaries of older message windows, used to bound prompt size. PK: id (UUID). FK: conversation_id → conversations.id. Key fields: summary_text (text), covers_message_ids (UUID[], the message IDs this summary replaces), token_estimate (integer), created_at. RLS: same as messages.
+
+**`daily_guidance`**
+Caches the daily structured summary per user per calendar day.
+PK: `id` (UUID). FK: `user_id` → `users.id`.
+Key fields:
+- `date` (date, the calendar date this guidance is for)
+- `bazi_version_id` (FK → `bazi_profile_versions.id`, snapshot used)
+- `summary` (JSONB, the full structured output: tone, pace,
+  helpful_element, tips, nudge, suggested_prompts)
+- `created_at` (timestamptz)
+
+Unique constraint: `(user_id, date)` — one row per user per day.
+RLS: owner only (`user_id = auth.uid()`).
+
+The `summary` JSONB field stores the complete daily output so the
+API can return it in a single query with no further processing.
+If the user's BaZi profile changes during the day, the cached row
+is still served — it reflects the profile at the time of first
+generation. The new profile takes effect the following day.
+
+
 persons Additional BaZi profiles (other people). PK: id (UUID). FK: user_id → users.id (who added this person). Key fields: name (text), relationship (text, e.g. "partner"), birth_date, birth_time (nullable), birth_location (text), year_pillar, month_pillar, day_pillar, hour_pillar (JSONB), created_at. RLS: owner only.
 comparisons A comparison session between the main user and a person. PK: id (UUID). FK: user_id → users.id, person_id → persons.id. Key fields: bazi_version_id (main user snapshot), result_summary (text, cached output), created_at. RLS: owner only.
 credits_accounts One per user. PK: id (UUID). FK: user_id → users.id (unique). Key fields: balance (integer, in credit units), updated_at. Balance is never written directly by application code — only via trigger or stored procedure that creates a corresponding transaction row first. RLS: owner only.
@@ -101,6 +148,38 @@ Message history: The last N messages (target: ~2000 tokens of history), trimmed 
 Current user message: The new question or prompt from the user.
 Conversation retention strategy: Keep the most recent 20 messages in full. When a conversation reaches 30 messages, trigger a summarization job: call the LLM with the oldest 15 messages and ask for a 150-token summary focused on themes and patterns the user has explored. Store this in conversation_summaries. Delete the 15 messages that were summarized (or mark them as archived). On subsequent requests, inject the summary chunk before the remaining recent messages. This creates a rolling window that keeps prompt costs bounded while preserving the arc of the conversation. Summaries themselves are never summarized further in MVP — cap at 3 summary chunks per conversation.
 
+**Daily Guidance generation:**
+
+Input: the user's current BaZi profile version (pillars + element
+balance) and the current calendar date (both Gregorian and lunar).
+
+Process: the analysis service derives the day's heavenly stem and
+earthly branch, calculates the interaction between the day pillar and
+the user's day master and dominant element, then assembles a short
+structured prompt asking the LLM to produce a fixed-schema daily
+summary (tone, pace, helpful element, two tips, one nudge sentence,
+three suggested prompts).
+
+Output schema (JSON, stored as-is):
+- tone: string
+- pace: string
+- helpful_element: { type, value, reason }
+- tips: [ { area, text } ] (exactly 2)
+- nudge: string
+- suggested_prompts: [ string ] (2–3)
+
+Caching: the result is stored in the daily_guidance table keyed on
+(user_id, date). On each page load, the API checks for an existing
+row for today before calling the LLM. If a row exists, it is returned
+directly — no LLM call is made. The cache is never invalidated within
+the same calendar day. This means each user incurs at most one LLM
+call per day for daily guidance, keeping costs low.
+
+Cost model: Daily Guidance generation is lightweight (small prompt,
+structured output, one call per day). It is treated as a free or
+included feature. The follow-up Guidance Chat, if the user chooses
+to explore further, follows the normal credit deduction model.
+
 G. Pricing & Credits Model
 Initial model: New users receive 50 welcome credits on signup. A free tier allows only profile creation and profile viewing — no AI chat without credits. A basic subscription (e.g. ~$9/month) grants 200 credits per billing cycle plus access to all core features. Credits can also be purchased à la carte.
 Credit costs (illustrative, to be tuned):
@@ -111,6 +190,21 @@ Running a person comparison: 15 credits
 Deep reading or yearly outlook (v2): 30 credits
 Credits ledger: The credits_accounts.balance field is the canonical balance but is never written directly by application code. Every balance change — whether a grant, purchase, or deduction — is first written as a row in credits_transactions with amount, type, reference_id, and balance_after. A Postgres trigger on credits_transactions then updates credits_accounts.balance atomically. This means the full history is always reconstructable from the transactions table alone, the balance can be audited at any point in time, and reversals are clean: a refund is simply a positive credits_transactions row with type = refund pointing to the original transaction's reference_id.
 Before any AI operation begins, apps/api checks the balance, inserts a pending debit row, and proceeds. If the AI call fails, the debit is reversed with a refund row. This prevents silent credit loss on errors.
+
+**Daily Guidance is free:**
+The Daily Guidance page is part of the core included experience —
+it does not cost credits. Each user gets one AI-generated daily
+summary per day at no credit cost, cached and reused for all
+subsequent views that day. This makes the app feel alive and
+valuable every day without draining the user's balance.
+
+The credit model activates when the user moves beyond the daily
+summary into the Guidance Chat. Opening a chat session from the
+Daily Guidance CTA or prompt chips follows the same credit rules
+as any other chat session (5 credits to start, 2 credits per
+response). This creates a natural free-to-paid transition: the
+daily nudge is always free; deeper exploration costs credits.
+
 
 H. UX Tone & Safeguards
 Desired tone: The AI always speaks in first person but stays low-ego — it is a light, not an authority. Responses should feel like a thoughtful friend who has studied these frameworks, not a master pronouncing fate. Sentence starters like "One thing worth noticing…," "Your chart suggests a tendency toward…," or "You might find it useful to reflect on…" are preferred over "You should…" or "You will…"
@@ -136,19 +230,23 @@ Guidance Chat: real AI responses, grounded in profile, with conversation history
 Credits ledger: full transaction log, balance checking, deduction on chat actions
 Pricing stub: welcome credits granted on signup; subscription tier is a boolean flag in the DB with no real payment flow (mock or manual assignment)
 One additional person (BaZi only), no comparison AI — just side-by-side pillar display
-English only (i18n strings wired but only English populated)
+- Daily Guidance page (每日明燈) — free, cached per day, 
+  default post-login screen
+- Multi-language from day one: English + Traditional Chinese (zh-TW).
+  i18n infrastructure is already in place — translation strings for 
+  both languages are populated before launch, not deferred to v2.
 PWA shell (installable, basic service worker for shell caching)
+Traditional Chinese language support (translation strings)
 v2 and beyond
 MBTI questionnaire (full or short-form, scored in the analysis service)
 AI-powered comparison analysis between main user and added persons
 Multiple subscription tiers with real Stripe integration
 Yearly outlook and luck pillar forecasting features
-Traditional Chinese language support (translation strings)
 Push notifications for daily nudges
 Richer conversation memory (semantic search over older sessions)
 Analytics dashboard for usage and credit trends (admin)
 Profile version rollback UI
-Social proof onboarding (testimonials, example profiles)
+Social proof onboarding (testimonials, example profiles
 
 J. Folder Structure
 
@@ -210,6 +308,28 @@ Phase 0 — Blueprint (current) Entry: product idea and tech direction defined. 
 Phase 1 — Repo, tooling, skeleton Goal: The monorepo exists, all three apps boot, CI runs linting and type checks. Tasks: Init pnpm workspace, configure Turborepo, scaffold apps/web with Vite + React + TypeScript, scaffold apps/api with Express + TypeScript, scaffold apps/analysis-service with FastAPI, set up packages/shared-types and shared-config, configure ESLint and Prettier across all packages, set up GitHub Actions for lint + typecheck on PR. Exit: pnpm dev starts all three services; a health check endpoint returns 200 on each; CI passes on a blank PR.
 Phase 2 — Auth + user identity Goal: A real user can sign up, receive a magic link, and be logged in. Their user row and credits account are created automatically. Tasks: Configure Supabase project, enable magic link auth, create users and credits_accounts tables with RLS policies, write the after insert on auth.users trigger, implement JWT middleware in apps/api, implement login and session flow in apps/web, write the Supabase client setup for apps/api. Exit: A user can sign up, receive a magic link email, click it, and see an authenticated home screen. Their users row and credits_accounts row exist in Supabase with the welcome credit balance.
 Phase 3 — MBTI + BaZi profile + summary Goal: A user can enter their birth data and MBTI type and see a combined AI-generated profile summary. Tasks: Create bazi_profile_versions, mbti_profile_versions, user_profiles tables with RLS, implement Four Pillars calculation in the analysis service (stem/branch derivation, element assignment), implement MBTI trait interpretation tables, write the profile summary prompt and call the LLM, create API endpoints for profile CRUD, build the My Profile and Profile Summary pages in the web app, cache the summary in the DB. Exit: A user can enter their birth data and MBTI type and view a combined written summary. Editing the birth data creates a new version row, not an update.
+Phase 3 additional tasks (Daily Guidance — first version):
+- Create `daily_guidance` table with RLS and unique constraint
+  on (user_id, date)
+- Add `/daily-guidance/today` endpoint to `apps/api` that:
+  - checks for an existing row for today
+  - if none exists, calls the analysis service to generate one
+  - stores the result and returns it
+- Add `/daily-guidance/generate` endpoint to
+  `apps/analysis-service` that:
+  - accepts BaZi profile + date
+  - derives day pillar interaction
+  - calls LLM with structured output prompt
+  - returns the fixed-schema JSON
+- Build the Daily Guidance page in `apps/web` as the default
+  post-login screen
+- Wire CTA and prompt chips to open Guidance Chat with
+  pre-filled context
+Phase 3 exit criteria update:
+A logged-in user lands on the Daily Guidance page, sees today's
+tone/pace/tips/nudge, and can tap a prompt chip or CTA to open
+the Guidance Chat with today's context pre-loaded.
+
 Phase 4 — Guidance Chat (minimal but real) Goal: A user can open a chat session and receive real AI responses grounded in their profile. Tasks: Create conversations, messages, conversation_summaries tables with RLS, implement WebSocket handler in apps/api, implement prompt assembly in the analysis service (profile context + message history + new message), implement streaming response forwarding from analysis service → api → web, implement the summarization trigger (at 30 messages, summarize oldest 15), build the Guidance Chat UI, add the persistent disclaimer line. Exit: A user can have a multi-turn conversation with Oria. The AI references their BaZi and MBTI. After 30 messages, older messages are summarized and the conversation continues coherently.
 Phase 5 — Credits ledger + basic charging Goal: Every chargeable action checks and deducts credits. The ledger is accurate and auditable. Tasks: Implement credit guard middleware in apps/api, implement the credits_transactions table and balance-update trigger, wire credit checks to chat session start and per-response deduction, implement the Billing & Credits page in the web app (balance display + transaction history), add welcome credit grant on signup (via auth trigger), add a manual credit assignment endpoint for admin use (mocked subscription), add the credit balance indicator to the chat UI. Exit: Starting a chat and receiving responses deducts credits. The balance shown in the UI matches the DB. A user with zero credits cannot start a new session. All transactions are visible in the ledger view.
 Phase 6 — Additional people & basic comparison Goal: A user can add another person's BaZi and view a side-by-side pillar comparison (no AI comparison in MVP). Tasks: Create persons table with RLS, build the People & Comparisons section (add person form, person list, side-by-side pillar display), enforce a limit of one additional person in MVP, scaffold the comparisons table for v2. Exit: A user can add one other person's BaZi details and view both sets of pillars side by side on the comparison screen. No AI response is generated yet for the comparison — that is v2.
