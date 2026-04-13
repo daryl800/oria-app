@@ -9,6 +9,12 @@
     "user_id": "User ID",
     "sign_out": "Sign out"
   },
+  "nav": {
+    "daily": "Daily",
+    "chat": "Chat",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
   "disclaimer": "This is a reflection, not a prediction. You hold the decisions.",
   "errors": {
     "generic": "Something went wrong. Please try again."

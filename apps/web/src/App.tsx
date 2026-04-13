@@ -1,11 +1,33 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import Login from './pages/Login';
 import DailyGuidance from './pages/DailyGuidance';
 import Profile from './pages/Profile';
 import Chat from './pages/Chat';
+import Settings from './pages/Settings';
+import BottomNav from './components/BottomNav';
+
+function AppRoutes({ user }: { user: User }) {
+  const location = useLocation();
+  const hideNav = location.pathname === '/login';
+
+  return (
+    <>
+      <div style={{ paddingBottom: hideNav ? 0 : 64 }}>
+        <Routes>
+          <Route path="/daily" element={<DailyGuidance user={user} />} />
+          <Route path="/profile" element={<Profile user={user} />} />
+          <Route path="/chat" element={<Chat user={user} />} />
+          <Route path="/settings" element={<Settings user={user} />} />
+          <Route path="*" element={<Navigate to="/daily" />} />
+        </Routes>
+      </div>
+      {!hideNav && <BottomNav />}
+    </>
+  );
+}
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -30,10 +52,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/daily" />} />
-        <Route path="/daily" element={user ? <DailyGuidance user={user} /> : <Navigate to="/login" />} />
-        <Route path="/profile" element={user ? <Profile user={user} /> : <Navigate to="/login" />} />
-        <Route path="/chat" element={user ? <Chat user={user} /> : <Navigate to="/login" />} />
-        <Route path="*" element={<Navigate to={user ? "/daily" : "/login"} />} />
+        <Route path="/*" element={user ? <AppRoutes user={user} /> : <Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   );

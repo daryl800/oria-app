@@ -18,9 +18,26 @@ const SAFETY_CLAUSE_ZH = `
 - 絕對不得將任何八字格局描述為詛咒或無法改變的壞運。
 `;
 
-export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en'): Messages {
-  const dominantElement = Object.entries(bazi.five_elements_strength as Record<string, number>)
+function getDateContext(): { gregorian: string; dayOfWeek: string } {
+  const now = new Date();
+  const gregorian = now.toLocaleDateString('en-GB', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const dayOfWeek = now.toLocaleDateString('en-GB', { weekday: 'long' });
+  return { gregorian, dayOfWeek };
+}
+
+function getDominantElement(five_elements_strength: Record<string, number>): string {
+  return Object.entries(five_elements_strength)
     .sort(([, a], [, b]) => b - a)[0][0];
+}
+
+export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en'): Messages {
+  const dominantElement = getDominantElement(bazi.five_elements_strength);
+  const { gregorian } = getDateContext();
 
   if (lang === 'zh-TW') {
     return [
@@ -28,6 +45,7 @@ export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en'):
         role: 'system',
         content: `你是Oria的引導師——溫和、有洞察力的顧問，結合八字和MBTI提供反思性指引。
 不做絕對預測。語氣平靜、紮實、不說教。永遠不說「你必須」或「你會」。
+今天日期：${gregorian}
 用繁體中文回應。${SAFETY_CLAUSE_ZH}`,
       },
       {
@@ -35,12 +53,16 @@ export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en'):
         content: `請根據以下資料生成個人檔案摘要。
 
 八字：日主 ${bazi.day_master}，主導五行 ${dominantElement}
-MBTI：${mbti.type} — ${mbti.nickname}，核心特質：${mbti.core_traits}
+五行力量：${JSON.stringify(bazi.five_elements_strength)}
+MBTI：${mbti.type} — ${mbti.nickname}
+核心特質：${mbti.core_traits}
+工作風格：${mbti.work_style}
+感情風格：${mbti.relationship_style}
 
 以JSON回應：
 {
   "headline": "一句話描述核心本質（15字以內）",
-  "summary": "2-3句整體描述",
+  "summary": "2-3句整體描述，結合八字和MBTI洞察",
   "key_strengths": ["優勢1","優勢2","優勢3"],
   "growth_areas": ["成長方向1","成長方向2"],
   "mbti_bazi_resonance": "一句話說明兩者如何印證",
@@ -54,8 +76,9 @@ MBTI：${mbti.type} — ${mbti.nickname}，核心特質：${mbti.core_traits}
   return [
     {
       role: 'system',
-      content: `You are Oria's guide — calm, insightful, combining BaZi and MBTI for reflective guidance.
+      content: `You are Oria's guide — calm, insightful, combining BaZi and MBTI for reflective personal guidance.
 No absolute predictions. Tone: calm, grounded, non-preachy. Never say "you must" or "you will."
+Today's date: ${gregorian}
 Respond in English.${SAFETY_CLAUSE_EN}`,
     },
     {
@@ -63,7 +86,11 @@ Respond in English.${SAFETY_CLAUSE_EN}`,
       content: `Generate a personal profile summary based on:
 
 BaZi: day master ${bazi.day_master}, dominant element ${dominantElement}
-MBTI: ${mbti.type} — ${mbti.nickname}, core traits: ${mbti.core_traits}
+Element strengths: ${JSON.stringify(bazi.five_elements_strength)}
+MBTI: ${mbti.type} — ${mbti.nickname}
+Core traits: ${mbti.core_traits}
+Work style: ${mbti.work_style}
+Relationship style: ${mbti.relationship_style}
 
 Respond in JSON:
 {
@@ -85,28 +112,32 @@ export function dailyGuidancePrompt(
   todayBranch: string,
   lang: string = 'en',
 ): Messages {
-  const dominantElement = Object.entries(bazi.five_elements_strength as Record<string, number>)
-    .sort(([, a], [, b]) => b - a)[0][0];
+  const dominantElement = getDominantElement(bazi.five_elements_strength);
+  const { gregorian, dayOfWeek } = getDateContext();
 
   if (lang === 'zh-TW') {
     return [
       {
         role: 'system',
         content: `你是Oria的每日引導師。根據用戶八字和今日干支提供簡短實用的每日指引。
-語氣溫和、積極、不說教。30秒內可讀完。用繁體中文回應。${SAFETY_CLAUSE_ZH}`,
+語氣溫和、積極、不說教。30秒內可讀完。
+今天日期：${gregorian}
+用繁體中文回應。${SAFETY_CLAUSE_ZH}`,
       },
       {
         role: 'user',
         content: `生成今日指引。
 
-用戶：日主 ${bazi.day_master}，主導五行 ${dominantElement}
+今天：${gregorian}（${dayOfWeek}）
 今日干支：${todayStem}${todayBranch}
+用戶：日主 ${bazi.day_master}，主導五行 ${dominantElement}
+五行力量：${JSON.stringify(bazi.five_elements_strength)}
 
 以JSON回應：
 {
-  "tone": "今日基調",
+  "tone": "今日基調（平衡／積極／內省／反思）",
   "pace": "建議節奏（一句話）",
-  "helpful_element": {"type":"顏色/環境/心態","value":"建議","reason":"原因"},
+  "helpful_element": {"type":"顏色/環境/心態","value":"具體建議","reason":"簡短原因"},
   "tips": [{"area":"工作","text":"提示"},{"area":"人際","text":"提示"}],
   "nudge": "今日明燈——一句溫柔提醒",
   "suggested_prompts": ["提問1","提問2","提問3"]
@@ -120,20 +151,24 @@ export function dailyGuidancePrompt(
     {
       role: 'system',
       content: `You are Oria's daily guide. Provide a short, practical daily overview based on BaZi and today's stem/branch.
-Tone: gentle, positive, non-preachy. Readable in under 30 seconds.${SAFETY_CLAUSE_EN}`,
+Tone: gentle, positive, non-preachy. Readable in under 30 seconds.
+Today's date: ${gregorian}
+Respond in English.${SAFETY_CLAUSE_EN}`,
     },
     {
       role: 'user',
       content: `Generate today's guidance.
 
-User: day master ${bazi.day_master}, dominant element ${dominantElement}
+Today: ${gregorian} (${dayOfWeek})
 Today's stem and branch: ${todayStem}${todayBranch}
+User: day master ${bazi.day_master}, dominant element ${dominantElement}
+Element strengths: ${JSON.stringify(bazi.five_elements_strength)}
 
 Respond in JSON:
 {
-  "tone": "Today's overall tone",
+  "tone": "Today's overall tone (Balanced/Active/Inward/Reflective)",
   "pace": "Suggested pace (one sentence)",
-  "helpful_element": {"type":"colour/environment/mindset","value":"suggestion","reason":"brief reason"},
+  "helpful_element": {"type":"colour/environment/mindset","value":"specific suggestion","reason":"brief reason"},
   "tips": [{"area":"Work","text":"tip"},{"area":"Relationships","text":"tip"}],
   "nudge": "Today's gentle nudge — one sentence",
   "suggested_prompts": ["prompt1","prompt2","prompt3"]
@@ -150,28 +185,42 @@ export function chatPrompt(
   userMessage: string,
   summary: string = '',
   lang: string = 'en',
+  userName: string = '',
 ): Messages {
-  const dominantElement = Object.entries(bazi.five_elements_strength as Record<string, number>)
-    .sort(([, a], [, b]) => b - a)[0][0];
+  const dominantElement = getDominantElement(bazi.five_elements_strength);
+  const { gregorian, dayOfWeek } = getDateContext();
+  const name = userName || (lang === 'zh-TW' ? '用戶' : 'the user');
 
   const systemContent = lang === 'zh-TW'
     ? `你是Oria的引導師——溫和、有洞察力。結合八字和MBTI提供反思性指引。
-不做絕對預測。語氣平靜、紮實、不說教。
+不做絕對預測。語氣平靜、紮實、不說教。永遠不說「你必須」或「你會」。
+
+今天日期：${gregorian}（${dayOfWeek}）
 
 用戶資料：
+- 姓名：${name}
 - 八字日主：${bazi.day_master}，主導五行：${dominantElement}
+- 五行力量：${JSON.stringify(bazi.five_elements_strength)}
 - MBTI：${mbti.type} — ${mbti.nickname}
 - 核心特質：${mbti.core_traits}
+- 工作風格：${mbti.work_style}
+- 感情風格：${mbti.relationship_style}
 
 每次回應結尾加上：「這是一種反思，而非預測。決定權在你。」
 用繁體中文回應。${SAFETY_CLAUSE_ZH}`
-    : `You are Oria's guide — calm, insightful. Combining BaZi and MBTI for reflective guidance.
-No absolute predictions. Tone: calm, grounded, non-preachy.
+    : `You are Oria's guide — calm, insightful. Combining BaZi and MBTI for reflective personal guidance.
+No absolute predictions. Tone: calm, grounded, non-preachy. Never say "you must" or "you will."
+
+Today's date: ${gregorian} (${dayOfWeek})
 
 User profile:
+- Name: ${name}
 - BaZi day master: ${bazi.day_master}, dominant element: ${dominantElement}
+- Element strengths: ${JSON.stringify(bazi.five_elements_strength)}
 - MBTI: ${mbti.type} — ${mbti.nickname}
 - Core traits: ${mbti.core_traits}
+- Work style: ${mbti.work_style}
+- Relationship style: ${mbti.relationship_style}
 
 End every response with: "This is a reflection, not a prediction. You hold the decisions."
 Respond in English.${SAFETY_CLAUSE_EN}`;
@@ -179,11 +228,20 @@ Respond in English.${SAFETY_CLAUSE_EN}`;
   const messages: Messages = [{ role: 'system', content: systemContent }];
 
   if (summary) {
-    messages.push({ role: 'user', content: `[Previous conversation summary: ${summary}]` });
-    messages.push({ role: 'assistant', content: 'Understood. I have the context of our earlier conversation.' });
+    messages.push({
+      role: 'user',
+      content: `[Previous conversation summary: ${summary}]`,
+    });
+    messages.push({
+      role: 'assistant',
+      content: 'Understood. I have the context of our earlier conversation.',
+    });
   }
 
-  history.forEach(m => messages.push({ role: m.role as 'user' | 'assistant', content: m.content }));
+  history.forEach(m =>
+    messages.push({ role: m.role as 'user' | 'assistant', content: m.content })
+  );
+
   messages.push({ role: 'user', content: userMessage });
 
   return messages;

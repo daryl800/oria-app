@@ -6,9 +6,6 @@ import { dailyGuidancePrompt } from '../lib/prompts';
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
 
-const GAN = ['Jia','Yi','Bing','Ding','Wu','Ji','Geng','Xin','Ren','Gui'];
-const ZHI = ['Zi','Chou','Yin','Mao','Chen','Si','Wu','Wei','Shen','You','Xu','Hai'];
-
 async function getTodayStemBranch(dateStr: string): Promise<{ stem: string; branch: string }> {
   const res = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
     method: 'POST',
@@ -35,12 +32,13 @@ router.get('/today', async (req: Request, res: Response) => {
     const lang = (req.query.lang as string) ?? 'en';
     const today = new Date().toISOString().split('T')[0];
 
-    // 1. check cache
+    // 1. check cache — now keyed on (user_id, date, lang)
     const { data: cached } = await supabase
       .from('daily_guidance')
       .select('summary')
       .eq('user_id', userId)
       .eq('date', today)
+      .eq('lang', lang)
       .single();
 
     if (cached) return res.json({ summary: cached.summary, cached: true });
@@ -79,11 +77,12 @@ router.get('/today', async (req: Request, res: Response) => {
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
     const summary = JSON.parse(clean);
 
-    // 5. cache result
+    // 5. cache result with lang
     await supabase.from('daily_guidance').insert({
       user_id: userId,
       bazi_version_id: userProfile.current_bazi_version_id,
       date: today,
+      lang,
       summary,
     });
 

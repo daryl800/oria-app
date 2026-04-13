@@ -66,3 +66,25 @@ export async function getProfileSummary(lang: string = 'en') {
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
+export async function sendMessage(
+  message: string,
+  conversationId: string | null,
+  lang: string = 'en'
+) {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/chat/send`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ message, conversation_id: conversationId, lang }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function getChatHistory(conversationId: string) {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/chat/history/${conversationId}`, { headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}

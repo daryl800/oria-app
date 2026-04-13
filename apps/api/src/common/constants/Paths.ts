@@ -23,6 +23,7 @@ const Paths = {
   Chat: {
     _: '/chat',
     Send: '/send',
+    History: '/history',
   },
 } as const;
 

@@ -1,6 +1,6 @@
 {
   "app_name": "Oria",
-  "tagline": "智囊在侧，命由你改。",
+  "tagline": "無論你走到哪個路口，明燈都在照著你。",
   "auth": {
     "email_placeholder": "你的電郵地址",
     "send_magic_link": "發送魔法連結",
@@ -8,6 +8,12 @@
     "logged_in_as": "已登入為",
     "user_id": "用戶編號",
     "sign_out": "登出"
+  },
+  "nav": {
+    "daily": "每日",
+    "chat": "對話",
+    "profile": "檔案",
+    "settings": "設定"
   },
   "disclaimer": "這是一種反思，而非預測。決定權在你。",
   "errors": {
