@@ -88,3 +88,17 @@ export async function getChatHistory(conversationId: string) {
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
+export async function getConversationHistory() {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/chat/history`, { headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function getConversationMessages(conversationId: string) {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/chat/history/${conversationId}`, { headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}

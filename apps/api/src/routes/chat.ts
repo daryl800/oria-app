@@ -127,3 +127,52 @@ router.post('/send', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+router.get('/history', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+
+    const { data: conversations, error } = await supabase
+      .from('conversations')
+      .select('id, title, created_at, updated_at, status')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .order('updated_at', { ascending: false })
+      .limit(20);
+
+    if (error) throw new Error(error.message);
+
+    return res.json({ conversations: conversations ?? [] });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/history/:conversationId', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { conversationId } = req.params;
+
+    // verify ownership
+    const { data: conversation } = await supabase
+      .from('conversations')
+      .select('id, title')
+      .eq('id', conversationId)
+      .eq('user_id', userId)
+      .single();
+
+    if (!conversation) {
+      return res.status(404).json({ error: 'Conversation not found.' });
+    }
+
+    const { data: messages } = await supabase
+      .from('messages')
+      .select('role, content, created_at')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true });
+
+    return res.json({ conversation, messages: messages ?? [] });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
