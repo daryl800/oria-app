@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
+import { complete } from '../lib/llm';
+import { profileSummaryPrompt } from '../lib/prompts';
 
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
@@ -17,18 +19,18 @@ router.get('/me', async (req: Request, res: Response) => {
 
     const { data: bazi } = profile?.current_bazi_version_id
       ? await supabase
-          .from('bazi_profile_versions')
-          .select('*')
-          .eq('id', profile.current_bazi_version_id)
-          .single()
+        .from('bazi_profile_versions')
+        .select('*')
+        .eq('id', profile.current_bazi_version_id)
+        .single()
       : { data: null };
 
     const { data: mbti } = profile?.current_mbti_version_id
       ? await supabase
-          .from('mbti_profile_versions')
-          .select('*')
-          .eq('id', profile.current_mbti_version_id)
-          .single()
+        .from('mbti_profile_versions')
+        .select('*')
+        .eq('id', profile.current_mbti_version_id)
+        .single()
       : { data: null };
 
     return res.json({ profile, bazi, mbti });
@@ -43,7 +45,7 @@ router.post('/bazi', async (req: Request, res: Response) => {
     const userId = (req as any).userId;
     const { year, month, day, hour, minute, tz_name, location, time_known } = req.body;
 
-    // calculate bazi via analysis service
+    // calculate bazi via Python analysis service (stays in Python)
     const analysisRes = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -53,7 +55,6 @@ router.post('/bazi', async (req: Request, res: Response) => {
     if (!analysisRes.ok) throw new Error('BaZi calculation failed');
     const { bazi } = await analysisRes.json();
 
-    // store as new version (append only)
     const { data: newVersion, error: insertError } = await supabase
       .from('bazi_profile_versions')
       .insert({
@@ -73,7 +74,6 @@ router.post('/bazi', async (req: Request, res: Response) => {
 
     if (insertError) throw new Error(`BaZi insert failed: ${insertError.message}`);
 
-    // update user_profiles to point to new version
     const { error: updateError } = await supabase
       .from('user_profiles')
       .update({ current_bazi_version_id: newVersion.id })
@@ -118,7 +118,7 @@ router.post('/mbti', async (req: Request, res: Response) => {
   }
 });
 
-// POST /api/profile/summary
+// POST /api/profile/summary — now calls LLM directly from Node.js
 router.post('/summary', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
@@ -146,21 +146,23 @@ router.post('/summary', async (req: Request, res: Response) => {
       .eq('id', profile.current_mbti_version_id)
       .single();
 
-    const analysisRes = await fetch(`${ANALYSIS_SERVICE_URL}/profile/summary`, {
+    // get mbti profile from Python (pure data, no LLM)
+    const mbtiRes = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/profile`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        bazi: {
-          day_master: bazi.day_master,
-          five_elements_strength: bazi.five_elements_strength,
-        },
-        mbti_type: mbti.mbti_type,
-        lang,
-      }),
+      body: JSON.stringify({ mbti_type: mbti.mbti_type, lang }),
     });
+    const mbtiProfile = await mbtiRes.json();
 
-    if (!analysisRes.ok) throw new Error('Summary generation failed');
-    const summary = await analysisRes.json();
+    // call LLM directly from Node.js
+    const messages = profileSummaryPrompt(
+      { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength },
+      mbtiProfile,
+      lang,
+    );
+    const raw = await complete(messages);
+    const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
+    const summary = JSON.parse(clean);
 
     return res.json({ summary });
   } catch (err: any) {
