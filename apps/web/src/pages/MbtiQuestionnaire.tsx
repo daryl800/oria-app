@@ -63,7 +63,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
 
   async function handleSubmit() {
     if (Object.keys(answers).length < questions.length) {
-      setError('Please answer all questions before submitting.');
+      setError(t('mbti.error_incomplete'));
       return;
     }
     setSubmitting(true);
@@ -100,20 +100,20 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
         {/* MBTI type hero */}
         <div style={{ ...whiteCard, textAlign: 'center', padding: '36px 24px' }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#7e22ce', textTransform: 'uppercase', marginBottom: 12 }}>
-            Your MBTI Type
+            {t('mbti.your_type')}
           </div>
           <div style={{ fontSize: 72, fontWeight: 800, color: '#1a0a2e', lineHeight: 1, marginBottom: 8 }}>
             {result.mbti_type}
           </div>
           <div style={{ fontSize: 14, color: '#888' }}>
-            Based on your answers to 20 questions
+            {t('mbti.based_on')}
           </div>
         </div>
 
         {/* Dimension breakdown */}
         <div style={whiteCard}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#7e22ce', textTransform: 'uppercase', marginBottom: 16 }}>
-            Dimension Breakdown
+            {t('mbti.dimension_breakdown')}
           </div>
           {Object.entries(result.dimension_results).map(([dim, scores]) => {
             const [a, b] = dim.split('') as [string, string];
@@ -156,7 +156,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
           fontSize: 17, fontWeight: 700,
           color: '#fff', cursor: 'pointer',
         }}>
-          Continue to Profile →
+          {t('mbti.continue')}
         </button>
       </div>
     </div>
@@ -204,7 +204,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
             fontWeight: 700, color: '#7e22ce',
             textTransform: 'uppercase', marginBottom: 14,
           }}>
-            {currentQuestion?.dimension} dimension
+            {currentQuestion?.dimension} {t('mbti.dimension')}
           </div>
           <div style={{ fontSize: 18, lineHeight: 1.65, fontWeight: 500, color: '#1a0a2e' }}>
             {currentQuestion?.text}
@@ -251,7 +251,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
               color: '#fff', cursor: 'pointer', fontSize: 14,
               fontFamily: 'inherit',
             }}>
-              ← Previous
+              {t('mbti.previous')}
             </button>
           )}
           {!isLastQuestion && answers[currentQuestion?.id] && (
@@ -263,7 +263,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
               color: '#fff', cursor: 'pointer', fontSize: 14,
               fontFamily: 'inherit',
             }}>
-              Next →
+              {t('mbti.next')}
             </button>
           )}
         </div>
@@ -280,7 +280,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
             boxShadow: '0 4px 20px rgba(147,51,234,0.45)',
             fontFamily: 'inherit',
           }}>
-            {submitting ? 'Calculating...' : 'Get My MBTI Type →'}
+            {submitting ? t('mbti.calculating') : t('mbti.get_type')}
           </button>
         )}
 

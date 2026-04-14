@@ -142,17 +142,17 @@ export default function Chat({ user }: { user: User }) {
           borderRadius: 20, padding: '6px 14px', fontSize: 13,
           color: '#C084FC', cursor: 'pointer',
         }}>
-          {historyLoading ? '...' : '☰ History'}
+          {historyLoading ? '...' : t('chat.history')}
         </button>
         <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 4, color: '#C084FC', textTransform: 'uppercase' }}>
-          Guidance Chat
+          {t('chat.title')}
         </span>
         <button onClick={startNewConversation} style={{
           background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(192,132,252,0.3)',
           borderRadius: 20, padding: '6px 14px', fontSize: 13,
           color: '#C084FC', cursor: 'pointer',
         }}>
-          + New
+          {t('chat.new')}
         </button>
       </div>
 
@@ -160,11 +160,11 @@ export default function Chat({ user }: { user: User }) {
       {showHistory && (
         <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#C084FC', textTransform: 'uppercase', marginBottom: 16 }}>
-            Previous Conversations
+            {t('chat.previous_conversations')}
           </div>
           {conversations.length === 0 ? (
             <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, textAlign: 'center', marginTop: 40 }}>
-              No previous conversations yet.
+              {t('chat.no_conversations')}
             </div>
           ) : (
             conversations.map(conv => (
@@ -197,10 +197,10 @@ export default function Chat({ user }: { user: User }) {
             <div style={{ textAlign: 'center', color: '#fff' }}>
               <div style={{ fontSize: 48, marginBottom: 12 }}>🔮</div>
               <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>
-                Ask Oria anything
+                {t('chat.empty_title')}
               </div>
               <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', marginBottom: 28 }}>
-                Your BaZi and MBTI are your guide
+                {t('chat.empty_subtitle')}
               </div>
 
               {/* Today's suggested prompts */}
@@ -209,7 +209,7 @@ export default function Chat({ user }: { user: User }) {
                 color: '#C084FC', textTransform: 'uppercase',
                 marginBottom: 14, textAlign: 'left',
               }}>
-                ✦ Try asking
+                {t('chat.try_asking')}
               </div>
               {allPrompts.map((prompt, i) => (
                 <button key={i}
@@ -283,7 +283,7 @@ export default function Chat({ user }: { user: User }) {
                 border: '1px solid rgba(192,132,252,0.3)',
                 color: 'rgba(255,255,255,0.5)', fontSize: 15,
               }}>
-                Thinking...
+                {t('chat.thinking')}
               </div>
             </div>
           )}
@@ -313,7 +313,7 @@ export default function Chat({ user }: { user: User }) {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask Oria anything..."
+          placeholder={t('chat.placeholder')}
           rows={2}
           style={{
             flex: 1,

@@ -5,10 +5,10 @@ import type { User } from '@supabase/supabase-js';
 import { getProfile, saveBazi, saveMbti, getProfileSummary, resetBazi } from '../services/api';
 
 const MBTI_TYPES = [
-  'INTJ','INTP','ENTJ','ENTP',
-  'INFJ','INFP','ENFJ','ENFP',
-  'ISTJ','ISFJ','ESTJ','ESFJ',
-  'ISTP','ISFP','ESTP','ESFP',
+  'INTJ', 'INTP', 'ENTJ', 'ENTP',
+  'INFJ', 'INFP', 'ENFJ', 'ENFP',
+  'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ',
+  'ISTP', 'ISFP', 'ESTP', 'ESFP',
 ];
 
 const whiteCard: React.CSSProperties = {
@@ -84,7 +84,7 @@ export default function Profile({ user }: { user: User }) {
         if (data.bazi && data.mbti) {
           getProfileSummary(i18n.language)
             .then(s => setSummary(s.summary))
-            .catch(() => {});
+            .catch(() => { });
         }
       })
       .catch(err => setError(err.message))
@@ -155,7 +155,7 @@ export default function Profile({ user }: { user: User }) {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center', color: '#fff' }}>
         <div style={{ fontSize: 48, marginBottom: 16 }}>◇</div>
-        <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)' }}>Loading profile...</div>
+        <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)' }}>{t('profile.loading')}</div>
       </div>
     </div>
   );
@@ -219,23 +219,23 @@ export default function Profile({ user }: { user: User }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
             <div>
               <div style={{ fontSize: 24, marginBottom: 4 }}>🪬</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 2 }}>BaZi · Birth Data</div>
-              <div style={{ fontSize: 13, color: '#888' }}>Four Pillars of Destiny</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 2 }}>{t('profile.bazi_title')}</div>
+              <div style={{ fontSize: 13, color: '#888' }}>{t('profile.bazi_subtitle')}</div>
             </div>
             {existingBazi && <div style={savedBadge}>✓ Saved</div>}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8 }}>
             <div>
-              <div style={labelStyle}>Year</div>
+              <div style={labelStyle}>{t('profile.year')}</div>
               <input style={inputStyle} placeholder="e.g. 1990" value={year} onChange={e => setYear(e.target.value)} />
             </div>
             <div>
-              <div style={labelStyle}>Month</div>
+              <div style={labelStyle}>{t('profile.month')}</div>
               <input style={inputStyle} placeholder="1-12" value={month} onChange={e => setMonth(e.target.value)} />
             </div>
             <div>
-              <div style={labelStyle}>Day</div>
+              <div style={labelStyle}>{t('profile.day')}</div>
               <input style={inputStyle} placeholder="1-31" value={day} onChange={e => setDay(e.target.value)} />
             </div>
           </div>
@@ -259,9 +259,9 @@ export default function Profile({ user }: { user: User }) {
             </div>
           )}
 
-          <div style={labelStyle}>Birth Location</div>
+          <div style={labelStyle}>{t('profile.birth_location')}</div>
           <input style={inputStyle} placeholder="e.g. Hong Kong" value={location} onChange={e => setLocation(e.target.value)} />
-          <div style={labelStyle}>Timezone</div>
+          <div style={labelStyle}>{t('profile.timezone')}</div>
           <input style={inputStyle} placeholder="e.g. Asia/Hong_Kong" value={tzName} onChange={e => setTzName(e.target.value)} />
 
           <button onClick={handleSaveBazi} disabled={saving} style={{
@@ -270,7 +270,7 @@ export default function Profile({ user }: { user: User }) {
             fontSize: 15, fontWeight: 700, color: '#fff',
             cursor: saving ? 'not-allowed' : 'pointer',
           }}>
-            {saving ? 'Saving...' : existingBazi ? 'Update BaZi' : 'Save BaZi'}
+            {saving ? t('profile.saving') : existingBazi ? t('profile.update_bazi') : t('profile.save_bazi')}
           </button>
         </div>
 
@@ -279,8 +279,8 @@ export default function Profile({ user }: { user: User }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
             <div>
               <div style={{ fontSize: 24, marginBottom: 4 }}>🧠</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 2 }}>MBTI · Personality</div>
-              <div style={{ fontSize: 13, color: '#888' }}>Myers-Briggs Type</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 2 }}>{t('profile.mbti_title')}</div>
+              <div style={{ fontSize: 13, color: '#888' }}>{t('profile.mbti_subtitle')}</div>
             </div>
             {existingMbti && <div style={savedBadge}>✓ {mbtiType}</div>}
           </div>
@@ -295,7 +295,7 @@ export default function Profile({ user }: { user: User }) {
             ✦ Take the MBTI questionnaire →
           </button>
 
-          <div style={labelStyle}>Or select your type directly</div>
+          <div style={labelStyle}>{t('profile.select_type')}</div>
           <select value={mbtiType} onChange={e => setMbtiType(e.target.value)}
             style={{ ...inputStyle, cursor: 'pointer' }}>
             <option value="">Select your MBTI type</option>
@@ -308,7 +308,7 @@ export default function Profile({ user }: { user: User }) {
             fontSize: 15, fontWeight: 700, color: '#fff',
             cursor: saving || !mbtiType ? 'not-allowed' : 'pointer',
           }}>
-            {saving ? 'Saving...' : existingMbti ? 'Update MBTI' : 'Save MBTI'}
+            {saving ? t('profile.saving') : existingMbti ? t('profile.update_mbti') : t('profile.save_mbti')}
           </button>
         </div>
 
@@ -316,8 +316,8 @@ export default function Profile({ user }: { user: User }) {
         {existingBazi && existingMbti && (
           <div style={whiteCard}>
             <div style={{ fontSize: 24, marginBottom: 4 }}>✨</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 2 }}>Profile Summary</div>
-            <div style={{ fontSize: 13, color: '#888', marginBottom: 16 }}>AI-generated from your BaZi + MBTI</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 2 }}>{t('profile.summary_title')}</div>
+            <div style={{ fontSize: 13, color: '#888', marginBottom: 16 }}>{t('profile.summary_subtitle')}</div>
 
             {summary ? (
               <div>
@@ -329,13 +329,13 @@ export default function Profile({ user }: { user: User }) {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
                   <div style={{ background: '#f3e8ff', borderRadius: 12, padding: '14px 16px' }}>
-                    <div style={{ ...labelStyle, marginBottom: 8 }}>✦ Strengths</div>
+                    <div style={{ ...labelStyle, marginBottom: 8 }}>{t('profile.strengths')}</div>
                     {summary.key_strengths.map((s: string, i: number) => (
                       <div key={i} style={{ fontSize: 13, color: '#444', marginBottom: 4 }}>• {s}</div>
                     ))}
                   </div>
                   <div style={{ background: '#fce7f3', borderRadius: 12, padding: '14px 16px' }}>
-                    <div style={{ ...labelStyle, color: '#9d174d', marginBottom: 8 }}>↑ Growth</div>
+                    <div style={{ ...labelStyle, color: '#9d174d', marginBottom: 8 }}>{t('profile.growth')}</div>
                     {summary.growth_areas.map((s: string, i: number) => (
                       <div key={i} style={{ fontSize: 13, color: '#444', marginBottom: 4 }}>• {s}</div>
                     ))}
@@ -356,7 +356,7 @@ export default function Profile({ user }: { user: User }) {
                 fontSize: 16, fontWeight: 700, color: '#fff',
                 cursor: summaryLoading ? 'not-allowed' : 'pointer',
               }}>
-                {summaryLoading ? 'Generating your summary...' : '✦ Generate my profile summary'}
+                {summaryLoading ? t('profile.generating') : t('profile.generate_summary')}
               </button>
             )}
           </div>

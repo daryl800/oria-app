@@ -17,6 +17,11 @@ i18n
     },
     defaultNS: 'common',
     interpolation: { escapeValue: false },
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
+      lookupLocalStorage: 'oria_language',
+    },
   });
 
 export default i18n;

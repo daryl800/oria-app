@@ -143,7 +143,7 @@ export default function DailyGuidance({ user }: { user: User }) {
             letterSpacing: 2, color: '#7e22ce',
             textTransform: 'uppercase', marginBottom: 16,
           }}>
-            Today's Tone · 今日氣場
+            {t('daily.tone_label')}
           </div>
           <div style={{ fontSize: 44, fontWeight: 800, color: '#1a0a2e', lineHeight: 1.1, marginBottom: 8 }}>
             {summary.tone} {toneSymbol}
@@ -156,7 +156,7 @@ export default function DailyGuidance({ user }: { user: User }) {
         {/* Nudge — white card with purple left border */}
         <div style={{ ...whiteCard, padding: '20px 24px', borderLeft: '4px solid #9333EA' }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#9333EA', textTransform: 'uppercase', marginBottom: 10 }}>
-            ✦ Today's Light · 明燈
+            {t('daily.nudge_label')}
           </div>
           <div style={{ fontSize: 17, color: '#1a0a2e', lineHeight: 1.7, fontStyle: 'italic' }}>
             "{summary.nudge}"
@@ -210,7 +210,7 @@ export default function DailyGuidance({ user }: { user: User }) {
               fontWeight: 700, color: '#7e22ce',
               textTransform: 'uppercase', marginBottom: 10,
             }}>
-              ✨ Helpful {summary.helpful_element.type}
+              {t('daily.helpful_label')} {summary.helpful_element.type}
             </div>
             <div style={{
               fontSize: 20, fontWeight: 700, marginBottom: 6,
@@ -239,7 +239,7 @@ export default function DailyGuidance({ user }: { user: User }) {
             marginBottom: 16,
           }}
         >
-          Open Guidance Chat →
+          {t('daily.cta')}
         </button>
 
         {/* Disclaimer — visible */}
