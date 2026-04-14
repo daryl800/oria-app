@@ -102,3 +102,21 @@ export async function getConversationMessages(conversationId: string) {
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
+export async function getMbtiQuestions(lang: string = 'en') {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/profile/mbti/questions?lang=${lang}`, { headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function submitMbtiAnswers(answers: Record<number, string>, lang: string = 'en') {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/profile/mbti/calculate`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ answers, lang }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}

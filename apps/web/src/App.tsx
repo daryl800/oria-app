@@ -7,6 +7,7 @@ import DailyGuidance from './pages/DailyGuidance';
 import Profile from './pages/Profile';
 import Chat from './pages/Chat';
 import Settings from './pages/Settings';
+import MbtiQuestionnaire from './pages/MbtiQuestionnaire';
 import BottomNav from './components/BottomNav';
 
 function AppRoutes({ user }: { user: User }) {
@@ -21,6 +22,7 @@ function AppRoutes({ user }: { user: User }) {
           <Route path="/profile" element={<Profile user={user} />} />
           <Route path="/chat" element={<Chat user={user} />} />
           <Route path="/settings" element={<Settings user={user} />} />
+          <Route path="/mbti-quiz" element={<MbtiQuestionnaire user={user} />} />
           <Route path="*" element={<Navigate to="/daily" />} />
         </Routes>
       </div>

@@ -189,6 +189,7 @@ export default function Profile({ user }: { user: User }) {
       {/* MBTI Section */}
       <div style={{ background: '#f5f5f5', borderRadius: 8, padding: 16, marginBottom: 16 }}>
         <h2>MBTI Type</h2>
+        <button onClick={() => navigate('/mbti-quiz')} style={{ marginBottom: 8, fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', color: '#888', textDecoration: 'underline' }}>Take the MBTI questionnaire →</button>
         {existingMbti && (
           <p style={{ color: 'green', fontSize: 13 }}>✓ MBTI profile saved</p>
         )}

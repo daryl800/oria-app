@@ -176,3 +176,57 @@ router.post('/summary', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// GET /api/profile/mbti/questions
+router.get('/mbti/questions', async (req: Request, res: Response) => {
+  try {
+    const lang = (req.query.lang as string) ?? 'en';
+    const res2 = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/questions?lang=${lang}`);
+    const data = await res2.json();
+    return res.json(data);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/profile/mbti/calculate
+router.post('/mbti/calculate', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { answers, lang = 'en' } = req.body;
+
+    const calcRes = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/calculate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers, lang }),
+    });
+
+    if (!calcRes.ok) throw new Error('MBTI calculation failed');
+    const result = await calcRes.json();
+
+    // save to mbti_profile_versions
+    const { data: newVersion, error: insertError } = await supabase
+      .from('mbti_profile_versions')
+      .insert({
+        user_id: userId,
+        mbti_type: result.mbti_type,
+        source: 'questionnaire',
+        questionnaire_responses: answers,
+      })
+      .select()
+      .single();
+
+    if (insertError) throw new Error(`MBTI insert failed: ${insertError.message}`);
+
+    const { error: updateError } = await supabase
+      .from('user_profiles')
+      .update({ current_mbti_version_id: newVersion.id })
+      .eq('user_id', userId);
+
+    if (updateError) throw new Error(`Profile update failed: ${updateError.message}`);
+
+    return res.json({ mbti_type: result.mbti_type, dimension_results: result.dimension_results });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});

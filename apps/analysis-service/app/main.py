@@ -67,3 +67,25 @@ def combined_context(req: ProfileContextRequest):
         return {"context": context}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+from app.mbti_questionnaire import get_questions, calculate_mbti
+
+class QuestionnaireRequest(BaseModel):
+    lang: str = "en"
+
+class AnswerRequest(BaseModel):
+    answers: dict
+    lang: str = "en"
+
+@app.get("/mbti/questions")
+def mbti_questions(lang: str = "en"):
+    return {"questions": get_questions(lang)}
+
+@app.post("/mbti/calculate")
+def mbti_calculate(req: AnswerRequest):
+    try:
+        answers = {int(k): v for k, v in req.answers.items()}
+        result = calculate_mbti(answers)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

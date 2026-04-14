@@ -162,7 +162,7 @@ Immutable, append-only.
 - `user_id` (FK → users.id)
 - `mbti_type` (text, e.g. `INFJ`)
 - `source` (text: `manual | questionnaire`)
-- `questionnaire_responses` (JSONB, nullable)
+- `questionnaire_responses` (JSONB, nullable) — stores raw answers when source is `questionnaire`
 - `created_at` (timestamptz)
 
 RLS: owner only.
@@ -449,10 +449,12 @@ User goes to Settings → Manage subscription
 - One additional person (BaZi only, side-by-side pillar display, Pro-gated)
 - English + Traditional Chinese (zh-TW) from day one
 - PWA (installable, service worker for shell caching, manifest for home-screen install)
+- MBTI questionnaire (20-question short form, scored in Python 
+  analysis service, result shown with dimension breakdown)
+- Manual MBTI type entry still available for users who know their type
 
 ### v2 and beyond
 
-- MBTI questionnaire (scored in analysis service)
 - AI-powered comparison analysis
 - Credits ledger active (à la carte purchases)
 - Multiple subscription tiers
@@ -553,6 +555,9 @@ Tasks completed:
 - LLM refactored to Node.js; Python is pure calculation engine
 - Routing (React Router)
 - CORS configured
+- MBTI questionnaire endpoint (20 questions, A/B scoring per dimension)
+- Questionnaire UI with progress indicator, dot navigation, result screen
+- questionnaire_responses column on mbti_profile_versions
 
 Exit: User enters birth data + MBTI, views profile summary, lands on Daily Guidance page with today's tone/tips/nudge.
 
