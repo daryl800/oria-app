@@ -120,3 +120,11 @@ export async function submitMbtiAnswers(answers: Record<number, string>, lang: s
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
+export async function getDailySuggestedPrompts(lang: string = 'en') {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/daily-guidance/today?lang=${lang}`, { headers });
+  if (!res.ok) return { suggested_prompts: [] };
+  const data = await res.json();
+  return { suggested_prompts: data.summary?.suggested_prompts ?? [] };
+}
