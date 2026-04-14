@@ -123,20 +123,32 @@ router.post('/mbti', async (req: Request, res: Response) => {
   }
 });
 
-// POST /api/profile/summary — now calls LLM directly from Node.js
+// POST /api/profile/summary — cached in user_profiles
 router.post('/summary', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
     const lang = req.body.lang ?? 'en';
+    const forceRegenerate = req.body.force ?? false;
 
     const { data: profile } = await supabase
       .from('user_profiles')
-      .select('current_bazi_version_id, current_mbti_version_id')
+      .select('current_bazi_version_id, current_mbti_version_id, profile_summary, summary_bazi_version_id, summary_mbti_version_id')
       .eq('user_id', userId)
       .single();
 
     if (!profile?.current_bazi_version_id || !profile?.current_mbti_version_id) {
       return res.status(400).json({ error: 'Complete both BaZi and MBTI profiles first.' });
+    }
+
+    // serve cached summary if versions match and not forcing regeneration
+    const cacheValid =
+      !forceRegenerate &&
+      profile.profile_summary &&
+      profile.summary_bazi_version_id === profile.current_bazi_version_id &&
+      profile.summary_mbti_version_id === profile.current_mbti_version_id;
+
+    if (cacheValid) {
+      return res.json({ summary: profile.profile_summary, cached: true });
     }
 
     const { data: bazi } = await supabase
@@ -151,7 +163,6 @@ router.post('/summary', async (req: Request, res: Response) => {
       .eq('id', profile.current_mbti_version_id)
       .single();
 
-    // get mbti profile from Python (pure data, no LLM)
     const mbtiRes = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/profile`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -159,7 +170,6 @@ router.post('/summary', async (req: Request, res: Response) => {
     });
     const mbtiProfile = await mbtiRes.json();
 
-    // call LLM directly from Node.js
     const messages = profileSummaryPrompt(
       { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength },
       mbtiProfile,
@@ -169,10 +179,90 @@ router.post('/summary', async (req: Request, res: Response) => {
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
     const summary = JSON.parse(clean);
 
-    return res.json({ summary });
+    // cache the summary
+    await supabase
+      .from('user_profiles')
+      .update({
+        profile_summary: summary,
+        summary_bazi_version_id: profile.current_bazi_version_id,
+        summary_mbti_version_id: profile.current_mbti_version_id,
+      })
+      .eq('user_id', userId);
+
+    return res.json({ summary, cached: false });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
+
+// POST /api/profile/bazi/update — clears history before saving new BaZi
+router.post('/bazi/reset', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { year, month, day, hour, minute, tz_name, location, time_known } = req.body;
+
+    // clear all history for this user
+    const { data: convs } = await supabase
+      .from('conversations')
+      .select('id')
+      .eq('user_id', userId);
+
+    if (convs && convs.length > 0) {
+      const convIds = convs.map((c: any) => c.id);
+      await supabase.from('messages').delete().in('conversation_id', convIds);
+      await supabase.from('conversation_summaries').delete().in('conversation_id', convIds);
+      await supabase.from('conversations').delete().eq('user_id', userId);
+    }
+
+    // clear daily guidance cache
+    await supabase.from('daily_guidance').delete().eq('user_id', userId);
+
+    // clear profile summary cache
+    await supabase
+      .from('user_profiles')
+      .update({ profile_summary: null, summary_bazi_version_id: null, summary_mbti_version_id: null })
+      .eq('user_id', userId);
+
+    // calculate new bazi
+    const analysisRes = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ year, month, day, hour, minute, tz_name, location, time_known, lang: 'en' }),
+    });
+
+    if (!analysisRes.ok) throw new Error('BaZi calculation failed');
+    const { bazi } = await analysisRes.json();
+
+    const { data: newVersion, error: insertError } = await supabase
+      .from('bazi_profile_versions')
+      .insert({
+        user_id: userId,
+        birth_date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
+        birth_time: time_known ? `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}` : null,
+        birth_location: location,
+        year_pillar: bazi.pillars.year,
+        month_pillar: bazi.pillars.month,
+        day_pillar: bazi.pillars.day,
+        hour_pillar: bazi.pillars.hour ?? null,
+        five_elements_strength: bazi.five_elements_strength,
+        day_master: bazi.day_master,
+      })
+      .select()
+      .single();
+
+    if (insertError) throw new Error(`BaZi insert failed: ${insertError.message}`);
+
+    const { error: updateError } = await supabase
+      .from('user_profiles')
+      .update({ current_bazi_version_id: newVersion.id })
+      .eq('user_id', userId);
+
+    if (updateError) throw new Error(`Profile update failed: ${updateError.message}`);
+
+    return res.json({ bazi: newVersion, history_cleared: true });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
 });
 
 export default router;

@@ -17,6 +17,7 @@ const Paths = {
     _: '/profile',
     Get: '/me',
     SaveBazi: '/bazi',
+    ResetBazi: '/bazi/reset',
     SaveMbti: '/mbti',
     Summary: '/summary',
   },

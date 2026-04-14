@@ -128,3 +128,17 @@ export async function getDailySuggestedPrompts(lang: string = 'en') {
   const data = await res.json();
   return { suggested_prompts: data.summary?.suggested_prompts ?? [] };
 }
+
+export async function resetBazi(data: {
+  year: number; month: number; day: number;
+  hour: number; minute: number;
+  tz_name: string; location: string; time_known: boolean;
+}) {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/profile/bazi/reset`, {
+    method: 'POST', headers,
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
