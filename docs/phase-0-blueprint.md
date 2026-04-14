@@ -640,3 +640,45 @@ Exit: Pro user can add one other person's BaZi and view both sets of pillars sid
 ---
 
 *This completes the Phase 0 Blueprint (current as of Phase 4 complete, Phase 5 starting). All structural decisions — schema shape, service boundaries, payment model, safety architecture, conversation memory strategy — are captured here.*
+
+---
+
+## L. Onboarding Funnel (Phase 5 — Value-First)
+
+### Philosophy
+Users experience value before being asked to sign up. The MBTI quiz is the entry point — fun, engaging, no commitment. The result is the hook. Signup is the natural next step to "save and unlock more."
+
+### Monetisation Model (Final)
+
+| Feature | Free | Paid |
+|---|---|---|
+| MBTI quiz + type result | ✅ | ✅ |
+| BaZi four pillars display | ✅ | ✅ |
+| 3 free chat messages | ✅ | ✅ |
+| 1 Daily Guidance (today only) | ✅ | ✅ |
+| Profile Summary (BaZi + MBTI AI analysis) | ❌ | ✅ |
+| Daily Guidance every day | ❌ | ✅ |
+| Unlimited chat + history | ❌ | ✅ |
+| People & Comparisons | ❌ | ✅ |
+
+### Onboarding Screen Flow
+
+### localStorage Keys
+- `oria_mbti_answers` — raw A/B answers (Record<number, string>)
+- `oria_mbti_result` — { mbti_type, dimension_results } from Python
+- `oria_language` — user's language preference
+
+### Post-Signup Logic (in App.tsx)
+### Credit System (Phase 6)
+- Welcome grant: 50 credits on signup
+- Daily Guidance: 5 credits/day
+- Chat message: 2 credits each
+- Profile Summary: 20 credits (one-time)
+- Profile Summary cached after first purchase — never charged again
+- When credits exhausted → subscribe or buy more via Stripe
+
+### Paywall Placement
+- Profile Summary: locked card with "Unlock →" CTA
+- Daily Guidance (day 2+): soft prompt "You've used your free guidance"
+- Chat (message 4+): input replaced with upgrade card
+- All paywalls: calm, non-aggressive, no countdown timers
