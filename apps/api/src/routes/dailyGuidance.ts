@@ -46,7 +46,7 @@ router.get('/today', async (req: Request, res: Response) => {
     // 2. load bazi profile
     const { data: userProfile } = await supabase
       .from('user_profiles')
-      .select('current_bazi_version_id')
+      .select('current_bazi_version_id, current_mbti_version_id')
       .eq('user_id', userId)
       .single();
 
@@ -63,12 +63,32 @@ router.get('/today', async (req: Request, res: Response) => {
     // 3. get today's stem and branch from Python
     const { stem, branch } = await getTodayStemBranch(today);
 
+    // 3b. load mbti profile
+    let mbtiProfile = null;
+    if (userProfile.current_mbti_version_id) {
+      const { data: mbtiVersion } = await supabase
+        .from('mbti_profile_versions')
+        .select('mbti_type')
+        .eq('id', userProfile.current_mbti_version_id)
+        .single();
+
+      if (mbtiVersion) {
+        const mbtiRes = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/profile`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mbti_type: mbtiVersion.mbti_type, lang }),
+        });
+        if (mbtiRes.ok) mbtiProfile = await mbtiRes.json();
+      }
+    }
+
     // 4. call LLM directly from Node.js
     const messages = dailyGuidancePrompt(
       {
         day_master: baziVersion.day_master,
         five_elements_strength: baziVersion.five_elements_strength,
       },
+      mbtiProfile,
       stem,
       branch,
       lang,
