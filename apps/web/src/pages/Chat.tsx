@@ -50,10 +50,10 @@ export default function Chat({ user }: { user: User }) {
   }, [messages]);
 
   useEffect(() => {
-    getDailySuggestedPrompts(i18n.language)
+    getDailySuggestedPrompts('en')
       .then(data => setDailyPrompts(data.suggested_prompts))
       .catch(() => {});
-  }, [i18n.language]);
+  }, []);
 
   async function loadHistory() {
     setHistoryLoading(true);

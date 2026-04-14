@@ -75,11 +75,11 @@ export default function DailyGuidance({ user }: { user: User }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchDailyGuidance(i18n.language)
+    fetchDailyGuidance('en')
       .then(data => setSummary(data.summary))
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [i18n.language]);
+  }, []);
 
   const today = new Date().toLocaleDateString('en-GB', {
     weekday: 'short', day: 'numeric', month: 'short',
