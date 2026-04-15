@@ -142,3 +142,19 @@ export async function resetBazi(data: {
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
+export async function getPublicMbtiQuestions(lang: string = 'en') {
+  const res = await fetch(`${API_URL}/api/public/mbti/questions?lang=${lang}`);
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function submitPublicMbtiAnswers(answers: Record<number, string>, lang: string = 'en') {
+  const res = await fetch(`${API_URL}/api/public/mbti/calculate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answers, lang }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
