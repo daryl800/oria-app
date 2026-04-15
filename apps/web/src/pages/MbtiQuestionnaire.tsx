@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { getMbtiQuestions, submitMbtiAnswers } from '../services/api';
+import '../styles/theme.css';
 
 interface Question {
   id: number;
@@ -26,16 +27,19 @@ const DIMENSION_LABELS: Record<string, { a: string; b: string; icon: string }> =
   'JP': { a: 'Judging',   b: 'Perceiving',icon: '🧭' },
 };
 
-const whiteCard: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.95)',
-  borderRadius: 20,
-  padding: '24px',
-  marginBottom: 14,
-  boxShadow: '0 2px 16px rgba(0,0,0,0.12)',
+const purpleCard: React.CSSProperties = {
+  background: 'rgba(45, 27, 84, 0.85)',
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  border: '1.5px solid rgba(192, 132, 252, 0.45)',
+  borderRadius: 24,
+  padding: '28px',
+  marginBottom: 16,
+  boxShadow: '0 8px 32px rgba(147, 51, 234, 0.25)',
 };
 
 export default function MbtiQuestionnaire({ user }: { user: User }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -51,7 +55,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
       .then(data => setQuestions(data.questions))
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [i18n.language]);
 
   function handleAnswer(questionId: number, answer: string) {
     const newAnswers = { ...answers, [questionId]: answer };
@@ -79,18 +83,16 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center', color: '#fff' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>🧠</div>
-        <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)' }}>Loading questions...</div>
-      </div>
+    <div className="oria-page oria-loading">
+      <div style={{ fontSize: 48, animation: 'breathe 2s infinite', color: '#C084FC' }}>🧠</div>
+      <div style={{ fontSize: 16, color: '#FFFFFF' }}>Loading questions...</div>
     </div>
   );
 
   // Result screen
   if (result) return (
-    <div style={{ minHeight: '100vh', paddingBottom: 84 }}>
-      <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 20px' }}>
+    <div className="oria-page">
+      <div className="oria-container">
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '28px 0 20px' }}>
           <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 4, color: '#C084FC', textTransform: 'uppercase' }}>Oria</span>
@@ -98,21 +100,21 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
         </div>
 
         {/* MBTI type hero */}
-        <div style={{ ...whiteCard, textAlign: 'center', padding: '36px 24px' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#7e22ce', textTransform: 'uppercase', marginBottom: 12 }}>
+        <div className="oria-card" style={{ textAlign: 'center', padding: '48px 28px' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#C084FC', textTransform: 'uppercase', marginBottom: 12 }}>
             {t('mbti.your_type')}
           </div>
-          <div style={{ fontSize: 72, fontWeight: 800, color: '#1a0a2e', lineHeight: 1, marginBottom: 8 }}>
+          <div style={{ fontSize: 72, fontWeight: 800, color: '#FFFFFF', lineHeight: 1, marginBottom: 8 }}>
             {result.mbti_type}
           </div>
-          <div style={{ fontSize: 14, color: '#888' }}>
+          <div style={{ fontSize: 14, color: 'rgba(255, 255, 255, 0.85)' }}>
             {t('mbti.based_on')}
           </div>
         </div>
 
         {/* Dimension breakdown */}
-        <div style={whiteCard}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#7e22ce', textTransform: 'uppercase', marginBottom: 16 }}>
+        <div className="oria-card">
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#C084FC', textTransform: 'uppercase', marginBottom: 16 }}>
             {t('mbti.dimension_breakdown')}
           </div>
           {Object.entries(result.dimension_results).map(([dim, scores]) => {
@@ -125,14 +127,14 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
             return (
               <div key={dim} style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 14 }}>
-                  <span style={{ fontWeight: scores.dominant === a ? 700 : 400, color: scores.dominant === a ? '#7e22ce' : '#888' }}>
+                  <span style={{ fontWeight: scores.dominant === a ? 700 : 400, color: scores.dominant === a ? '#C084FC' : 'rgba(255, 255, 255, 0.7)' }}>
                     {labels?.icon} {a} · {labels?.a}
                   </span>
-                  <span style={{ fontWeight: scores.dominant === b ? 700 : 400, color: scores.dominant === b ? '#7e22ce' : '#888' }}>
+                  <span style={{ fontWeight: scores.dominant === b ? 700 : 400, color: scores.dominant === b ? '#C084FC' : 'rgba(255, 255, 255, 0.7)' }}>
                     {b} · {labels?.b}
                   </span>
                 </div>
-                <div style={{ background: '#f3e8ff', borderRadius: 8, height: 10, position: 'relative' }}>
+                <div style={{ background: 'rgba(192, 132, 252, 0.15)', borderRadius: 8, height: 10, position: 'relative' }}>
                   <div style={{
                     background: 'linear-gradient(90deg, #9333EA, #C084FC)',
                     borderRadius: 8, height: 10,
@@ -140,7 +142,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
                     transition: 'width 0.6s ease',
                   }} />
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, fontSize: 12, color: '#aaa' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, fontSize: 12, color: 'rgba(255, 255, 255, 0.65)' }}>
                   <span>{aScore} / {total}</span>
                   <span>{bScore} / {total}</span>
                 </div>
@@ -149,13 +151,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
           })}
         </div>
 
-        <button onClick={() => navigate('/profile')} style={{
-          display: 'block', width: '100%',
-          background: '#1a0a2e', border: 'none',
-          borderRadius: 16, padding: '18px',
-          fontSize: 17, fontWeight: 700,
-          color: '#fff', cursor: 'pointer',
-        }}>
+        <button onClick={() => navigate('/profile')} className="oria-btn-primary" style={{ marginTop: 16 }}>
           {t('mbti.continue')}
         </button>
       </div>
@@ -168,24 +164,24 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
   const isLastQuestion = currentIndex === questions.length - 1;
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: 84 }}>
-      <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 20px' }}>
+    <div className="oria-page">
+      <div className="oria-container">
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '28px 0 20px' }}>
           <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 4, color: '#C084FC', textTransform: 'uppercase' }}>Oria</span>
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)' }}>
+          <span style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.75)' }}>
             {answeredCount} / {questions.length} answered
           </span>
         </div>
 
         {/* Progress bar */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'rgba(255, 255, 255, 0.65)', marginBottom: 8 }}>
             <span>Question {currentIndex + 1} of {questions.length}</span>
             <span>{progress}%</span>
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 8, height: 6 }}>
+          <div style={{ background: 'rgba(192, 132, 252, 0.15)', borderRadius: 8, height: 6 }}>
             <div style={{
               background: 'linear-gradient(90deg, #9333EA, #C084FC)',
               borderRadius: 8, height: 6,
@@ -196,23 +192,23 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
         </div>
 
         {/* Question card */}
-        <div style={{ ...whiteCard, marginBottom: 14 }}>
+        <div className="oria-card">
           <div style={{
             display: 'inline-block',
-            background: '#f3e8ff', borderRadius: 20,
-            padding: '4px 12px', fontSize: 11,
-            fontWeight: 700, color: '#7e22ce',
+            background: 'rgba(192, 132, 252, 0.18)', borderRadius: 20,
+            padding: '6px 14px', fontSize: 11,
+            fontWeight: 700, color: '#C084FC',
             textTransform: 'uppercase', marginBottom: 14,
           }}>
             {currentQuestion?.dimension} {t('mbti.dimension')}
           </div>
-          <div style={{ fontSize: 18, lineHeight: 1.65, fontWeight: 500, color: '#1a0a2e' }}>
+          <div style={{ fontSize: 20, lineHeight: 1.7, fontWeight: 600, color: '#FFFFFF' }}>
             {currentQuestion?.text}
           </div>
         </div>
 
         {/* Answer options */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
           {(['A', 'B'] as const).map(option => {
             const isSelected = answers[currentQuestion?.id] === option;
             return (
@@ -220,20 +216,23 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
                 key={option}
                 onClick={() => handleAnswer(currentQuestion.id, option)}
                 style={{
-                  padding: '16px 20px',
+                  padding: '18px 20px',
                   borderRadius: 16,
-                  border: isSelected ? '2px solid #9333EA' : 'none',
-                  background: isSelected ? '#9333EA' : 'rgba(255,255,255,0.93)',
-                  color: isSelected ? '#fff' : '#1a0a2e',
+                  border: isSelected ? '2px solid #C084FC' : '1.5px solid rgba(192, 132, 252, 0.35)',
+                  background: isSelected ? 'linear-gradient(135deg, #9333EA 0%, #7C3AED 100%)' : 'rgba(45, 27, 84, 0.7)',
+                  color: isSelected ? '#fff' : '#FFFFFF',
                   cursor: 'pointer',
-                  fontSize: 15,
+                  fontSize: 16,
                   textAlign: 'left',
                   transition: 'all 0.2s',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+                  boxShadow: isSelected ? '0 6px 20px rgba(147, 51, 234, 0.4)' : 'none',
                   fontFamily: 'inherit',
+                  fontWeight: 500,
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
                 }}
               >
-                <span style={{ fontWeight: 700, marginRight: 12, opacity: 0.6 }}>{option}</span>
+                <span style={{ fontWeight: 700, marginRight: 12, opacity: 0.7 }}>{option}</span>
                 {currentQuestion?.options[option]}
               </button>
             );
@@ -241,28 +240,14 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
         </div>
 
         {/* Navigation */}
-        <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+        <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
           {currentIndex > 0 && (
-            <button onClick={() => setCurrentIndex(prev => prev - 1)} style={{
-              flex: 1, padding: '12px',
-              borderRadius: 12,
-              background: 'rgba(255,255,255,0.15)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              color: '#fff', cursor: 'pointer', fontSize: 14,
-              fontFamily: 'inherit',
-            }}>
+            <button onClick={() => setCurrentIndex(prev => prev - 1)} className="oria-btn-outline" style={{ flex: 1, padding: '14px' }}>
               {t('mbti.previous')}
             </button>
           )}
           {!isLastQuestion && answers[currentQuestion?.id] && (
-            <button onClick={() => setCurrentIndex(prev => prev + 1)} style={{
-              flex: 1, padding: '12px',
-              borderRadius: 12,
-              background: 'rgba(255,255,255,0.15)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              color: '#fff', cursor: 'pointer', fontSize: 14,
-              fontFamily: 'inherit',
-            }}>
+            <button onClick={() => setCurrentIndex(prev => prev + 1)} className="oria-btn-outline" style={{ flex: 1, padding: '14px' }}>
               {t('mbti.next')}
             </button>
           )}
@@ -270,32 +255,19 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
 
         {/* Submit */}
         {answeredCount === questions.length && (
-          <button onClick={handleSubmit} disabled={submitting} style={{
-            width: '100%', padding: '18px',
-            borderRadius: 16,
-            background: submitting ? '#ddd' : '#9333EA',
-            color: '#fff', border: 'none',
-            cursor: submitting ? 'not-allowed' : 'pointer',
-            fontSize: 17, fontWeight: 700,
-            boxShadow: '0 4px 20px rgba(147,51,234,0.45)',
-            fontFamily: 'inherit',
-          }}>
+          <button onClick={handleSubmit} disabled={submitting} className="oria-btn-primary">
             {submitting ? t('mbti.calculating') : t('mbti.get_type')}
           </button>
         )}
 
         {error && (
-          <div style={{
-            background: 'rgba(220,38,38,0.2)', border: '1px solid rgba(220,38,38,0.4)',
-            borderRadius: 12, padding: '12px 16px',
-            color: '#fca5a5', fontSize: 14, marginTop: 12,
-          }}>
+          <div className="oria-error" style={{ marginTop: 16 }}>
             {error}
           </div>
         )}
 
         {/* Dot navigation */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 24, justifyContent: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 28, justifyContent: 'center' }}>
           {questions.map((q, i) => (
             <button
               key={q.id}
@@ -304,12 +276,13 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
                 width: 10, height: 10,
                 borderRadius: '50%', border: 'none',
                 background: answers[q.id]
-                  ? '#9333EA'
+                  ? '#C084FC'
                   : i === currentIndex
-                  ? 'rgba(255,255,255,0.8)'
-                  : 'rgba(255,255,255,0.25)',
+                  ? 'rgba(255, 255, 255, 0.85)'
+                  : 'rgba(255, 255, 255, 0.25)',
                 cursor: 'pointer',
                 padding: 0,
+                transition: 'all 0.2s ease',
               }}
             />
           ))}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { getProfile, saveBazi, saveMbti, getProfileSummary, resetBazi } from '../services/api';
+import '../styles/theme.css';
 
 const MBTI_TYPES = [
   'INTJ', 'INTP', 'ENTJ', 'ENTP',
@@ -10,37 +11,6 @@ const MBTI_TYPES = [
   'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ',
   'ISTP', 'ISFP', 'ESTP', 'ESFP',
 ];
-
-const whiteCard: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.95)',
-  borderRadius: 20, padding: '24px',
-  marginBottom: 16,
-  boxShadow: '0 2px 16px rgba(0,0,0,0.12)',
-};
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  background: '#f8f5ff',
-  border: '1px solid rgba(147,51,234,0.2)',
-  borderRadius: 12, padding: '12px 16px',
-  fontSize: 15, color: '#1a0a2e',
-  outline: 'none', marginBottom: 10,
-  fontFamily: 'inherit',
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 700,
-  letterSpacing: 1.5, color: '#7e22ce',
-  textTransform: 'uppercase', marginBottom: 6,
-  display: 'block',
-};
-
-const savedBadge: React.CSSProperties = {
-  display: 'inline-flex', alignItems: 'center', gap: 6,
-  background: '#dcfce7', borderRadius: 20,
-  padding: '4px 12px', fontSize: 12,
-  fontWeight: 700, color: '#166534',
-};
 
 export default function Profile({ user }: { user: User }) {
   const { t, i18n } = useTranslation();
@@ -80,7 +50,6 @@ export default function Profile({ user }: { user: User }) {
           setExistingMbti(data.mbti);
           setMbtiType(data.mbti.mbti_type);
         }
-        // auto-load cached summary if both profiles exist
         if (data.bazi && data.mbti) {
           getProfileSummary(i18n.language)
             .then(s => setSummary(s.summary))
@@ -89,11 +58,10 @@ export default function Profile({ user }: { user: User }) {
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [i18n.language]);
 
   async function handleSaveBazi() {
     if (!year || !month || !day) return setError('Please enter your birth date.');
-    // if existing bazi, show warning first
     if (existingBazi) {
       setShowResetWarning(true);
       return;
@@ -131,7 +99,7 @@ export default function Profile({ user }: { user: User }) {
     try {
       await saveMbti(mbtiType);
       setExistingMbti(true);
-      setSummary(null); // clear cached summary — MBTI changed
+      setSummary(null);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -139,7 +107,7 @@ export default function Profile({ user }: { user: User }) {
     }
   }
 
-  async function handleGetSummary(force = false) {
+  async function handleGetSummary() {
     setSummaryLoading(true); setError('');
     try {
       const data = await getProfileSummary(i18n.language);
@@ -152,220 +120,137 @@ export default function Profile({ user }: { user: User }) {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center', color: '#fff' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>◇</div>
-        <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)' }}>{t('profile.loading')}</div>
-      </div>
+    <div className="oria-page oria-loading">
+      <div style={{ fontSize: 48, animation: 'breathe 2s infinite', color: '#C084FC' }}>✦</div>
+      <p>{t('profile.loading')}</p>
     </div>
   );
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: 84 }}>
-      <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 20px' }}>
+    <div className="oria-page oria-container animate-fade-in">
+      <header style={{ marginBottom: 32 }}>
+        <div className="oria-card-label">Oria</div>
+        <h1 className="text-2xl">My Profile</h1>
+      </header>
 
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '28px 0 20px' }}>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 4, color: '#C084FC', textTransform: 'uppercase' }}>Oria</span>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, color: '#C084FC', textTransform: 'uppercase' }}>My Profile</span>
+      {showResetWarning && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 2000,
+          background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+        }}>
+          <div className="oria-card" style={{ maxWidth: 420, width: '100%', margin: 0 }}>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>⚠️</div>
+            <h2 className="text-xl" style={{ marginBottom: 12 }}>Update Birth Data?</h2>
+            <p style={{ color: '#FFFFFF', marginBottom: 24, lineHeight: 1.6 }}>
+              Updating your birth data will <strong>clear all your conversation history and daily guidance</strong>.
+            </p>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button onClick={() => setShowResetWarning(false)} className="oria-btn-outline" style={{ flex: 1 }}>Cancel</button>
+              <button onClick={() => doSaveBazi(true)} className="oria-btn-primary" style={{ flex: 1, background: '#EF4444' }}>Update</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {error && <div className="oria-error">{error}</div>}
+
+      {/* BaZi Section */}
+      <div className="oria-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+          <div>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>🪬</div>
+            <h2 className="text-lg">{t('profile.bazi_title')}</h2>
+            <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>{t('profile.bazi_subtitle')}</p>
+          </div>
+          {existingBazi && <div style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#4ADE80', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>✓ Saved</div>}
         </div>
 
-        {/* Reset warning modal */}
-        {showResetWarning && (
-          <div style={{
-            position: 'fixed', inset: 0, zIndex: 200,
-            background: 'rgba(0,0,0,0.7)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: 24,
-          }}>
-            <div style={{ ...whiteCard, maxWidth: 420, width: '100%', marginBottom: 0 }}>
-              <div style={{ fontSize: 28, marginBottom: 12 }}>⚠️</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 12 }}>
-                Update Birth Data?
-              </div>
-              <div style={{ fontSize: 15, color: '#444', lineHeight: 1.6, marginBottom: 20 }}>
-                Updating your birth data will <strong>clear all your conversation history and daily guidance</strong>. This ensures your future guidance truly reflects your chart.
-              </div>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button onClick={() => setShowResetWarning(false)} style={{
-                  flex: 1, background: '#f3f4f6', border: 'none',
-                  borderRadius: 12, padding: '14px', fontSize: 15,
-                  color: '#444', cursor: 'pointer',
-                }}>
-                  Cancel
-                </button>
-                <button onClick={() => doSaveBazi(true)} style={{
-                  flex: 1, background: '#dc2626', border: 'none',
-                  borderRadius: 12, padding: '14px', fontSize: 15,
-                  fontWeight: 700, color: '#fff', cursor: 'pointer',
-                }}>
-                  Yes, update
-                </button>
-              </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, marginBottom: 16 }}>
+          <div>
+            <label className="oria-card-label">{t('profile.year')}</label>
+            <input className="oria-input" placeholder="1990" value={year} onChange={e => setYear(e.target.value)} />
+          </div>
+          <div>
+            <label className="oria-card-label">{t('profile.month')}</label>
+            <input className="oria-input" placeholder="1-12" value={month} onChange={e => setMonth(e.target.value)} />
+          </div>
+          <div>
+            <label className="oria-card-label">{t('profile.day')}</label>
+            <input className="oria-input" placeholder="1-31" value={day} onChange={e => setDay(e.target.value)} />
+          </div>
+        </div>
+
+        <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20, cursor: 'pointer' }}>
+          <input type="checkbox" checked={timeKnown} onChange={e => setTimeKnown(e.target.checked)} style={{ width: 18, height: 18, accentColor: '#C084FC' }} />
+          <span className="text-sm">I know my exact birth time</span>
+        </label>
+
+        {timeKnown && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+            <div>
+              <label className="oria-card-label">Hour (0-23)</label>
+              <input className="oria-input" placeholder="14" value={hour} onChange={e => setHour(e.target.value)} />
+            </div>
+            <div>
+              <label className="oria-card-label">Minute</label>
+              <input className="oria-input" placeholder="30" value={minute} onChange={e => setMinute(e.target.value)} />
             </div>
           </div>
         )}
 
-        {error && (
-          <div style={{
-            background: 'rgba(220,38,38,0.2)', border: '1px solid rgba(220,38,38,0.4)',
-            borderRadius: 12, padding: '12px 16px', color: '#fca5a5',
-            fontSize: 14, marginBottom: 16,
-          }}>{error}</div>
-        )}
-
-        {/* BaZi */}
-        <div style={whiteCard}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-            <div>
-              <div style={{ fontSize: 24, marginBottom: 4 }}>🪬</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 2 }}>{t('profile.bazi_title')}</div>
-              <div style={{ fontSize: 13, color: '#888' }}>{t('profile.bazi_subtitle')}</div>
-            </div>
-            {existingBazi && <div style={savedBadge}>✓ Saved</div>}
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8 }}>
-            <div>
-              <div style={labelStyle}>{t('profile.year')}</div>
-              <input style={inputStyle} placeholder="e.g. 1990" value={year} onChange={e => setYear(e.target.value)} />
-            </div>
-            <div>
-              <div style={labelStyle}>{t('profile.month')}</div>
-              <input style={inputStyle} placeholder="1-12" value={month} onChange={e => setMonth(e.target.value)} />
-            </div>
-            <div>
-              <div style={labelStyle}>{t('profile.day')}</div>
-              <input style={inputStyle} placeholder="1-31" value={day} onChange={e => setDay(e.target.value)} />
-            </div>
-          </div>
-
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, cursor: 'pointer', fontSize: 14, color: '#444' }}>
-            <input type="checkbox" checked={timeKnown} onChange={e => setTimeKnown(e.target.checked)}
-              style={{ width: 16, height: 16, accentColor: '#9333EA' }} />
-            I know my exact birth time
-          </label>
-
-          {timeKnown && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <div>
-                <div style={labelStyle}>Hour (0-23)</div>
-                <input style={inputStyle} placeholder="e.g. 14" value={hour} onChange={e => setHour(e.target.value)} />
-              </div>
-              <div>
-                <div style={labelStyle}>Minute</div>
-                <input style={inputStyle} placeholder="e.g. 30" value={minute} onChange={e => setMinute(e.target.value)} />
-              </div>
-            </div>
-          )}
-
-          <div style={labelStyle}>{t('profile.birth_location')}</div>
-          <input style={inputStyle} placeholder="e.g. Hong Kong" value={location} onChange={e => setLocation(e.target.value)} />
-          <div style={labelStyle}>{t('profile.timezone')}</div>
-          <input style={inputStyle} placeholder="e.g. Asia/Hong_Kong" value={tzName} onChange={e => setTzName(e.target.value)} />
-
-          <button onClick={handleSaveBazi} disabled={saving} style={{
-            width: '100%', background: saving ? '#ddd' : '#1a0a2e',
-            border: 'none', borderRadius: 12, padding: '14px',
-            fontSize: 15, fontWeight: 700, color: '#fff',
-            cursor: saving ? 'not-allowed' : 'pointer',
-          }}>
-            {saving ? t('profile.saving') : existingBazi ? t('profile.update_bazi') : t('profile.save_bazi')}
-          </button>
+        <div style={{ marginBottom: 16 }}>
+          <label className="oria-card-label">{t('profile.birth_location')}</label>
+          <input className="oria-input" placeholder="Hong Kong" value={location} onChange={e => setLocation(e.target.value)} />
         </div>
 
-        {/* MBTI */}
-        <div style={whiteCard}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-            <div>
-              <div style={{ fontSize: 24, marginBottom: 4 }}>🧠</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 2 }}>{t('profile.mbti_title')}</div>
-              <div style={{ fontSize: 13, color: '#888' }}>{t('profile.mbti_subtitle')}</div>
-            </div>
-            {existingMbti && <div style={savedBadge}>✓ {mbtiType}</div>}
-          </div>
-
-          <button onClick={() => navigate('/mbti-quiz')} style={{
-            display: 'block', width: '100%',
-            background: '#f3e8ff', border: '1px solid rgba(147,51,234,0.3)',
-            borderRadius: 12, padding: '12px 16px',
-            fontSize: 14, fontWeight: 600, color: '#7e22ce',
-            cursor: 'pointer', marginBottom: 14, textAlign: 'center',
-          }}>
-            ✦ Take the MBTI questionnaire →
-          </button>
-
-          <div style={labelStyle}>{t('profile.select_type')}</div>
-          <select value={mbtiType} onChange={e => setMbtiType(e.target.value)}
-            style={{ ...inputStyle, cursor: 'pointer' }}>
-            <option value="">Select your MBTI type</option>
-            {MBTI_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-
-          <button onClick={handleSaveMbti} disabled={saving || !mbtiType} style={{
-            width: '100%', background: saving || !mbtiType ? '#ddd' : '#1a0a2e',
-            border: 'none', borderRadius: 12, padding: '14px',
-            fontSize: 15, fontWeight: 700, color: '#fff',
-            cursor: saving || !mbtiType ? 'not-allowed' : 'pointer',
-          }}>
-            {saving ? t('profile.saving') : existingMbti ? t('profile.update_mbti') : t('profile.save_mbti')}
-          </button>
-        </div>
-
-        {/* Profile Summary */}
-        {existingBazi && existingMbti && (
-          <div style={whiteCard}>
-            <div style={{ fontSize: 24, marginBottom: 4 }}>✨</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 2 }}>{t('profile.summary_title')}</div>
-            <div style={{ fontSize: 13, color: '#888', marginBottom: 16 }}>{t('profile.summary_subtitle')}</div>
-
-            {summary ? (
-              <div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#1a0a2e', marginBottom: 12, lineHeight: 1.4 }}>
-                  {summary.headline}
-                </div>
-                <div style={{ fontSize: 15, color: '#444', lineHeight: 1.7, marginBottom: 16 }}>
-                  {summary.summary}
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
-                  <div style={{ background: '#f3e8ff', borderRadius: 12, padding: '14px 16px' }}>
-                    <div style={{ ...labelStyle, marginBottom: 8 }}>{t('profile.strengths')}</div>
-                    {summary.key_strengths.map((s: string, i: number) => (
-                      <div key={i} style={{ fontSize: 13, color: '#444', marginBottom: 4 }}>• {s}</div>
-                    ))}
-                  </div>
-                  <div style={{ background: '#fce7f3', borderRadius: 12, padding: '14px 16px' }}>
-                    <div style={{ ...labelStyle, color: '#9d174d', marginBottom: 8 }}>{t('profile.growth')}</div>
-                    {summary.growth_areas.map((s: string, i: number) => (
-                      <div key={i} style={{ fontSize: 13, color: '#444', marginBottom: 4 }}>• {s}</div>
-                    ))}
-                  </div>
-                </div>
-                <div style={{
-                  borderLeft: '3px solid #9333EA', padding: '12px 16px',
-                  background: '#f3e8ff', borderRadius: '0 12px 12px 0',
-                  fontSize: 15, color: '#1a0a2e', fontStyle: 'italic', lineHeight: 1.6,
-                }}>
-                  {summary.gentle_nudge}
-                </div>
-              </div>
-            ) : (
-              <button onClick={() => handleGetSummary(false)} disabled={summaryLoading} style={{
-                width: '100%', background: summaryLoading ? '#ddd' : '#9333EA',
-                border: 'none', borderRadius: 12, padding: '16px',
-                fontSize: 16, fontWeight: 700, color: '#fff',
-                cursor: summaryLoading ? 'not-allowed' : 'pointer',
-              }}>
-                {summaryLoading ? t('profile.generating') : t('profile.generate_summary')}
-              </button>
-            )}
-          </div>
-        )}
-
-        <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.4)', paddingBottom: 24 }}>
-          {t('disclaimer')}
-        </div>
+        <button onClick={handleSaveBazi} disabled={saving} className="oria-btn-primary">
+          {saving ? t('profile.saving') : existingBazi ? t('profile.update_bazi') : t('profile.save_bazi')}
+        </button>
       </div>
+
+      {/* MBTI Section */}
+      <div className="oria-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+          <div>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>🧠</div>
+            <h2 className="text-lg">{t('profile.mbti_title')}</h2>
+            <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>{t('profile.mbti_subtitle')}</p>
+          </div>
+          {existingMbti && <div style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#4ADE80', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>✓ Saved</div>}
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <label className="oria-card-label">Select Type</label>
+          <select className="oria-input" value={mbtiType} onChange={e => setMbtiType(e.target.value)} style={{ appearance: 'auto' }}>
+            <option value="" disabled>Choose your type...</option>
+            {MBTI_TYPES.map(t => <option key={t} value={t} style={{ background: '#1A0B2E' }}>{t}</option>)}
+          </select>
+        </div>
+
+        <button onClick={handleSaveMbti} disabled={saving} className="oria-btn-primary">
+          {saving ? t('profile.saving') : existingMbti ? t('profile.update_mbti') : t('profile.save_mbti')}
+        </button>
+      </div>
+
+      {/* Summary Section */}
+      {existingBazi && existingMbti && (
+        <div className="oria-card" style={{ background: 'rgba(192, 132, 252, 0.05)', borderColor: 'rgba(192, 132, 252, 0.2)' }}>
+          <div className="oria-card-label">Profile Insight</div>
+          {summary ? (
+            <div className="animate-fade-in">
+              <h3 className="text-lg" style={{ color: '#C084FC', marginBottom: 12 }}>{summary.title}</h3>
+              <p style={{ lineHeight: 1.6, color: '#FFFFFF' }}>{summary.description}</p>
+            </div>
+          ) : (
+            <button onClick={() => handleGetSummary()} disabled={summaryLoading} className="oria-btn-outline" style={{ width: '100%', padding: 16 }}>
+              {summaryLoading ? 'Analyzing...' : 'Generate Profile Insight'}
+            </button>
+          )}
+        </div>
+      )}
+
+      <footer className="oria-disclaimer">{t('disclaimer')}</footer>
     </div>
   );
 }

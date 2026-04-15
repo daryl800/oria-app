@@ -87,8 +87,8 @@ export default function OnboardingMbti() {
           align-items: center;
           gap: 20px;
           padding: 16px 20px;
-          background: rgba(80,20,120,0.25);
-          border: 1px solid rgba(192,132,252,0.15);
+          background: rgba(45, 27, 84, 0.5);
+          border: 1.5px solid rgba(192, 132, 252, 0.2);
           border-radius: 12px;
           cursor: pointer;
           text-align: left;
@@ -98,42 +98,42 @@ export default function OnboardingMbti() {
           margin-bottom: 8px;
         }
         .mbti-option:hover {
-          background: rgba(120,40,180,0.35);
-          border-color: rgba(192,132,252,0.4);
+          background: rgba(45, 27, 84, 0.8);
+          border-color: rgba(192, 132, 252, 0.5);
         }
         .mbti-option.selected {
-          background: rgba(192,132,252,0.25);
-          border-color: rgba(192,132,252,0.7);
+          background: rgba(192, 132, 252, 0.2);
+          border-color: rgba(192, 132, 252, 0.8);
         }
         .mbti-option-letter {
           width: 34px; height: 34px;
           border-radius: 50%;
           display: flex; align-items: center; justify-content: center;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(192, 132, 252, 0.1);
+          border: 1px solid rgba(192, 132, 252, 0.3);
           font-size: 12px; font-weight: 700;
-          color: #6B6880; flex-shrink: 0;
+          color: #C084FC; flex-shrink: 0;
           transition: all 0.2s;
         }
+        .mbti-option:hover .mbti-option-letter {
+          background: rgba(192, 132, 252, 0.25);
+          border-color: rgba(192, 132, 252, 0.7);
+          color: #FFFFFF;
+        }
         .mbti-option.selected .mbti-option-letter {
-          background: rgba(192,132,252,0.25);
-          border-color: rgba(192,132,252,0.7);
-          color: #C084FC;
+          background: rgba(192, 132, 252, 0.4);
+          border-color: rgba(192, 132, 252, 1);
+          color: #FFFFFF;
         }
         .mbti-option-text {
-          font-size: 15px; color: #9B98AA;
+          font-size: 15px; color: #D8B4FE;
           line-height: 1.5; transition: color 0.2s;
         }
         .mbti-option.selected .mbti-option-text,
-        .mbti-option:hover .mbti-option-text { color: #F0EDE8; }
+        .mbti-option:hover .mbti-option-text { color: #FFFFFF; }
       `}</style>
 
-      {/* Dark overlay */}
-      <div style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(8,4,16,0.65)',
-        zIndex: 0, pointerEvents: 'none',
-      }} />
+
 
       {/* Top — step label + progress */}
       <div style={{
@@ -147,16 +147,8 @@ export default function OnboardingMbti() {
           alignItems: 'center', gap: 12,
           marginBottom: 12,
         }}>
-          <div style={{
-            fontSize: 11, letterSpacing: 3,
-            color: '#6B6880', fontWeight: 600,
-            textTransform: 'uppercase',
-          }}>
-            {isZH ? `第 1 步，共 3 步` : 'Step 1 of 3'}
-          </div>
-          <div style={{ color: '#3A3850', fontSize: 11 }}>·</div>
-          <div style={{ fontSize: 11, color: '#6B6880', letterSpacing: 1 }}>
-            {currentIndex + 1} / {questions.length}
+          <div style={{ fontSize: 11, letterSpacing: 2, color: '#C4B0E0', fontWeight: 600, textTransform: 'uppercase' }}>
+            {isZH ? `第 1 步，共 3 步 · ${currentIndex + 1} / ${questions.length}` : `Step 1 of 3 · ${currentIndex + 1} / ${questions.length}`}
           </div>
         </div>
 
@@ -190,15 +182,9 @@ export default function OnboardingMbti() {
           opacity: fade ? 1 : 0,
           transition: 'opacity 0.25s ease',
         }}>
-          <div style={{
-            background: 'rgba(25,12,45,0.80)',
-            border: '1px solid rgba(192,132,252,0.2)',
-            borderRadius: 20,
-            padding: '32px 32px 24px',
-            backdropFilter: 'blur(8px)',
-          }}>
+          <div className="oria-card" style={{ padding: '32px 32px 24px' }}>
             <div style={{
-              fontSize: 12, color: '#3A3850',
+              fontSize: 12, color: '#C084FC',
               letterSpacing: 3, marginBottom: 16, fontWeight: 600,
             }}>
               {qNum}
@@ -206,7 +192,7 @@ export default function OnboardingMbti() {
 
             <div style={{
               fontSize: 20, fontWeight: 600,
-              color: '#F0EDE8', lineHeight: 1.55,
+              color: '#FFFFFF', lineHeight: 1.55,
               marginBottom: 28,
             }}>
               {currentQuestion?.text}
@@ -261,8 +247,8 @@ export default function OnboardingMbti() {
               width: 6, height: 6, borderRadius: '50%',
               cursor: 'pointer', transition: 'background 0.2s',
               background: answers[q.id] ? '#C084FC'
-                : i === currentIndex ? 'rgba(255,255,255,0.5)'
-                : 'rgba(255,255,255,0.12)',
+                : i === currentIndex ? 'rgba(255,255,255,0.8)'
+                : 'rgba(255,255,255,0.3)',
             }} />
           ))}
         </div>
@@ -272,7 +258,7 @@ export default function OnboardingMbti() {
           onClick={() => currentIndex > 0 && setCurrentIndex(prev => prev - 1)}
           style={{
             background: 'none', border: 'none',
-            color: currentIndex > 0 ? '#6B6880' : 'transparent',
+            color: currentIndex > 0 ? '#C4B0E0' : 'transparent',
             fontSize: 12, cursor: currentIndex > 0 ? 'pointer' : 'default',
             letterSpacing: 1, fontFamily: 'inherit',
           }}

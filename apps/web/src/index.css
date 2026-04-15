@@ -35,3 +35,51 @@ body {
 .spiritual-gradient {
   background: radial-gradient(ellipse at center, rgba(147,51,234,0.4) 0%, transparent 70%);
 }
+
+/* When on landing page, hide body background so universe-bg shows */
+body.no-overlay {
+  background-image: none !important;
+  background-color: #000 !important;
+}
+
+/* Global dark overlay on body — skip on landing */
+body:not(.no-overlay)::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 4, 18, 0.55);
+  z-index: 0;
+  pointer-events: none;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Landing page — travelling universe effect */
+.landing-page body,
+body.landing {
+  background-attachment: fixed;
+}
+
+@keyframes universe-travel {
+  0%   { transform: scale(1.0) translate(0%, 0%); }
+  25%  { transform: scale(1.15) translate(-3%, 2%); }
+  50%  { transform: scale(1.25) translate(3%, -3%); }
+  75%  { transform: scale(1.15) translate(-2%, 3%); }
+  100% { transform: scale(1.0) translate(0%, 0%); }
+}
+
+.universe-bg {
+  position: fixed;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
+  z-index: 0;
+  background-image: url('/oria_background2.jpg');
+  background-size: cover;
+  background-position: center;
+  animation: universe-travel 25s ease-in-out infinite;
+  will-change: transform;
+}

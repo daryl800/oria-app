@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { sendMessage, getConversationHistory, getConversationMessages, getDailySuggestedPrompts } from '@/services/api';
+import '../styles/theme.css';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -50,10 +51,10 @@ export default function Chat({ user }: { user: User }) {
   }, [messages]);
 
   useEffect(() => {
-    getDailySuggestedPrompts('en')
+    getDailySuggestedPrompts(i18n.language === 'zh-TW' ? 'zh-TW' : 'en')
       .then(data => setDailyPrompts(data.suggested_prompts))
       .catch(() => {});
-  }, []);
+  }, [i18n.language]);
 
   async function loadHistory() {
     setHistoryLoading(true);
@@ -118,227 +119,167 @@ export default function Chat({ user }: { user: User }) {
     setShowHistory(false);
   }
 
-  // combine daily prompts + static starters, dedupe, limit to 5
   const allPrompts = [
     ...dailyPrompts,
     ...STARTER_QUESTIONS.filter(q => !dailyPrompts.includes(q)),
   ].slice(0, 5);
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column',
-      height: '100vh', maxWidth: 680, margin: '0 auto',
-    }}>
+    <div className="oria-page" style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: 0 }}>
       {/* Header */}
-      <div style={{
-        padding: '16px 20px',
+      <div className="oria-glass" style={{
+        padding: '16px 24px',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        borderBottom: '1px solid rgba(192,132,252,0.2)',
-        background: 'rgba(10,5,20,0.7)',
-        backdropFilter: 'blur(8px)',
+        borderTop: 'none', borderLeft: 'none', borderRight: 'none',
+        zIndex: 10,
       }}>
-        <button onClick={loadHistory} style={{
-          background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(192,132,252,0.3)',
-          borderRadius: 20, padding: '6px 14px', fontSize: 13,
-          color: '#C084FC', cursor: 'pointer',
-        }}>
+        <button onClick={loadHistory} className="oria-btn-outline" style={{ padding: '8px 16px', fontSize: 15 }}>
           {historyLoading ? '...' : t('chat.history')}
         </button>
-        <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 4, color: '#C084FC', textTransform: 'uppercase' }}>
-          {t('chat.title')}
-        </span>
-        <button onClick={startNewConversation} style={{
-          background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(192,132,252,0.3)',
-          borderRadius: 20, padding: '6px 14px', fontSize: 13,
-          color: '#C084FC', cursor: 'pointer',
-        }}>
+        <span className="oria-card-label" style={{ margin: 0, fontSize: 13 }}>{t('chat.title')}</span>
+        <button onClick={startNewConversation} className="oria-btn-outline" style={{ padding: '8px 16px', fontSize: 15 }}>
           {t('chat.new')}
         </button>
       </div>
 
-      {/* History panel */}
-      {showHistory && (
-        <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#C084FC', textTransform: 'uppercase', marginBottom: 16 }}>
-            {t('chat.previous_conversations')}
-          </div>
-          {conversations.length === 0 ? (
-            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, textAlign: 'center', marginTop: 40 }}>
-              {t('chat.no_conversations')}
-            </div>
-          ) : (
-            conversations.map(conv => (
-              <button key={conv.id} onClick={() => loadConversation(conv)} style={{
-                display: 'block', width: '100%', textAlign: 'left',
-                background: 'rgba(255,255,255,0.93)',
-                border: 'none', borderRadius: 16,
-                padding: '16px 20px', marginBottom: 10,
-                cursor: 'pointer',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
-              }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: '#1a0a2e', marginBottom: 4 }}>
-                  {conv.title || 'Untitled conversation'}
-                </div>
-                <div style={{ fontSize: 12, color: '#888' }}>
-                  {new Date(conv.updated_at).toLocaleDateString()}
-                </div>
-              </button>
-            ))
-          )}
-        </div>
-      )}
-
-      {/* Messages */}
-      {!showHistory && (
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px 0' }}>
-
-          {/* Empty state with suggested prompts */}
-          {messages.length === 0 && (
-            <div style={{ textAlign: 'center', color: '#fff' }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🔮</div>
-              <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>
-                {t('chat.empty_title')}
+      {/* Main Content Area */}
+      <div style={{ flex: 1, overflowY: 'auto', position: 'relative' }}>
+        {showHistory ? (
+          <div className="oria-container animate-fade-in" style={{ padding: '28px 20px' }}>
+            <div className="oria-card-label" style={{ marginBottom: 20, fontSize: 13 }}>{t('chat.previous_conversations')}</div>
+            {conversations.length === 0 ? (
+              <div style={{ color: '#FFFFFF', textAlign: 'center', marginTop: 40, fontSize: 16 }}>
+                {t('chat.no_conversations')}
               </div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', marginBottom: 28 }}>
-                {t('chat.empty_subtitle')}
-              </div>
-
-              {/* Today's suggested prompts */}
-              <div style={{
-                fontSize: 11, fontWeight: 700, letterSpacing: 2,
-                color: '#C084FC', textTransform: 'uppercase',
-                marginBottom: 14, textAlign: 'left',
-              }}>
-                {t('chat.try_asking')}
-              </div>
-              {allPrompts.map((prompt, i) => (
-                <button key={i}
-                  onClick={() => setInput(prompt)}
-                  style={{
-                    display: 'block', width: '100%',
-                    background: 'rgba(255,255,255,0.93)',
-                    border: input === prompt ? '2px solid #9333EA' : 'none',
-                    borderRadius: 16,
-                    padding: '14px 18px',
-                    fontSize: 15, color: '#1a0a2e',
-                    textAlign: 'left', cursor: 'pointer',
-                    marginBottom: 10,
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
-                    transition: 'border 0.15s',
-                  }}>
-                  {prompt}
+            ) : (
+              conversations.map(conv => (
+                <button key={conv.id} onClick={() => loadConversation(conv)} className="oria-card" style={{
+                  display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer', marginBottom: 14
+                }}>
+                  <div className="text-lg" style={{ marginBottom: 6, fontSize: 18, fontWeight: 600 }}>{conv.title || 'Untitled conversation'}</div>
+                  <div className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: 14 }}>
+                    {new Date(conv.updated_at).toLocaleDateString()}
+                  </div>
                 </button>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
+        ) : (
+          <div className="oria-container" style={{ padding: '28px 20px' }}>
+            {messages.length === 0 && (
+              <div className="animate-fade-in" style={{ textAlign: 'center', marginTop: 48 }}>
+                <div style={{ fontSize: 72, marginBottom: 20, animation: 'float 6s ease-in-out infinite' }}>🔮</div>
+                <h2 className="text-xl" style={{ marginBottom: 12, fontSize: 32 }}>{t('chat.empty_title')}</h2>
+                <p style={{ color: '#FFFFFF', marginBottom: 40, fontSize: 17 }}>{t('chat.empty_subtitle')}</p>
 
-          {/* Messages */}
-          {messages.map((msg, i) => (
-            <div key={i} style={{
-              display: 'flex',
-              flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
-              marginBottom: 16, alignItems: 'flex-end', gap: 10,
-            }}>
-              {msg.role === 'assistant' && (
-                <div style={{
-                  width: 32, height: 32, borderRadius: '50%',
-                  background: 'rgba(147,51,234,0.3)',
-                  border: '1px solid rgba(192,132,252,0.5)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 14, flexShrink: 0,
-                }}>✦</div>
-              )}
-              <div style={{
-                maxWidth: '75%',
-                padding: '14px 18px',
-                borderRadius: msg.role === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                background: msg.role === 'user' ? 'rgba(255,255,255,0.95)' : 'rgba(45,20,80,0.88)',
-                border: msg.role === 'user' ? 'none' : '1px solid rgba(192,132,252,0.3)',
-                color: msg.role === 'user' ? '#1a0a2e' : '#fff',
-                fontSize: 15, lineHeight: 1.65,
-                whiteSpace: 'pre-wrap',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+                <div className="oria-card-label" style={{ textAlign: 'left', marginBottom: 16, fontSize: 13 }}>{t('chat.try_asking')}</div>
+                {allPrompts.map((prompt, i) => (
+                  <button key={i} onClick={() => setInput(prompt)} className="oria-card" style={{
+                    display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer',
+                    background: input === prompt ? 'rgba(192, 132, 252, 0.18)' : 'rgba(192, 132, 252, 0.08)',
+                    borderColor: input === prompt ? 'rgba(192, 132, 252, 0.5)' : 'rgba(192, 132, 252, 0.25)',
+                    padding: '18px 20px',
+                    marginBottom: 12,
+                    fontSize: 16,
+                    color: '#FFFFFF'
+                  }}>
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {messages.map((msg, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
+                marginBottom: 28, alignItems: 'flex-end', gap: 14,
               }}>
-                {msg.content}
-                {msg.crisis && (
-                  <div style={{ marginTop: 8, fontSize: 11, opacity: 0.6 }}>— Oria safety response</div>
+                {msg.role === 'assistant' && (
+                  <div style={{
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: 'rgba(192, 132, 252, 0.18)',
+                    border: '1px solid rgba(192, 132, 252, 0.35)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 16, flexShrink: 0, marginBottom: 4
+                  }}>✦</div>
                 )}
+                <div style={{
+                  maxWidth: '85%',
+                  padding: '16px 22px',
+                  borderRadius: msg.role === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                  background: msg.role === 'user' ? 'linear-gradient(135deg, #9333EA 0%, #7C3AED 100%)' : 'rgba(192, 132, 252, 0.12)',
+                  backdropFilter: 'blur(12px)',
+                  border: msg.role === 'user' ? 'none' : '1px solid rgba(192, 132, 252, 0.3)',
+                  color: msg.role === 'user' ? '#FFFFFF' : '#FFFFFF',
+                  fontWeight: msg.role === 'user' ? '600' : '400',
+                  fontSize: 16, lineHeight: 1.7,
+                  boxShadow: msg.role === 'user' ? '0 6px 20px rgba(147, 51, 234, 0.3)' : 'none'
+                }}>
+                  {msg.content}
+                  {msg.crisis && (
+                    <div style={{ marginTop: 10, fontSize: 12, opacity: 0.7 }}>— Oria safety response</div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {loading && (
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, marginBottom: 16 }}>
-              <div style={{
-                width: 32, height: 32, borderRadius: '50%',
-                background: 'rgba(147,51,234,0.3)',
-                border: '1px solid rgba(192,132,252,0.5)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 14,
-              }}>✦</div>
-              <div style={{
-                padding: '14px 18px',
-                borderRadius: '20px 20px 20px 4px',
-                background: 'rgba(45,20,80,0.88)',
-                border: '1px solid rgba(192,132,252,0.3)',
-                color: 'rgba(255,255,255,0.5)', fontSize: 15,
-              }}>
-                {t('chat.thinking')}
+            {loading && (
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, marginBottom: 28 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: 'rgba(192, 132, 252, 0.18)',
+                  border: '1px solid rgba(192, 132, 252, 0.35)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 16, flexShrink: 0, marginBottom: 4
+                }}>✦</div>
+                <div className="oria-card" style={{ padding: '14px 22px', margin: 0, color: '#FFFFFF', fontSize: 16 }}>
+                  <span style={{ animation: 'pulse 1.5s infinite' }}>{t('chat.thinking')}</span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {error && (
-            <div style={{
-              background: 'rgba(220,38,38,0.2)', border: '1px solid rgba(220,38,38,0.4)',
-              borderRadius: 12, padding: '12px 16px',
-              color: '#fca5a5', fontSize: 14, marginBottom: 16,
-            }}>
-              {error}
-            </div>
-          )}
-
-          <div ref={bottomRef} />
-        </div>
-      )}
-
-      {/* Disclaimer */}
-      <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.3)', padding: '8px 20px 0' }}>
-        {t('disclaimer')}
+            {error && (
+              <div className="oria-error" style={{ margin: '20px 0' }}>{error}</div>
+            )}
+            <div ref={bottomRef} />
+          </div>
+        )}
       </div>
 
-      {/* Input */}
-      <div style={{ padding: '12px 20px 84px', display: 'flex', gap: 10, alignItems: 'flex-end' }}>
-        <textarea
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={t('chat.placeholder')}
-          rows={2}
-          style={{
-            flex: 1,
-            background: 'rgba(255,255,255,0.95)',
-            border: 'none', borderRadius: 16,
-            padding: '14px 18px',
-            fontSize: 15, color: '#1a0a2e',
-            resize: 'none', fontFamily: 'inherit',
-            outline: 'none',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
-          }}
-        />
-        <button
-          onClick={handleSend}
-          disabled={loading || !input.trim()}
-          style={{
-            width: 48, height: 48, borderRadius: '50%',
-            background: loading || !input.trim() ? 'rgba(255,255,255,0.2)' : '#9333EA',
-            border: 'none', color: '#fff', fontSize: 18,
-            cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-            boxShadow: loading || !input.trim() ? 'none' : '0 4px 16px rgba(147,51,234,0.5)',
-          }}
-        >↑</button>
+      {/* Input Area */}
+      <div className="oria-glass" style={{
+        padding: '18px 24px 48px',
+        borderBottom: 'none', borderLeft: 'none', borderRight: 'none',
+      }}>
+        <div className="oria-container" style={{ display: 'flex', gap: 14, alignItems: 'flex-end', padding: 0 }}>
+          <textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={t('chat.placeholder')}
+            rows={1}
+            className="oria-input"
+            style={{ flex: 1, minHeight: 56, maxHeight: 140, resize: 'none', padding: '16px 20px', fontSize: 16 }}
+          />
+          <button
+            onClick={handleSend}
+            disabled={loading || !input.trim()}
+            style={{
+              width: 56, height: 56, borderRadius: '50%',
+              background: loading || !input.trim() ? 'rgba(192, 132, 252, 0.15)' : 'linear-gradient(135deg, #9333EA 0%, #7C3AED 100%)',
+              border: 'none', color: loading || !input.trim() ? 'rgba(192, 132, 252, 0.5)' : 'white',
+              fontSize: 22, cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              transition: 'all 0.2s ease',
+              boxShadow: loading || !input.trim() ? 'none' : '0 6px 20px rgba(147, 51, 234, 0.3)',
+              fontWeight: 700
+            }}
+          >
+            <span style={{ transform: 'rotate(-45deg) translate(2px, -2px)', display: 'inline-block' }}>➤</span>
+          </button>
+        </div>
+        <div className="oria-disclaimer" style={{ marginTop: 14, padding: 0, fontSize: 12 }}>{t('disclaimer')}</div>
       </div>
     </div>
   );

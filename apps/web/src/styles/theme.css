@@ -1,19 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
+  /* Premium Purple Palette */
   --oria-purple-bright: #C084FC;
   --oria-purple-mid: #9333EA;
-  --oria-purple-card: #2D1B54;
-  --oria-text: #FFFFFF;
-  --oria-text-dim: #D8B4FE;
-  --oria-text-muted: #9B8AB0;
-  --oria-card-bg: #2D1B54;
-  --oria-card-border: rgba(192, 132, 252, 0.25);
-  --oria-nav-bg: rgba(12, 6, 24, 0.97);
-  --oria-nav-border: rgba(192, 132, 252, 0.15);
-  --oria-radius-md: 12px;
-  --oria-radius-lg: 16px;
-  --oria-radius-pill: 24px;
-  --oria-nav-height: 64px;
-  --oria-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --oria-purple-dark: #1A0B2E;
+  --oria-purple-card: rgba(147, 51, 234, 0.15);
+  
+  /* Text Colors */
+  --oria-text: #F0EDE8;
+  --oria-text-dim: #E8D5FF;
+  --oria-text-muted: #B8A0D0;
+  
+  /* Glass Effects */
+  --oria-glass-bg: rgba(45, 27, 84, 0.75);
+  --oria-glass-border: rgba(192, 132, 252, 0.35);
+  --oria-glass-blur: blur(20px);
+  
+  /* Spacing & Radius */
+  --oria-radius-md: 16px;
+  --oria-radius-lg: 24px;
+  --oria-radius-pill: 9999px;
+  --oria-nav-height: 72px;
+  
+  /* Fonts */
+  --oria-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --oria-serif: 'Playfair Display', 'Georgia', serif;
 }
 
 *,
@@ -33,11 +45,14 @@ body,
 
 body {
   font-family: var(--oria-font);
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.6;
   color: var(--oria-text);
-  background-color: #0a0614;
-  background-image: url('/oria_background.jpg');
+  background-color: #02000a;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(147, 51, 234, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(192, 132, 252, 0.08) 0%, transparent 50%),
+    url('/oria_background.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -45,236 +60,62 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-button {
-  font-family: var(--oria-font);
-  cursor: pointer;
+/* Glassmorphism Utilities */
+.oria-glass {
+  background: rgba(45, 27, 84, 0.75);
+  backdrop-filter: var(--oria-glass-blur);
+  -webkit-backdrop-filter: var(--oria-glass-blur);
+  border: 1px solid rgba(192, 132, 252, 0.35);
 }
 
-input,
-textarea,
-select {
-  font-family: var(--oria-font);
+.oria-glass-purple {
+  background: rgba(147, 51, 234, 0.15);
+  backdrop-filter: var(--oria-glass-blur);
+  -webkit-backdrop-filter: var(--oria-glass-blur);
+  border: 1px solid rgba(192, 132, 252, 0.35);
 }
 
-/* Font scale — 4 sizes only */
-.text-sm {
-  font-size: 13px;
+/* Typography */
+.text-xs { font-size: 13px; letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.85); }
+.text-sm { font-size: 15px; letter-spacing: 0.01em; color: rgba(255, 255, 255, 0.9); }
+.text-base { font-size: 17px; color: rgba(255, 255, 255, 0.95); }
+.text-lg { font-size: 20px; font-weight: 500; color: rgba(255, 255, 255, 0.98); }
+.text-xl { font-size: 28px; font-weight: 600; font-family: var(--oria-serif); letter-spacing: -0.02em; color: #FFFFFF; }
+.text-2xl { font-size: 40px; font-weight: 700; font-family: var(--oria-serif); letter-spacing: -0.03em; color: #FFFFFF; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--oria-serif);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
 }
 
-.text-base {
-  font-size: 16px;
-}
+h1 { font-size: 48px; }
+h2 { font-size: 36px; }
+h3 { font-size: 28px; }
 
-.text-lg {
-  font-size: 20px;
-}
-
-.text-xl {
-  font-size: 28px;
-}
-
-.text-2xl {
-  font-size: 40px;
-}
-
+/* Layout */
 .oria-page {
   min-height: 100vh;
-  padding-bottom: calc(var(--oria-nav-height) + 24px);
+  padding-top: 24px;
+  padding-bottom: calc(var(--oria-nav-height) + 40px);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* SUBTLE Background overlay for all pages except landing */
+.oria-page:not(.oria-landing) {
+  background: 
+    radial-gradient(circle at 15% 25%, rgba(147, 51, 234, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(192, 132, 252, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.03) 0%, transparent 65%);
+  background-attachment: fixed;
 }
 
 .oria-container {
-  max-width: 560px;
+  max-width: 620px;
   margin: 0 auto;
-  padding: 0 20px;
-}
-
-@media (min-width: 768px) {
-  .oria-container {
-    max-width: 800px;
-    padding: 0 48px;
-  }
-
-  .text-2xl {
-    font-size: 52px;
-  }
-}
-
-.oria-card {
-  background: var(--oria-card-bg);
-  border: 1px solid var(--oria-card-border);
-  border-radius: var(--oria-radius-lg);
-  padding: 20px 24px;
-  margin-bottom: 12px;
-}
-
-.oria-card-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  color: var(--oria-purple-bright);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-.oria-card-value {
-  font-size: 16px;
-  color: var(--oria-text);
-  line-height: 1.6;
-}
-
-.oria-btn-primary {
-  display: block;
-  width: 100%;
-  background: var(--oria-purple-mid);
-  border: none;
-  border-radius: var(--oria-radius-md);
-  padding: 18px;
-  font-size: 17px;
-  font-weight: 700;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.oria-btn-primary:hover {
-  background: var(--oria-purple-bright);
-}
-
-.oria-btn-ghost {
-  display: block;
-  width: 100%;
-  background: var(--oria-card-bg);
-  border: 1px solid var(--oria-card-border);
-  border-radius: var(--oria-radius-md);
-  padding: 14px 18px;
-  font-size: 15px;
-  color: var(--oria-text-dim);
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-bottom: 10px;
-}
-
-.oria-btn-ghost:hover {
-  background: rgba(147, 51, 234, 0.2);
-  color: var(--oria-text);
-}
-
-.oria-btn-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  border: 1px solid var(--oria-card-border);
-  border-radius: var(--oria-radius-pill);
-  padding: 8px 16px;
-  font-size: 13px;
-  color: var(--oria-text-dim);
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-.oria-btn-outline:hover {
-  border-color: var(--oria-purple-bright);
-  color: var(--oria-text);
-}
-
-.oria-input {
-  width: 100%;
-  background: var(--oria-card-bg);
-  border: 1px solid var(--oria-card-border);
-  border-radius: var(--oria-radius-md);
-  padding: 14px 18px;
-  font-size: 16px;
-  color: var(--oria-text);
-  outline: none;
-  transition: border-color 0.2s;
-  margin-bottom: 12px;
-}
-
-.oria-input:focus {
-  border-color: var(--oria-purple-bright);
-}
-
-.oria-input::placeholder {
-  color: var(--oria-text-muted);
-}
-
-.oria-select {
-  width: 100%;
-  background: var(--oria-card-bg);
-  border: 1px solid var(--oria-card-border);
-  border-radius: var(--oria-radius-md);
-  padding: 14px 18px;
-  font-size: 16px;
-  color: var(--oria-text);
-  outline: none;
-  cursor: pointer;
-  margin-bottom: 12px;
-}
-
-.oria-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px 0 16px;
-}
-
-.oria-app-name {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 4px;
-  color: var(--oria-purple-bright);
-  text-transform: uppercase;
-}
-
-.oria-disclaimer {
-  text-align: center;
-  font-size: 12px;
-  color: var(--oria-text-muted);
-  margin-top: 24px;
-  padding-bottom: 24px;
-}
-
-.oria-bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: var(--oria-nav-height);
-  background: var(--oria-nav-bg);
-  border-top: 1px solid var(--oria-nav-border);
-  display: flex;
-  align-items: stretch;
-  z-index: 100;
-}
-
-.oria-nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--oria-text-muted);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  border-top: 2px solid transparent;
-  transition: color 0.2s;
-}
-
-.oria-nav-item.active {
-  color: var(--oria-purple-bright);
-  border-top-color: var(--oria-purple-bright);
-}
-
-.oria-nav-icon {
-  font-size: 20px;
+  padding: 0 24px;
 }
 
 .oria-loading {
@@ -282,57 +123,233 @@ select {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
-  color: var(--oria-text-dim);
-  font-size: 16px;
+  text-align: center;
   gap: 16px;
 }
 
-.oria-error {
-  background: rgba(180, 40, 40, 0.25);
-  border: 1px solid rgba(220, 80, 80, 0.4);
-  border-radius: var(--oria-radius-md);
-  padding: 16px 20px;
-  color: #ffaaaa;
-  font-size: 15px;
-  margin: 16px 0;
+@media (min-width: 768px) {
+  .oria-container {
+    max-width: 900px;
+  }
+  .text-2xl { font-size: 48px; }
+  h2 { font-size: 42px; }
 }
 
-.oria-section-label {
-  font-size: 11px;
+/* Components */
+.oria-card {
+  background: rgba(45, 27, 84, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(192, 132, 252, 0.4);
+  border-radius: var(--oria-radius-lg);
+  padding: 28px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(147, 51, 234, 0.2);
+  color: #FFFFFF;
+}
+
+.oria-card:hover {
+  border-color: rgba(192, 132, 252, 0.65);
+  background: rgba(45, 27, 84, 0.95);
+  box-shadow: 0 12px 48px rgba(147, 51, 234, 0.35);
+  transform: translateY(-2px);
+}
+
+.oria-card-label {
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.15em;
   color: var(--oria-purple-bright);
   text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.oria-divider {
-  border: none;
-  border-top: 1px solid var(--oria-card-border);
-  margin: 20px 0;
-}
-
-.oria-chip-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
   margin-bottom: 16px;
+  opacity: 1;
 }
 
-.oria-chip {
-  background: var(--oria-card-bg);
-  border: 1px solid var(--oria-card-border);
-  border-radius: var(--oria-radius-pill);
-  padding: 8px 16px;
-  font-size: 13px;
-  color: var(--oria-text-dim);
+.oria-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: linear-gradient(135deg, var(--oria-purple-mid) 0%, #7C3AED 100%);
+  border: none;
+  border-radius: var(--oria-radius-md);
+  padding: 18px 28px;
+  font-size: 17px;
+  font-weight: 600;
+  color: white;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 24px rgba(147, 51, 234, 0.4);
 }
 
-.oria-chip:hover {
-  background: rgba(147, 51, 234, 0.2);
-  color: var(--oria-text);
+.oria-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(147, 51, 234, 0.6);
+  filter: brightness(1.15);
+}
+
+.oria-btn-primary:active {
+  transform: translateY(0);
+}
+
+.oria-btn-outline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: transparent;
+  border: 1.5px solid rgba(192, 132, 252, 0.45);
+  border-radius: var(--oria-radius-md);
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #E8D5FF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.oria-btn-outline:hover {
+  background: rgba(192, 132, 252, 0.15);
+  border-color: rgba(192, 132, 252, 0.75);
+  color: #FFFFFF;
+}
+
+.oria-input {
+  width: 100%;
+  background: rgba(45, 27, 84, 0.6);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  border-radius: var(--oria-radius-md);
+  padding: 16px 20px;
+  font-size: 16px;
+  color: #FFFFFF;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: var(--oria-font);
+}
+
+.oria-input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.oria-input:focus {
+  background: rgba(45, 27, 84, 0.8);
+  border-color: var(--oria-purple-bright);
+  box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.2);
+}
+
+.oria-error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: var(--oria-radius-md);
+  padding: 14px 18px;
+  font-size: 15px;
+  color: #FCA5A5;
+  margin-bottom: 20px;
+}
+
+.oria-disclaimer {
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65);
+  margin-top: 32px;
+  padding-bottom: 16px;
+  line-height: 1.6;
+}
+
+/* Navigation */
+.oria-bottom-nav {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 420px;
+  height: 72px;
+  background: rgba(10, 5, 20, 0.98);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  border-radius: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 16px;
+  z-index: 1000;
+  box-shadow: 0 12px 48px rgba(147, 51, 234, 0.3);
+}
+
+.oria-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  padding: 10px;
+  border-radius: 16px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--oria-font);
+}
+
+.oria-nav-item:hover {
+  color: var(--oria-purple-bright);
+}
+
+.oria-nav-item.active {
+  color: var(--oria-purple-bright);
+  background: rgba(192, 132, 252, 0.18);
+}
+
+.oria-nav-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.oria-nav-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-breathe {
+  animation: breathe 2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
 }
