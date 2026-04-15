@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import '../styles/theme.css';
 
 const NAV_ITEMS = [
-  { path: '/daily',   labelKey: 'nav.daily',    icon: '✦' },
-  { path: '/chat',    labelKey: 'nav.chat',     icon: '🔮' },
-  { path: '/profile', labelKey: 'nav.profile',  icon: '👤' },
-  { path: '/settings',labelKey: 'nav.settings', icon: '⚙️' },
+  { path: '/daily',    labelKey: 'nav.daily',    icon: '☀' },
+  { path: '/chat',     labelKey: 'nav.chat',     icon: '◎' },
+  { path: '/profile',  labelKey: 'nav.profile',  icon: '◇' },
+  { path: '/settings', labelKey: 'nav.settings', icon: '≡' },
 ];
 
 export default function BottomNav() {

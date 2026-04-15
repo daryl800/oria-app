@@ -147,14 +147,28 @@ export default function DailyGuidance({ user }: { user: User }) {
 
       {/* Helpful Element — dot left, text centered */}
       <div className="oria-card" style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-        <div style={{
-          width: 48, height: 48, borderRadius: '50%',
-          background: elementColor || '#C084FC',
-          boxShadow: `0 0 24px ${elementColor || '#C084FC'}88`,
-          flexShrink: 0,
-        }} />
+        {elementColor ? (
+          <div style={{
+            width: 48, height: 48, borderRadius: '50%',
+            background: elementColor,
+            boxShadow: `0 0 24px ${elementColor}99`,
+            flexShrink: 0,
+          }} />
+        ) : (
+          <div style={{
+            width: 48, height: 48, borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(192,132,252,0.15)',
+            border: '1px solid rgba(192,132,252,0.35)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 24,
+          }}>
+            {summary.helpful_element.type?.includes('mindset') || summary.helpful_element.type?.includes('心態') ? '🧘'
+              : summary.helpful_element.type?.includes('environment') || summary.helpful_element.type?.includes('環境') ? '🌿'
+              : '✨'}
+          </div>
+        )}
         <div style={{ flex: 1, textAlign: 'center' }}>
-          <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, color: '#C084FC', textTransform: 'uppercase', marginBottom: 6 }}>✨ {t('daily.helpful_label')} {summary.helpful_element.type}</div>
+          <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, color: '#C084FC', textTransform: 'uppercase', marginBottom: 6 }}>{i18n.language === 'zh-TW' ? '✨ 今日開運元素' : "✨ Today's Lucky Element"}</div>
           <div style={{ color: elementColor || '#C084FC', marginBottom: 6, fontSize: 22, fontWeight: 700 }}>
             {summary.helpful_element.value}
           </div>
