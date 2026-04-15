@@ -8,7 +8,8 @@ import '../styles/theme.css';
 interface DailySummary {
   tone: string;
   pace: string;
-  helpful_element: { type: string; value: string; reason: string };
+  lucky_color?: { color: string; reason: string };
+  helpful_element?: { type: string; value: string; reason: string };
   tips: { area: string; text: string }[];
   nudge: string;
   suggested_prompts: string[];
@@ -97,7 +98,8 @@ export default function DailyGuidance({ user }: { user: User }) {
     'Wellness': '🧘', 'wellness': '🧘', '健康': '🧘',
     'Finance': '💰', 'finance': '💰', '財務': '💰',
   };
-  const elementColor = getElementColor(summary.helpful_element.value);
+  const luckyColor = summary.lucky_color?.color || summary.helpful_element?.value || '';
+  const elementColor = getElementColor(luckyColor);
 
   return (
     <div className="oria-page oria-container animate-fade-in">
@@ -149,31 +151,29 @@ export default function DailyGuidance({ user }: { user: User }) {
       <div className="oria-card" style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
         {elementColor ? (
           <div style={{
-            width: 48, height: 48, borderRadius: '50%',
+            width: 52, height: 52, borderRadius: '50%',
             background: elementColor,
-            boxShadow: `0 0 24px ${elementColor}99`,
+            boxShadow: `0 0 28px ${elementColor}bb`,
             flexShrink: 0,
           }} />
         ) : (
           <div style={{
-            width: 48, height: 48, borderRadius: '50%', flexShrink: 0,
-            background: 'rgba(192,132,252,0.15)',
-            border: '1px solid rgba(192,132,252,0.35)',
+            width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(192,132,252,0.2)',
+            border: '1px solid rgba(192,132,252,0.4)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 24,
-          }}>
-            {summary.helpful_element.type?.includes('mindset') || summary.helpful_element.type?.includes('心態') ? '🧘'
-              : summary.helpful_element.type?.includes('environment') || summary.helpful_element.type?.includes('環境') ? '🌿'
-              : '✨'}
-          </div>
+            fontSize: 26,
+          }}>🎨</div>
         )}
         <div style={{ flex: 1, textAlign: 'center' }}>
-          <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, color: '#C084FC', textTransform: 'uppercase', marginBottom: 6 }}>{i18n.language === 'zh-TW' ? '✨ 今日開運元素' : "✨ Today's Lucky Element"}</div>
-          <div style={{ color: elementColor || '#C084FC', marginBottom: 6, fontSize: 22, fontWeight: 700 }}>
-            {summary.helpful_element.value}
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 6 }}>
+            🎨 {i18n.language === 'zh-TW' ? '今日開運顏色' : "Today's Lucky Color"}
+          </div>
+          <div style={{ color: elementColor || '#C084FC', marginBottom: 6, fontSize: 24, fontWeight: 800 }}>
+            {luckyColor}
           </div>
           <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 14, lineHeight: 1.5 }}>
-            {summary.helpful_element.reason}
+            {summary.lucky_color?.reason || summary.helpful_element?.reason || ''}
           </p>
         </div>
       </div>

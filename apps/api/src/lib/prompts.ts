@@ -136,16 +136,24 @@ export function dailyGuidancePrompt(
 MBTI：${mbti?.type || ''} — ${mbti?.nickname || ''}
 核心特質：${mbti?.core_traits || ''}
 
-以JSON回應：
+以JSON回應（所有建議必須具體實用，避免空泛）：
 {
-  "tone": "今日基調（平衡／積極／內省／反思）",
-  "pace": "建議節奏（一句話）",
-  "helpful_element": {"type":"顏色/環境/心態","value":"具體建議","reason":"簡短原因"},
-  "tips": [{"area":"工作","text":"提示"},{"area":"人際","text":"提示"},{"area":"健康","text":"提示"},{"area":"財務","text":"提示"}],
-  "nudge": "今日明燈——一句溫柔提醒",
+  "tone": "今日基調（例如：積極火旺、沉穩水流、創意木生）",
+  "pace": "今日節奏建議（一句具體建議，例如：上午處理重要事務，下午適合溝通協調）",
+  "lucky_color": {
+    "color": "具體顏色名稱（例如：紅色、藍色、綠色、黃色、白色、黑色、橙色、紫色）",
+    "reason": "為何今日適合此顏色（根據五行，一句話）"
+  },
+  "tips": [
+    {"area":"工作","text":"具體工作建議（例如：適合開會談判，避免獨自埋頭苦幹）"},
+    {"area":"人際","text":"具體人際建議（例如：主動聯繫久未聯絡的朋友）"},
+    {"area":"健康","text":"具體健康建議（例如：多喝水，避免熬夜）"},
+    {"area":"財務","text":"具體財務建議（例如：適合檢視開支，避免大額消費）"}
+  ],
+  "nudge": "今日明燈——一句簡短有力的提醒（例如：今日宜進不宜退，把握主動）",
   "suggested_prompts": ["提問1","提問2","提問3"]
 }
-只回傳JSON。`,
+只回傳JSON。不要有任何空泛或抽象的建議。`,
       },
     ];
   }
@@ -173,7 +181,7 @@ Respond in JSON:
 {
   "tone": "Today's overall tone (one or two evocative words e.g. Gentle Fire, Deep Water, Active Metal)",
   "pace": "Suggested pace (one sentence)",
-  "helpful_element": {"type":"colour/environment/mindset","value":"specific suggestion","reason":"brief reason"},
+  "lucky_color": {"color": "specific color name e.g. Red, Blue, Green, Yellow, White, Black, Orange, Purple", "reason": "one sentence why this color helps today based on Five Elements"},
   "tips": [{"area":"Work","text":"tip"},{"area":"Relationships","text":"tip"},{"area":"Wellness","text":"tip"},{"area":"Finance","text":"tip"}],
   "nudge": "Today's gentle nudge — one poetic sentence",
   "suggested_prompts": ["prompt1","prompt2","prompt3"]
