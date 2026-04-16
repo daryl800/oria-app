@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
-export default function Login() {
+export default function Login({ isNewUser = false }: { isNewUser?: boolean }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -16,7 +16,10 @@ export default function Login() {
     if (!email.trim()) return;
     setLoading(true);
     setError('');
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin + '/' }
+    });
     if (error) setError(t('errors.generic'));
     else setSent(true);
     setLoading(false);
@@ -57,10 +60,10 @@ export default function Login() {
         <div className="oria-card-label" style={{ marginBottom: 32 }}>Oria</div>
 
         <h2 className="text-xl" style={{ marginBottom: 8 }}>
-          {isZH ? '歡迎回來' : 'Welcome back'}
+          {isNewUser ? (isZH ? '註冊以深入了解自己' : 'Sign up to understand yourself better') : (isZH ? '歡迎回來' : 'Welcome back')}
         </h2>
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', marginBottom: 32 }}>
-          {isZH ? '輸入你的電郵以接收魔法連結' : 'Enter your email to receive a magic link'}
+          {isNewUser ? (isZH ? '輸入你的電郵，我們將發送一個魔法連結' : 'Enter your email — we\'ll send you a magic link to get started') : (isZH ? '輸入你的電郵以接收魔法連結' : 'Enter your email to receive a magic link')}
         </p>
 
         {/* Email input */}
@@ -92,9 +95,21 @@ export default function Login() {
             : (isZH ? '發送魔法連結' : 'Send magic link')}
         </button>
 
+        {/* Trust line for new users */}
+        {isNewUser && (
+          <div style={{ 
+            display: 'flex', alignItems: 'center', gap: 8,
+            fontSize: 12, color: 'rgba(255,255,255,0.35)',
+            marginTop: 16, justifyContent: 'center',
+          }}>
+            <span>🔒</span>
+            <span>{isZH ? '你的資料安全受保護，不會分享給第三方' : 'Your data is safe with us. No spam, ever.'}</span>
+          </div>
+        )}
+
         {/* Back to landing */}
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate(isNewUser ? '/onboarding/result' : '/')}
           className="oria-btn-outline"
           style={{ width: '100%', border: 'none', background: 'none', color: 'rgba(255,255,255,0.4)' }}
         >

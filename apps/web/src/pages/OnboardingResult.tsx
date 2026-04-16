@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 const MBTI_DESCRIPTIONS: Record<string, { nickname: string; tagline: string; traits: string[] }> = {
@@ -22,7 +23,15 @@ const MBTI_DESCRIPTIONS: Record<string, { nickname: string; tagline: string; tra
 
 export default function OnboardingResult() {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
+  const isZH = i18n.language === 'zh-TW';
   const [result, setResult] = useState<any>(null);
+  const [leaving, setLeaving] = useState(false);
+
+  function handleSignup() {
+    setLeaving(true);
+    setTimeout(() => navigate('/onboarding/signup'), 600);
+  }
 
   useEffect(() => {
     const stored = localStorage.getItem('oria_mbti_result');
@@ -39,7 +48,7 @@ export default function OnboardingResult() {
   const desc = MBTI_DESCRIPTIONS[mbti_type] || { nickname: 'Unique', tagline: 'One of a kind.', traits: [] };
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: 40 }}>
+    <div style={{ minHeight: '100vh', paddingBottom: 40, opacity: leaving ? 0 : 1, transition: 'opacity 0.6s ease' }}>
       <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 20px' }}>
 
         {/* Header */}
@@ -136,16 +145,16 @@ export default function OnboardingResult() {
         }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>🔮</div>
           <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 6 }}>
-            Your birth chart reveals even more
+            {isZH ? '你的八字命盤揭示更多' : 'Your birth chart reveals even more'}
           </div>
           <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>
-            Combine your MBTI with your BaZi birth chart for a complete cosmic profile — unique to you.
+            {isZH ? '結合你的MBTI與八字命盤，打造獨一無二的宇宙命盤。' : 'Combine your MBTI with your BaZi birth chart for a complete cosmic profile — unique to you.'}
           </div>
         </div>
 
         {/* CTA — signup */}
         <button
-          onClick={() => navigate('/login')}
+          onClick={handleSignup}
           style={{
             display: 'block', width: '100%',
             background: '#9333EA', border: 'none',
@@ -156,7 +165,7 @@ export default function OnboardingResult() {
             marginBottom: 12,
           }}
         >
-          Save my results & explore more →
+          {isZH ? '註冊以深入了解自己 →' : 'Sign up to understand yourself better →'}
         </button>
 
         <button
@@ -170,7 +179,7 @@ export default function OnboardingResult() {
             cursor: 'pointer', fontFamily: 'inherit',
           }}
         >
-          Retake the quiz
+          {isZH ? '重新測驗' : 'Retake the quiz'}
         </button>
 
         <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 20 }}>

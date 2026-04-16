@@ -50,6 +50,17 @@ router.post('/bazi', async (req: Request, res: Response) => {
     const userId = (req as any).userId;
     const { year, month, day, hour, minute, tz_name, location, time_known } = req.body;
 
+    // Ensure user exists in public.users (in case trigger hasn't fired yet)
+    const { data: authUser } = await supabase.auth.admin.getUserById(userId);
+    await supabase.from('users').upsert({
+      id: userId,
+      email: authUser?.user?.email ?? '',
+      created_at: new Date().toISOString(),
+    }, { onConflict: 'id' });
+
+    // Wait briefly for trigger to create user_profiles
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     // calculate bazi via Python analysis service (stays in Python)
     const analysisRes = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
       method: 'POST',

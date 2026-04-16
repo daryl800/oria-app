@@ -8,6 +8,8 @@ import Chart from './pages/Chart';
 import Landing from './pages/Landing';
 import OnboardingMbti from './pages/OnboardingMbti';
 import OnboardingTransition from './pages/OnboardingTransition';
+import OnboardingSignup from './pages/OnboardingSignup';
+import OnboardingMbtiSummary from './pages/OnboardingMbtiSummary';
 import OnboardingResult from './pages/OnboardingResult';
 import OnboardingBazi from './pages/OnboardingBazi';
 import DailyGuidance from './pages/DailyGuidance';
@@ -22,7 +24,8 @@ import TopBar from './components/TopBar';
 function AppShell({ user, children }: { user: User | null; children: React.ReactNode }) {
   const location = useLocation();
   const isLoggedIn = !!user;
-  const showBottomNav = isLoggedIn && !['/onboarding/bazi'].includes(location.pathname);
+  const onboardingPaths = ['/onboarding/bazi', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup'];
+  const showBottomNav = isLoggedIn && !onboardingPaths.includes(location.pathname);
   return (
     <>
       <TopBar user={user} />
@@ -68,8 +71,8 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Still checking auth — show spinner
-  if (user === undefined) return (
+  // Still checking auth or onboarding — show spinner
+  if (user === undefined || (user && onboardingComplete === null)) return (
     <BrowserRouter>
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0614' }}>
         <div style={{ fontSize: 48, color: '#C084FC' }}>✦</div>
@@ -82,12 +85,14 @@ export default function App() {
     <BrowserRouter>
       <AppShell user={user}>
         <Routes>
-          <Route path="/" element={!user ? <Landing /> : <Navigate to="/home" />} />
+          <Route path="/" element={!user ? <Landing /> : <Navigate to={onboardingComplete ? "/home" : "/onboarding/mbti-summary"} />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
+          <Route path="/onboarding/signup" element={<OnboardingSignup />} />
+          <Route path="/onboarding/mbti-summary" element={user ? <OnboardingMbtiSummary user={user} /> : <Navigate to="/" />} />
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
           <Route path="/onboarding/result" element={<OnboardingResult />} />
           <Route path="/onboarding/bazi" element={user ? <OnboardingBazi /> : <Navigate to="/" />} />
-          <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/home' : '/onboarding/bazi'} />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/home' : '/onboarding/mbti-summary'} />} />
 
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
           <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} />} />
