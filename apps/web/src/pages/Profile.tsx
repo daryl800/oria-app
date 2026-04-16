@@ -191,10 +191,12 @@ export default function Profile({ user }: { user: User }) {
       {/* BaZi Section */}
       <div className="oria-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-          <div>
-            <div style={{ fontSize: 32, marginBottom: 8 }}>🪬</div>
-            <h2 className="text-lg">{t('profile.bazi_title')}</h2>
-            <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>{t('profile.bazi_subtitle')}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 24 }}>🪬</span>
+            <div>
+              <h2 className="text-lg">{t('profile.bazi_title')}</h2>
+              <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>{t('profile.bazi_subtitle')}</p>
+            </div>
           </div>
           {existingBazi && <div style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#4ADE80', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>✓ Saved</div>}
         </div>
@@ -202,15 +204,30 @@ export default function Profile({ user }: { user: User }) {
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, marginBottom: 16 }}>
           <div>
             <label className="oria-card-label">{t('profile.year')}</label>
-            <input className="oria-input" placeholder="1990" value={year} onChange={e => setYear(e.target.value)} />
+            <select className="oria-input" value={year} onChange={e => setYear(e.target.value)} style={{ appearance: 'auto', cursor: 'pointer' }}>
+              <option value="">{i18n.language === 'zh-TW' ? '選擇年份' : 'Year'}</option>
+              {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                <option key={y} value={y} style={{ background: '#1A0B2E' }}>{y}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="oria-card-label">{t('profile.month')}</label>
-            <input className="oria-input" placeholder="1-12" value={month} onChange={e => setMonth(e.target.value)} />
+            <select className="oria-input" value={month} onChange={e => setMonth(e.target.value)} style={{ appearance: 'auto', cursor: 'pointer' }}>
+              <option value="">{i18n.language === 'zh-TW' ? '月' : 'Month'}</option>
+              {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                <option key={m} value={m} style={{ background: '#1A0B2E' }}>{m}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="oria-card-label">{t('profile.day')}</label>
-            <input className="oria-input" placeholder="1-31" value={day} onChange={e => setDay(e.target.value)} />
+            <select className="oria-input" value={day} onChange={e => setDay(e.target.value)} style={{ appearance: 'auto', cursor: 'pointer' }}>
+              <option value="">{i18n.language === 'zh-TW' ? '日' : 'Day'}</option>
+              {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+                <option key={d} value={d} style={{ background: '#1A0B2E' }}>{d}</option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -258,16 +275,23 @@ export default function Profile({ user }: { user: User }) {
       {/* MBTI Section */}
       <div className="oria-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-          <div>
-            <div style={{ fontSize: 32, marginBottom: 8 }}>🧠</div>
-            <h2 className="text-lg">{t('profile.mbti_title')}</h2>
-            <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>{t('profile.mbti_subtitle')}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 24 }}>🧠</span>
+            <div>
+              <h2 className="text-lg">{t('profile.mbti_title')}</h2>
+              <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>{t('profile.mbti_subtitle')}</p>
+            </div>
           </div>
           {existingMbti && <div style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#4ADE80', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>✓ Saved</div>}
         </div>
 
         <div style={{ marginBottom: 20 }}>
-          <label className="oria-card-label">{i18n.language === "zh-TW" ? "選擇類型" : "Select Type"}</label>
+          <label className="oria-card-label">{i18n.language === 'zh-TW' ? '你的MBTI類型' : 'Your MBTI Type'}</label>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 8, lineHeight: 1.5 }}>
+            {i18n.language === 'zh-TW'
+              ? '此結果來自你的MBTI測驗。你可以手動更改，或重做測驗以獲取更準確的結果。'
+              : 'This result is from your MBTI quiz. You can manually change it, or retake the quiz for a more accurate result.'}
+          </p>
           <select className="oria-input" value={mbtiType} onChange={e => setMbtiType(e.target.value)} style={{ appearance: 'auto' }}>
             <option value="" disabled>Choose your type...</option>
             {MBTI_TYPES.map(t => <option key={t} value={t} style={{ background: '#1A0B2E' }}>{t}</option>)}

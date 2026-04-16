@@ -52,6 +52,9 @@ export default function Home({ user }: HomeProps) {
           cursor: pointer;
           transition: all 0.2s;
           text-align: center;
+          box-shadow: 0 4px 24px rgba(147, 51, 234, 0.2);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
         }
         .home-card:hover {
           background: rgba(45, 27, 84, 0.95);
@@ -91,12 +94,12 @@ export default function Home({ user }: HomeProps) {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, justifyContent: 'center' }}>
               <span style={{ fontSize: 28 }}>{feature.icon}</span>
-              <span style={{ fontSize: 18, fontWeight: 700, color: '#C084FC' }}>
+              <span style={{ fontSize: 20, fontWeight: 700, color: '#C084FC' }}>
                 {t(feature.labelKey)}
               </span>
             </div>
             <div style={{
-              fontSize: 14, color: 'rgba(255,255,255,0.6)',
+              fontSize: 16, color: 'rgba(255,255,255,0.7)',
               lineHeight: 1.6, textAlign: 'center',
             }}>
               {t(feature.descKey)}

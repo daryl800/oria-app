@@ -360,40 +360,6 @@ export default function Chart({ user }: { user: User }) {
         </div>
       )}
 
-      {/* Danger zone */}
-      <div className="oria-card" style={{
-        border: '1.5px solid rgba(239,68,68,0.25)',
-        background: 'rgba(239,68,68,0.04)',
-      }}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: '#EF4444', textTransform: 'uppercase', marginBottom: 8 }}>
-          ⚠️ {isZH ? '修改資料' : 'Edit Data'}
-        </div>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 16 }}>
-          {isZH
-            ? '修改八字或MBTI資料將清除所有對話紀錄、每日指引和命盤解析。此操作不可逆轉。'
-            : 'Updating your data will permanently clear all chat history, daily guidance and profile insights. This cannot be undone.'}
-        </p>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <button onClick={() => navigate('/onboarding/bazi')} style={{
-            background: 'rgba(239,68,68,0.12)',
-            border: '1px solid rgba(239,68,68,0.35)',
-            borderRadius: 12, padding: '10px 20px',
-            color: '#EF4444', cursor: 'pointer',
-            fontSize: 13, fontFamily: 'inherit', fontWeight: 600,
-          }}>
-            {isZH ? '修改八字資料' : 'Update BaZi'}
-          </button>
-          <button onClick={() => navigate('/mbti-quiz')} style={{
-            background: 'rgba(239,68,68,0.12)',
-            border: '1px solid rgba(239,68,68,0.35)',
-            borderRadius: 12, padding: '10px 20px',
-            color: '#EF4444', cursor: 'pointer',
-            fontSize: 13, fontFamily: 'inherit', fontWeight: 600,
-          }}>
-            {isZH ? '重做MBTI測試' : 'Retake MBTI'}
-          </button>
-        </div>
-      </div>
 
       <footer className="oria-disclaimer" style={{ marginTop: 32 }}>
         {isZH ? '這是一種反思，而非預測。決定權在你。' : 'This is a reflection, not a prediction. You hold the decisions.'}

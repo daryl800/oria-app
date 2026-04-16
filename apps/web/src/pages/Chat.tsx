@@ -39,6 +39,7 @@ export default function Chat({ user }: { user: User }) {
   const [showHistory, setShowHistory] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [dailyPrompts, setDailyPrompts] = useState<string[]>([]);
+  const [promptsLoading, setPromptsLoading] = useState(true);
 
   useEffect(() => {
     const prefill = (location.state as any)?.prefill;
@@ -251,6 +252,7 @@ export default function Chat({ user }: { user: User }) {
         padding: '18px 24px 48px',
         borderBottom: 'none', borderLeft: 'none', borderRight: 'none',
       }}>
+        <style>{'.chat-input::placeholder { color: #9B8AB0; }'}</style>
         <div className="oria-container" style={{ display: 'flex', gap: 14, alignItems: 'flex-end', padding: 0 }}>
           <textarea
             value={input}
@@ -258,16 +260,22 @@ export default function Chat({ user }: { user: User }) {
             onKeyDown={handleKeyDown}
             placeholder={t('chat.placeholder')}
             rows={1}
-            className="oria-input"
-            style={{ flex: 1, minHeight: 56, maxHeight: 140, resize: 'none', padding: '16px 20px', fontSize: 16 }}
+            className="oria-input chat-input"
+            style={{ 
+              flex: 1, minHeight: 56, maxHeight: 140, resize: 'none', 
+              padding: '16px 20px', fontSize: 16,
+              background: 'rgba(255,255,255,0.92)',
+              border: '1.5px solid rgba(192,132,252,0.4)',
+              color: '#1a0a2e',
+            }}
           />
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
             style={{
               width: 56, height: 56, borderRadius: '50%',
-              background: loading || !input.trim() ? 'rgba(192, 132, 252, 0.15)' : 'linear-gradient(135deg, #9333EA 0%, #7C3AED 100%)',
-              border: 'none', color: loading || !input.trim() ? 'rgba(192, 132, 252, 0.5)' : 'white',
+              background: loading || !input.trim() ? 'rgba(192, 132, 252, 0.3)' : 'linear-gradient(135deg, #9333EA 0%, #7C3AED 100%)',
+              border: '1.5px solid rgba(192,132,252,0.5)', color: loading || !input.trim() ? 'rgba(192, 132, 252, 0.8)' : 'white',
               fontSize: 22, cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               transition: 'all 0.2s ease',
