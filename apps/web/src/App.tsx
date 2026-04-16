@@ -4,6 +4,7 @@ import { supabase } from './lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import Chart from './pages/Chart';
 import Landing from './pages/Landing';
 import OnboardingMbti from './pages/OnboardingMbti';
 import OnboardingTransition from './pages/OnboardingTransition';
@@ -89,7 +90,7 @@ export default function App() {
           <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/home' : '/onboarding/bazi'} />} />
 
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
-          <Route path="/chart" element={!user ? <Navigate to="/" /> : <Profile user={user} />} />
+          <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} />} />
           <Route path="/compare" element={!user ? <Navigate to="/" /> : <Compare user={user} />} />
           <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} />} />
           <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} />} />

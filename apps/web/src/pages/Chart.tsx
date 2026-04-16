@@ -1,0 +1,396 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import type { User } from '@supabase/supabase-js';
+import { getProfile, getProfileSummary } from '../services/api';
+
+// Romanized to Chinese character mappings
+const GAN_CN: Record<string, string> = {
+  'Jia':'甲','Yi':'乙','Bing':'丙','Ding':'丁','Wu':'戊',
+  'Ji':'己','Geng':'庚','Xin':'辛','Ren':'壬','Gui':'癸'
+};
+const ZHI_CN: Record<string, string> = {
+  'Zi':'子','Chou':'丑','Yin':'寅','Mao':'卯','Chen':'辰',
+  'Si':'巳','Wu':'午','Wei':'未','Shen':'申','You':'酉','Xu':'戌','Hai':'亥'
+};
+
+const ELEMENT_COLORS: Record<string, string> = {
+  Wood: '#22c55e', 木: '#22c55e',
+  Fire: '#ef4444', 火: '#ef4444',
+  Earth: '#eab308', 土: '#eab308',
+  Metal: '#94a3b8', 金: '#94a3b8',
+  Water: '#3b82f6', 水: '#3b82f6',
+};
+
+const ELEMENT_EMOJI: Record<string, string> = {
+  Wood: '🌱', 木: '🌱',
+  Fire: '🔥', 火: '🔥',
+  Earth: '🪨', 土: '🪨',
+  Metal: '⚔️', 金: '⚔️',
+  Water: '💧', 水: '💧',
+};
+
+// Derived dimension strengths — based on typical MBTI research averages
+const MBTI_DIMENSIONS: Record<string, Record<string, number>> = {
+  INTJ: { E: 25, I: 75, S: 30, N: 70, T: 75, F: 25, J: 70, P: 30 },
+  INTP: { E: 20, I: 80, S: 25, N: 75, T: 80, F: 20, J: 30, P: 70 },
+  ENTJ: { E: 75, I: 25, S: 30, N: 70, T: 80, F: 20, J: 75, P: 25 },
+  ENTP: { E: 70, I: 30, S: 25, N: 75, T: 65, F: 35, J: 30, P: 70 },
+  INFJ: { E: 25, I: 75, S: 30, N: 70, T: 30, F: 70, J: 75, P: 25 },
+  INFP: { E: 25, I: 75, S: 25, N: 75, T: 25, F: 75, J: 30, P: 70 },
+  ENFJ: { E: 70, I: 30, S: 30, N: 70, T: 30, F: 70, J: 75, P: 25 },
+  ENFP: { E: 75, I: 25, S: 25, N: 75, T: 30, F: 70, J: 30, P: 70 },
+  ISTJ: { E: 25, I: 75, S: 75, N: 25, T: 70, F: 30, J: 80, P: 20 },
+  ISFJ: { E: 25, I: 75, S: 75, N: 25, T: 30, F: 70, J: 75, P: 25 },
+  ESTJ: { E: 75, I: 25, S: 75, N: 25, T: 75, F: 25, J: 80, P: 20 },
+  ESFJ: { E: 75, I: 25, S: 70, N: 30, T: 25, F: 75, J: 75, P: 25 },
+  ISTP: { E: 25, I: 75, S: 65, N: 35, T: 75, F: 25, J: 25, P: 75 },
+  ISFP: { E: 25, I: 75, S: 65, N: 35, T: 25, F: 75, J: 25, P: 75 },
+  ESTP: { E: 75, I: 25, S: 70, N: 30, T: 65, F: 35, J: 25, P: 75 },
+  ESFP: { E: 80, I: 20, S: 70, N: 30, T: 25, F: 75, J: 25, P: 75 },
+};
+
+const MBTI_DESCRIPTIONS: Record<string, { nickname: string; traits: string[] }> = {
+  INTJ: { nickname: 'The Architect', traits: ['Strategic', 'Independent', 'Visionary'] },
+  INTP: { nickname: 'The Thinker', traits: ['Analytical', 'Curious', 'Inventive'] },
+  ENTJ: { nickname: 'The Commander', traits: ['Bold', 'Decisive', 'Leader'] },
+  ENTP: { nickname: 'The Debater', traits: ['Quick-witted', 'Innovative', 'Charismatic'] },
+  INFJ: { nickname: 'The Advocate', traits: ['Empathetic', 'Principled', 'Visionary'] },
+  INFP: { nickname: 'The Mediator', traits: ['Creative', 'Empathetic', 'Idealistic'] },
+  ENFJ: { nickname: 'The Protagonist', traits: ['Inspiring', 'Empathetic', 'Leader'] },
+  ENFP: { nickname: 'The Campaigner', traits: ['Enthusiastic', 'Creative', 'Optimistic'] },
+  ISTJ: { nickname: 'The Logistician', traits: ['Reliable', 'Practical', 'Detail-oriented'] },
+  ISFJ: { nickname: 'The Defender', traits: ['Warm', 'Dedicated', 'Observant'] },
+  ESTJ: { nickname: 'The Executive', traits: ['Organised', 'Decisive', 'Loyal'] },
+  ESFJ: { nickname: 'The Consul', traits: ['Caring', 'Social', 'Loyal'] },
+  ISTP: { nickname: 'The Virtuoso', traits: ['Practical', 'Observant', 'Independent'] },
+  ISFP: { nickname: 'The Adventurer', traits: ['Artistic', 'Spontaneous', 'Empathetic'] },
+  ESTP: { nickname: 'The Entrepreneur', traits: ['Bold', 'Perceptive', 'Energetic'] },
+  ESFP: { nickname: 'The Entertainer', traits: ['Spontaneous', 'Energetic', 'Fun-loving'] },
+};
+
+export default function Chart({ user }: { user: User }) {
+  const { i18n } = useTranslation();
+  const navigate = useNavigate();
+  const isZH = i18n.language === 'zh-TW';
+
+  const [bazi, setBazi] = useState<any>(null);
+  const [mbti, setMbti] = useState<any>(null);
+  const [summary, setSummary] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+
+  useEffect(() => {
+    const lang = i18n.language === 'zh-TW' ? 'zh-TW' : 'en';
+    const cacheKey = `oria_chart_${user.id}_${lang}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      const data = JSON.parse(cached);
+      setBazi(data.bazi);
+      setMbti(data.mbti);
+      if (data.summary) setSummary(data.summary);
+      setLoading(false);
+      return;
+    }
+
+    getProfile().then(async data => {
+      setBazi(data.bazi);
+      setMbti(data.mbti);
+      if (data.bazi && data.mbti) {
+        setSummaryLoading(true);
+        try {
+          const s = await getProfileSummary(lang);
+          setSummary(s.summary);
+          sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: s.summary }));
+        } catch {
+          sessionStorage.setItem(cacheKey, JSON.stringify(data));
+        } finally {
+          setSummaryLoading(false);
+        }
+      } else {
+        sessionStorage.setItem(cacheKey, JSON.stringify(data));
+      }
+    }).finally(() => setLoading(false));
+  }, [user.id, i18n.language]);
+
+  if (loading) return (
+    <div className="oria-page oria-loading">
+      <div style={{ fontSize: 48, color: '#C084FC', animation: 'breathe 2s infinite' }}>✦</div>
+      <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: 16 }}>
+        {isZH ? '載入命盤中...' : 'Loading your chart...'}
+      </p>
+    </div>
+  );
+
+  const pillars = bazi ? [
+    { label: isZH ? '年柱' : 'Year', data: bazi.year_pillar },
+    { label: isZH ? '月柱' : 'Month', data: bazi.month_pillar },
+    { label: isZH ? '日柱' : 'Day', data: bazi.day_pillar },
+    { label: isZH ? '時柱' : 'Hour', data: bazi.hour_pillar },
+  ] : [];
+
+  const elements = bazi?.five_elements_strength || {};
+  const maxElement = Object.values(elements).length > 0
+    ? Math.max(...Object.values(elements) as number[])
+    : 1;
+
+  const mbtiInfo = mbti ? MBTI_DESCRIPTIONS[mbti.mbti_type] : null;
+
+  return (
+    <div className="oria-page oria-container animate-fade-in">
+      {/* Header */}
+      <header style={{ marginBottom: 32, textAlign: 'center' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: '#C084FC', textTransform: 'uppercase', marginBottom: 8 }}>
+          {isZH ? '我的命盤' : 'My Chart'}
+        </div>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: '#F0EDE8' }}>
+          {user.user_metadata?.full_name || user.email?.split('@')[0]}
+        </h1>
+      </header>
+
+      {/* BaZi Four Pillars */}
+      {bazi && (
+        <div className="oria-card" style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
+            🪬 {isZH ? '八字四柱' : 'Four Pillars'}
+          </div>
+
+          {/* Pillars grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+            {pillars.map((pillar, i) => (
+              <div key={i} style={{
+                background: 'rgba(192,132,252,0.1)',
+                border: '1px solid rgba(192,132,252,0.25)',
+                borderRadius: 14, padding: '16px 8px',
+                textAlign: 'center',
+              }}>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, marginBottom: 12, textTransform: 'uppercase' }}>
+                  {pillar.label}
+                </div>
+                {pillar.data ? (
+                  <>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: '#F0EDE8', marginBottom: 4 }}>
+                      {isZH ? (GAN_CN[pillar.data.gan] || pillar.data.gan) : pillar.data.gan}
+                    </div>
+                    <div style={{ fontSize: 22, color: '#C084FC' }}>
+                      {isZH ? (ZHI_CN[pillar.data.zhi] || pillar.data.zhi) : pillar.data.zhi}
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)' }}>
+                    {isZH ? '未知' : 'Unknown'}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Day Master */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            background: 'rgba(192,132,252,0.08)',
+            border: '1px solid rgba(192,132,252,0.2)',
+            borderRadius: 12, padding: '12px 16px',
+            marginBottom: 20,
+          }}>
+            <div style={{ fontSize: 24 }}>⭐</div>
+            <div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 2 }}>
+                {isZH ? '日主' : 'Day Master'}
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#C084FC' }}>
+                {isZH ? (GAN_CN[bazi.day_master] || bazi.day_master) : bazi.day_master}
+              </div>
+            </div>
+          </div>
+
+          {/* Five Elements */}
+          <div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 12, letterSpacing: 1 }}>
+              {isZH ? '五行力量' : 'FIVE ELEMENTS'}
+            </div>
+            {Object.entries(elements).map(([element, strength]: [string, any]) => {
+              const color = ELEMENT_COLORS[element] || '#C084FC';
+              const emoji = ELEMENT_EMOJI[element] || '✦';
+              const pct = Math.round((strength / maxElement) * 100);
+              return (
+                <div key={element} style={{ marginBottom: 10 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <span style={{ fontSize: 13, color: '#F0EDE8' }}>{emoji} {element}</span>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{strength.toFixed(1)}</span>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 4, height: 6 }}>
+                    <div style={{
+                      height: 6, borderRadius: 4,
+                      width: `${pct}%`,
+                      background: color,
+                      transition: 'width 0.8s ease',
+                    }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* MBTI */}
+      {mbti && (
+        <div className="oria-card" style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
+            🧠 {isZH ? 'MBTI 性格' : 'MBTI Personality'}
+          </div>
+
+          {/* Type + nickname */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+            <div style={{
+              fontSize: 36, fontWeight: 800, color: '#C084FC',
+              background: 'rgba(192,132,252,0.1)',
+              border: '1px solid rgba(192,132,252,0.3)',
+              borderRadius: 14, padding: '10px 16px',
+              letterSpacing: 3, flexShrink: 0,
+            }}>
+              {mbti.mbti_type}
+            </div>
+            <div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>
+                {mbtiInfo?.nickname}
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {mbtiInfo?.traits.map((trait, i) => (
+                  <span key={i} style={{
+                    background: 'rgba(192,132,252,0.12)',
+                    border: '1px solid rgba(192,132,252,0.25)',
+                    borderRadius: 20, padding: '3px 10px',
+                    fontSize: 11, color: '#C084FC',
+                  }}>{trait}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Dimension bars */}
+          {MBTI_DIMENSIONS[mbti.mbti_type] && (() => {
+            const dims = MBTI_DIMENSIONS[mbti.mbti_type];
+            const pairs = [
+              { a: 'E', b: 'I', colorA: '#f97316', colorB: '#38bdf8' },
+              { a: 'S', b: 'N', colorA: '#4ade80', colorB: '#c084fc' },
+              { a: 'T', b: 'F', colorA: '#22d3ee', colorB: '#f472b6' },
+              { a: 'J', b: 'P', colorA: '#fbbf24', colorB: '#a78bfa' },
+            ];
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {pairs.map(({ a, b, colorA, colorB }) => {
+                  const aVal = dims[a];
+                  const bVal = dims[b];
+                  const dominant = aVal > bVal ? a : b;
+                  const dominantColor = dominant === a ? colorA : colorB;
+                  const pct = Math.max(aVal, bVal);
+                  return (
+                    <div key={a+b}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: dominant === a ? colorA : 'rgba(255,255,255,0.3)' }}>{a}</span>
+                        <span style={{ fontSize: 11, color: dominantColor, background: `${dominantColor}22`, padding: '2px 10px', borderRadius: 20, fontWeight: 600 }}>{pct}% {dominant}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: dominant === b ? colorB : 'rgba(255,255,255,0.3)' }}>{b}</span>
+                      </div>
+                      <div style={{ position: 'relative', height: 8, background: 'rgba(255,255,255,0.06)', borderRadius: 4 }}>
+                        {dominant === a ? (
+                          <div style={{
+                            position: 'absolute', left: 0, top: 0, bottom: 0,
+                            width: `${aVal}%`, borderRadius: 3,
+                            background: 'linear-gradient(90deg, #9333EA, #C084FC)',
+                            transition: 'width 0.8s ease',
+                          }} />
+                        ) : (
+                          <div style={{
+                            position: 'absolute', right: 0, top: 0, bottom: 0,
+                            width: `${bVal}%`, borderRadius: 3,
+                            background: 'linear-gradient(270deg, #9333EA, #C084FC)',
+                            transition: 'width 0.8s ease',
+                          }} />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* Profile Summary */}
+      {bazi && mbti && (
+        <div className="oria-card" style={{
+          marginBottom: 16,
+          background: 'rgba(192,132,252,0.06)',
+          borderColor: 'rgba(192,132,252,0.25)',
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 16 }}>
+            ✦ {isZH ? '命盤解析' : 'Profile Insight'}
+          </div>
+          {summaryLoading ? (
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <div style={{ fontSize: 32, color: '#C084FC', animation: 'breathe 2s infinite' }}>✦</div>
+              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginTop: 12 }}>
+                {isZH ? '正在解析你的命盤...' : 'Analyzing your profile...'}
+              </div>
+            </div>
+          ) : summary ? (
+            <div className="animate-fade-in">
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#C084FC', marginBottom: 12 }}>
+                {summary.title}
+              </h3>
+              <p style={{ lineHeight: 1.8, color: '#F0EDE8', fontSize: 15 }}>
+                {summary.description}
+              </p>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: 14, padding: '12px 0' }}>
+              {isZH ? '命盤解析載入中...' : 'Loading your insight...'}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Danger zone */}
+      <div className="oria-card" style={{
+        border: '1.5px solid rgba(239,68,68,0.25)',
+        background: 'rgba(239,68,68,0.04)',
+      }}>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: '#EF4444', textTransform: 'uppercase', marginBottom: 8 }}>
+          ⚠️ {isZH ? '修改資料' : 'Edit Data'}
+        </div>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 16 }}>
+          {isZH
+            ? '修改八字或MBTI資料將清除所有對話紀錄、每日指引和命盤解析。此操作不可逆轉。'
+            : 'Updating your data will permanently clear all chat history, daily guidance and profile insights. This cannot be undone.'}
+        </p>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <button onClick={() => navigate('/onboarding/bazi')} style={{
+            background: 'rgba(239,68,68,0.12)',
+            border: '1px solid rgba(239,68,68,0.35)',
+            borderRadius: 12, padding: '10px 20px',
+            color: '#EF4444', cursor: 'pointer',
+            fontSize: 13, fontFamily: 'inherit', fontWeight: 600,
+          }}>
+            {isZH ? '修改八字資料' : 'Update BaZi'}
+          </button>
+          <button onClick={() => navigate('/mbti-quiz')} style={{
+            background: 'rgba(239,68,68,0.12)',
+            border: '1px solid rgba(239,68,68,0.35)',
+            borderRadius: 12, padding: '10px 20px',
+            color: '#EF4444', cursor: 'pointer',
+            fontSize: 13, fontFamily: 'inherit', fontWeight: 600,
+          }}>
+            {isZH ? '重做MBTI測試' : 'Retake MBTI'}
+          </button>
+        </div>
+      </div>
+
+      <footer className="oria-disclaimer" style={{ marginTop: 32 }}>
+        {isZH ? '這是一種反思，而非預測。決定權在你。' : 'This is a reflection, not a prediction. You hold the decisions.'}
+      </footer>
+    </div>
+  );
+}
