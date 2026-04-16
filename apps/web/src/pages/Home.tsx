@@ -38,7 +38,8 @@ export default function Home({ user }: HomeProps) {
   const { t, i18n } = useTranslation();
   const isZH = i18n.language === 'zh-TW';
 
-  const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Friend';
+  const rawName = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+  const name = rawName.includes('.') ? rawName.split('.').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : rawName;
 
   return (
     <div className="animate-fade-in" style={{ minHeight: '100vh', padding: '40px 24px 80px' }}>
@@ -50,7 +51,7 @@ export default function Home({ user }: HomeProps) {
           padding: 32px 24px;
           cursor: pointer;
           transition: all 0.2s;
-          text-align: left;
+          text-align: center;
         }
         .home-card:hover {
           background: rgba(45, 27, 84, 0.95);
@@ -88,16 +89,15 @@ export default function Home({ user }: HomeProps) {
             className="home-card"
             onClick={() => navigate(feature.path)}
           >
-            <div style={{ fontSize: 36, marginBottom: 16 }}>{feature.icon}</div>
-            <div style={{
-              fontSize: 18, fontWeight: 700,
-              color: '#C084FC', marginBottom: 8,
-            }}>
-              {t(feature.labelKey)}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, justifyContent: 'center' }}>
+              <span style={{ fontSize: 28 }}>{feature.icon}</span>
+              <span style={{ fontSize: 18, fontWeight: 700, color: '#C084FC' }}>
+                {t(feature.labelKey)}
+              </span>
             </div>
             <div style={{
               fontSize: 14, color: 'rgba(255,255,255,0.6)',
-              lineHeight: 1.6,
+              lineHeight: 1.6, textAlign: 'center',
             }}>
               {t(feature.descKey)}
             </div>

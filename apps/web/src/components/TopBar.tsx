@@ -11,10 +11,10 @@ const LANGUAGES = [
 ];
 
 const NAV_ITEMS = [
-  { path: '/daily',    label: 'Daily' },
-  { path: '/chat',     label: 'Chat' },
-  { path: '/profile',  label: 'Profile' },
-  { path: '/settings', label: 'Settings' },
+  { path: '/home',    labelKey: 'nav.home' },
+  { path: '/daily',   labelKey: 'nav.daily' },
+  { path: '/chat',    labelKey: 'nav.chat' },
+  { path: '/chart',   labelKey: 'nav.chart' },
 ];
 
 interface TopBarProps {
@@ -24,7 +24,7 @@ interface TopBarProps {
 export default function TopBar({ user }: TopBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isLoggedIn = !!user;
 
   function handleLanguageChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -77,7 +77,7 @@ export default function TopBar({ user }: TopBarProps) {
                   transition: 'all 0.2s ease'
                 }}
               >
-                {item.label}
+                {item.labelKey ? t(item.labelKey) : item.label}
               </button>
             ))}
           </div>
@@ -130,6 +130,28 @@ export default function TopBar({ user }: TopBarProps) {
               <span>💎</span>
               <span>—</span>
             </div>
+          )}
+
+          {/* Profile icon */}
+          {isLoggedIn && (
+            <button onClick={() => navigate('/profile')} style={{
+              width: 34, height: 34, borderRadius: '50%',
+              background: location.pathname === '/profile' ? 'rgba(192,132,252,0.2)' : 'transparent',
+              border: '1px solid rgba(192,132,252,0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', fontSize: 16, color: '#C084FC',
+            }}>👤</button>
+          )}
+
+          {/* Settings icon */}
+          {isLoggedIn && (
+            <button onClick={() => navigate('/settings')} style={{
+              width: 34, height: 34, borderRadius: '50%',
+              background: location.pathname === '/settings' ? 'rgba(192,132,252,0.2)' : 'transparent',
+              border: '1px solid rgba(192,132,252,0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', fontSize: 16, color: '#C084FC',
+            }}>⚙️</button>
           )}
         </div>
       </div>

@@ -216,7 +216,7 @@ export default function Profile({ user }: { user: User }) {
 
         <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20, cursor: 'pointer' }}>
           <input type="checkbox" checked={timeKnown} onChange={e => setTimeKnown(e.target.checked)} style={{ width: 18, height: 18, accentColor: '#C084FC' }} />
-          <span className="text-sm">I know my exact birth time</span>
+          <span className="text-sm">{i18n.language === 'zh-TW' ? '我知道確切的出生時間' : 'I know my exact birth time'}</span>
         </label>
 
         {timeKnown && (
@@ -237,6 +237,19 @@ export default function Profile({ user }: { user: User }) {
           <input className="oria-input" placeholder="Hong Kong" value={location} onChange={e => setLocation(e.target.value)} />
         </div>
 
+        {existingBazi && (
+          <div style={{
+            background: 'rgba(239,68,68,0.08)',
+            border: '1px solid rgba(239,68,68,0.25)',
+            borderRadius: 10, padding: '10px 14px',
+            marginBottom: 12, fontSize: 13,
+            color: 'rgba(255,255,255,0.55)', lineHeight: 1.5,
+          }}>
+            ⚠️ {i18n.language === 'zh-TW'
+              ? '更新八字將清除所有對話紀錄及每日指引'
+              : 'Updating BaZi will clear all chat history and daily guidance'}
+          </div>
+        )}
         <button onClick={handleSaveBazi} disabled={saving} className="oria-btn-primary">
           {saving ? t('profile.saving') : existingBazi ? t('profile.update_bazi') : t('profile.save_bazi')}
         </button>
@@ -254,80 +267,42 @@ export default function Profile({ user }: { user: User }) {
         </div>
 
         <div style={{ marginBottom: 20 }}>
-          <label className="oria-card-label">Select Type</label>
+          <label className="oria-card-label">{i18n.language === "zh-TW" ? "選擇類型" : "Select Type"}</label>
           <select className="oria-input" value={mbtiType} onChange={e => setMbtiType(e.target.value)} style={{ appearance: 'auto' }}>
             <option value="" disabled>Choose your type...</option>
             {MBTI_TYPES.map(t => <option key={t} value={t} style={{ background: '#1A0B2E' }}>{t}</option>)}
           </select>
         </div>
 
+        {existingMbti && (
+          <div style={{
+            background: 'rgba(239,68,68,0.08)',
+            border: '1px solid rgba(239,68,68,0.25)',
+            borderRadius: 10, padding: '10px 14px',
+            marginBottom: 12, fontSize: 13,
+            color: 'rgba(255,255,255,0.55)', lineHeight: 1.5,
+          }}>
+            ⚠️ {i18n.language === 'zh-TW'
+              ? '更新MBTI將清除命盤解析紀錄'
+              : 'Updating MBTI will clear your profile insight'}
+          </div>
+        )}
         <button onClick={handleSaveMbti} disabled={saving} className="oria-btn-primary">
           {saving ? t('profile.saving') : existingMbti ? t('profile.update_mbti') : t('profile.save_mbti')}
         </button>
       </div>
 
-      {/* Summary Section — auto loads */}
-      {existingBazi && existingMbti && (
-        <div className="oria-card" style={{ background: 'rgba(192, 132, 252, 0.08)', borderColor: 'rgba(192, 132, 252, 0.3)' }}>
-          <div className="oria-card-label">✦ {i18n.language === 'zh-TW' ? '命盤解析' : 'Profile Insight'}</div>
-          {summaryLoading ? (
-            <div style={{ textAlign: 'center', padding: '20px 0', color: 'rgba(255,255,255,0.5)' }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>✦</div>
-              <div>{i18n.language === 'zh-TW' ? '正在解析你的命盤...' : 'Analyzing your profile...'}</div>
-            </div>
-          ) : summary ? (
-            <div className="animate-fade-in">
-              <h3 style={{ fontSize: 20, fontWeight: 700, color: '#C084FC', marginBottom: 12 }}>{summary.title}</h3>
-              <p style={{ lineHeight: 1.8, color: '#FFFFFF', fontSize: 15 }}>{summary.description}</p>
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', padding: '12px 0', color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>
-              {i18n.language === 'zh-TW' ? '命盤解析將在此顯示' : 'Your profile insight will appear here'}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Danger zone — edit birth data */}
-      <div className="oria-card" style={{
-        border: '1.5px solid rgba(239,68,68,0.3)',
-        background: 'rgba(239,68,68,0.05)',
-        marginTop: 8,
-      }}>
-        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#EF4444', textTransform: 'uppercase', marginBottom: 8 }}>
-          ⚠️ {i18n.language === 'zh-TW' ? '修改資料' : 'Edit Data'}
-        </div>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, marginBottom: 16 }}>
-          {i18n.language === 'zh-TW'
-            ? '修改八字或MBTI資料將清除所有對話紀錄、每日指引和命盤解析。此操作不可逆轉。'
-            : 'Updating your BaZi or MBTI data will permanently clear all chat history, daily guidance and profile insights. This cannot be undone.'}
-        </p>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <button
-            onClick={() => navigate('/onboarding/bazi')}
-            style={{
-              background: 'rgba(239,68,68,0.15)',
-              border: '1px solid rgba(239,68,68,0.4)',
-              borderRadius: 12, padding: '10px 20px',
-              color: '#EF4444', cursor: 'pointer',
-              fontSize: 14, fontFamily: 'inherit', fontWeight: 600,
-            }}
-          >
-            {i18n.language === 'zh-TW' ? '修改八字資料' : 'Update BaZi Data'}
-          </button>
-          <button
-            onClick={() => navigate('/mbti-quiz')}
-            style={{
-              background: 'rgba(239,68,68,0.15)',
-              border: '1px solid rgba(239,68,68,0.4)',
-              borderRadius: 12, padding: '10px 20px',
-              color: '#EF4444', cursor: 'pointer',
-              fontSize: 14, fontFamily: 'inherit', fontWeight: 600,
-            }}
-          >
-            {i18n.language === 'zh-TW' ? '重做MBTI測試' : 'Retake MBTI Quiz'}
-          </button>
-        </div>
+      {/* Link to chart page */}
+      <div style={{ textAlign: 'center', padding: '8px 0' }}>
+        <button onClick={() => navigate('/chart')} style={{
+          background: 'rgba(192,132,252,0.1)',
+          border: '1px solid rgba(192,132,252,0.3)',
+          borderRadius: 12, padding: '12px 24px',
+          color: '#C084FC', cursor: 'pointer',
+          fontSize: 14, fontFamily: 'inherit', fontWeight: 600,
+        }}>
+          {i18n.language === 'zh-TW' ? '查看我的命盤解析 →' : 'View My Chart →'}
+        </button>
       </div>
 
       <footer className="oria-disclaimer">{t('disclaimer')}</footer>

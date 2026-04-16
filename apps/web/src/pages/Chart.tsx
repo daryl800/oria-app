@@ -144,7 +144,10 @@ export default function Chart({ user }: { user: User }) {
           {isZH ? '我的命盤' : 'My Chart'}
         </div>
         <h1 style={{ fontSize: 28, fontWeight: 800, color: '#F0EDE8' }}>
-          {user.user_metadata?.full_name || user.email?.split('@')[0]}
+          {(() => {
+            const raw = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+            return raw.includes('.') ? raw.split('.').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : raw;
+          })()}
         </h1>
       </header>
 
@@ -161,24 +164,25 @@ export default function Chart({ user }: { user: User }) {
               <div key={i} style={{
                 background: 'rgba(192,132,252,0.1)',
                 border: '1px solid rgba(192,132,252,0.25)',
-                borderRadius: 14, padding: '16px 8px',
+                borderRadius: 12, padding: '12px 6px',
                 textAlign: 'center',
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
               }}>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, marginBottom: 12, textTransform: 'uppercase' }}>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
                   {pillar.label}
                 </div>
                 {pillar.data ? (
                   <>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: '#F0EDE8', marginBottom: 4 }}>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: '#F0EDE8', marginBottom: 4 }}>
                       {isZH ? (GAN_CN[pillar.data.gan] || pillar.data.gan) : pillar.data.gan}
                     </div>
-                    <div style={{ fontSize: 22, color: '#C084FC' }}>
+                    <div style={{ fontSize: 16, color: '#C084FC' }}>
                       {isZH ? (ZHI_CN[pillar.data.zhi] || pillar.data.zhi) : pillar.data.zhi}
                     </div>
                   </>
                 ) : (
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)' }}>
-                    {isZH ? '未知' : 'Unknown'}
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>
+                    {isZH ? '未知' : '—'}
                   </div>
                 )}
               </div>
@@ -216,7 +220,9 @@ export default function Chart({ user }: { user: User }) {
               return (
                 <div key={element} style={{ marginBottom: 10 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 13, color: '#F0EDE8' }}>{emoji} {element}</span>
+                    <span style={{ fontSize: 13, color: '#F0EDE8' }}>
+                    {emoji} {isZH ? {'Fire':'火','Wood':'木','Earth':'土','Metal':'金','Water':'水'}[element] || element : element}
+                  </span>
                     <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{strength.toFixed(1)}</span>
                   </div>
                   <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 4, height: 6 }}>
@@ -297,14 +303,15 @@ export default function Chart({ user }: { user: User }) {
                         {dominant === a ? (
                           <div style={{
                             position: 'absolute', left: 0, top: 0, bottom: 0,
-                            width: `${aVal}%`, borderRadius: 3,
-                            background: 'linear-gradient(90deg, #9333EA, #C084FC)',
+                            width: `${aVal}%`, borderRadius: 4,
+                            background: colorA,
+                            boxShadow: `0 0 8px ${colorA}88`,
                             transition: 'width 0.8s ease',
                           }} />
                         ) : (
                           <div style={{
                             position: 'absolute', right: 0, top: 0, bottom: 0,
-                            width: `${bVal}%`, borderRadius: 3,
+                            width: `${bVal}%`, borderRadius: 4,
                             background: 'linear-gradient(270deg, #9333EA, #C084FC)',
                             transition: 'width 0.8s ease',
                           }} />

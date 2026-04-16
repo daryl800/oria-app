@@ -38,8 +38,10 @@ export default function Settings({ user }: { user: User }) {
 
       {/* Account */}
       <div className="oria-card">
-        <div style={{ fontSize: 32, marginBottom: 12 }}>👤</div>
-        <h2 className="text-lg" style={{ marginBottom: 16 }}>{t('settings.account')}</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+          <span style={{ fontSize: 24 }}>👤</span>
+          <h2 className="text-lg">{t('settings.account')}</h2>
+        </div>
         <label className="oria-card-label">{t('auth.logged_in_as')}</label>
         <div className="oria-input" style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
           {user.email}
@@ -48,8 +50,10 @@ export default function Settings({ user }: { user: User }) {
 
       {/* Language */}
       <div className="oria-card">
-        <div style={{ fontSize: 32, marginBottom: 12 }}>🌐</div>
-        <h2 className="text-lg" style={{ marginBottom: 16 }}>{t('settings.language')}</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+          <span style={{ fontSize: 24 }}>🌐</span>
+          <h2 className="text-lg">{t('settings.language')}</h2>
+        </div>
         <label className="oria-card-label">{t('settings.language_label')}</label>
         <select
           value={i18n.language}
@@ -67,8 +71,10 @@ export default function Settings({ user }: { user: User }) {
 
       {/* About */}
       <div className="oria-card">
-        <div style={{ fontSize: 32, marginBottom: 12 }}>✦</div>
-        <h2 className="text-lg" style={{ marginBottom: 12 }}>{t('settings.about_title')}</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+          <span style={{ fontSize: 24 }}>✦</span>
+          <h2 className="text-lg">{t('settings.about_title')}</h2>
+        </div>
         <p style={{ fontSize: 14, color: '#FFFFFF', lineHeight: 1.7, marginBottom: 16 }}>
           {t('settings.about_body')}
         </p>
