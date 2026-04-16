@@ -2,13 +2,12 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
-import '../styles/theme.css';
 
 const LANGUAGES = [
-  { code: 'en',    label: '🇬🇧 English' },
+  { code: 'en', label: '🇬🇧 English' },
   { code: 'zh-TW', label: '🇭🇰 繁體中文' },
   { code: 'zh-CN', label: '🇨🇳 简体中文' },
-  { code: 'sv',    label: '🇸🇪 Svenska' },
+  { code: 'sv', label: '🇸🇪 Svenska' },
 ];
 
 const AVAILABLE = ['en', 'zh-TW'];
@@ -85,7 +84,7 @@ export default function Settings({ user }: { user: User }) {
       </div>
 
       {/* Sign out */}
-      <button onClick={handleSignOut} className="oria-btn-outline" style={{ 
+      <button onClick={handleSignOut} className="oria-btn-outline" style={{
         width: '100%', padding: 18, color: '#EF4444', borderColor: 'rgba(239, 68, 68, 0.2)',
         background: 'rgba(239, 68, 68, 0.05)', fontSize: 16, fontWeight: 700
       }}>

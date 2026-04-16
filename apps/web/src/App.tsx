@@ -19,7 +19,6 @@ function AppShell({ user, children }: { user: User | null; children: React.React
   const location = useLocation();
   const isLoggedIn = !!user;
   const showBottomNav = isLoggedIn && !['/onboarding/bazi'].includes(location.pathname);
-
   return (
     <>
       <TopBar user={user} />
@@ -32,26 +31,9 @@ function AppShell({ user, children }: { user: User | null; children: React.React
 }
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  // undefined = not yet checked, null = checked and no user, User = logged in
+  const [user, setUser] = useState<User | null | undefined>(undefined);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      const u = data.session?.user ?? null;
-      setUser(u);
-      if (u) await checkOnboarding(u.id);
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      const u = session?.user ?? null;
-      setUser(u);
-      if (u) await checkOnboarding(u.id);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   async function checkOnboarding(userId: string) {
     const { data } = await supabase
@@ -62,43 +44,51 @@ export default function App() {
     setOnboardingComplete(!!data?.current_bazi_version_id);
   }
 
-  if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ fontSize: 48, color: '#C084FC' }}>✦</div>
-    </div>
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('AUTH EVENT:', event, session?.user?.email);
+      const u = session?.user ?? null;
+
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+        // Set user immediately — don't wait for checkOnboarding
+        setUser(u);
+        // Check onboarding in background
+        if (u) checkOnboarding(u.id);
+        else setOnboardingComplete(null);
+      } else if (event === 'SIGNED_OUT') {
+        setOnboardingComplete(null);
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Still checking auth — show spinner
+  if (user === undefined) return (
+    <BrowserRouter>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0614' }}>
+        <div style={{ fontSize: 48, color: '#C084FC' }}>✦</div>
+      </div>
+    </BrowserRouter>
   );
 
+  // Auth checked — render app
   return (
     <BrowserRouter>
       <AppShell user={user}>
         <Routes>
-          {/* Public */}
           <Route path="/" element={!user ? <Landing /> : <Navigate to="/daily" />} />
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
           <Route path="/onboarding/result" element={<OnboardingResult />} />
-          <Route path="/onboarding/bazi" element={
-            user ? <OnboardingBazi /> : <Navigate to="/" />
-          } />
-          <Route path="/login" element={
-            !user ? <Login /> : <Navigate to={onboardingComplete ? '/daily' : '/onboarding/bazi'} />
-          } />
+          <Route path="/onboarding/bazi" element={user ? <OnboardingBazi /> : <Navigate to="/" />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/daily' : '/onboarding/bazi'} />} />
 
-          {/* Protected */}
-          <Route path="/daily" element={
-            !user ? <Navigate to="/" /> : <DailyGuidance user={user} />
-          } />
-          <Route path="/chat" element={
-            !user ? <Navigate to="/" /> : <Chat user={user} />
-          } />
-          <Route path="/profile" element={
-            !user ? <Navigate to="/" /> : <Profile user={user} />
-          } />
-          <Route path="/settings" element={
-            !user ? <Navigate to="/" /> : <Settings user={user} />
-          } />
-          <Route path="/mbti-quiz" element={
-            !user ? <Navigate to="/" /> : <MbtiQuestionnaire user={user} />
-          } />
+          <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} />} />
+          <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} />} />
+          <Route path="/profile" element={!user ? <Navigate to="/" /> : <Profile user={user} />} />
+          <Route path="/settings" element={!user ? <Navigate to="/" /> : <Settings user={user} />} />
+          <Route path="/mbti-quiz" element={!user ? <Navigate to="/" /> : <MbtiQuestionnaire user={user} />} />
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

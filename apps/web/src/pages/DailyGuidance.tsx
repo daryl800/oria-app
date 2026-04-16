@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { fetchDailyGuidance } from '@/services/api';
-import '../styles/theme.css';
 
 interface DailySummary {
   tone: string;
@@ -178,8 +177,8 @@ export default function DailyGuidance({ user }: { user: User }) {
         </div>
       </div>
 
-      <button 
-        className="oria-btn-primary" 
+      <button
+        className="oria-btn-primary"
         style={{ marginTop: 32 }}
         onClick={() => navigate('/chat', {
           state: { prefill: 'What should I focus on today based on my BaZi?' }

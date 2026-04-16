@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { sendMessage, getConversationHistory, getConversationMessages, getDailySuggestedPrompts } from '@/services/api';
-import '../styles/theme.css';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -53,7 +52,7 @@ export default function Chat({ user }: { user: User }) {
   useEffect(() => {
     getDailySuggestedPrompts(i18n.language === 'zh-TW' ? 'zh-TW' : 'en')
       .then(data => setDailyPrompts(data.suggested_prompts))
-      .catch(() => {});
+      .catch(() => { });
   }, [i18n.language]);
 
   async function loadHistory() {
