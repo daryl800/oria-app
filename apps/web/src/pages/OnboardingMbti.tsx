@@ -19,9 +19,16 @@ export default function OnboardingMbti() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [fade, setFade] = useState(true);
+  const [fade, setFade] = useState(false);
+  const [entered, setEntered] = useState(false);
 
   const isZH = i18n.language === 'zh-TW';
+
+  useEffect(() => {
+    // Entrance delay — gives transition page time to feel complete
+    const t = setTimeout(() => { setEntered(true); setFade(true); }, 600);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -39,7 +46,7 @@ export default function OnboardingMbti() {
       setTimeout(() => {
         setCurrentIndex(prev => prev + 1);
         setFade(true);
-      }, 300);
+      }, 500);
     }
   }
 
@@ -179,8 +186,8 @@ export default function OnboardingMbti() {
         <div style={{
           width: '100%', maxWidth: 680,
           padding: '0 24px',
-          opacity: fade ? 1 : 0,
-          transition: 'opacity 0.25s ease',
+          opacity: entered && fade ? 1 : 0,
+          transition: 'opacity 0.5s ease',
         }}>
           <div className="oria-card" style={{ padding: '32px 32px 24px' }}>
             <div style={{

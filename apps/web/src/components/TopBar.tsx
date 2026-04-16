@@ -49,7 +49,7 @@ export default function TopBar({ user }: TopBarProps) {
       }}>
         {/* Left — logo */}
         <button
-          onClick={() => navigate(isLoggedIn ? '/daily' : '/')}
+          onClick={() => navigate(isLoggedIn ? '/home' : '/')}
           style={{
             background: 'none', border: 'none',
             cursor: 'pointer', display: 'flex',

@@ -347,7 +347,7 @@ h3 { font-size: 28px; }
 }
 
 .animate-fade-in {
-  animation: fade-in 0.4s ease-out;
+  animation: fade-in 0.8s ease-out;
 }
 
 .animate-pulse {

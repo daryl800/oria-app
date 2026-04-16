@@ -11,10 +11,13 @@
     "sign_out": "登出"
   },
   "nav": {
-    "daily": "每日",
-    "chat": "對話",
+    "daily": "每日羅盤",
+    "chat": "與大師對話",
     "profile": "檔案",
-    "settings": "設定"
+    "settings": "設定",
+    "chart": "我的命盤",
+    "compare": "相容性分析",
+    "home": "首頁"
   },
   "daily": {
     "title": "每日指引",
@@ -107,5 +110,11 @@
   },
   "errors": {
     "generic": "出現錯誤，請再試一次。"
+  },
+  "home": {
+    "daily_desc": "根據你的八字命盤獲取個性化的每日指引",
+    "chat_desc": "與 AI 對話，獲取關於職業、感情和健康的建議",
+    "chart_desc": "探索你的八字命盤與 MBTI 性格分析",
+    "compare_desc": "與朋友比較八字，發現宇宙相容性"
   }
 }

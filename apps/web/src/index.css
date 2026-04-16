@@ -83,3 +83,10 @@ body.landing {
   animation: universe-travel 25s ease-in-out infinite;
   will-change: transform;
 }
+
+/* Desktop: hide bottom nav, top bar handles navigation */
+@media (min-width: 768px) {
+  .oria-bottom-nav {
+    display: none !important;
+  }
+}

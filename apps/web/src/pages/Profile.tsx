@@ -35,6 +35,28 @@ export default function Profile({ user }: { user: User }) {
   const [mbtiType, setMbtiType] = useState('');
 
   useEffect(() => {
+    const cacheKey = `oria_profile_${user.id}`;
+    const cached = sessionStorage.getItem(cacheKey);
+
+    if (cached) {
+      const data = JSON.parse(cached);
+      if (data.bazi) {
+        setExistingBazi(data.bazi);
+        const d = new Date(data.bazi.birth_date);
+        setYear(String(d.getUTCFullYear()));
+        setMonth(String(d.getUTCMonth() + 1));
+        setDay(String(d.getUTCDate()));
+        if (data.bazi.birth_location) setLocation(data.bazi.birth_location);
+      }
+      if (data.mbti) {
+        setExistingMbti(data.mbti);
+        setMbtiType(data.mbti.mbti_type);
+      }
+      if (data.summary) setSummary(data.summary);
+      setLoading(false);
+      return;
+    }
+
     getProfile()
       .then(data => {
         if (data.bazi) {
@@ -49,17 +71,28 @@ export default function Profile({ user }: { user: User }) {
           setExistingMbti(data.mbti);
           setMbtiType(data.mbti.mbti_type);
         }
+        // Auto-load summary if both bazi and mbti exist
         if (data.bazi && data.mbti) {
+          setSummaryLoading(true);
           getProfileSummary(i18n.language)
-            .then(s => setSummary(s.summary))
-            .catch(() => { });
+            .then(s => {
+              setSummary(s.summary);
+              sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: s.summary }));
+            })
+            .catch(() => {
+              sessionStorage.setItem(cacheKey, JSON.stringify(data));
+            })
+            .finally(() => setSummaryLoading(false));
+        } else {
+          sessionStorage.setItem(cacheKey, JSON.stringify(data));
         }
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-  }, [i18n.language]);
+  }, [user.id]);
 
   async function handleSaveBazi() {
+    sessionStorage.removeItem(`oria_profile_${user.id}`);
     if (!year || !month || !day) return setError('Please enter your birth date.');
     if (existingBazi) {
       setShowResetWarning(true);
@@ -93,6 +126,7 @@ export default function Profile({ user }: { user: User }) {
   }
 
   async function handleSaveMbti() {
+    sessionStorage.removeItem(`oria_profile_${user.id}`);
     if (!mbtiType) return setError('Please select your MBTI type.');
     setSaving(true); setError('');
     try {
@@ -232,22 +266,69 @@ export default function Profile({ user }: { user: User }) {
         </button>
       </div>
 
-      {/* Summary Section */}
+      {/* Summary Section — auto loads */}
       {existingBazi && existingMbti && (
-        <div className="oria-card" style={{ background: 'rgba(192, 132, 252, 0.05)', borderColor: 'rgba(192, 132, 252, 0.2)' }}>
-          <div className="oria-card-label">Profile Insight</div>
-          {summary ? (
+        <div className="oria-card" style={{ background: 'rgba(192, 132, 252, 0.08)', borderColor: 'rgba(192, 132, 252, 0.3)' }}>
+          <div className="oria-card-label">✦ {i18n.language === 'zh-TW' ? '命盤解析' : 'Profile Insight'}</div>
+          {summaryLoading ? (
+            <div style={{ textAlign: 'center', padding: '20px 0', color: 'rgba(255,255,255,0.5)' }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>✦</div>
+              <div>{i18n.language === 'zh-TW' ? '正在解析你的命盤...' : 'Analyzing your profile...'}</div>
+            </div>
+          ) : summary ? (
             <div className="animate-fade-in">
-              <h3 className="text-lg" style={{ color: '#C084FC', marginBottom: 12 }}>{summary.title}</h3>
-              <p style={{ lineHeight: 1.6, color: '#FFFFFF' }}>{summary.description}</p>
+              <h3 style={{ fontSize: 20, fontWeight: 700, color: '#C084FC', marginBottom: 12 }}>{summary.title}</h3>
+              <p style={{ lineHeight: 1.8, color: '#FFFFFF', fontSize: 15 }}>{summary.description}</p>
             </div>
           ) : (
-            <button onClick={() => handleGetSummary()} disabled={summaryLoading} className="oria-btn-outline" style={{ width: '100%', padding: 16 }}>
-              {summaryLoading ? 'Analyzing...' : 'Generate Profile Insight'}
-            </button>
+            <div style={{ textAlign: 'center', padding: '12px 0', color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>
+              {i18n.language === 'zh-TW' ? '命盤解析將在此顯示' : 'Your profile insight will appear here'}
+            </div>
           )}
         </div>
       )}
+
+      {/* Danger zone — edit birth data */}
+      <div className="oria-card" style={{
+        border: '1.5px solid rgba(239,68,68,0.3)',
+        background: 'rgba(239,68,68,0.05)',
+        marginTop: 8,
+      }}>
+        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#EF4444', textTransform: 'uppercase', marginBottom: 8 }}>
+          ⚠️ {i18n.language === 'zh-TW' ? '修改資料' : 'Edit Data'}
+        </div>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, marginBottom: 16 }}>
+          {i18n.language === 'zh-TW'
+            ? '修改八字或MBTI資料將清除所有對話紀錄、每日指引和命盤解析。此操作不可逆轉。'
+            : 'Updating your BaZi or MBTI data will permanently clear all chat history, daily guidance and profile insights. This cannot be undone.'}
+        </p>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <button
+            onClick={() => navigate('/onboarding/bazi')}
+            style={{
+              background: 'rgba(239,68,68,0.15)',
+              border: '1px solid rgba(239,68,68,0.4)',
+              borderRadius: 12, padding: '10px 20px',
+              color: '#EF4444', cursor: 'pointer',
+              fontSize: 14, fontFamily: 'inherit', fontWeight: 600,
+            }}
+          >
+            {i18n.language === 'zh-TW' ? '修改八字資料' : 'Update BaZi Data'}
+          </button>
+          <button
+            onClick={() => navigate('/mbti-quiz')}
+            style={{
+              background: 'rgba(239,68,68,0.15)',
+              border: '1px solid rgba(239,68,68,0.4)',
+              borderRadius: 12, padding: '10px 20px',
+              color: '#EF4444', cursor: 'pointer',
+              fontSize: 14, fontFamily: 'inherit', fontWeight: 600,
+            }}
+          >
+            {i18n.language === 'zh-TW' ? '重做MBTI測試' : 'Retake MBTI Quiz'}
+          </button>
+        </div>
+      </div>
 
       <footer className="oria-disclaimer">{t('disclaimer')}</footer>
     </div>

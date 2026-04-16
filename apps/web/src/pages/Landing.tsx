@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -6,6 +6,7 @@ export default function Landing() {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const isZH = i18n.language === 'zh-TW';
+  const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
     document.body.classList.add('no-overlay');
@@ -132,8 +133,8 @@ export default function Landing() {
           <button className="btn-signin" onClick={() => navigate('/login')}>
             {isZH ? '登入' : 'Already have an account'}
           </button>
-          <button className="link-newuser" onClick={() => navigate('/onboarding/mbti')}>
-            {isZH ? <>新用戶？<span>開始你的旅程 →</span></> : <>New user? <span>Sign Up →</span></>}
+          <button className="link-newuser" onClick={() => { setLeaving(true); setTimeout(() => navigate('/onboarding/start'), 800); }}>
+            {isZH ? <>新用戶？<span>立即開始</span></> : <>New user? <span>Sign Up</span></>}
           </button>
           <div>
             <a href="mailto:hello@oria.io?subject=Oria%20enquiry" className="btn-contact">

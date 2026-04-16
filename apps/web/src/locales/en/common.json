@@ -11,10 +11,13 @@
     "sign_out": "Sign Out"
   },
   "nav": {
-    "daily": "Daily",
-    "chat": "Chat",
+    "daily": "Daily Compass",
+    "chat": "AI Master",
     "profile": "Profile",
-    "settings": "Settings"
+    "settings": "Settings",
+    "chart": "My Chart",
+    "compare": "Compatibility",
+    "home": "Home"
   },
   "daily": {
     "title": "Daily Guidance",
@@ -107,5 +110,11 @@
   },
   "errors": {
     "generic": "Something went wrong. Please try again."
+  },
+  "home": {
+    "daily_desc": "Get personalised daily guidance based on your BaZi and MBTI",
+    "chat_desc": "Chat with your AI guide about career, relationships and health",
+    "chart_desc": "Explore your BaZi birth chart and MBTI personality profile",
+    "compare_desc": "Compare BaZi charts with friends to discover cosmic compatibility"
   }
 }

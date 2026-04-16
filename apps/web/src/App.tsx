@@ -3,8 +3,10 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { supabase } from './lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import Login from './pages/Login';
+import Home from './pages/Home';
 import Landing from './pages/Landing';
 import OnboardingMbti from './pages/OnboardingMbti';
+import OnboardingTransition from './pages/OnboardingTransition';
 import OnboardingResult from './pages/OnboardingResult';
 import OnboardingBazi from './pages/OnboardingBazi';
 import DailyGuidance from './pages/DailyGuidance';
@@ -12,6 +14,7 @@ import Profile from './pages/Profile';
 import Chat from './pages/Chat';
 import Settings from './pages/Settings';
 import MbtiQuestionnaire from './pages/MbtiQuestionnaire';
+import Compare from './pages/Compare';
 import BottomNav from './components/BottomNav';
 import TopBar from './components/TopBar';
 
@@ -78,12 +81,16 @@ export default function App() {
     <BrowserRouter>
       <AppShell user={user}>
         <Routes>
-          <Route path="/" element={!user ? <Landing /> : <Navigate to="/daily" />} />
+          <Route path="/" element={!user ? <Landing /> : <Navigate to="/home" />} />
+          <Route path="/onboarding/start" element={<OnboardingTransition />} />
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
           <Route path="/onboarding/result" element={<OnboardingResult />} />
           <Route path="/onboarding/bazi" element={user ? <OnboardingBazi /> : <Navigate to="/" />} />
-          <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/daily' : '/onboarding/bazi'} />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/home' : '/onboarding/bazi'} />} />
 
+          <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
+          <Route path="/chart" element={!user ? <Navigate to="/" /> : <Profile user={user} />} />
+          <Route path="/compare" element={!user ? <Navigate to="/" /> : <Compare user={user} />} />
           <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} />} />
           <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} />} />
           <Route path="/profile" element={!user ? <Navigate to="/" /> : <Profile user={user} />} />

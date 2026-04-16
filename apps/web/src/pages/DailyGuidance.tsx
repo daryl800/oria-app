@@ -57,8 +57,19 @@ export default function DailyGuidance({ user }: { user: User }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchDailyGuidance(i18n.language === 'zh-TW' ? 'zh-TW' : 'en')
-      .then(data => setSummary(data.summary))
+    const lang = i18n.language === 'zh-TW' ? 'zh-TW' : 'en';
+    const cacheKey = `oria_daily_${new Date().toDateString()}_${lang}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      setSummary(JSON.parse(cached));
+      setLoading(false);
+      return;
+    }
+    fetchDailyGuidance(lang)
+      .then(data => {
+        setSummary(data.summary);
+        sessionStorage.setItem(cacheKey, JSON.stringify(data.summary));
+      })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }, [i18n.language]);

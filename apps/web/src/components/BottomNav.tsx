@@ -5,7 +5,7 @@ import '../styles/theme.css';
 const NAV_ITEMS = [
   { path: '/daily',    labelKey: 'nav.daily',    icon: '☀' },
   { path: '/chat',     labelKey: 'nav.chat',     icon: '◎' },
-  { path: '/profile',  labelKey: 'nav.profile',  icon: '◇' },
+  { path: '/chart',    labelKey: 'nav.chart',    icon: '🔮' },
   { path: '/settings', labelKey: 'nav.settings', icon: '≡' },
 ];
 
