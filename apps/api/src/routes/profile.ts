@@ -143,7 +143,7 @@ router.post('/summary', async (req: Request, res: Response) => {
 
     const { data: profile } = await supabase
       .from('user_profiles')
-      .select('current_bazi_version_id, current_mbti_version_id, profile_summary, summary_bazi_version_id, summary_mbti_version_id')
+      .select('current_bazi_version_id, current_mbti_version_id, profile_summary, summary_bazi_version_id, summary_mbti_version_id, summary_lang')
       .eq('user_id', userId)
       .single();
 
@@ -151,12 +151,13 @@ router.post('/summary', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Complete both BaZi and MBTI profiles first.' });
     }
 
-    // serve cached summary if versions match and not forcing regeneration
+    // serve cached summary if versions match, language matches, and not forcing regeneration
     const cacheValid =
       !forceRegenerate &&
       profile.profile_summary &&
       profile.summary_bazi_version_id === profile.current_bazi_version_id &&
-      profile.summary_mbti_version_id === profile.current_mbti_version_id;
+      profile.summary_mbti_version_id === profile.current_mbti_version_id &&
+      profile.summary_lang === lang;
 
     if (cacheValid) {
       return res.json({ summary: profile.profile_summary, cached: true });
@@ -190,13 +191,14 @@ router.post('/summary', async (req: Request, res: Response) => {
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
     const summary = JSON.parse(clean);
 
-    // cache the summary
+    // cache the summary with lang
     await supabase
       .from('user_profiles')
       .update({
         profile_summary: summary,
         summary_bazi_version_id: profile.current_bazi_version_id,
         summary_mbti_version_id: profile.current_mbti_version_id,
+        summary_lang: lang,
       })
       .eq('user_id', userId);
 

@@ -83,34 +83,69 @@ export default function Chart({ user }: { user: User }) {
   useEffect(() => {
     const lang = i18n.language === 'zh-TW' ? 'zh-TW' : 'en';
     const cacheKey = `oria_chart_${user.id}_${lang}`;
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) {
-      const data = JSON.parse(cached);
-      setBazi(data.bazi);
-      setMbti(data.mbti);
-      if (data.summary) setSummary(data.summary);
-      setLoading(false);
-      return;
+
+    async function load() {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const data = JSON.parse(cached);
+        setBazi(data.bazi);
+        setMbti(data.mbti);
+        setLoading(false);
+        if (data.summary) {
+          setSummary(data.summary);
+          return;
+        }
+        // Cache exists but no summary yet (fresh redirect from onboarding)
+        console.log('[Chart] cache hit but no summary, bazi:', !!data.bazi, 'mbti:', !!data.mbti);
+        if (data.bazi && data.mbti) {
+          setSummaryLoading(true);
+          try {
+            console.log('[Chart] calling getProfileSummary, lang:', lang);
+            const s = await getProfileSummary(lang);
+            console.log('[Chart] getProfileSummary response:', s);
+            setSummary(s.summary);
+            sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: s.summary }));
+          } catch (e) {
+            console.error('[Chart] getProfileSummary failed (cached branch):', e);
+          } finally {
+            setSummaryLoading(false);
+          }
+        }
+        return;
+      }
+
+      // No cache — fetch everything fresh
+      console.log('[Chart] no cache, fetching profile fresh');
+      try {
+        const data = await getProfile();
+        console.log('[Chart] getProfile response:', data);
+        setBazi(data.bazi);
+        setMbti(data.mbti);
+        setLoading(false);
+        if (data.bazi && data.mbti) {
+          setSummaryLoading(true);
+          try {
+            console.log('[Chart] calling getProfileSummary, lang:', lang);
+            const s = await getProfileSummary(lang);
+            console.log('[Chart] getProfileSummary response:', s);
+            setSummary(s.summary);
+            sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: s.summary }));
+          } catch (e) {
+            console.error('[Chart] getProfileSummary failed (fresh branch):', e);
+          } finally {
+            setSummaryLoading(false);
+          }
+        } else {
+          console.warn('[Chart] missing bazi or mbti — skipping summary');
+          sessionStorage.setItem(cacheKey, JSON.stringify(data));
+        }
+      } catch (e) {
+        console.error('[Chart] getProfile failed:', e);
+        setLoading(false);
+      }
     }
 
-    getProfile().then(async data => {
-      setBazi(data.bazi);
-      setMbti(data.mbti);
-      if (data.bazi && data.mbti) {
-        setSummaryLoading(true);
-        try {
-          const s = await getProfileSummary(lang);
-          setSummary(s.summary);
-          sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: s.summary }));
-        } catch {
-          sessionStorage.setItem(cacheKey, JSON.stringify(data));
-        } finally {
-          setSummaryLoading(false);
-        }
-      } else {
-        sessionStorage.setItem(cacheKey, JSON.stringify(data));
-      }
-    }).finally(() => setLoading(false));
+    load();
   }, [user.id, i18n.language]);
 
   if (loading) return (
@@ -312,7 +347,8 @@ export default function Chart({ user }: { user: User }) {
                           <div style={{
                             position: 'absolute', right: 0, top: 0, bottom: 0,
                             width: `${bVal}%`, borderRadius: 4,
-                            background: 'linear-gradient(270deg, #9333EA, #C084FC)',
+                            background: colorB,
+                            boxShadow: `0 0 8px ${colorB}88`,
                             transition: 'width 0.8s ease',
                           }} />
                         )}
@@ -345,12 +381,39 @@ export default function Chart({ user }: { user: User }) {
             </div>
           ) : summary ? (
             <div className="animate-fade-in">
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#C084FC', marginBottom: 12 }}>
-                {summary.title}
-              </h3>
-              <p style={{ lineHeight: 1.8, color: '#F0EDE8', fontSize: 15 }}>
-                {summary.description}
+              <p style={{ lineHeight: 1.8, color: '#F0EDE8', fontSize: 15, marginBottom: 16 }}>
+                {summary.headline}
               </p>
+              <p style={{ lineHeight: 1.8, color: 'rgba(255,255,255,0.75)', fontSize: 14, marginBottom: 16 }}>
+                {summary.summary}
+              </p>
+              {summary.mbti_bazi_resonance && (
+                <p style={{ lineHeight: 1.7, color: '#C084FC', fontSize: 13, fontStyle: 'italic', marginBottom: 16 }}>
+                  {summary.mbti_bazi_resonance}
+                </p>
+              )}
+              {summary.gentle_nudge && (
+                <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '12px 14px', marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 6 }}>
+                    {isZH ? '成長提示' : 'GENTLE NUDGE'}
+                  </div>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0 }}>
+                    {summary.gentle_nudge}
+                  </p>
+                </div>
+              )}
+              {summary.key_strengths?.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {summary.key_strengths.map((s: string, i: number) => (
+                    <span key={i} style={{
+                      background: 'rgba(192,132,252,0.12)',
+                      border: '1px solid rgba(192,132,252,0.25)',
+                      borderRadius: 20, padding: '4px 12px',
+                      fontSize: 12, color: '#C084FC',
+                    }}>{s}</span>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
             <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: 14, padding: '12px 0' }}>

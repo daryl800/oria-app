@@ -42,7 +42,7 @@ export default function OnboardingBazi() {
         localStorage.removeItem('oria_mbti_result');
         localStorage.removeItem('oria_mbti_answers');
       }
-      navigate('/home');
+      navigate('/chart');
     } catch (err: any) {
       setError(err.message);
     } finally {
