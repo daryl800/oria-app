@@ -189,29 +189,29 @@ export default function Chart({ user }: { user: User }) {
       {/* BaZi Four Pillars */}
       {bazi && (
         <div className="oria-card" style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
             🪬 {isZH ? '八字四柱' : 'Four Pillars'}
           </div>
 
           {/* Pillars grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
             {pillars.map((pillar, i) => (
               <div key={i} style={{
                 background: 'rgba(192,132,252,0.1)',
                 border: '1px solid rgba(192,132,252,0.25)',
-                borderRadius: 12, padding: '12px 6px',
+                borderRadius: 10, padding: '8px 4px',
                 textAlign: 'center',
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
               }}>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, marginBottom: 4, textTransform: 'uppercase' }}>
                   {pillar.label}
                 </div>
                 {pillar.data ? (
                   <>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: '#F0EDE8', marginBottom: 4 }}>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: '#F0EDE8', marginBottom: 2 }}>
                       {isZH ? (GAN_CN[pillar.data.gan] || pillar.data.gan) : pillar.data.gan}
                     </div>
-                    <div style={{ fontSize: 16, color: '#C084FC' }}>
+                    <div style={{ fontSize: 13, color: '#C084FC' }}>
                       {isZH ? (ZHI_CN[pillar.data.zhi] || pillar.data.zhi) : pillar.data.zhi}
                     </div>
                   </>
@@ -226,18 +226,18 @@ export default function Chart({ user }: { user: User }) {
 
           {/* Day Master */}
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 12,
+            display: 'flex', alignItems: 'center', gap: 10,
             background: 'rgba(192,132,252,0.08)',
             border: '1px solid rgba(192,132,252,0.2)',
-            borderRadius: 12, padding: '12px 16px',
-            marginBottom: 20,
+            borderRadius: 10, padding: '8px 14px',
+            marginBottom: 14,
           }}>
-            <div style={{ fontSize: 24 }}>⭐</div>
+            <div style={{ fontSize: 18 }}>⭐</div>
             <div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 2 }}>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 1 }}>
                 {isZH ? '日主' : 'Day Master'}
               </div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#C084FC' }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#C084FC' }}>
                 {isZH ? (GAN_CN[bazi.day_master] || bazi.day_master) : bazi.day_master}
               </div>
             </div>
@@ -253,7 +253,7 @@ export default function Chart({ user }: { user: User }) {
               const emoji = ELEMENT_EMOJI[element] || '✦';
               const pct = Math.round((strength / maxElement) * 100);
               return (
-                <div key={element} style={{ marginBottom: 10 }}>
+                <div key={element} style={{ marginBottom: 7 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                     <span style={{ fontSize: 13, color: '#F0EDE8' }}>
                     {emoji} {isZH ? {'Fire':'火','Wood':'木','Earth':'土','Metal':'金','Water':'水'}[element] || element : element}
@@ -278,7 +278,7 @@ export default function Chart({ user }: { user: User }) {
       {/* MBTI */}
       {mbti && (
         <div className="oria-card" style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
             🧠 {isZH ? 'MBTI 性格' : 'MBTI Personality'}
           </div>
 
@@ -366,11 +366,13 @@ export default function Chart({ user }: { user: User }) {
       {bazi && mbti && (
         <div className="oria-card" style={{
           marginBottom: 16,
-          background: 'rgba(192,132,252,0.06)',
-          borderColor: 'rgba(192,132,252,0.25)',
+          background: 'rgba(192,132,252,0.08)',
+          borderColor: 'rgba(192,132,252,0.4)',
+          padding: '28px 24px',
         }}>
-          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 16 }}>
-            ✦ {isZH ? '命盤解析' : 'Profile Insight'}
+          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: 1, color: '#C084FC', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 18 }}>✦</span>
+            {isZH ? '命盤解析' : 'Profile Insight'}
           </div>
           {summaryLoading ? (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
@@ -381,10 +383,10 @@ export default function Chart({ user }: { user: User }) {
             </div>
           ) : summary ? (
             <div className="animate-fade-in">
-              <p style={{ lineHeight: 1.8, color: '#F0EDE8', fontSize: 15, marginBottom: 16 }}>
+              <p style={{ lineHeight: 1.8, color: '#F0EDE8', fontSize: 17, marginBottom: 16 }}>
                 {summary.headline}
               </p>
-              <p style={{ lineHeight: 1.8, color: 'rgba(255,255,255,0.75)', fontSize: 14, marginBottom: 16 }}>
+              <p style={{ lineHeight: 1.8, color: 'rgba(255,255,255,0.75)', fontSize: 15, marginBottom: 16 }}>
                 {summary.summary}
               </p>
               {summary.mbti_bazi_resonance && (
