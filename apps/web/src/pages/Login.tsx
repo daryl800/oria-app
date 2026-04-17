@@ -38,7 +38,7 @@ export default function Login({ isNewUser = false }: { isNewUser?: boolean }) {
         </h2>
         <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 32 }}>
           {isZH
-            ? `我們已發送魔法連結到 ${email}`
+            ? `我們已發送連結到 ${email}`
             : `We sent a magic link to ${email}`}
         </p>
         <button
@@ -60,7 +60,7 @@ export default function Login({ isNewUser = false }: { isNewUser?: boolean }) {
         <div className="oria-card-label" style={{ marginBottom: 32 }}>Oria</div>
 
         <h2 className="text-xl" style={{ marginBottom: 8 }}>
-          {isNewUser ? (isZH ? '註冊以深入了解自己' : 'Sign up to understand yourself better') : (isZH ? '歡迎回來' : 'Welcome back')}
+          {isNewUser ? (isZH ? <>註冊以獲取報告，<br />並深入探索你的命盤</> : 'Sign up to unlock your full chart and dive deeper') : (isZH ? '歡迎回來' : 'Welcome back')}
         </h2>
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', marginBottom: 32 }}>
           {isNewUser ? (isZH ? '輸入你的電郵，我們將發送一個魔法連結' : 'Enter your email — we\'ll send you a magic link to get started') : (isZH ? '輸入你的電郵以接收魔法連結' : 'Enter your email to receive a magic link')}
@@ -92,7 +92,7 @@ export default function Login({ isNewUser = false }: { isNewUser?: boolean }) {
         >
           {loading
             ? (isZH ? '發送中...' : 'Sending...')
-            : (isZH ? '發送魔法連結' : 'Send magic link')}
+            : (isZH ? '發送連結' : 'Send link')}
         </button>
 
         {/* Trust line for new users */}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { saveBazi, saveMbti } from '@/services/api';
+// api imports removed — data saved to localStorage before auth
 
 export default function OnboardingBazi() {
   const navigate = useNavigate();
@@ -27,22 +27,14 @@ export default function OnboardingBazi() {
     setSaving(true);
     setError('');
     try {
-      // Save BaZi first (creates user profile), then MBTI
-      await saveBazi({
+      // Save BaZi data to localStorage — will be submitted after auth
+      localStorage.setItem('oria_bazi_data', JSON.stringify({
         year: parseInt(year), month: parseInt(month), day: parseInt(day),
         hour: timeKnown ? parseInt(hour) : 0,
         minute: timeKnown ? parseInt(minute) : 0,
         tz_name: tzName, location, time_known: timeKnown,
-      });
-      // Now save MBTI after user profile exists
-      const storedMbti = localStorage.getItem('oria_mbti_result');
-      if (storedMbti) {
-        const { mbti_type } = JSON.parse(storedMbti);
-        await saveMbti(mbti_type);
-        localStorage.removeItem('oria_mbti_result');
-        localStorage.removeItem('oria_mbti_answers');
-      }
-      navigate('/chart');
+      }));
+      navigate('/onboarding/signup');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -77,13 +69,9 @@ export default function OnboardingBazi() {
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>✨</div>
           <h2 style={{ fontSize: 26, fontWeight: 700, color: '#F0EDE8', marginBottom: 10 }}>
-            {isZH ? '輸入你的生日' : 'Enter Your Birthday'}
+            {isZH ? '輸入你的出生資料' : 'Enter your birth details'}
           </h2>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
-            {isZH
-              ? '八字根據你的出生日期計算，結合MBTI，打造你的宇宙命盤。'
-              : 'Your BaZi chart is calculated from your birth date. Combined with MBTI, it creates your cosmic profile.'}
-          </p>
+
         </div>
 
         {/* Form */}
@@ -173,6 +161,12 @@ export default function OnboardingBazi() {
           {error && (
             <div style={{ color: '#f87171', fontSize: 13, marginBottom: 12 }}>{error}</div>
           )}
+
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, textAlign: 'center', margin: '8px 0 16px' }}>
+            {isZH
+              ? '八字根據你的出生日期計算，結合MBTI，打造你的宇宙命盤。'
+              : 'Your BaZi chart is calculated from your birth date. Combined with MBTI, it creates your cosmic profile.'}
+          </p>
 
           <button onClick={handleSave} disabled={saving} style={{
             width: '100%', background: saving ? 'rgba(147,51,234,0.5)' : '#9333EA',

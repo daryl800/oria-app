@@ -18,9 +18,17 @@ export default function OnboardingMbti() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [typewriterText, setTypewriterText] = useState('');
+  const [typewriterDone, setTypewriterDone] = useState(false);
   const [error, setError] = useState('');
   const [fade, setFade] = useState(false);
   const [entered, setEntered] = useState(false);
+  const currentQuestion = questions[currentIndex];
+  const answeredCount = Object.keys(answers).length;
+  const progress = questions.length > 0 ? answeredCount / questions.length : 0;
+  const isLastQuestion = currentIndex === questions.length - 1;
+  const allAnswered = answeredCount === questions.length;
+  const qNum = String(currentIndex + 1).padStart(2, '0');
 
   const isZH = i18n.language === 'zh-TW';
 
@@ -50,13 +58,35 @@ export default function OnboardingMbti() {
     }
   }
 
+  const completionMsg = isZH
+    ? '很好！你已完成第一部份。接下來請你完成最後一部份 —— 你準備好了嗎？'
+    : "Great! You've completed part one. The best part is coming next — are you ready?";
+
+  useEffect(() => {
+    if (allAnswered && isLastQuestion) {
+      setTypewriterText('');
+      setTypewriterDone(false);
+      let i = 0;
+      const interval = setInterval(() => {
+        i++;
+        setTypewriterText(completionMsg.slice(0, i));
+        if (i >= completionMsg.length) {
+          clearInterval(interval);
+          setTypewriterDone(true);
+        }
+      }, 80);
+      return () => clearInterval(interval);
+    }
+  }, [allAnswered, isLastQuestion]);
+
   async function handleSubmit() {
     setSubmitting(true);
     try {
       const data = await submitPublicMbtiAnswers(answers, i18n.language);
       localStorage.setItem('oria_mbti_answers', JSON.stringify(answers));
       localStorage.setItem('oria_mbti_result', JSON.stringify(data));
-      navigate('/onboarding/result');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      navigate('/onboarding/bazi');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -79,12 +109,7 @@ export default function OnboardingMbti() {
     </div>
   );
 
-  const currentQuestion = questions[currentIndex];
-  const answeredCount = Object.keys(answers).length;
-  const progress = questions.length > 0 ? answeredCount / questions.length : 0;
-  const isLastQuestion = currentIndex === questions.length - 1;
-  const allAnswered = answeredCount === questions.length;
-  const qNum = String(currentIndex + 1).padStart(2, '0');
+
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -227,27 +252,43 @@ export default function OnboardingMbti() {
       {/* Bottom — dots centered, back below */}
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,
-        zIndex: 10,
-        paddingBottom: 28,
+        zIndex: 10, paddingBottom: 28,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', gap: 12,
+        minHeight: 180, justifyContent: 'flex-end',
       }}>
-        {/* Submit button — show when all answered on last question */}
-        {allAnswered && isLastQuestion && (
-          <button onClick={handleSubmit} style={{
-            background: '#C084FC', border: 'none',
-            borderRadius: 12, padding: '13px 28px',
-            fontSize: 15, fontWeight: 700,
-            color: '#0D0D14', cursor: 'pointer',
-            fontFamily: 'inherit',
-            boxShadow: '0 4px 20px rgba(192,132,252,0.3)',
-            marginBottom: 4,
-          }}>
-            {isZH ? '查看我的性格類型 →' : 'See my personality type →'}
-          </button>
-        )}
+        {/* Typewriter text + button — text above, button always visible */}
+        <div style={{ width: '100%', maxWidth: 480, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {allAnswered && isLastQuestion && (
+            <>
+              <p style={{
+                fontSize: 18, lineHeight: 1.8, color: '#C084FC',
+                padding: '0 16px', marginBottom: 16, fontStyle: 'italic',
+                minHeight: 60, transition: 'all 0.3s ease',
+                marginTop: -20,
+              }}>
+                {typewriterText}
+                {!typewriterDone && <span style={{ opacity: 0.7 }}>▌</span>}
+              </p>
+              <button onClick={handleSubmit} style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #9333EA 0%, #7C3AED 100%)',
+                border: 'none', borderRadius: 9999,
+                padding: '20px 32px',
+                fontSize: 17, fontWeight: 700,
+                color: '#fff', cursor: 'pointer',
+                fontFamily: 'inherit',
+                boxShadow: '0 8px 24px rgba(147,51,234,0.4)',
+                marginBottom: 8,
+                opacity: typewriterDone ? 1 : 0.45,
+              }}>
+                {isZH ? '繼續 →' : 'Continue →'}
+              </button>
+            </>
+          )}
+        </div>
 
-        {/* Dots — centered */}
+        {/* Dots */}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 300 }}>
           {questions.map((q, i) => (
             <div key={q.id} onClick={() => setCurrentIndex(i)} style={{
@@ -260,7 +301,7 @@ export default function OnboardingMbti() {
           ))}
         </div>
 
-        {/* Back — below dots */}
+        {/* Back */}
         <button
           onClick={() => currentIndex > 0 && setCurrentIndex(prev => prev - 1)}
           style={{

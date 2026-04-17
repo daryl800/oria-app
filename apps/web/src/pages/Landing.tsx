@@ -134,7 +134,7 @@ export default function Landing() {
             {isZH ? '登入' : 'Already have an account'}
           </button>
           <button className="link-newuser" onClick={() => { setLeaving(true); setTimeout(() => navigate('/onboarding/start'), 800); }}>
-            {isZH ? <>新用戶？<span>立即開始</span></> : <>New user? <span>Sign Up</span></>}
+            {isZH ? <>新用戶？<span>立即開始</span></> : <>New user? <span>Get Started</span></>}
           </button>
           <div>
             <a href="mailto:hello@oria.io?subject=Oria%20enquiry" className="btn-contact">

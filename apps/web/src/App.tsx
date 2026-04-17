@@ -57,14 +57,40 @@ export default function App() {
       const u = session?.user ?? null;
 
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-        // Set user immediately — don't wait for checkOnboarding
         setUser(u);
-        // Check onboarding in background
-        if (u) checkOnboarding(u.id);
-        else setOnboardingComplete(null);
+        if (u) {
+          // Check if we have pending onboarding data to save
+          const pendingBazi = localStorage.getItem('oria_bazi_data');
+          const pendingMbti = localStorage.getItem('oria_mbti_result');
+
+          if (pendingBazi && pendingMbti && event === 'SIGNED_IN') {
+            // Fresh signup with pending data — save everything then go to chart
+            try {
+              const { saveBazi, saveMbti } = await import('./services/api');
+              const baziData = JSON.parse(pendingBazi);
+              await saveBazi(baziData);
+              const { mbti_type } = JSON.parse(pendingMbti);
+              await saveMbti(mbti_type);
+              localStorage.removeItem('oria_bazi_data');
+              localStorage.removeItem('oria_mbti_result');
+              localStorage.removeItem('oria_mbti_answers');
+            } catch (e) {
+              console.error('Failed to save onboarding data:', e);
+            }
+            setOnboardingComplete(true);
+          } else {
+            checkOnboarding(u.id);
+          }
+        } else {
+          setOnboardingComplete(null);
+        }
       } else if (event === 'SIGNED_OUT') {
         setOnboardingComplete(null);
         setUser(null);
+        localStorage.removeItem('oria_bazi_data');
+        localStorage.removeItem('oria_mbti_result');
+        localStorage.removeItem('oria_mbti_answers');
+        sessionStorage.clear();
       }
     });
 
@@ -85,14 +111,14 @@ export default function App() {
     <BrowserRouter>
       <AppShell user={user}>
         <Routes>
-          <Route path="/" element={!user ? <Landing /> : <Navigate to={onboardingComplete ? "/home" : (localStorage.getItem('oria_mbti_result') ? "/onboarding/bazi" : "/onboarding/mbti-summary")} />} />
+          <Route path="/" element={!user ? <Landing /> : <Navigate to={onboardingComplete ? "/home" : "/chart"} />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
           <Route path="/onboarding/signup" element={<OnboardingSignup />} />
           <Route path="/onboarding/mbti-summary" element={user ? <OnboardingMbtiSummary user={user} /> : <Navigate to="/" />} />
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
           <Route path="/onboarding/result" element={<OnboardingResult />} />
-          <Route path="/onboarding/bazi" element={user ? <OnboardingBazi /> : <Navigate to="/" />} />
-          <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/home' : (localStorage.getItem('oria_mbti_result') ? '/onboarding/bazi' : '/onboarding/mbti-summary')} />} />
+          <Route path="/onboarding/bazi" element={<OnboardingBazi />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/home' : '/chart'} />} />
 
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
           <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} />} />

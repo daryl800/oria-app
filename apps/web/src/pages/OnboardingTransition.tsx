@@ -19,7 +19,7 @@ export default function OnboardingTransition() {
 
   const messages = isZH
     ? ['繫好安全帶', '我們即將啟程', '探索你的宇宙命盤 ✦']
-    : ['Fasten your seatbelt', 'We are beginning a new journey', 'Discover your cosmic profile ✦'];
+    : ['Fasten your seatbelt', 'Your journey begins here', 'Discover your cosmic profile ✦'];
 
   return (
     <div style={{
