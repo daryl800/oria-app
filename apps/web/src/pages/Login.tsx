@@ -20,7 +20,7 @@ export default function Login({ isNewUser = false }: { isNewUser?: boolean }) {
       email,
       options: { emailRedirectTo: window.location.origin + '/' }
     });
-    if (error) setError(t('errors.generic'));
+    if (error) { console.error('[Login] OTP error:', error.message, error.status); setError(t('errors.generic')); }
     else setSent(true);
     setLoading(false);
   }

@@ -85,14 +85,14 @@ export default function App() {
     <BrowserRouter>
       <AppShell user={user}>
         <Routes>
-          <Route path="/" element={!user ? <Landing /> : <Navigate to={onboardingComplete ? "/home" : "/onboarding/mbti-summary"} />} />
+          <Route path="/" element={!user ? <Landing /> : <Navigate to={onboardingComplete ? "/home" : (localStorage.getItem('oria_mbti_result') ? "/onboarding/bazi" : "/onboarding/mbti-summary")} />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
           <Route path="/onboarding/signup" element={<OnboardingSignup />} />
           <Route path="/onboarding/mbti-summary" element={user ? <OnboardingMbtiSummary user={user} /> : <Navigate to="/" />} />
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
           <Route path="/onboarding/result" element={<OnboardingResult />} />
           <Route path="/onboarding/bazi" element={user ? <OnboardingBazi /> : <Navigate to="/" />} />
-          <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/home' : '/onboarding/mbti-summary'} />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/home' : (localStorage.getItem('oria_mbti_result') ? '/onboarding/bazi' : '/onboarding/mbti-summary')} />} />
 
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
           <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} />} />
