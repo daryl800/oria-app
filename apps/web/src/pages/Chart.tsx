@@ -424,6 +424,16 @@ export default function Chart({ user }: { user: User }) {
       )}
 
 
+      <button
+        className="oria-btn-primary"
+        style={{ marginTop: 32 }}
+        onClick={() => navigate('/chat', {
+          state: { prefill: isZH ? '根據我的命盤，我應該關注什麼？' : 'What should I focus on based on my chart?' }
+        })}
+      >
+        {isZH ? '開啟指引對話 →' : 'Start Guidance Chat →'}
+      </button>
+
       <footer className="oria-disclaimer" style={{ marginTop: 32 }}>
         {isZH ? '這是一種反思，而非預測。決定權在你。' : 'This is a reflection, not a prediction. You hold the decisions.'}
       </footer>
