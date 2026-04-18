@@ -42,12 +42,17 @@ export default function App() {
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
 
-  async function checkOnboarding(userId: string) {
+  async function checkOnboarding(userId: string, retries = 3) {
     const { data } = await supabase
       .from('user_profiles')
       .select('current_bazi_version_id')
       .eq('user_id', userId)
       .single();
+    if (!data?.current_bazi_version_id && retries > 0) {
+      // Data may not be committed yet — retry after short delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      return checkOnboarding(userId, retries - 1);
+    }
     setOnboardingComplete(!!data?.current_bazi_version_id);
   }
 
@@ -56,41 +61,50 @@ export default function App() {
       console.log('AUTH EVENT:', event, session?.user?.email);
       const u = session?.user ?? null;
 
-      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-        setUser(u);
+      if (event === 'INITIAL_SESSION') {
         if (u) {
-          // Check if we have pending onboarding data to save
-          const pendingBazi = localStorage.getItem('oria_bazi_data');
-          const pendingMbti = localStorage.getItem('oria_mbti_result');
-
-          if (pendingBazi && pendingMbti && event === 'SIGNED_IN') {
-            // Fresh signup with pending data — save everything then go to chart
-            try {
-              const { saveBazi, saveMbti } = await import('./services/api');
-              const baziData = JSON.parse(pendingBazi);
-              await saveBazi(baziData);
-              const { mbti_type } = JSON.parse(pendingMbti);
-              await saveMbti(mbti_type);
-              localStorage.removeItem('oria_bazi_data');
-              localStorage.removeItem('oria_mbti_result');
-              localStorage.removeItem('oria_mbti_answers');
-            } catch (e) {
-              console.error('Failed to save onboarding data:', e);
-            }
-            setOnboardingComplete(true);
-          } else {
-            checkOnboarding(u.id);
-          }
+          console.log('[Auth] INITIAL_SESSION user:', u.id, 'anon:', u.is_anonymous);
+          setUser(u);
+          if (!u.is_anonymous) checkOnboarding(u.id);
+          else setOnboardingComplete(false);
         } else {
-          setOnboardingComplete(null);
+          // No session — create anonymous user
+          console.log('[Auth] No session, signing in anonymously...');
+          const { data, error } = await supabase.auth.signInAnonymously();
+          console.log('[Auth] Anonymous result:', data?.user?.id, error?.message);
+          setUser(data?.user ?? null);
+          setOnboardingComplete(false);
         }
+      } else if (event === 'SIGNED_IN') {
+        console.log('[Auth] SIGNED_IN user:', u?.id, 'anon:', u?.is_anonymous, 'email:', u?.email);
+        setUser(u);
+        if (u && !u.is_anonymous) {
+          // Check if there's an anonymous user whose data needs migrating
+          const anonId = sessionStorage.getItem('oria_anon_id');
+          console.log('[Auth] anonId in session:', anonId, 'new user id:', u.id);
+          if (anonId && anonId !== u.id) {
+            // Migrate data from anonymous user to real user
+            console.log('[Auth] migrating data from anon:', anonId, 'to:', u.id);
+            try {
+              const { migrateAnonUser } = await import('./services/api');
+              await migrateAnonUser(anonId, u.id);
+              sessionStorage.removeItem('oria_anon_id');
+              console.log('[Auth] migration done');
+            } catch (e) {
+              console.error('[Auth] migration failed:', e);
+            }
+          }
+          checkOnboarding(u.id);
+        } else setOnboardingComplete(false);
       } else if (event === 'SIGNED_OUT') {
         setOnboardingComplete(null);
         setUser(null);
-        localStorage.removeItem('oria_bazi_data');
-        localStorage.removeItem('oria_mbti_result');
-        localStorage.removeItem('oria_mbti_answers');
         sessionStorage.clear();
+        // Re-create anonymous session
+        console.log('[Auth] SIGNED_OUT — creating new anonymous session');
+        const { data } = await supabase.auth.signInAnonymously();
+        setUser(data?.user ?? null);
+        setOnboardingComplete(false);
       }
     });
 
@@ -111,14 +125,14 @@ export default function App() {
     <BrowserRouter>
       <AppShell user={user}>
         <Routes>
-          <Route path="/" element={!user ? <Landing /> : <Navigate to={onboardingComplete ? "/home" : "/chart"} />} />
+          <Route path="/" element={!user || user.is_anonymous ? <Landing /> : <Navigate to="/chart" />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
           <Route path="/onboarding/signup" element={<OnboardingSignup />} />
           <Route path="/onboarding/mbti-summary" element={user ? <OnboardingMbtiSummary user={user} /> : <Navigate to="/" />} />
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
           <Route path="/onboarding/result" element={<OnboardingResult />} />
           <Route path="/onboarding/bazi" element={<OnboardingBazi />} />
-          <Route path="/login" element={!user ? <Login /> : <Navigate to={onboardingComplete ? '/home' : '/chart'} />} />
+          <Route path="/login" element={!user || user.is_anonymous ? <Login /> : <Navigate to="/chart" />} />
 
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
           <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} />} />

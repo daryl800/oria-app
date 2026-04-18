@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-// api imports removed — data saved to localStorage before auth
+import { saveBazi, saveMbti } from '@/services/api';
 
 export default function OnboardingBazi() {
   const navigate = useNavigate();
@@ -27,13 +27,24 @@ export default function OnboardingBazi() {
     setSaving(true);
     setError('');
     try {
-      // Save BaZi data to localStorage — will be submitted after auth
-      localStorage.setItem('oria_bazi_data', JSON.stringify({
+      console.log('[BaZi] calling saveBazi...');
+      const baziResult = await saveBazi({
         year: parseInt(year), month: parseInt(month), day: parseInt(day),
         hour: timeKnown ? parseInt(hour) : 0,
         minute: timeKnown ? parseInt(minute) : 0,
         tz_name: tzName, location, time_known: timeKnown,
-      }));
+      });
+      console.log('[BaZi] saveBazi result:', baziResult);
+      const storedMbti = localStorage.getItem('oria_mbti_result');
+      console.log('[BaZi] storedMbti:', storedMbti);
+      if (storedMbti) {
+        const { mbti_type } = JSON.parse(storedMbti);
+        console.log('[BaZi] calling saveMbti with:', mbti_type);
+        const mbtiResult = await saveMbti(mbti_type);
+        console.log('[BaZi] saveMbti result:', mbtiResult);
+        localStorage.removeItem('oria_mbti_result');
+        localStorage.removeItem('oria_mbti_answers');
+      }
       navigate('/onboarding/signup');
     } catch (err: any) {
       setError(err.message);

@@ -333,3 +333,52 @@ router.post('/mbti/calculate', async (req: Request, res: Response) => {
     return res.status(500).json({ error: err.message });
   }
 });
+
+// POST /api/profile/migrate-anon — migrate anonymous user data to real user
+router.post('/migrate-anon', async (req: Request, res: Response) => {
+  try {
+    const { anon_id, real_user_id } = req.body;
+    if (!anon_id || !real_user_id) {
+      return res.status(400).json({ error: 'Missing anon_id or real_user_id' });
+    }
+
+    // Migrate bazi versions
+    await supabase.from('bazi_profile_versions')
+      .update({ user_id: real_user_id })
+      .eq('user_id', anon_id);
+
+    // Migrate mbti versions
+    await supabase.from('mbti_profile_versions')
+      .update({ user_id: real_user_id })
+      .eq('user_id', anon_id);
+
+    // Migrate user_profiles
+    const { data: anonProfile } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('user_id', anon_id)
+      .single();
+
+    if (anonProfile) {
+      // Upsert into real user profile
+      await supabase.from('user_profiles').upsert({
+        ...anonProfile,
+        user_id: real_user_id,
+      }, { onConflict: 'user_id' });
+
+      // Delete anon profile
+      await supabase.from('user_profiles').delete().eq('user_id', anon_id);
+    }
+
+    // Migrate users table
+    await supabase.from('users')
+      .update({ id: real_user_id })
+      .eq('id', anon_id);
+
+    return res.json({ success: true });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+export default router;
