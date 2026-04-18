@@ -18,8 +18,6 @@ export default function OnboardingMbti() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [typewriterText, setTypewriterText] = useState('');
-  const [typewriterDone, setTypewriterDone] = useState(false);
   const [error, setError] = useState('');
   const [fade, setFade] = useState(false);
   const [entered, setEntered] = useState(false);
@@ -58,24 +56,13 @@ export default function OnboardingMbti() {
     }
   }
 
-  const completionMsg = isZH
-    ? '很好！你已完成第一部份。接下來請你完成最後一部份 —— 你準備好了嗎？'
-    : "Great! You've completed part one. The best part is coming next — are you ready?";
+  const [readyVisible, setReadyVisible] = useState(false);
 
   useEffect(() => {
     if (allAnswered && isLastQuestion) {
-      setTypewriterText('');
-      setTypewriterDone(false);
-      let i = 0;
-      const interval = setInterval(() => {
-        i++;
-        setTypewriterText(completionMsg.slice(0, i));
-        if (i >= completionMsg.length) {
-          clearInterval(interval);
-          setTypewriterDone(true);
-        }
-      }, 80);
-      return () => clearInterval(interval);
+      setTimeout(() => setReadyVisible(true), 400);
+    } else {
+      setReadyVisible(false);
     }
   }, [allAnswered, isLastQuestion]);
 
@@ -86,7 +73,8 @@ export default function OnboardingMbti() {
       localStorage.setItem('oria_mbti_answers', JSON.stringify(answers));
       localStorage.setItem('oria_mbti_result', JSON.stringify(data));
       await new Promise(resolve => setTimeout(resolve, 1500));
-      navigate('/onboarding/bazi');
+      await new Promise(resolve => setTimeout(resolve, 800));
+      navigate('/onboarding/mbti-summary');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -257,34 +245,25 @@ export default function OnboardingMbti() {
         alignItems: 'center', gap: 12,
         minHeight: 180, justifyContent: 'flex-end',
       }}>
-        {/* Typewriter text + button — text above, button always visible */}
+        {/* Ready button — fades in after last answer */}
         <div style={{ width: '100%', maxWidth: 480, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {allAnswered && isLastQuestion && (
-            <>
-              <p style={{
-                fontSize: 18, lineHeight: 1.8, color: '#C084FC',
-                padding: '0 16px', marginBottom: 16, fontStyle: 'italic',
-                minHeight: 60, transition: 'all 0.3s ease',
-                marginTop: -20,
-              }}>
-                {typewriterText}
-                {!typewriterDone && <span style={{ opacity: 0.7 }}>▌</span>}
-              </p>
-              <button onClick={handleSubmit} style={{
-                width: '100%',
-                background: 'linear-gradient(135deg, #9333EA 0%, #7C3AED 100%)',
-                border: 'none', borderRadius: 9999,
-                padding: '20px 32px',
-                fontSize: 17, fontWeight: 700,
-                color: '#fff', cursor: 'pointer',
-                fontFamily: 'inherit',
-                boxShadow: '0 8px 24px rgba(147,51,234,0.4)',
-                marginBottom: 8,
-                opacity: typewriterDone ? 1 : 0.45,
-              }}>
-                {isZH ? '繼續 →' : 'Continue →'}
-              </button>
-            </>
+            <button onClick={handleSubmit} style={{
+              width: '100%',
+              background: 'linear-gradient(135deg, #9333EA 0%, #7C3AED 100%)',
+              border: 'none', borderRadius: 9999,
+              padding: '20px 32px',
+              fontSize: 17, fontWeight: 700,
+              color: '#fff', cursor: 'pointer',
+              fontFamily: 'inherit',
+              boxShadow: '0 8px 24px rgba(147,51,234,0.4)',
+              marginBottom: 8,
+              opacity: readyVisible ? 1 : 0,
+              transform: readyVisible ? 'translateY(0)' : 'translateY(10px)',
+              transition: 'opacity 0.5s ease, transform 0.5s ease',
+            }}>
+              {isZH ? '你的性格結果出爐了——按繼續揭曉 ✦' : 'Your personality result is ready — want to see it? ✦'}
+            </button>
           )}
         </div>
 

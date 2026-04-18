@@ -28,6 +28,8 @@ export default function OnboardingMbtiSummary({ user }: { user: User }) {
   const isZH = i18n.language === 'zh-TW';
   const [mbtiType, setMbtiType] = useState('');
   const [visible, setVisible] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const [teaserText, setTeaserText] = useState('');
 
   useEffect(() => {
     // Get MBTI from localStorage (saved during onboarding)
@@ -37,6 +39,19 @@ export default function OnboardingMbtiSummary({ user }: { user: User }) {
       setMbtiType(data.mbti_type);
     }
     setTimeout(() => setVisible(true), 300);
+    // Typewriter for teaser
+    const msg = isZH
+      ? '很好！接下來請輸入你的出生資料，解鎖你的完整命盤 ✦'
+      : 'Great! Now enter your birth details to unlock your full cosmic chart ✦';
+    let i = 0;
+    const timer = setTimeout(() => {
+      const interval = setInterval(() => {
+        i++;
+        setTeaserText(msg.slice(0, i));
+        if (i >= msg.length) clearInterval(interval);
+      }, 60);
+    }, 800);
+    return () => clearTimeout(timer);
   }, []);
 
   const desc = MBTI_DESCRIPTIONS[mbtiType];
@@ -46,7 +61,7 @@ export default function OnboardingMbtiSummary({ user }: { user: User }) {
       minHeight: '100vh', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       padding: '40px 24px', textAlign: 'center',
-      opacity: visible ? 1 : 0, transition: 'opacity 0.8s ease',
+      opacity: visible && !leaving ? 1 : 0, transition: 'opacity 0.6s ease',
     }}>
       <div style={{ maxWidth: 480, width: '100%' }}>
         {/* Step indicator */}
@@ -54,49 +69,53 @@ export default function OnboardingMbtiSummary({ user }: { user: User }) {
           {isZH ? '✦ 你的性格解析' : '✦ Your Personality'}
         </div>
 
-        {/* MBTI type */}
-        <div style={{
-          fontSize: 72, fontWeight: 800, color: '#C084FC',
-          marginBottom: 8, letterSpacing: 4,
-        }}>
-          {mbtiType}
+        {/* Card */}
+        <div className="oria-card" style={{ padding: '36px 32px', marginBottom: 28 }}>
+          {/* MBTI type */}
+          <div style={{
+            fontSize: 72, fontWeight: 800, color: '#C084FC',
+            marginBottom: 8, letterSpacing: 4,
+          }}>
+            {mbtiType}
+          </div>
+
+          {/* Nickname */}
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 12 }}>
+            {isZH ? desc?.nickname_zh : desc?.nickname}
+          </div>
+
+          {/* Tagline */}
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 24 }}>
+            {isZH ? desc?.tagline_zh : desc?.tagline}
+          </p>
+
+          {/* Traits */}
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            {(isZH ? desc?.traits_zh : desc?.traits)?.map((trait, i) => (
+              <span key={i} style={{
+                background: 'rgba(192,132,252,0.15)',
+                border: '1px solid rgba(192,132,252,0.35)',
+                borderRadius: 20, padding: '6px 16px',
+                fontSize: 14, color: '#C084FC', fontWeight: 600,
+              }}>{trait}</span>
+            ))}
+          </div>
         </div>
 
-        {/* Nickname */}
-        <div style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 16 }}>
-          {isZH ? desc?.nickname_zh : desc?.nickname}
-        </div>
-
-        {/* Tagline */}
-        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 28 }}>
-          {isZH ? desc?.tagline_zh : desc?.tagline}
+        {/* Teaser */}
+        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 28, fontStyle: 'italic', minHeight: 52 }}>
+          {teaserText}<span style={{ opacity: teaserText.length > 0 && teaserText.length < (isZH ? 24 : 60) ? 0.7 : 0 }}>▌</span>
         </p>
 
-        {/* Traits */}
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 48 }}>
-          {(isZH ? desc?.traits_zh : desc?.traits)?.map((trait, i) => (
-            <span key={i} style={{
-              background: 'rgba(192,132,252,0.15)',
-              border: '1px solid rgba(192,132,252,0.35)',
-              borderRadius: 20, padding: '6px 16px',
-              fontSize: 14, color: '#C084FC', fontWeight: 600,
-            }}>{trait}</span>
-          ))}
-        </div>
-
-        {/* Continue */}
-        <button onClick={() => navigate('/onboarding/bazi')} style={{
-          width: 'fit-content', minWidth: 280, background: '#9333EA', border: 'none',
-          borderRadius: 9999, padding: '18px',
-          fontSize: 17, fontWeight: 700, color: '#fff',
-          cursor: 'pointer', fontFamily: 'inherit',
-          boxShadow: '0 4px 24px rgba(147,51,234,0.4)',
-          marginBottom: 16,
-        }}>
-          {isZH ? '探索我的八字命盤 ✦' : 'Explore My Birth Chart ✦'}
+        {/* Continue button */}
+        <button onClick={() => {
+          setLeaving(true);
+          setTimeout(() => navigate('/onboarding/bazi'), 600);
+        }} className="oria-btn-primary" style={{ marginBottom: 16 }}>
+          {isZH ? '輸入出生資料 →' : 'Enter Birth Details →'}
         </button>
 
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>
           {isZH ? '古老星象，等待與你相遇' : 'Ancient stars are waiting to meet you'}
         </p>
       </div>

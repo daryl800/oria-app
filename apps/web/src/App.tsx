@@ -94,7 +94,7 @@ export default function App() {
           <Route path="/" element={!user ? <Landing /> : <Navigate to="/chart" />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
           <Route path="/onboarding/signup" element={<OnboardingSignup />} />
-          <Route path="/onboarding/mbti-summary" element={user ? <OnboardingMbtiSummary user={user} /> : <Navigate to="/" />} />
+          <Route path="/onboarding/mbti-summary" element={<OnboardingMbtiSummary user={user!} />} />
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
           <Route path="/onboarding/result" element={<OnboardingResult />} />
           <Route path="/onboarding/bazi" element={<OnboardingBazi />} />
