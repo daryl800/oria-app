@@ -45,6 +45,30 @@ apiRouter.post('/public/mbti/calculate', async (req: Request, res: Response) => 
   }
 });
 
+// public onboarding temp-save (no auth required)
+apiRouter.post('/profile/temp-save', async (req: Request, res: Response) => {
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    const { mbti_data, bazi_data } = req.body;
+    if (!mbti_data || !bazi_data) {
+      return res.status(400).json({ error: 'Missing mbti_data or bazi_data' });
+    }
+    const { data, error } = await supabase
+      .from('temp_onboarding_data')
+      .insert({ mbti_data, bazi_data })
+      .select('token')
+      .single();
+    if (error) throw new Error(error.message);
+    return res.json({ token: data.token });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // oria routes (auth protected)
 apiRouter.use(Paths.DailyGuidance._, authMiddleware, dailyGuidanceRouter);
 apiRouter.use(Paths.Profile._, authMiddleware, profileRouter);

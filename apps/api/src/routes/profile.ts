@@ -381,4 +381,110 @@ router.post('/migrate-anon', async (req: Request, res: Response) => {
   }
 });
 
+
+// POST /api/onboarding/temp-save — save MBTI + BaZi to temp table, return token
+router.post('/temp-save', async (req: Request, res: Response) => {
+  try {
+    const { mbti_data, bazi_data } = req.body;
+    if (!mbti_data || !bazi_data) {
+      return res.status(400).json({ error: 'Missing mbti_data or bazi_data' });
+    }
+    const { data, error } = await supabase
+      .from('temp_onboarding_data')
+      .insert({ mbti_data, bazi_data })
+      .select('token')
+      .single();
+    if (error) throw new Error(error.message);
+    return res.json({ token: data.token });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/onboarding/transfer — move temp data to real user profile
+router.post('/transfer', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ error: 'Missing token' });
+
+    // Get temp data
+    const { data: temp, error: tempError } = await supabase
+      .from('temp_onboarding_data')
+      .select('*')
+      .eq('token', token)
+      .gt('expires_at', new Date().toISOString())
+      .single();
+
+    if (tempError || !temp) {
+      return res.status(404).json({ error: 'Token not found or expired' });
+    }
+
+    // Delete temp record immediately (one-time use)
+    await supabase.from('temp_onboarding_data').delete().eq('token', token);
+
+    // Ensure user exists in public.users
+    const { data: authUser } = await supabase.auth.admin.getUserById(userId);
+    await supabase.from('users').upsert({
+      id: userId,
+      email: authUser?.user?.email ?? '',
+      created_at: new Date().toISOString(),
+    }, { onConflict: 'id' });
+
+    // Save BaZi
+    const bazi = temp.bazi_data;
+    const analysisRes = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...bazi, lang: 'en' }),
+    });
+    if (!analysisRes.ok) throw new Error('BaZi calculation failed');
+    const { bazi: baziResult } = await analysisRes.json();
+
+    const { data: baziVersion, error: baziError } = await supabase
+      .from('bazi_profile_versions')
+      .insert({
+        user_id: userId,
+        birth_date: `${bazi.year}-${String(bazi.month).padStart(2, '0')}-${String(bazi.day).padStart(2, '0')}`,
+        birth_time: bazi.time_known ? `${String(bazi.hour).padStart(2, '0')}:${String(bazi.minute).padStart(2, '0')}` : null,
+        birth_location: bazi.location,
+        year_pillar: baziResult.pillars.year,
+        month_pillar: baziResult.pillars.month,
+        day_pillar: baziResult.pillars.day,
+        hour_pillar: baziResult.pillars.hour ?? null,
+        five_elements_strength: baziResult.five_elements_strength,
+        day_master: baziResult.day_master,
+      })
+      .select()
+      .single();
+    if (baziError) throw new Error(`BaZi insert failed: ${baziError.message}`);
+
+    // Save MBTI
+    const { mbti_type } = temp.mbti_data;
+    const { data: mbtiVersion, error: mbtiError } = await supabase
+      .from('mbti_profile_versions')
+      .insert({
+        user_id: userId,
+        mbti_type,
+        source: 'questionnaire',
+        questionnaire_responses: temp.mbti_data,
+      })
+      .select()
+      .single();
+    if (mbtiError) throw new Error(`MBTI insert failed: ${mbtiError.message}`);
+
+    // Update user profile
+    await supabase.from('user_profiles').upsert({
+      user_id: userId,
+      current_bazi_version_id: baziVersion.id,
+      current_mbti_version_id: mbtiVersion.id,
+      onboarding_complete: true,
+    }, { onConflict: 'user_id' });
+
+    return res.json({ success: true });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { saveBazi, saveMbti } from '@/services/api';
+import { saveTempOnboarding } from '@/services/api';
 
 export default function OnboardingBazi() {
   const navigate = useNavigate();
@@ -27,24 +27,21 @@ export default function OnboardingBazi() {
     setSaving(true);
     setError('');
     try {
-      console.log('[BaZi] calling saveBazi...');
-      const baziResult = await saveBazi({
+      const storedMbti = localStorage.getItem('oria_mbti_result');
+      if (!storedMbti) throw new Error('MBTI result not found');
+      const mbtiData = JSON.parse(storedMbti);
+      const baziData = {
         year: parseInt(year), month: parseInt(month), day: parseInt(day),
         hour: timeKnown ? parseInt(hour) : 0,
         minute: timeKnown ? parseInt(minute) : 0,
         tz_name: tzName, location, time_known: timeKnown,
-      });
-      console.log('[BaZi] saveBazi result:', baziResult);
-      const storedMbti = localStorage.getItem('oria_mbti_result');
-      console.log('[BaZi] storedMbti:', storedMbti);
-      if (storedMbti) {
-        const { mbti_type } = JSON.parse(storedMbti);
-        console.log('[BaZi] calling saveMbti with:', mbti_type);
-        const mbtiResult = await saveMbti(mbti_type);
-        console.log('[BaZi] saveMbti result:', mbtiResult);
-        localStorage.removeItem('oria_mbti_result');
-        localStorage.removeItem('oria_mbti_answers');
-      }
+      };
+      const { token } = await saveTempOnboarding(mbtiData, baziData);
+      console.log('[BaZi] temp token:', token);
+      localStorage.removeItem('oria_mbti_result');
+      localStorage.removeItem('oria_mbti_answers');
+      // Store token for callback
+      sessionStorage.setItem('oria_onboarding_token', token);
       navigate('/onboarding/signup');
     } catch (err: any) {
       setError(err.message);

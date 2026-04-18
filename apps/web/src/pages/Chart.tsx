@@ -114,11 +114,19 @@ export default function Chart({ user }: { user: User }) {
         return;
       }
 
-      // No cache — fetch everything fresh
+      // No cache — fetch everything fresh, retry if data not ready yet
       console.log('[Chart] no cache, fetching profile fresh');
       try {
-        const data = await getProfile();
+        let data = await getProfile();
         console.log('[Chart] getProfile response:', data);
+        // Retry up to 3x if bazi/mbti not ready (race condition after onboarding)
+        let retries = 3;
+        while ((!data.bazi || !data.mbti) && retries > 0) {
+          console.log('[Chart] data not ready, retrying in 1s...', retries);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          data = await getProfile();
+          retries--;
+        }
         setBazi(data.bazi);
         setMbti(data.mbti);
         setLoading(false);

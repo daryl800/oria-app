@@ -158,3 +158,24 @@ export async function submitPublicMbtiAnswers(answers: Record<number, string>, l
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
+export async function saveTempOnboarding(mbtiData: any, baziData: any) {
+  const res = await fetch(`${API_URL}/api/profile/temp-save`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mbti_data: mbtiData, bazi_data: baziData }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function transferTempOnboarding(token: string) {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/profile/transfer`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ token }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}

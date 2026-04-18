@@ -13,15 +13,13 @@ export default function Login({ isNewUser = false }: { isNewUser?: boolean }) {
   async function handleGoogleLogin() {
     setLoading(true);
     setError('');
-    // Store anonymous user ID in sessionStorage before OAuth redirect
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user?.is_anonymous) {
-      sessionStorage.setItem('oria_anon_id', session.user.id);
-      console.log('[Login] stored anon ID:', session.user.id);
-    }
+    const token = sessionStorage.getItem('oria_onboarding_token');
+    console.log('[Login] onboarding token:', token);
+    const redirectTo = window.location.origin + '/auth/callback' + (token ? `?token=${token}` : '');
+    console.log('[Login] redirectTo:', redirectTo);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/' }
+      options: { redirectTo }
     });
     if (error) {
       console.error('[Login] OAuth error:', error.message);

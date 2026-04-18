@@ -18,6 +18,7 @@ import Chat from './pages/Chat';
 import Settings from './pages/Settings';
 import MbtiQuestionnaire from './pages/MbtiQuestionnaire';
 import Compare from './pages/Compare';
+import AuthCallback from './pages/AuthCallback';
 import BottomNav from './components/BottomNav';
 import TopBar from './components/TopBar';
 
@@ -61,50 +62,16 @@ export default function App() {
       console.log('AUTH EVENT:', event, session?.user?.email);
       const u = session?.user ?? null;
 
-      if (event === 'INITIAL_SESSION') {
-        if (u) {
-          console.log('[Auth] INITIAL_SESSION user:', u.id, 'anon:', u.is_anonymous);
-          setUser(u);
-          if (!u.is_anonymous) checkOnboarding(u.id);
-          else setOnboardingComplete(false);
-        } else {
-          // No session — create anonymous user
-          console.log('[Auth] No session, signing in anonymously...');
-          const { data, error } = await supabase.auth.signInAnonymously();
-          console.log('[Auth] Anonymous result:', data?.user?.id, error?.message);
-          setUser(data?.user ?? null);
-          setOnboardingComplete(false);
-        }
-      } else if (event === 'SIGNED_IN') {
-        console.log('[Auth] SIGNED_IN user:', u?.id, 'anon:', u?.is_anonymous, 'email:', u?.email);
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
         setUser(u);
-        if (u && !u.is_anonymous) {
-          // Check if there's an anonymous user whose data needs migrating
-          const anonId = sessionStorage.getItem('oria_anon_id');
-          console.log('[Auth] anonId in session:', anonId, 'new user id:', u.id);
-          if (anonId && anonId !== u.id) {
-            // Migrate data from anonymous user to real user
-            console.log('[Auth] migrating data from anon:', anonId, 'to:', u.id);
-            try {
-              const { migrateAnonUser } = await import('./services/api');
-              await migrateAnonUser(anonId, u.id);
-              sessionStorage.removeItem('oria_anon_id');
-              console.log('[Auth] migration done');
-            } catch (e) {
-              console.error('[Auth] migration failed:', e);
-            }
-          }
-          checkOnboarding(u.id);
-        } else setOnboardingComplete(false);
+        if (u) checkOnboarding(u.id);
+        else setOnboardingComplete(null);
       } else if (event === 'SIGNED_OUT') {
         setOnboardingComplete(null);
         setUser(null);
         sessionStorage.clear();
-        // Re-create anonymous session
-        console.log('[Auth] SIGNED_OUT — creating new anonymous session');
-        const { data } = await supabase.auth.signInAnonymously();
-        setUser(data?.user ?? null);
-        setOnboardingComplete(false);
+        localStorage.removeItem('oria_mbti_result');
+        localStorage.removeItem('oria_mbti_answers');
       }
     });
 
@@ -125,14 +92,14 @@ export default function App() {
     <BrowserRouter>
       <AppShell user={user}>
         <Routes>
-          <Route path="/" element={!user || user.is_anonymous ? <Landing /> : <Navigate to="/chart" />} />
+          <Route path="/" element={!user ? <Landing /> : <Navigate to="/chart" />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
           <Route path="/onboarding/signup" element={<OnboardingSignup />} />
           <Route path="/onboarding/mbti-summary" element={user ? <OnboardingMbtiSummary user={user} /> : <Navigate to="/" />} />
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
           <Route path="/onboarding/result" element={<OnboardingResult />} />
           <Route path="/onboarding/bazi" element={<OnboardingBazi />} />
-          <Route path="/login" element={!user || user.is_anonymous ? <Login /> : <Navigate to="/chart" />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to="/chart" />} />
 
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
           <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} />} />
@@ -143,6 +110,7 @@ export default function App() {
           <Route path="/settings" element={!user ? <Navigate to="/" /> : <Settings user={user} />} />
           <Route path="/mbti-quiz" element={!user ? <Navigate to="/" /> : <MbtiQuestionnaire user={user} />} />
 
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AppShell>
