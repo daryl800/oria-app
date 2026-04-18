@@ -24,7 +24,6 @@ export default function Login({ isNewUser = false }: { isNewUser?: boolean }) {
       options: { redirectTo }
     });
     if (error) {
-      console.error('[Login] OAuth error:', error.message);
       setError(isZH ? '登入失敗，請再試一次' : 'Sign in failed. Please try again.');
       setGoogleLoading(false);
     }

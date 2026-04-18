@@ -96,17 +96,13 @@ export default function Chart({ user }: { user: User }) {
           return;
         }
         // Cache exists but no summary yet (fresh redirect from onboarding)
-        console.log('[Chart] cache hit but no summary, bazi:', !!data.bazi, 'mbti:', !!data.mbti);
         if (data.bazi && data.mbti) {
           setSummaryLoading(true);
           try {
-            console.log('[Chart] calling getProfileSummary, lang:', lang);
             const s = await getProfileSummary(lang);
-            console.log('[Chart] getProfileSummary response:', s);
             setSummary(s.summary);
             sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: s.summary }));
           } catch (e) {
-            console.error('[Chart] getProfileSummary failed (cached branch):', e);
           } finally {
             setSummaryLoading(false);
           }
@@ -115,14 +111,11 @@ export default function Chart({ user }: { user: User }) {
       }
 
       // No cache — fetch everything fresh, retry if data not ready yet
-      console.log('[Chart] no cache, fetching profile fresh');
       try {
         let data = await getProfile();
-        console.log('[Chart] getProfile response:', data);
         // Retry up to 3x if bazi/mbti not ready (race condition after onboarding)
         let retries = 3;
         while ((!data.bazi || !data.mbti) && retries > 0) {
-          console.log('[Chart] data not ready, retrying in 1s...', retries);
           await new Promise(resolve => setTimeout(resolve, 1000));
           data = await getProfile();
           retries--;
@@ -133,22 +126,17 @@ export default function Chart({ user }: { user: User }) {
         if (data.bazi && data.mbti) {
           setSummaryLoading(true);
           try {
-            console.log('[Chart] calling getProfileSummary, lang:', lang);
             const s = await getProfileSummary(lang);
-            console.log('[Chart] getProfileSummary response:', s);
             setSummary(s.summary);
             sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: s.summary }));
           } catch (e) {
-            console.error('[Chart] getProfileSummary failed (fresh branch):', e);
           } finally {
             setSummaryLoading(false);
           }
         } else {
-          console.warn('[Chart] missing bazi or mbti — skipping summary');
           sessionStorage.setItem(cacheKey, JSON.stringify(data));
         }
       } catch (e) {
-        console.error('[Chart] getProfile failed:', e);
         setLoading(false);
       }
     }

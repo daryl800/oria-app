@@ -59,7 +59,6 @@ export default function App() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('AUTH EVENT:', event, session?.user?.email);
       const u = session?.user ?? null;
 
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {

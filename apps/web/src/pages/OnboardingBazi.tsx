@@ -37,7 +37,6 @@ export default function OnboardingBazi() {
         tz_name: tzName, location, time_known: timeKnown,
       };
       const { token } = await saveTempOnboarding(mbtiData, baziData);
-      console.log('[BaZi] temp token:', token);
       localStorage.removeItem('oria_mbti_result');
       localStorage.removeItem('oria_mbti_answers');
       // Store token for callback
