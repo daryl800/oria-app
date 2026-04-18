@@ -383,10 +383,21 @@ export default function Chart({ user }: { user: User }) {
             {isZH ? '命盤解析' : 'Profile Insight'}
           </div>
           {summaryLoading ? (
-            <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <div style={{ fontSize: 32, color: '#C084FC', animation: 'breathe 2s infinite' }}>✦</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginTop: 12 }}>
-                {isZH ? '正在解析你的命盤...' : 'Analyzing your profile...'}
+            <div style={{ padding: '16px 0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <div style={{ fontSize: 24, color: '#C084FC', animation: 'breathe 1.5s ease-in-out infinite' }}>✦</div>
+                <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}>
+                  {isZH ? '正在解析你的命盤' : 'Analyzing your profile'}
+                  <span className="saving-btn" />
+                </div>
+              </div>
+              <div style={{ height: 4, background: 'rgba(192,132,252,0.1)', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%', borderRadius: 2,
+                  background: 'linear-gradient(90deg, #9333EA, #C084FC, #9333EA)',
+                  backgroundSize: '200% 100%',
+                  animation: 'shimmer 1.5s ease-in-out infinite',
+                }} />
               </div>
             </div>
           ) : summary ? (

@@ -54,16 +54,16 @@ export default function OnboardingBazi() {
     width: '100%',
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid rgba(192,132,252,0.3)',
-    borderRadius: 12, padding: '12px 16px',
-    fontSize: 15, color: '#F0EDE8',
+    borderRadius: 12, padding: '14px 18px',
+    fontSize: 17, color: '#F0EDE8',
     fontFamily: 'inherit', outline: 'none',
     cursor: 'pointer', appearance: 'auto',
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 11, fontWeight: 700,
+    fontSize: 13, fontWeight: 700,
     letterSpacing: 1.5, color: '#C084FC',
-    textTransform: 'uppercase', marginBottom: 6,
+    textTransform: 'uppercase', marginBottom: 8,
     display: 'block',
   };
 
@@ -76,14 +76,14 @@ export default function OnboardingBazi() {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>✨</div>
-          <h2 style={{ fontSize: 26, fontWeight: 700, color: '#F0EDE8', marginBottom: 10 }}>
+          <h2 style={{ fontSize: 30, fontWeight: 700, color: '#F0EDE8', marginBottom: 10 }}>
             {isZH ? '輸入你的出生資料' : 'Enter your birth details'}
           </h2>
 
         </div>
 
         {/* Form */}
-        <div className="oria-card" style={{ padding: '28px 24px' }}>
+        <div className="oria-card" style={{ padding: '36px 32px' }}>
 
           {/* Year / Month / Day dropdowns */}
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, marginBottom: 16 }}>
