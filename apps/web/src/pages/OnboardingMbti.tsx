@@ -73,7 +73,7 @@ export default function OnboardingMbti() {
       localStorage.setItem('oria_mbti_answers', JSON.stringify(answers));
       localStorage.setItem('oria_mbti_result', JSON.stringify(data));
       await new Promise(resolve => setTimeout(resolve, 1500));
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       navigate('/onboarding/mbti-summary');
     } catch (err: any) {
       setError(err.message);
@@ -82,18 +82,25 @@ export default function OnboardingMbti() {
     }
   }
 
-  if (loading || submitting) return (
+  if (loading) return (
     <div style={{
       minHeight: '100vh', display: 'flex',
       alignItems: 'center', justifyContent: 'center',
-      flexDirection: 'column', gap: 16,
     }}>
       <div style={{ fontSize: 48, color: '#C084FC' }}>☽</div>
-      <div style={{ fontSize: 15, color: '#6B6880', letterSpacing: 1 }}>
-        {submitting
-          ? (isZH ? '正在解讀你的性格...' : 'Reading your personality...')
-          : (isZH ? '載入中...' : 'Loading...')}
-      </div>
+    </div>
+  );
+
+  if (submitting) return (
+    <div style={{
+      minHeight: '100vh', display: 'flex',
+      alignItems: 'center', justifyContent: 'center',
+      flexDirection: 'column', gap: 20,
+    }}>
+      <div style={{ fontSize: 48, color: '#C084FC', animation: 'breathe 1.5s ease-in-out infinite' }}>✦</div>
+      <p style={{ fontSize: 18, color: '#C084FC', fontStyle: 'italic', letterSpacing: 1 }}>
+        {isZH ? '解讀中...' : 'Reading your personality...'}
+      </p>
     </div>
   );
 
@@ -192,8 +199,8 @@ export default function OnboardingMbti() {
 
       {/* Main content */}
       <div style={{
-        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        paddingTop: 130, paddingBottom: 120,
+        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        paddingTop: currentIndex === 0 ? 20 : 130, paddingBottom: 120,
         position: 'relative', zIndex: 1,
       }}>
         <div style={{
@@ -202,6 +209,19 @@ export default function OnboardingMbti() {
           opacity: entered && fade ? 1 : 0,
           transition: 'opacity 0.5s ease',
         }}>
+          {currentIndex === 0 && (
+            <p style={{
+              fontSize: 18, lineHeight: 1.9,
+              color: '#C084FC',
+              marginBottom: 48, textAlign: 'center',
+              fontStyle: 'italic',
+              padding: '0 24px',
+            }}>
+              {isZH
+                ? '接下來，我將帶你完成一個約3分鐘的性格測驗。沒有對錯之分——憑第一感覺作答，你會更清楚地認識自己。就算做過類似測驗，現在的你或許已有所不同，值得重新探索。準備好就立即開始吧！'
+                : "In the next 3 minutes, we'll walk through a short personality quiz. There are no right or wrong answers — just go with your first instinct. Even if you've taken a similar test before, you may have grown since then. Ready? Let's begin!"}
+            </p>
+          )}
           <div className="oria-card" style={{ padding: '32px 32px 24px' }}>
             <div style={{
               fontSize: 12, color: '#C084FC',
@@ -262,7 +282,7 @@ export default function OnboardingMbti() {
               transform: readyVisible ? 'translateY(0)' : 'translateY(10px)',
               transition: 'opacity 0.5s ease, transform 0.5s ease',
             }}>
-              {isZH ? '你的性格結果出爐了——按繼續揭曉 ✦' : 'Your personality result is ready — want to see it? ✦'}
+              {isZH ? '想看你的性格分析結果？✦' : 'Curious about your personality? Tap to reveal ✦'}
             </button>
           )}
         </div>

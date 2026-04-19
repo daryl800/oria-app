@@ -38,7 +38,7 @@ export default function OnboardingMbtiSummary({ user }: { user: User }) {
       const data = JSON.parse(stored);
       setMbtiType(data.mbti_type);
     }
-    setTimeout(() => setVisible(true), 300);
+    setTimeout(() => setVisible(true), 50);
     // Typewriter for teaser
     const msg = isZH
       ? '很好！接下來請輸入你的出生資料，解鎖你的完整命盤 ✦'
@@ -61,12 +61,12 @@ export default function OnboardingMbtiSummary({ user }: { user: User }) {
       minHeight: '100vh', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       padding: '40px 24px', textAlign: 'center',
-      opacity: visible && !leaving ? 1 : 0, transition: 'opacity 0.6s ease',
+      opacity: visible && !leaving ? 1 : 0, transition: 'opacity 1s ease',
     }}>
       <div style={{ maxWidth: 480, width: '100%' }}>
         {/* Step indicator */}
-        <div style={{ fontSize: 11, letterSpacing: 3, color: '#C084FC', textTransform: 'uppercase', marginBottom: 32 }}>
-          {isZH ? '✦ 你的性格解析' : '✦ Your Personality'}
+        <div style={{ fontSize: 16, letterSpacing: 3, color: '#C084FC', textTransform: 'uppercase', marginBottom: 24, fontWeight: 700 }}>
+          {isZH ? '✦ 你的性格解析' : '✦ Your Personality Type'}
         </div>
 
         {/* Card */}
@@ -112,7 +112,7 @@ export default function OnboardingMbtiSummary({ user }: { user: User }) {
           setLeaving(true);
           setTimeout(() => navigate('/onboarding/bazi'), 600);
         }} className="oria-btn-primary" style={{ marginBottom: 16 }}>
-          {isZH ? '輸入出生資料 →' : 'Enter Birth Details →'}
+          {isZH ? '繼續你的探索旅程 →' : 'Continue Your Journey →'}
         </button>
 
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>
