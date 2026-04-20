@@ -126,7 +126,7 @@ export default function TopBar({ user, isPro = false }: TopBarProps) {
               borderRadius: 9999, padding: '4px 10px',
               fontSize: 11, fontWeight: 700, color: '#fff',
               letterSpacing: 1,
-            }}>PRO</div>
+            }}>PLUS</div>
           )}
 
           {/* Profile icon */}

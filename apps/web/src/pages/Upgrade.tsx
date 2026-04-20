@@ -27,7 +27,7 @@ export default function Upgrade() {
         {/* Header */}
         <div style={{ fontSize: 48, marginBottom: 16 }}>🔮</div>
         <h1 style={{ fontSize: 28, fontWeight: 800, color: '#F0EDE8', marginBottom: 8 }}>
-          {isZH ? '升級至 Oria Pro' : 'Upgrade to Oria Pro'}
+          {isZH ? '升級至 Oria Plus' : 'Upgrade to Oria Plus'}
         </h1>
         <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', marginBottom: 32 }}>
           {isZH ? '解鎖完整命盤體驗' : 'Unlock the full cosmic experience'}
@@ -56,7 +56,7 @@ export default function Upgrade() {
         {/* CTA */}
         <a href={STRIPE_PAYMENT_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
           <button className="oria-btn-primary" style={{ marginBottom: 16 }}>
-            {isZH ? '立即升級 Pro ✦' : 'Upgrade to Pro ✦'}
+            {isZH ? '立即升級 Pro ✦' : 'Upgrade to Oria Plus ✦'}
           </button>
         </a>
 

@@ -134,10 +134,10 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
           {isZH ? '與大師對話' : 'Chat with Oria'}
         </h2>
         <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', marginBottom: 32, lineHeight: 1.7 }}>
-          {isZH ? '升級至 Pro，即可與Oria進行無限深度對話，獲取個人化指引。' : 'Upgrade to Pro for unlimited personalized guidance conversations with Oria.'}
+          {isZH ? '升級至 Oria Plus，即可與Oria進行無限深度對話，獲取個人化指引。' : 'Upgrade to Oria Plus for unlimited personalized guidance conversations with Oria.'}
         </p>
         <button className="oria-btn-primary" onClick={() => navigate('/upgrade')} style={{ marginBottom: 16 }}>
-          {isZH ? '升級至 Oria Pro ✦' : 'Upgrade to Oria Pro ✦'}
+          {isZH ? '升級至 Oria Plus ✦' : 'Upgrade to Oria Plus ✦'}
         </button>
         <br />
         <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13 }}>
