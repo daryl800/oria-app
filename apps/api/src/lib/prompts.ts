@@ -106,6 +106,27 @@ Return only JSON.`,
   ];
 }
 
+const STEM_ELEMENT: Record<string, { en: string; zh: string }> = {
+  '甲': { en: 'Wood', zh: '木' }, '乙': { en: 'Wood', zh: '木' },
+  '丙': { en: 'Fire', zh: '火' }, '丁': { en: 'Fire', zh: '火' },
+  '戊': { en: 'Earth', zh: '土' }, '己': { en: 'Earth', zh: '土' },
+  '庚': { en: 'Metal', zh: '金' }, '辛': { en: 'Metal', zh: '金' },
+  '壬': { en: 'Water', zh: '水' }, '癸': { en: 'Water', zh: '水' },
+};
+
+const STEM_TONE: Record<string, { en: string; zh: string }> = {
+  '甲': { en: 'Rising Wood', zh: '創意木生' },
+  '乙': { en: 'Gentle Wood', zh: '柔韌木氣' },
+  '丙': { en: 'Bright Fire', zh: '熱情火旺' },
+  '丁': { en: 'Warm Fire', zh: '溫暖丁火' },
+  '戊': { en: 'Steady Earth', zh: '穩重土氣' },
+  '己': { en: 'Nurturing Earth', zh: '包容己土' },
+  '庚': { en: 'Bold Metal', zh: '剛毅金氣' },
+  '辛': { en: 'Refined Metal', zh: '精緻辛金' },
+  '壬': { en: 'Deep Water', zh: '深流水氣' },
+  '癸': { en: 'Gentle Water', zh: '沉穩癸水' },
+};
+
 export function dailyGuidancePrompt(
   bazi: any,
   mbti: any,
@@ -115,6 +136,9 @@ export function dailyGuidancePrompt(
 ): Messages {
   const dominantElement = getDominantElement(bazi.five_elements_strength);
   const { gregorian, dayOfWeek } = getDateContext();
+
+  const todayElement = STEM_ELEMENT[todayStem] ?? { en: 'Earth', zh: '土' };
+  const todayTone = STEM_TONE[todayStem] ?? { en: 'Steady Earth', zh: '穩重土氣' };
 
   if (lang === 'zh-TW') {
     return [
@@ -131,6 +155,7 @@ export function dailyGuidancePrompt(
 
 今天：${gregorian}（${dayOfWeek}）
 今日干支：${todayStem}${todayBranch}
+今日五行：${todayElement.zh}（固定，必須使用此五行作為今日基調基礎）
 用戶八字：日主 ${bazi.day_master}，主導五行 ${dominantElement}
 五行力量：${JSON.stringify(bazi.five_elements_strength)}
 MBTI：${mbti?.type || ''} — ${mbti?.nickname || ''}
@@ -138,7 +163,7 @@ MBTI：${mbti?.type || ''} — ${mbti?.nickname || ''}
 
 以JSON回應（所有建議必須具體實用，避免空泛）：
 {
-  "tone": "今日基調（例如：積極火旺、沉穩水流、創意木生）",
+  "tone": "${todayTone.zh}",
   "pace": "今日節奏建議（一句具體建議，例如：上午處理重要事務，下午適合溝通協調）",
   "lucky_color": {
     "color": "具體顏色名稱（例如：紅色、藍色、綠色、黃色、白色、黑色、橙色、紫色）",
@@ -172,6 +197,7 @@ Respond in English.${SAFETY_CLAUSE_EN}`,
 
 Today: ${gregorian} (${dayOfWeek})
 Today's stem and branch: ${todayStem}${todayBranch}
+Today's element: ${todayElement.en} (FIXED — must use this as the base for today's tone)
 User BaZi: day master ${bazi.day_master}, dominant element ${dominantElement}
 Element strengths: ${JSON.stringify(bazi.five_elements_strength)}
 MBTI: ${mbti?.type || ''} — ${mbti?.nickname || ''}
@@ -179,7 +205,7 @@ Core traits: ${mbti?.core_traits || ''}
 
 Respond in JSON:
 {
-  "tone": "Today's overall tone (one or two evocative words e.g. Gentle Fire, Deep Water, Active Metal)",
+  "tone": "${todayTone.en}",
   "pace": "Suggested pace (one sentence)",
   "lucky_color": {"color": "specific color name e.g. Red, Blue, Green, Yellow, White, Black, Orange, Purple", "reason": "one sentence why this color helps today based on Five Elements"},
   "tips": [{"area":"Work","text":"tip"},{"area":"Relationships","text":"tip"},{"area":"Wellness","text":"tip"},{"area":"Finance","text":"tip"}],

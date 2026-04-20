@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { sendMessage, getConversationHistory, getConversationMessages, getDailySuggestedPrompts } from '@/services/api';
 
@@ -25,8 +25,10 @@ const STARTER_QUESTIONS = [
   'What should I pay attention to this month?',
 ];
 
-export default function Chat({ user }: { user: User }) {
+export default function Chat({ user, isPro = false }: { user: User; isPro?: boolean }) {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const isZH = i18n.language === 'zh-TW';
   const location = useLocation();
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -123,6 +125,27 @@ export default function Chat({ user }: { user: User }) {
     ...dailyPrompts,
     ...STARTER_QUESTIONS.filter(q => !dailyPrompts.includes(q)),
   ].slice(0, 5);
+
+  if (!isPro) return (
+    <div className="oria-page oria-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
+      <div style={{ maxWidth: 400, width: '100%', textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>💬</div>
+        <h2 style={{ fontSize: 24, fontWeight: 800, color: '#F0EDE8', marginBottom: 12 }}>
+          {isZH ? '與大師對話' : 'Chat with Oria'}
+        </h2>
+        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', marginBottom: 32, lineHeight: 1.7 }}>
+          {isZH ? '升級至 Pro，即可與Oria進行無限深度對話，獲取個人化指引。' : 'Upgrade to Pro for unlimited personalized guidance conversations with Oria.'}
+        </p>
+        <button className="oria-btn-primary" onClick={() => navigate('/upgrade')} style={{ marginBottom: 16 }}>
+          {isZH ? '升級至 Oria Pro ✦' : 'Upgrade to Oria Pro ✦'}
+        </button>
+        <br />
+        <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13 }}>
+          ← {isZH ? '返回' : 'Back'}
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="oria-page" style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: 0 }}>

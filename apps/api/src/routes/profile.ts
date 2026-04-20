@@ -38,7 +38,17 @@ router.get('/me', async (req: Request, res: Response) => {
         .single()
       : { data: null };
 
-    return res.json({ profile, bazi, mbti });
+    // Get plan info from users table
+    const { data: userRecord } = await supabase
+      .from('users')
+      .select('plan, pro_expires_at')
+      .eq('id', userId)
+      .single();
+
+    const isPro = userRecord?.plan === 'pro' &&
+      (!userRecord?.pro_expires_at || new Date(userRecord.pro_expires_at) > new Date());
+
+    return res.json({ profile, bazi, mbti, plan: userRecord?.plan ?? 'free', isPro });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }

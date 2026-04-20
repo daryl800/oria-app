@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from './lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import Login from './pages/Login';
@@ -18,18 +19,20 @@ import Chat from './pages/Chat';
 import Settings from './pages/Settings';
 import MbtiQuestionnaire from './pages/MbtiQuestionnaire';
 import Compare from './pages/Compare';
+import LanguageModal from './components/LanguageModal';
+import Upgrade from './pages/Upgrade';
 import AuthCallback from './pages/AuthCallback';
 import BottomNav from './components/BottomNav';
 import TopBar from './components/TopBar';
 
-function AppShell({ user, children }: { user: User | null; children: React.ReactNode }) {
+function AppShell({ user, isPro, children }: { user: User | null; isPro: boolean; children: React.ReactNode }) {
   const location = useLocation();
   const isLoggedIn = !!user;
   const onboardingPaths = ['/onboarding/bazi', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup'];
   const showBottomNav = isLoggedIn && !onboardingPaths.includes(location.pathname);
   return (
     <>
-      <TopBar user={user} />
+      <TopBar user={user} isPro={isPro} />
       <div style={{ paddingTop: 56, paddingBottom: showBottomNav ? 64 : 0 }}>
         {children}
       </div>
@@ -40,8 +43,12 @@ function AppShell({ user, children }: { user: User | null; children: React.React
 
 export default function App() {
   // undefined = not yet checked, null = checked and no user, User = logged in
+  const { i18n } = useTranslation();
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
+  const [isPro, setIsPro] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [langUserId, setLangUserId] = useState<string | null>(null);
 
   async function checkOnboarding(userId: string, retries = 3) {
     const { data } = await supabase
@@ -50,11 +57,28 @@ export default function App() {
       .eq('user_id', userId)
       .single();
     if (!data?.current_bazi_version_id && retries > 0) {
-      // Data may not be committed yet — retry after short delay
       await new Promise(resolve => setTimeout(resolve, 800));
       return checkOnboarding(userId, retries - 1);
     }
     setOnboardingComplete(!!data?.current_bazi_version_id);
+
+    // Fetch plan + language
+    const { data: userRecord } = await supabase
+      .from('users')
+      .select('plan, pro_expires_at, preferred_language')
+      .eq('id', userId)
+      .single();
+    const pro = userRecord?.plan === 'pro' &&
+      (!userRecord?.pro_expires_at || new Date(userRecord.pro_expires_at) > new Date());
+    setIsPro(pro);
+
+    // Apply saved language or show modal if not set
+    if (userRecord?.preferred_language) {
+      await i18n.changeLanguage(userRecord.preferred_language);
+    } else {
+      setLangUserId(userId);
+      setShowLanguageModal(true);
+    }
   }
 
   useEffect(() => {
@@ -89,7 +113,13 @@ export default function App() {
   // Auth checked — render app
   return (
     <BrowserRouter>
-      <AppShell user={user}>
+      {showLanguageModal && langUserId && (
+        <LanguageModal
+          userId={langUserId}
+          onDone={() => setShowLanguageModal(false)}
+        />
+      )}
+      <AppShell user={user} isPro={isPro}>
         <Routes>
           <Route path="/" element={!user ? <Landing /> : <Navigate to="/chart" />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
@@ -101,14 +131,15 @@ export default function App() {
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/chart" />} />
 
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
-          <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} />} />
+          <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} isPro={isPro} />} />
           <Route path="/compare" element={!user ? <Navigate to="/" /> : <Compare user={user} />} />
           <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} />} />
-          <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} />} />
+          <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} isPro={isPro} />} />
           <Route path="/profile" element={!user ? <Navigate to="/" /> : <Profile user={user} />} />
           <Route path="/settings" element={!user ? <Navigate to="/" /> : <Settings user={user} />} />
           <Route path="/mbti-quiz" element={!user ? <Navigate to="/" /> : <MbtiQuestionnaire user={user} />} />
 
+          <Route path="/upgrade" element={!user ? <Navigate to="/" /> : <Upgrade />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

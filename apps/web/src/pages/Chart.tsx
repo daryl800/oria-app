@@ -69,7 +69,7 @@ const MBTI_DESCRIPTIONS: Record<string, { nickname: string; traits: string[] }> 
   ESFP: { nickname: 'The Entertainer', traits: ['Spontaneous', 'Energetic', 'Fun-loving'] },
 };
 
-export default function Chart({ user }: { user: User }) {
+export default function Chart({ user, isPro = false }: { user: User; isPro?: boolean }) {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const isZH = i18n.language === 'zh-TW';
@@ -390,30 +390,18 @@ export default function Chart({ user }: { user: User }) {
             </div>
           ) : summary ? (
             <div className="animate-fade-in">
+              {/* Headline — always shown */}
               <p style={{ lineHeight: 1.8, color: '#F0EDE8', fontSize: 17, marginBottom: 16 }}>
                 {summary.headline}
               </p>
+              {/* Summary paragraph — always shown */}
               <p style={{ lineHeight: 1.8, color: 'rgba(255,255,255,0.75)', fontSize: 15, marginBottom: 16 }}>
                 {summary.summary}
               </p>
-              {summary.mbti_bazi_resonance && (
-                <p style={{ lineHeight: 1.7, color: '#C084FC', fontSize: 13, fontStyle: 'italic', marginBottom: 16 }}>
-                  {summary.mbti_bazi_resonance}
-                </p>
-              )}
-              {summary.gentle_nudge && (
-                <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '12px 14px', marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 6 }}>
-                    {isZH ? '成長提示' : 'GENTLE NUDGE'}
-                  </div>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0 }}>
-                    {summary.gentle_nudge}
-                  </p>
-                </div>
-              )}
+              {/* Key strengths — always shown */}
               {summary.key_strengths?.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {summary.key_strengths.map((s: string, i: number) => (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+                  {summary.key_strengths.slice(0, isPro ? undefined : 2).map((s: string, i: number) => (
                     <span key={i} style={{
                       background: 'rgba(192,132,252,0.12)',
                       border: '1px solid rgba(192,132,252,0.25)',
@@ -421,6 +409,44 @@ export default function Chart({ user }: { user: User }) {
                       fontSize: 12, color: '#C084FC',
                     }}>{s}</span>
                   ))}
+                </div>
+              )}
+              {/* Pro-only content */}
+              {isPro ? (
+                <>
+                  {summary.mbti_bazi_resonance && (
+                    <p style={{ lineHeight: 1.7, color: '#C084FC', fontSize: 13, fontStyle: 'italic', marginBottom: 16 }}>
+                      {summary.mbti_bazi_resonance}
+                    </p>
+                  )}
+                  {summary.gentle_nudge && (
+                    <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '12px 14px' }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 6 }}>
+                        {isZH ? '成長提示' : 'GENTLE NUDGE'}
+                      </div>
+                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0 }}>
+                        {summary.gentle_nudge}
+                      </p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                /* Free user paywall */
+                <div style={{ borderTop: '1px solid rgba(192,132,252,0.2)', paddingTop: 16, marginTop: 8 }}
+                  onClick={() => navigate('/upgrade')} >
+                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 12, fontStyle: 'italic' }}>
+                    {isZH
+                      ? '這只是你命盤的一部分。你的完整命盤揭示了更深層的連結與規律。'
+                      : 'This is only part of your pattern. Your full profile reveals how everything connects beneath it.'}
+                  </p>
+                  <button style={{
+                    background: 'none', border: '1px solid rgba(192,132,252,0.4)',
+                    borderRadius: 9999, padding: '8px 20px',
+                    fontSize: 13, color: '#C084FC', cursor: 'pointer',
+                    fontFamily: 'inherit',
+                  }}>
+                    {isZH ? '解鎖完整命盤 →' : 'See your full pattern →'}
+                  </button>
                 </div>
               )}
             </div>

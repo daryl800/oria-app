@@ -26,6 +26,22 @@ async function getTodayStemBranch(dateStr: string): Promise<{ stem: string; bran
   };
 }
 
+function trimGuidanceForFree(summary: any, lang: string): any {
+  // Keep key fields but shorten the main content
+  const trimmed = { ...summary };
+  const nudge = lang === 'zh-TW'
+    ? '\n\n今日還有更深層的指引。升級至 Oria Pro，解鎖完整每日洞察。'
+    : '\n\nThere\'s more to this pattern today. Unlock full daily guidance with Oria Pro.';
+
+  if (trimmed.summary && typeof trimmed.summary === 'string') {
+    const sentences = trimmed.summary.split(/(?<=[.!?。！？])\s*/);
+    trimmed.summary = sentences.slice(0, Math.max(2, Math.ceil(sentences.length * 0.5))).join(' ') + nudge;
+  }
+  if (trimmed.reflection) delete trimmed.reflection;
+  if (trimmed.suggested_prompts) trimmed.suggested_prompts = trimmed.suggested_prompts.slice(0, 1);
+  return trimmed;
+}
+
 router.get('/today', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
@@ -41,7 +57,27 @@ router.get('/today', async (req: Request, res: Response) => {
       .eq('lang', lang)
       .single();
 
-    if (cached) return res.json({ summary: cached.summary, cached: true });
+    // Get user plan + signup date
+    const { data: userData } = await supabase
+      .from('users')
+      .select('plan, created_at')
+      .eq('id', userId)
+      .single();
+
+    const isPro = userData?.plan === 'pro';
+    const createdAt = new Date(userData?.created_at ?? Date.now());
+    const daysSinceSignup = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    const isFullGuidance = isPro || daysSinceSignup <= 5;
+
+    if (cached) {
+      const summary = cached.summary;
+      // For free users after day 5, trim the guidance
+      if (!isFullGuidance) {
+        const trimmed = trimGuidanceForFree(summary, lang);
+        return res.json({ summary: trimmed, cached: true, is_preview: true });
+      }
+      return res.json({ summary, cached: true });
+    }
 
     // 2. load bazi profile
     const { data: userProfile } = await supabase
@@ -106,6 +142,10 @@ router.get('/today', async (req: Request, res: Response) => {
       summary,
     });
 
+    if (!isFullGuidance) {
+      const trimmed = trimGuidanceForFree(summary, lang);
+      return res.json({ summary: trimmed, cached: false, is_preview: true });
+    }
     return res.json({ summary, cached: false });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });

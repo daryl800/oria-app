@@ -19,9 +19,10 @@ const NAV_ITEMS = [
 
 interface TopBarProps {
   user?: User | null;
+  isPro?: boolean;
 }
 
-export default function TopBar({ user }: TopBarProps) {
+export default function TopBar({ user, isPro = false }: TopBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
@@ -85,8 +86,8 @@ export default function TopBar({ user }: TopBarProps) {
 
         {/* Right */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Language dropdown */}
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          {/* Language dropdown — only shown when not logged in */}
+          {!isLoggedIn && <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
             <span style={{ position: 'absolute', left: 12, fontSize: 14, pointerEvents: 'none', opacity: 0.7 }}>
               🌐
             </span>
@@ -116,20 +117,16 @@ export default function TopBar({ user }: TopBarProps) {
                 </option>
               ))}
             </select>
-          </div>
+          </div>}
 
-          {/* Credits */}
-          {isLoggedIn && (
+          {/* Pro badge */}
+          {isPro && (
             <div style={{
-              background: 'rgba(192, 132, 252, 0.1)',
-              border: '1px solid rgba(192, 132, 252, 0.2)',
-              borderRadius: 20, padding: '6px 12px',
-              fontSize: 13, display: 'flex', alignItems: 'center', gap: 6,
-              color: '#C084FC', fontWeight: 600
-            }}>
-              <span>💎</span>
-              <span>—</span>
-            </div>
+              background: 'linear-gradient(135deg, #9333EA, #C084FC)',
+              borderRadius: 9999, padding: '4px 10px',
+              fontSize: 11, fontWeight: 700, color: '#fff',
+              letterSpacing: 1,
+            }}>PRO</div>
           )}
 
           {/* Profile icon */}
