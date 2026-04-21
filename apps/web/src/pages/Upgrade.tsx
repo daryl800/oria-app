@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/your_link_here'; // Replace with your Stripe link
+const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/fZu4gz4G4dN3dGs1tb8N200';
 
 export default function Upgrade() {
   const navigate = useNavigate();
