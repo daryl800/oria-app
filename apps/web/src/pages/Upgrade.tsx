@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/fZu4gz4G4dN3dGs1tb8N200';
+const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/test_cNi7sLegE6kBcCo4Fn8N202'; // TEST MODE
 
 export default function Upgrade() {
   const navigate = useNavigate();

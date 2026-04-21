@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -15,6 +16,8 @@ const AVAILABLE = ['en', 'zh-TW'];
 export default function Settings({ user }: { user: User }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const isZH = i18n.language === 'zh-TW';
+  const [pendingLang, setPendingLang] = useState<string | null>(null);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -23,10 +26,16 @@ export default function Settings({ user }: { user: User }) {
 
   function handleLanguageChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const code = e.target.value;
-    if (AVAILABLE.includes(code)) {
-      i18n.changeLanguage(code);
-      localStorage.setItem('oria_language', code);
-    }
+    if (!AVAILABLE.includes(code) || code === i18n.language) return;
+    setPendingLang(code);
+  }
+
+  async function confirmLanguageChange() {
+    if (!pendingLang) return;
+    await i18n.changeLanguage(pendingLang);
+    localStorage.setItem('oria_language', pendingLang);
+    await supabase.from('users').update({ preferred_language: pendingLang }).eq('id', user.id);
+    setPendingLang(null);
   }
 
   return (
@@ -96,6 +105,47 @@ export default function Settings({ user }: { user: User }) {
       }}>
         {t('settings.sign_out')}
       </button>
+
+      {/* Language change confirmation modal */}
+      {pendingLang && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(0,0,0,0.7)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 24,
+        }}>
+          <div className="oria-card" style={{ maxWidth: 380, width: '100%', textAlign: 'center', padding: '36px 28px' }}>
+            <div style={{ fontSize: 36, marginBottom: 16 }}>🌐</div>
+            <h3 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 12 }}>
+              {isZH ? '更改語言' : 'Change Language'}
+            </h3>
+            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 28 }}>
+              {isZH
+                ? '之前的內容不會被翻譯。只有新內容會以新語言顯示。確定要更改嗎？'
+                : 'Previous content will not be translated. Only new content will appear in the new language. Continue?'}
+            </p>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => setPendingLang(null)}
+                style={{
+                  flex: 1, padding: '14px', borderRadius: 9999,
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
+                  fontFamily: 'inherit', fontSize: 16,
+                }}>
+                {isZH ? '取消' : 'Cancel'}
+              </button>
+              <button
+                onClick={confirmLanguageChange}
+                className="oria-btn-primary"
+                style={{ flex: 1, padding: '14px', fontSize: 16 }}>
+                {isZH ? '確認更改' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <footer className="oria-disclaimer">{t('disclaimer')}</footer>
     </div>
