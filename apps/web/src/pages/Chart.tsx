@@ -76,6 +76,7 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
 
   const [bazi, setBazi] = useState<any>(null);
   const [mbti, setMbti] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'bazi' | 'mbti' | 'insight'>('bazi');
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [summaryLoading, setSummaryLoading] = useState(false);
@@ -182,8 +183,28 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
         </h1>
       </header>
 
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: 4 }}>
+        {[
+          { key: 'bazi', label: isZH ? '🪬 四柱命盤' : '🪬 Four Pillars' },
+          { key: 'mbti', label: isZH ? '🧠 MBTI性格' : '🧠 MBTI Type' },
+          { key: 'insight', label: isZH ? '✦ 命盤解析' : '✦ Insight' },
+        ].map(tab => (
+          <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{
+            flex: 1, padding: '10px 4px', borderRadius: 10, border: 'none',
+            background: activeTab === tab.key ? 'rgba(192,132,252,0.2)' : 'transparent',
+            color: activeTab === tab.key ? '#C084FC' : 'rgba(255,255,255,0.4)',
+            fontWeight: activeTab === tab.key ? 700 : 400,
+            fontSize: 12, cursor: 'pointer', fontFamily: 'inherit',
+            transition: 'all 0.2s ease',
+          }}>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {/* BaZi Four Pillars */}
-      {bazi && (
+      {activeTab === 'bazi' && bazi && (
         <div className="oria-card" style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
             🪬 {isZH ? '八字四柱' : 'Four Pillars'}
@@ -271,8 +292,8 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
         </div>
       )}
 
-      {/* MBTI */}
-      {mbti && (
+      {/* MBTI Tab */}
+      {activeTab === 'mbti' && mbti && (
         <div className="oria-card" style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
             🧠 {isZH ? 'MBTI 性格' : 'MBTI Personality'}
@@ -358,8 +379,8 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
         </div>
       )}
 
-      {/* Profile Summary */}
-      {bazi && mbti && (
+      {/* Profile Insight Tab */}
+      {activeTab === 'insight' && bazi && mbti && (
         <div className="oria-card" style={{
           marginBottom: 16,
           background: 'rgba(192,132,252,0.08)',
