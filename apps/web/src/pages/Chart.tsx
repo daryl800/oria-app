@@ -585,8 +585,58 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
                     </div>
                   )}
 
-                  {/* Career direction */}
-                  {summary.career_direction && (
+                  {/* Ten Gods */}
+                  {summary.ten_gods && Object.keys(summary.ten_gods).length > 0 && (
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 12 }}>
+                        {isZH ? '十神格局' : 'TEN GODS'}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {Object.entries(summary.ten_gods).map(([god, desc]: [string, any]) => (
+                          <div key={god} style={{ background: 'rgba(192,132,252,0.05)', borderRadius: 10, padding: '10px 14px' }}>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: '#C084FC', marginRight: 8 }}>{god}</span>
+                            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6 }}>{desc}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Decision style */}
+                  {summary.decision_style && (
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
+                        {isZH ? '決策風格' : 'DECISION STYLE'}
+                      </div>
+                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, margin: 0 }}>
+                        {summary.decision_style}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Career favorable/unfavorable */}
+                  {(summary.career_favorable || summary.career_unfavorable) && (
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 12 }}>
+                        {isZH ? '事業方向' : 'CAREER DIRECTION'}
+                      </div>
+                      {summary.career_favorable?.length > 0 && (
+                        <div style={{ marginBottom: 8 }}>
+                          <span style={{ fontSize: 12, color: '#4ade80', marginRight: 8 }}>✓ {isZH ? '有利：' : 'Favorable: '}</span>
+                          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>{summary.career_favorable.join('、')}</span>
+                        </div>
+                      )}
+                      {summary.career_unfavorable?.length > 0 && (
+                        <div>
+                          <span style={{ fontSize: 12, color: 'rgba(255,100,100,0.8)', marginRight: 8 }}>○ {isZH ? '不利：' : 'Unfavorable: '}</span>
+                          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>{summary.career_unfavorable.join('、')}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Career direction (old field fallback) */}
+                  {summary.career_direction && !summary.career_favorable && (
                     <div style={{ marginBottom: 20 }}>
                       <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
                         {isZH ? '事業天賦' : 'CAREER DIRECTION'}
@@ -638,11 +688,63 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
                             🧭 {isZH ? '方位：' : 'Directions: '}{summary.lucky_elements.directions.join('、')}
                           </div>
                         )}
+                        {summary.lucky_elements.numbers?.length > 0 && (
+                          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
+                            🔢 {isZH ? '數字：' : 'Numbers: '}{summary.lucky_elements.numbers.join('、')}
+                          </div>
+                        )}
                         {summary.lucky_elements.items?.length > 0 && (
                           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
                             ✨ {isZH ? '吉祥物：' : 'Items: '}{summary.lucky_elements.items.join('、')}
                           </div>
                         )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Amulet */}
+                  {summary.amulet?.item && (
+                    <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '14px 16px', marginBottom: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
+                        {isZH ? '🔮 吉祥物推薦' : '🔮 AMULET'}
+                      </div>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: '#F0EDE8', marginBottom: 6 }}>
+                        {summary.amulet.item}
+                      </p>
+                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, margin: 0 }}>
+                        {summary.amulet.reason}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Final Advice */}
+                  {summary.final_advice && (
+                    <div style={{ background: 'linear-gradient(135deg, rgba(147,51,234,0.15), rgba(192,132,252,0.08))', borderRadius: 14, padding: '20px 18px', marginBottom: 20, border: '1px solid rgba(192,132,252,0.3)' }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 14 }}>
+                        {isZH ? '✦ 給你的話' : '✦ FINAL GUIDANCE'}
+                      </div>
+                      {summary.final_advice.overview && (
+                        <p style={{ fontSize: 15, color: '#F0EDE8', lineHeight: 1.8, marginBottom: 16, fontWeight: 500 }}>
+                          {summary.final_advice.overview}
+                        </p>
+                      )}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {[
+                          { key: 'focus', icon: '🎯', label: isZH ? '關注重點' : 'Focus' },
+                          { key: 'opportunity', icon: '✨', label: isZH ? '把握機會' : 'Opportunity' },
+                          { key: 'career', icon: '💼', label: isZH ? '事業發展' : 'Career' },
+                          { key: 'health', icon: '🌿', label: isZH ? '健康注意' : 'Health' },
+                          { key: 'relationships', icon: '❤️', label: isZH ? '關係著力' : 'Relationships' },
+                          { key: 'caution', icon: '⚠️', label: isZH ? '謹慎迴避' : 'Caution' },
+                        ].map(({ key, icon, label }) => summary.final_advice[key] && (
+                          <div key={key} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                            <span style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
+                            <div>
+                              <span style={{ fontSize: 12, color: '#C084FC', fontWeight: 700, marginRight: 6 }}>{label}</span>
+                              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6 }}>{summary.final_advice[key]}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
