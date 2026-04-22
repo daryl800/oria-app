@@ -1,11 +1,11 @@
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  apiKey: process.env.QIANWEN_API_KEY!,
-  baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
 });
 
-const MODEL = 'deepseek-v3.2';
+const MODEL = process.env.DEEPSEEK_LLM_MODEL || 'deepseek-chat';
 
 export async function complete(messages: OpenAI.ChatCompletionMessageParam[]): Promise<string> {
   const stream = await client.chat.completions.create({
@@ -13,7 +13,7 @@ export async function complete(messages: OpenAI.ChatCompletionMessageParam[]): P
     messages,
     stream: true,
     // @ts-ignore — qianwen-specific extension
-    extra_body: { enable_thinking: true },
+    // extra_body: { enable_thinking: true },
   });
 
   let answer = '';
@@ -38,7 +38,7 @@ export async function streamToWebSocket(
       messages,
       stream: true,
       // @ts-ignore
-      extra_body: { enable_thinking: true },
+      // extra_body: { enable_thinking: true },
     });
 
     for await (const chunk of stream) {
