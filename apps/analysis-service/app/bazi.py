@@ -867,3 +867,100 @@ if __name__ == "__main__":
     print(f"   ✓ This is EXPECTED behavior for unknown birth time")
     print(f"   ✓ LLM will receive DIFFERENT element strengths based on time confidence")
     print(f"\n   🎯 Day Master remains the anchor - all analysis centers on this!")
+# =====================================================
+# 大運 (Luck Cycles) Calculation
+# =====================================================
+
+JQ_NAMES_ZH = {
+    1: '小寒', 2: '大寒', 3: '立春', 4: '雨水', 5: '驚蟄', 6: '春分',
+    7: '清明', 8: '穀雨', 9: '立夏', 10: '小滿', 11: '芒種', 12: '夏至',
+    13: '小暑', 14: '大暑', 15: '立秋', 16: '處暑', 17: '白露', 18: '秋分',
+    19: '寒露', 20: '霜降', 21: '立冬', 22: '小雪', 23: '大雪', 24: '冬至'
+}
+
+def calculate_dayun(birth_year: int, birth_month: int, birth_day: int, is_male: bool) -> Optional[Dict]:
+    """Calculate 大運 (10-year luck cycles) based on birth date and gender."""
+    try:
+        birth = sxtwl.fromSolar(birth_year, birth_month, birth_day)
+        year_gz = birth.getYearGZ()
+        month_gz = birth.getMonthGZ()
+
+        yang_stems = [1, 3, 5, 7, 9]
+        is_yang = year_gz.tg in yang_stems
+        forward = (is_yang and is_male) or (not is_yang and not is_male)
+
+        birth_datetime = datetime(birth_year, birth_month, birth_day)
+        target_jd = None
+        target_name = None
+
+        for yr in range(birth_year - 1, birth_year + 3):
+            jq_list = sxtwl.getJieQiByYear(yr)
+            for jq in jq_list:
+                jq_date = sxtwl.JD2DD(jq.jd)
+                jq_datetime = datetime(jq_date.Y, jq_date.M, jq_date.D)
+                if forward:
+                    if jq_datetime > birth_datetime:
+                        if target_jd is None or jq.jd < target_jd:
+                            target_jd = jq.jd
+                            target_name = JQ_NAMES_ZH.get(jq.jqIndex, str(jq.jqIndex))
+                else:
+                    if jq_datetime < birth_datetime:
+                        if target_jd is None or jq.jd > target_jd:
+                            target_jd = jq.jd
+                            target_name = JQ_NAMES_ZH.get(jq.jqIndex, str(jq.jqIndex))
+
+        if target_jd is None:
+            return None
+
+        target_date = sxtwl.JD2DD(target_jd)
+        target_datetime = datetime(target_date.Y, target_date.M, target_date.D)
+        days_diff = abs((target_datetime - birth_datetime).days)
+        years_float = days_diff / 3.0
+        years_int = int(years_float)
+        months_int = int((years_float - years_int) * 12)
+
+        month_stem_idx = month_gz.tg - 1
+        month_branch_idx = month_gz.dz - 1
+
+        current_year = datetime.now().year
+        dayuns = []
+
+        for i in range(8):
+            age = years_float + (i * 10)
+            calendar_year = birth_year + int(age)
+            if forward:
+                stem_idx = (month_stem_idx + i + 1) % 10
+                branch_idx = (month_branch_idx + i + 1) % 12
+            else:
+                stem_idx = (month_stem_idx - i - 1) % 10
+                branch_idx = (month_branch_idx - i - 1) % 12
+
+            pillar = GAN_CN[stem_idx] + ZHI_CN[branch_idx]
+            pillar_en = GAN[stem_idx] + ZHI[branch_idx]
+            is_current = calendar_year <= current_year < calendar_year + 10
+
+            dayuns.append({
+                'pillar': pillar,
+                'pillar_en': pillar_en,
+                'stem': GAN_CN[stem_idx],
+                'branch': ZHI_CN[branch_idx],
+                'stem_en': GAN[stem_idx],
+                'branch_en': ZHI[branch_idx],
+                'start_age': round(age, 1),
+                'end_age': round(age + 9, 1),
+                'start_year': calendar_year,
+                'end_year': calendar_year + 9,
+                'is_current': is_current,
+            })
+
+        return {
+            'direction': 'forward' if forward else 'backward',
+            'years_to_first': round(years_float, 2),
+            'years_int': years_int,
+            'months_int': months_int,
+            'target_solar_term': target_name,
+            'dayuns': dayuns,
+            'current_dayun': next((d for d in dayuns if d['is_current']), None),
+        }
+    except Exception as e:
+        return None

@@ -45,7 +45,7 @@ router.get('/me', async (req: Request, res: Response) => {
       .eq('id', userId)
       .single();
 
-    const isPro = userRecord?.plan === 'pro' &&
+    const isPro = userRecord?.plan === 'plus' &&
       (!userRecord?.pro_expires_at || new Date(userRecord.pro_expires_at) > new Date());
 
     return res.json({ profile, bazi, mbti, plan: userRecord?.plan ?? 'free', isPro });
@@ -58,7 +58,7 @@ router.get('/me', async (req: Request, res: Response) => {
 router.post('/bazi', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
-    const { year, month, day, hour, minute, tz_name, location, time_known } = req.body;
+    const { year, month, day, hour, minute, tz_name, location, time_known, is_male } = req.body;
 
     // Ensure user exists in public.users (in case trigger hasn't fired yet)
     const { data: authUser } = await supabase.auth.admin.getUserById(userId);
@@ -75,11 +75,11 @@ router.post('/bazi', async (req: Request, res: Response) => {
     const analysisRes = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ year, month, day, hour, minute, tz_name, location, time_known, lang: 'en' }),
+      body: JSON.stringify({ year, month, day, hour, minute, tz_name, location, time_known, lang: 'en', is_male: is_male ?? true }),
     });
 
     if (!analysisRes.ok) throw new Error('BaZi calculation failed');
-    const { bazi } = await analysisRes.json();
+    const { bazi, dayun } = await analysisRes.json();
 
     const { data: newVersion, error: insertError } = await supabase
       .from('bazi_profile_versions')
@@ -94,6 +94,8 @@ router.post('/bazi', async (req: Request, res: Response) => {
         hour_pillar: bazi.pillars.hour ?? null,
         five_elements_strength: bazi.five_elements_strength,
         day_master: bazi.day_master,
+        is_male: is_male ?? true,
+        dayun: dayun ?? null,
       })
       .select()
       .single();
@@ -193,7 +195,7 @@ router.post('/summary', async (req: Request, res: Response) => {
     const mbtiProfile = await mbtiRes.json();
 
     const messages = profileSummaryPrompt(
-      { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength },
+      { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength, year_pillar: bazi.year_pillar, month_pillar: bazi.month_pillar, day_pillar: bazi.day_pillar, hour_pillar: bazi.hour_pillar, birth_date: bazi.birth_date, dayun: bazi.dayun },
       mbtiProfile,
       lang,
     );
@@ -221,7 +223,7 @@ router.post('/summary', async (req: Request, res: Response) => {
 router.post('/bazi/reset', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
-    const { year, month, day, hour, minute, tz_name, location, time_known } = req.body;
+    const { year, month, day, hour, minute, tz_name, location, time_known, is_male } = req.body;
 
     // clear all history for this user
     const { data: convs } = await supabase
@@ -249,11 +251,11 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
     const analysisRes = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ year, month, day, hour, minute, tz_name, location, time_known, lang: 'en' }),
+      body: JSON.stringify({ year, month, day, hour, minute, tz_name, location, time_known, lang: 'en', is_male: is_male ?? true }),
     });
 
     if (!analysisRes.ok) throw new Error('BaZi calculation failed');
-    const { bazi } = await analysisRes.json();
+    const { bazi, dayun } = await analysisRes.json();
 
     const { data: newVersion, error: insertError } = await supabase
       .from('bazi_profile_versions')
@@ -268,6 +270,8 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
         hour_pillar: bazi.pillars.hour ?? null,
         five_elements_strength: bazi.five_elements_strength,
         day_master: bazi.day_master,
+        is_male: is_male ?? true,
+        dayun: dayun ?? null,
       })
       .select()
       .single();
@@ -446,10 +450,10 @@ router.post('/transfer', async (req: Request, res: Response) => {
     const analysisRes = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...bazi, lang: 'en' }),
+      body: JSON.stringify({ ...bazi, lang: 'en', is_male: bazi.is_male ?? true }),
     });
     if (!analysisRes.ok) throw new Error('BaZi calculation failed');
-    const { bazi: baziResult } = await analysisRes.json();
+    const { bazi: baziResult, dayun } = await analysisRes.json();
 
     const { data: baziVersion, error: baziError } = await supabase
       .from('bazi_profile_versions')
@@ -464,6 +468,8 @@ router.post('/transfer', async (req: Request, res: Response) => {
         hour_pillar: baziResult.pillars.hour ?? null,
         five_elements_strength: baziResult.five_elements_strength,
         day_master: baziResult.day_master,
+        is_male: bazi.is_male ?? true,
+        dayun: dayun ?? null,
       })
       .select()
       .single();

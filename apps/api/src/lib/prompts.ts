@@ -2,15 +2,7 @@ import type OpenAI from 'openai';
 
 type Messages = OpenAI.ChatCompletionMessageParam[];
 
-const SAFETY_CLAUSE_EN = `
-ABSOLUTE SAFETY RULES — these override everything else:
-- Never mention, suggest, imply, or reference death, dying, suicide, self-harm, killing, or harming oneself or others in any form.
-- If the user's message contains any hint of crisis, hopelessness, or self-harm, do NOT continue the reading. Instead respond only with the crisis support message.
-- Never use language that implies a person's fate is sealed or their situation is hopeless.
-- Never frame any BaZi pattern as a curse, severe misfortune, or irreversible bad luck.
-`;
-
-const SAFETY_CLAUSE_ZH = `
+const SAFETY_CLAUSE = `
 絕對安全守則——以下規則優先於一切：
 - 絕對不得以任何形式提及、暗示或引導與死亡、自殺、自我傷害相關的內容。
 - 若用戶的訊息中出現任何危機或絕望的跡象，請立即停止解讀並回應危機支援訊息。
@@ -21,10 +13,7 @@ const SAFETY_CLAUSE_ZH = `
 function getDateContext(): { gregorian: string; dayOfWeek: string } {
   const now = new Date();
   const gregorian = now.toLocaleDateString('en-GB', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
   const dayOfWeek = now.toLocaleDateString('en-GB', { weekday: 'long' });
   return { gregorian, dayOfWeek };
@@ -35,97 +24,176 @@ function getDominantElement(five_elements_strength: Record<string, number>): str
     .sort(([, a], [, b]) => b - a)[0][0];
 }
 
-export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en'): Messages {
-  const dominantElement = getDominantElement(bazi.five_elements_strength);
-  const { gregorian } = getDateContext();
-
-  if (lang === 'zh-TW') {
-    return [
-      {
-        role: 'system',
-        content: `你是Oria的引導師——溫和、有洞察力的顧問，結合八字和MBTI提供反思性指引。
-不做絕對預測。語氣平靜、紮實、不說教。永遠不說「你必須」或「你會」。
-今天日期：${gregorian}
-用繁體中文回應。${SAFETY_CLAUSE_ZH}`,
-      },
-      {
-        role: 'user',
-        content: `請根據以下資料生成個人檔案摘要。
-
-八字：日主 ${bazi.day_master}，主導五行 ${dominantElement}
-五行力量：${JSON.stringify(bazi.five_elements_strength)}
-MBTI：${mbti.type} — ${mbti.nickname}
-核心特質：${mbti.core_traits}
-工作風格：${mbti.work_style}
-感情風格：${mbti.relationship_style}
-
-以JSON回應：
-{
-  "headline": "一句話描述核心本質（15字以內）",
-  "summary": "2-3句整體描述，結合八字和MBTI洞察",
-  "key_strengths": ["優勢1","優勢2","優勢3"],
-  "growth_areas": ["成長方向1","成長方向2"],
-  "mbti_bazi_resonance": "一句話說明兩者如何印證",
-  "gentle_nudge": "一句溫和鼓勵"
+function formatPillar(pillar: any): string {
+  if (!pillar) return '未知';
+  return `${pillar.gan}${pillar.zhi}`;
 }
-只回傳JSON。`,
-      },
-    ];
+
+// 流年干支 (Annual stems/branches) - fixed 60-year cycle
+const ANNUAL_PILLARS: Record<number, { stem: string; branch: string; element: string; zh: string }> = {
+  2020: { stem: 'Geng', branch: 'Zi', element: 'Metal', zh: '庚子' },
+  2021: { stem: 'Xin', branch: 'Chou', element: 'Metal', zh: '辛丑' },
+  2022: { stem: 'Ren', branch: 'Yin', element: 'Water', zh: '壬寅' },
+  2023: { stem: 'Gui', branch: 'Mao', element: 'Water', zh: '癸卯' },
+  2024: { stem: 'Jia', branch: 'Chen', element: 'Wood', zh: '甲辰' },
+  2025: { stem: 'Yi', branch: 'Si', element: 'Wood', zh: '乙巳' },
+  2026: { stem: 'Bing', branch: 'Wu', element: 'Fire', zh: '丙午' },
+  2027: { stem: 'Ding', branch: 'Wei', element: 'Fire', zh: '丁未' },
+  2028: { stem: 'Wu', branch: 'Shen', element: 'Earth', zh: '戊申' },
+  2029: { stem: 'Ji', branch: 'You', element: 'Earth', zh: '己酉' },
+  2030: { stem: 'Geng', branch: 'Xu', element: 'Metal', zh: '庚戌' },
+  2031: { stem: 'Xin', branch: 'Hai', element: 'Metal', zh: '辛亥' },
+  2032: { stem: 'Ren', branch: 'Zi', element: 'Water', zh: '壬子' },
+  2033: { stem: 'Gui', branch: 'Chou', element: 'Water', zh: '癸丑' },
+  2034: { stem: 'Jia', branch: 'Yin', element: 'Wood', zh: '甲寅' },
+  2035: { stem: 'Yi', branch: 'Mao', element: 'Wood', zh: '乙卯' },
+};
+
+function getLiunianContext(years: number = 5): string {
+  const currentYear = new Date().getFullYear();
+  const liunian = [];
+  for (let y = currentYear; y < currentYear + years; y++) {
+    const p = ANNUAL_PILLARS[y];
+    if (p) liunian.push(`${y}年：${p.zh}（${p.element}）`);
   }
+  return `未來${years}年流年：${liunian.join(' | ')}`;
+}
+
+function getBaziContext(bazi: any): string {
+  const dominantElement = getDominantElement(bazi.five_elements_strength);
+  const birthDate = bazi.birth_date ? `出生日期：${bazi.birth_date}` : '';
+  const currentYear = new Date().getFullYear();
+
+  // Current 大運
+  let dayunContext = '';
+  if (bazi.dayun?.current_dayun) {
+    const cd = bazi.dayun.current_dayun;
+    dayunContext = `當前大運：${cd.pillar}（${cd.stem_en}${cd.branch_en}）| 流年：${cd.start_year}-${cd.end_year} | 現年${currentYear - (parseInt(bazi.birth_date?.split('-')[0] ?? '1990'))}歲`;
+  }
+
+  // All 大運 cycles
+  let allDayun = '';
+  if (bazi.dayun?.dayuns?.length > 0) {
+    allDayun = '大運排列：' + bazi.dayun.dayuns
+      .map((d: any) => `${d.pillar}(${d.start_year}-${d.end_year})${d.is_current ? '←現在' : ''}`)
+      .join(' | ');
+  }
+
+  return `${birthDate}
+八字四柱：
+- 年柱：${formatPillar(bazi.year_pillar)}
+- 月柱：${formatPillar(bazi.month_pillar)}
+- 日柱：${formatPillar(bazi.day_pillar)}（日主：${bazi.day_master}）
+- 時柱：${formatPillar(bazi.hour_pillar)}
+五行力量：木${bazi.five_elements_strength?.Wood ?? 0} 火${bazi.five_elements_strength?.Fire ?? 0} 土${bazi.five_elements_strength?.Earth ?? 0} 金${bazi.five_elements_strength?.Metal ?? 0} 水${bazi.five_elements_strength?.Water ?? 0}
+主導五行：${dominantElement}
+${dayunContext}
+${allDayun}
+${getLiunianContext(6)}`;
+}
+
+function getMbtiContext(mbti: any): string {
+  if (!mbti) return 'MBTI：未知';
+  return `MBTI：${mbti.type || mbti.mbti_type || ''} — ${mbti.nickname || ''}
+核心特質：${mbti.core_traits || ''}
+工作風格：${mbti.work_style || ''}
+感情風格：${mbti.relationship_style || ''}`;
+}
+
+function getRespondIn(lang: string): string {
+  if (lang === 'zh-TW') return '請用繁體中文回應。';
+  if (lang === 'zh-CN') return '请用简体中文回应。';
+  return 'Please respond in English.';
+}
+
+const STEM_ELEMENT: Record<string, string> = {
+  '甲': '木', '乙': '木', '丙': '火', '丁': '火',
+  '戊': '土', '己': '土', '庚': '金', '辛': '金',
+  '壬': '水', '癸': '水',
+  'Jia': '木', 'Yi': '木', 'Bing': '火', 'Ding': '火',
+  'Wu': '土', 'Ji': '土', 'Geng': '金', 'Xin': '金',
+  'Ren': '水', 'Gui': '水',
+};
+
+const STEM_TONE: Record<string, { en: string; zh: string }> = {
+  '甲': { en: 'Rising Wood', zh: '創意木生' }, 'Jia': { en: 'Rising Wood', zh: '創意木生' },
+  '乙': { en: 'Gentle Wood', zh: '柔韌木氣' }, 'Yi': { en: 'Gentle Wood', zh: '柔韌木氣' },
+  '丙': { en: 'Bright Fire', zh: '熱情火旺' }, 'Bing': { en: 'Bright Fire', zh: '熱情火旺' },
+  '丁': { en: 'Warm Fire', zh: '溫暖丁火' }, 'Ding': { en: 'Warm Fire', zh: '溫暖丁火' },
+  '戊': { en: 'Steady Earth', zh: '穩重土氣' }, 'Wu': { en: 'Steady Earth', zh: '穩重土氣' },
+  '己': { en: 'Nurturing Earth', zh: '包容己土' }, 'Ji': { en: 'Nurturing Earth', zh: '包容己土' },
+  '庚': { en: 'Bold Metal', zh: '剛毅金氣' }, 'Geng': { en: 'Bold Metal', zh: '剛毅金氣' },
+  '辛': { en: 'Refined Metal', zh: '精緻辛金' }, 'Xin': { en: 'Refined Metal', zh: '精緻辛金' },
+  '壬': { en: 'Deep Water', zh: '深流水氣' }, 'Ren': { en: 'Deep Water', zh: '深流水氣' },
+  '癸': { en: 'Gentle Water', zh: '沉穩癸水' }, 'Gui': { en: 'Gentle Water', zh: '沉穩癸水' },
+};
+
+export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en'): Messages {
+  const { gregorian } = getDateContext();
+  const baziCtx = getBaziContext(bazi);
+  const mbtiCtx = getMbtiContext(mbti);
+  const respondIn = getRespondIn(lang);
+  const currentYear = new Date().getFullYear();
 
   return [
     {
       role: 'system',
-      content: `You are Oria's guide — calm, insightful, combining BaZi and MBTI for reflective personal guidance.
-No absolute predictions. Tone: calm, grounded, non-preachy. Never say "you must" or "you will."
-Today's date: ${gregorian}
-Respond in English.${SAFETY_CLAUSE_EN}`,
+      content: `你是Oria的資深命盤解析師——深諳八字命理、十神分析、格局判斷，並能精準結合MBTI提供深度洞察。
+你的分析必須基於真實的八字命理理論，包括日主強弱、十神配置、用神忌神。
+語氣溫和、有洞察力、不說教。不做絕對預測。
+今天日期：${gregorian}
+${SAFETY_CLAUSE}`,
     },
     {
       role: 'user',
-      content: `Generate a personal profile summary based on:
+      content: `請根據以下完整八字與MBTI資料，生成深度個人命盤解析。
 
-BaZi: day master ${bazi.day_master}, dominant element ${dominantElement}
-Element strengths: ${JSON.stringify(bazi.five_elements_strength)}
-MBTI: ${mbti.type} — ${mbti.nickname}
-Core traits: ${mbti.core_traits}
-Work style: ${mbti.work_style}
-Relationship style: ${mbti.relationship_style}
+${baziCtx}
+${mbtiCtx}
 
-Respond in JSON:
+分析要求（必須執行）：
+1. 判斷日主強弱（根據月令、印星、比劫等）
+2. 分析十神配置對性格的影響
+3. 找出用神與忌神
+4. 結合MBTI印證性格特質
+5. ${currentYear}流年分析（今年天干地支對日主的影響）
+6. 事業方向建議（基於十神與MBTI）
+7. 吉祥建議（基於用神五行）
+
+以JSON回應：
 {
-  "headline": "One sentence, core essence, under 15 words",
-  "summary": "2-3 sentences combining BaZi and MBTI insights",
-  "key_strengths": ["strength1","strength2","strength3"],
-  "growth_areas": ["area1","area2"],
-  "mbti_bazi_resonance": "One sentence on how they echo each other",
-  "gentle_nudge": "One gentle encouragement"
+  "headline": "一句話點出命盤核心本質（15字以內，必須包含日主特性）",
+  "summary": "3-4句深度描述，結合日主強弱、十神配置與MBTI",
+  "day_master_analysis": "2-3句說明日主特性與強弱，以及對性格的具體影響",
+  "key_strengths": [
+    "優勢1（說明來自哪個十神或五行）",
+    "優勢2",
+    "優勢3"
+  ],
+  "growth_areas": [
+    "成長方向1（具體可行，基於忌神或弱勢五行）",
+    "成長方向2"
+  ],
+  "career_direction": "2-3句基於十神配置與MBTI的事業方向建議，給出具體行業或職能方向",
+  "relationship_pattern": "1-2句基於日支與感情宮的感情模式分析",
+  "current_year": "${currentYear}年流年——2句說明今年天干地支對日主的影響及建議",
+  "lucky_elements": {
+    "colors": ["顏色1（說明五行關係）", "顏色2"],
+    "directions": ["方位1", "方位2"],
+    "items": ["吉祥物件1（說明原因）", "吉祥物件2"]
+  },
+  "mbti_bazi_resonance": "一句話精準說明八字與MBTI如何相互印證",
+  "gentle_nudge": "一句溫和而有力的鼓勵",
+  "chat_teasers": [
+    "留給對話探索的問題1（必須用第一人稱，例如：我的大運走勢如何？）",
+    "留給對話探索的問題2（第一人稱）",
+    "留給對話探索的問題3（第一人稱）"
+  ]
 }
-Return only JSON.`,
+只回傳JSON。${respondIn}`,
     },
   ];
 }
-
-const STEM_ELEMENT: Record<string, { en: string; zh: string }> = {
-  '甲': { en: 'Wood', zh: '木' }, '乙': { en: 'Wood', zh: '木' },
-  '丙': { en: 'Fire', zh: '火' }, '丁': { en: 'Fire', zh: '火' },
-  '戊': { en: 'Earth', zh: '土' }, '己': { en: 'Earth', zh: '土' },
-  '庚': { en: 'Metal', zh: '金' }, '辛': { en: 'Metal', zh: '金' },
-  '壬': { en: 'Water', zh: '水' }, '癸': { en: 'Water', zh: '水' },
-};
-
-const STEM_TONE: Record<string, { en: string; zh: string }> = {
-  '甲': { en: 'Rising Wood', zh: '創意木生' },
-  '乙': { en: 'Gentle Wood', zh: '柔韌木氣' },
-  '丙': { en: 'Bright Fire', zh: '熱情火旺' },
-  '丁': { en: 'Warm Fire', zh: '溫暖丁火' },
-  '戊': { en: 'Steady Earth', zh: '穩重土氣' },
-  '己': { en: 'Nurturing Earth', zh: '包容己土' },
-  '庚': { en: 'Bold Metal', zh: '剛毅金氣' },
-  '辛': { en: 'Refined Metal', zh: '精緻辛金' },
-  '壬': { en: 'Deep Water', zh: '深流水氣' },
-  '癸': { en: 'Gentle Water', zh: '沉穩癸水' },
-};
 
 export function dailyGuidancePrompt(
   bazi: any,
@@ -134,85 +202,58 @@ export function dailyGuidancePrompt(
   todayBranch: string,
   lang: string = 'en',
 ): Messages {
-  const dominantElement = getDominantElement(bazi.five_elements_strength);
   const { gregorian, dayOfWeek } = getDateContext();
-
-  const todayElement = STEM_ELEMENT[todayStem] ?? { en: 'Earth', zh: '土' };
+  const baziCtx = getBaziContext(bazi);
+  const mbtiCtx = getMbtiContext(mbti);
+  const respondIn = getRespondIn(lang);
+  const todayElement = STEM_ELEMENT[todayStem] ?? '土';
   const todayTone = STEM_TONE[todayStem] ?? { en: 'Steady Earth', zh: '穩重土氣' };
-
-  if (lang === 'zh-TW') {
-    return [
-      {
-        role: 'system',
-        content: `你是Oria的每日引導師。根據用戶八字、MBTI性格和今日干支提供簡短實用的每日指引。
-語氣溫和、積極、不說教。30秒內可讀完。
-今天日期：${gregorian}
-用繁體中文回應。${SAFETY_CLAUSE_ZH}`,
-      },
-      {
-        role: 'user',
-        content: `生成今日指引。
-
-今天：${gregorian}（${dayOfWeek}）
-今日干支：${todayStem}${todayBranch}
-今日五行：${todayElement.zh}（固定，必須使用此五行作為今日基調基礎）
-用戶八字：日主 ${bazi.day_master}，主導五行 ${dominantElement}
-五行力量：${JSON.stringify(bazi.five_elements_strength)}
-MBTI：${mbti?.type || ''} — ${mbti?.nickname || ''}
-核心特質：${mbti?.core_traits || ''}
-
-以JSON回應（所有建議必須具體實用，避免空泛）：
-{
-  "tone": "${todayTone.zh}",
-  "pace": "今日節奏建議（一句具體建議，例如：上午處理重要事務，下午適合溝通協調）",
-  "lucky_color": {
-    "color": "具體顏色名稱（例如：紅色、藍色、綠色、黃色、白色、黑色、橙色、紫色）",
-    "reason": "為何今日適合此顏色（根據五行，一句話）"
-  },
-  "tips": [
-    {"area":"工作","text":"具體工作建議（例如：適合開會談判，避免獨自埋頭苦幹）"},
-    {"area":"人際","text":"具體人際建議（例如：主動聯繫久未聯絡的朋友）"},
-    {"area":"健康","text":"具體健康建議（例如：多喝水，避免熬夜）"},
-    {"area":"財務","text":"具體財務建議（例如：適合檢視開支，避免大額消費）"}
-  ],
-  "nudge": "今日明燈——一句簡短有力的提醒（例如：今日宜進不宜退，把握主動）",
-  "suggested_prompts": ["提問1","提問2","提問3"]
-}
-只回傳JSON。不要有任何空泛或抽象的建議。`,
-      },
-    ];
-  }
+  const toneStr = lang === 'en' ? todayTone.en : todayTone.zh;
 
   return [
     {
       role: 'system',
-      content: `You are Oria's daily guide. Provide a short, practical daily overview based on BaZi, MBTI personality, and today's stem/branch.
-Tone: gentle, positive, non-preachy. Readable in under 30 seconds.
-Today's date: ${gregorian}
-Respond in English.${SAFETY_CLAUSE_EN}`,
+      content: `你是Oria的每日命盤引導師。根據用戶完整八字、MBTI性格和今日干支，提供精準個人化的每日指引。
+今日干支的五行必須與用戶日主進行生剋分析，才能給出真正個人化的建議。
+語氣溫和、積極、不說教。30秒內可讀完。
+今天日期：${gregorian}
+${SAFETY_CLAUSE}`,
     },
     {
       role: 'user',
-      content: `Generate today's guidance.
+      content: `生成今日個人化指引。
 
-Today: ${gregorian} (${dayOfWeek})
-Today's stem and branch: ${todayStem}${todayBranch}
-Today's element: ${todayElement.en} (FIXED — must use this as the base for today's tone)
-User BaZi: day master ${bazi.day_master}, dominant element ${dominantElement}
-Element strengths: ${JSON.stringify(bazi.five_elements_strength)}
-MBTI: ${mbti?.type || ''} — ${mbti?.nickname || ''}
-Core traits: ${mbti?.core_traits || ''}
+今天：${gregorian}（${dayOfWeek}）
+今日干支：${todayStem}${todayBranch}（今日五行：${todayElement}）
+今日基調（固定）：${toneStr}
 
-Respond in JSON:
+用戶命盤：
+${baziCtx}
+${mbtiCtx}
+
+分析邏輯（必須執行）：
+1. 今日${todayElement}與日主${bazi.day_master}的關係：判斷是生、剋、洩、耗還是比
+2. 根據此關係決定今日對用戶的影響（有利/中性/需謹慎）
+3. 結合MBTI特質給出具體建議
+
+以JSON回應：
 {
-  "tone": "${todayTone.en}",
-  "pace": "Suggested pace (one sentence)",
-  "lucky_color": {"color": "specific color name e.g. Red, Blue, Green, Yellow, White, Black, Orange, Purple", "reason": "one sentence why this color helps today based on Five Elements"},
-  "tips": [{"area":"Work","text":"tip"},{"area":"Relationships","text":"tip"},{"area":"Wellness","text":"tip"},{"area":"Finance","text":"tip"}],
-  "nudge": "Today's gentle nudge — one poetic sentence",
-  "suggested_prompts": ["prompt1","prompt2","prompt3"]
+  "tone": "${toneStr}",
+  "pace": "根據今日五行與日主關係，給出一句具體節奏建議",
+  "lucky_color": {
+    "color": "根據今日五行選擇具體顏色",
+    "reason": "一句說明此顏色與今日五行的關係"
+  },
+  "tips": [
+    {"area":"工作","text":"結合日主特性與MBTI的具體工作建議"},
+    {"area":"人際","text":"結合感情風格的具體人際建議"},
+    {"area":"健康","text":"根據五行平衡的具體健康建議"},
+    {"area":"財務","text":"具體財務建議"}
+  ],
+  "nudge": "一句簡短有力的提醒，必須體現今日五行與日主的互動",
+  "suggested_prompts": ["與命盤相關的提問1","提問2","提問3"]
 }
-Return only JSON.`,
+只回傳JSON。${respondIn}`,
     },
   ];
 }
@@ -226,55 +267,44 @@ export function chatPrompt(
   lang: string = 'en',
   userName: string = '',
 ): Messages {
-  const dominantElement = getDominantElement(bazi.five_elements_strength);
   const { gregorian, dayOfWeek } = getDateContext();
-  const name = userName || (lang === 'zh-TW' ? '用戶' : 'the user');
+  const name = userName || '用戶';
+  const baziCtx = getBaziContext(bazi);
+  const mbtiCtx = getMbtiContext(mbti);
+  const respondIn = getRespondIn(lang);
 
-  const systemContent = lang === 'zh-TW'
-    ? `你是Oria的引導師——溫和、有洞察力。結合八字和MBTI提供反思性指引。
-不做絕對預測。語氣平靜、紮實、不說教。永遠不說「你必須」或「你會」。
+  const systemContent = `你是Oria的命盤引導師——深諳八字命理與MBTI性格分析。
 
 今天日期：${gregorian}（${dayOfWeek}）
+用戶：${name}
+${baziCtx}
+${mbtiCtx}
 
-用戶資料：
-- 姓名：${name}
-- 八字日主：${bazi.day_master}，主導五行：${dominantElement}
-- 五行力量：${JSON.stringify(bazi.five_elements_strength)}
-- MBTI：${mbti.type} — ${mbti.nickname}
-- 核心特質：${mbti.core_traits}
-- 工作風格：${mbti.work_style}
-- 感情風格：${mbti.relationship_style}
-
-每次回應結尾加上：「這是一種反思，而非預測。決定權在你。」
-用繁體中文回應。${SAFETY_CLAUSE_ZH}`
-    : `You are Oria's guide — calm, insightful. Combining BaZi and MBTI for reflective personal guidance.
-No absolute predictions. Tone: calm, grounded, non-preachy. Never say "you must" or "you will."
-
-Today's date: ${gregorian} (${dayOfWeek})
-
-User profile:
-- Name: ${name}
-- BaZi day master: ${bazi.day_master}, dominant element: ${dominantElement}
-- Element strengths: ${JSON.stringify(bazi.five_elements_strength)}
-- MBTI: ${mbti.type} — ${mbti.nickname}
-- Core traits: ${mbti.core_traits}
-- Work style: ${mbti.work_style}
-- Relationship style: ${mbti.relationship_style}
-
-End every response with: "This is a reflection, not a prediction. You hold the decisions."
-Respond in English.${SAFETY_CLAUSE_EN}`;
+回應規則（嚴格執行）：
+1. 每次回應必須明確提及用戶的日主（${bazi.day_master}）或具體五行，不得給出適用於所有人的泛泛之詞
+2. 回應長度：4-6句，簡潔有力，不要長篇大論
+3. 禁止使用空洞句子如「保持努力」「抓住機會」「希望對你有幫助」「建議你」
+4. 若問時間預測/財運/事業運：
+   - 必須逐年分析（2026、2027、2028...）
+   - 說明每年流年干支與日主、大運的三者互動
+   - 指出具體機遇與風險
+   - 結合MBTI說明如何應對
+5. 若問性格：從日主五行特性切入，結合MBTI給出獨特洞察，說明優勢與盲點
+6. 若問事業：基於十神配置與MBTI給出具體行業或職能方向
+7. 若問任何一般性問題（財務管理、人際關係、健康等）：
+   - 必須先說明日主五行如何影響這個範疇
+   - 再結合當前大運和流年給出具體建議
+   - 例如：「辛金日主在財務上的特點是...，加上當前辛卯大運...」
+8. 語氣：像一位直接、有洞察力的朋友，敢於指出問題，而非只說好話
+9. 結尾一句：「這是一種反思，而非預測。決定權在你。」
+${SAFETY_CLAUSE}
+${respondIn}`;
 
   const messages: Messages = [{ role: 'system', content: systemContent }];
 
   if (summary) {
-    messages.push({
-      role: 'user',
-      content: `[Previous conversation summary: ${summary}]`,
-    });
-    messages.push({
-      role: 'assistant',
-      content: 'Understood. I have the context of our earlier conversation.',
-    });
+    messages.push({ role: 'user', content: `[之前對話摘要：${summary}]` });
+    messages.push({ role: 'assistant', content: '明白，我已了解我們之前的對話內容。' });
   }
 
   history.forEach(m =>
@@ -282,34 +312,21 @@ Respond in English.${SAFETY_CLAUSE_EN}`;
   );
 
   messages.push({ role: 'user', content: userMessage });
-
   return messages;
 }
 
 export function summarizationPrompt(messages: { role: string; content: string }[], lang: string = 'en'): Messages {
-  const formatted = messages.map(m => `${m.role === 'user' ? 'User' : 'Oria'}: ${m.content}`).join('\n\n');
-
-  if (lang === 'zh-TW') {
-    return [
-      {
-        role: 'system',
-        content: '你是一個對話摘要助手。請將以下對話濃縮成150字以內的摘要，重點記錄用戶探討的主題、模式和洞察。用繁體中文回應。',
-      },
-      {
-        role: 'user',
-        content: `請摘要以下對話：\n\n${formatted}`,
-      },
-    ];
-  }
+  const formatted = messages.map(m => `${m.role === 'user' ? '用戶' : 'Oria'}: ${m.content}`).join('\\n\\n');
+  const respondIn = getRespondIn(lang);
 
   return [
     {
       role: 'system',
-      content: 'You are a conversation summarizer. Condense the following conversation into a summary of under 150 words, focusing on the themes, patterns, and insights the user explored.',
+      content: '你是一個對話摘要助手。請將以下對話濃縮成150字以內的摘要，重點記錄用戶探討的主題、命盤相關的洞察，以及任何重要的個人背景。',
     },
     {
       role: 'user',
-      content: `Summarize this conversation:\n\n${formatted}`,
+      content: `請摘要以下對話：\\n\\n${formatted}\\n\\n${respondIn}`,
     },
   ];
 }

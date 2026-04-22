@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
@@ -17,12 +18,20 @@ interface Conversation {
   updated_at: string;
 }
 
-const STARTER_QUESTIONS = [
+const STARTER_QUESTIONS_EN = [
   'What does my BaZi say about my career direction?',
   'How does my MBTI interact with my day master?',
   'What patterns do you see in how I handle relationships?',
   'What kind of work environment fits my nature?',
   'What should I pay attention to this month?',
+];
+
+const STARTER_QUESTIONS_ZH = [
+  '我的八字對事業方向有什麼啟示？',
+  '我的MBTI與日主如何相互影響？',
+  '從命盤來看，我在感情中有什麼模式？',
+  '什麼樣的工作環境最適合我的性格？',
+  '這個月我應該注意什麼？',
 ];
 
 export default function Chat({ user, isPro = false }: { user: User; isPro?: boolean }) {
@@ -42,6 +51,7 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
   const [historyLoading, setHistoryLoading] = useState(false);
   const [dailyPrompts, setDailyPrompts] = useState<string[]>([]);
   const [promptsLoading, setPromptsLoading] = useState(true);
+  const [langReady, setLangReady] = useState(false);
 
   useEffect(() => {
     const prefill = (location.state as any)?.prefill;
@@ -53,9 +63,13 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
   }, [messages]);
 
   useEffect(() => {
+    setLangReady(false);
     getDailySuggestedPrompts(i18n.language === 'zh-TW' ? 'zh-TW' : 'en')
-      .then(data => setDailyPrompts(data.suggested_prompts))
-      .catch(() => { });
+      .then(data => {
+        setDailyPrompts(data.suggested_prompts);
+        setLangReady(true);
+      })
+      .catch(() => { setLangReady(true); });
   }, [i18n.language]);
 
   async function loadHistory() {
@@ -122,8 +136,8 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
   }
 
   const allPrompts = [
-    ...dailyPrompts,
-    ...STARTER_QUESTIONS.filter(q => !dailyPrompts.includes(q)),
+    ...(langReady ? dailyPrompts : []),
+    ...( langReady ? (isZH ? STARTER_QUESTIONS_ZH : STARTER_QUESTIONS_EN).filter(q => !dailyPrompts.includes(q)) : []),
   ].slice(0, 5);
 
   if (!isPro) return (
@@ -239,7 +253,11 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
                   fontSize: 16, lineHeight: 1.7,
                   boxShadow: msg.role === 'user' ? '0 6px 20px rgba(147, 51, 234, 0.3)' : 'none'
                 }}>
-                  {msg.content}
+                  {msg.role === 'assistant' ? (
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  ) : (
+                    msg.content
+                  )}
                   {msg.crisis && (
                     <div style={{ marginTop: 10, fontSize: 12, opacity: 0.7 }}>— Oria safety response</div>
                   )}

@@ -5,7 +5,7 @@ const client = new OpenAI({
   baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
 });
 
-const MODEL = 'qwen-max';
+const MODEL = 'deepseek-v3.2';
 
 export async function complete(messages: OpenAI.ChatCompletionMessageParam[]): Promise<string> {
   const stream = await client.chat.completions.create({

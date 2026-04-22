@@ -110,7 +110,7 @@ router.post('/send', async (req: Request, res: Response) => {
       supabase.from('user_profiles').select('current_bazi_version_id, current_mbti_version_id').eq('user_id', userId).single(),
     ]);
 
-    const isPro = userData?.plan === 'pro';
+    const isPro = userData?.plan === 'plus';
     const today = new Date().toISOString().split('T')[0];
     const lastDate = userData?.last_question_date;
     const questionsToday = lastDate === today ? (userData?.questions_today ?? 0) : 0;
@@ -124,8 +124,8 @@ router.post('/send', async (req: Request, res: Response) => {
     const dailyLimit = isPro ? 3 : 1;
     if (questionsToday >= dailyLimit) {
       const msg = lang === 'zh-TW'
-        ? `你已達到今天的提問上限。\n明天我們可以繼續探討。\n\n✨ 或者立即升級至 Oria Pro，繼續你的深度探索。`
-        : `You've reached today's guidance limit.\nTake some time to reflect — we'll continue tomorrow.\n\n✨ Or continue now with Oria Pro.`;
+        ? (isPro ? `你已達到今天的提問上限（每日3次）。\n明天我們可以繼續探討。\n✨ 靜心思考今日的洞察，明天見。` : `你已達到今天的提問上限。\n明天我們可以繼續探討。\n\n✨ 或者立即升級至 Oria Plus，繼續你的深度探索。`)
+        : (isPro ? `You've reached today's limit (3 questions/day). Reflect on today's insights — see you tomorrow.` : `You've reached today's guidance limit. Take some time to reflect — we'll continue tomorrow.\n\n✨ Or continue now with Oria Plus.`);
       return res.json({
         response: msg,
         conversation_id: conversation_id,
@@ -204,7 +204,7 @@ router.post('/send', async (req: Request, res: Response) => {
 
     // build prompt and call LLM
     const messages = chatPrompt(
-      { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength },
+      { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength, year_pillar: bazi.year_pillar, month_pillar: bazi.month_pillar, day_pillar: bazi.day_pillar, hour_pillar: bazi.hour_pillar, birth_date: bazi.birth_date, dayun: bazi.dayun },
       mbtiProfile,
       history,
       message,

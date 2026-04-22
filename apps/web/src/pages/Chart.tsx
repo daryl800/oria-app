@@ -414,19 +414,118 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
               {/* Pro-only content */}
               {isPro ? (
                 <>
+                  {/* Day master analysis */}
+                  {summary.day_master_analysis && (
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
+                        {isZH ? '日主解析' : 'DAY MASTER'}
+                      </div>
+                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, margin: 0 }}>
+                        {summary.day_master_analysis}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Career direction */}
+                  {summary.career_direction && (
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
+                        {isZH ? '事業天賦' : 'CAREER DIRECTION'}
+                      </div>
+                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, margin: 0 }}>
+                        {summary.career_direction}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Relationship pattern */}
+                  {summary.relationship_pattern && (
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
+                        {isZH ? '感情模式' : 'RELATIONSHIP PATTERN'}
+                      </div>
+                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, margin: 0 }}>
+                        {summary.relationship_pattern}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Current year */}
+                  {summary.current_year && (
+                    <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '14px 16px', marginBottom: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
+                        {isZH ? '今年流年' : 'THIS YEAR'}
+                      </div>
+                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, margin: 0 }}>
+                        {summary.current_year}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Lucky elements */}
+                  {summary.lucky_elements && (
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 12 }}>
+                        {isZH ? '吉祥建議' : 'LUCKY ELEMENTS'}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {summary.lucky_elements.colors?.length > 0 && (
+                          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
+                            🎨 {isZH ? '顏色：' : 'Colors: '}{summary.lucky_elements.colors.join('、')}
+                          </div>
+                        )}
+                        {summary.lucky_elements.directions?.length > 0 && (
+                          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
+                            🧭 {isZH ? '方位：' : 'Directions: '}{summary.lucky_elements.directions.join('、')}
+                          </div>
+                        )}
+                        {summary.lucky_elements.items?.length > 0 && (
+                          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
+                            ✨ {isZH ? '吉祥物：' : 'Items: '}{summary.lucky_elements.items.join('、')}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* MBTI BaZi resonance */}
                   {summary.mbti_bazi_resonance && (
                     <p style={{ lineHeight: 1.7, color: '#C084FC', fontSize: 13, fontStyle: 'italic', marginBottom: 16 }}>
                       {summary.mbti_bazi_resonance}
                     </p>
                   )}
+
+                  {/* Gentle nudge */}
                   {summary.gentle_nudge && (
-                    <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '12px 14px' }}>
+                    <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '12px 14px', marginBottom: 16 }}>
                       <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 6 }}>
                         {isZH ? '成長提示' : 'GENTLE NUDGE'}
                       </div>
                       <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0 }}>
                         {summary.gentle_nudge}
                       </p>
+                    </div>
+                  )}
+
+                  {/* Chat teasers */}
+                  {summary.chat_teasers?.length > 0 && (
+                    <div style={{ borderTop: '1px solid rgba(192,132,252,0.15)', paddingTop: 16 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 10 }}>
+                        {isZH ? '繼續探索' : 'EXPLORE FURTHER'}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {summary.chat_teasers.map((q: string, i: number) => (
+                          <button key={i} onClick={() => navigate('/chat', { state: { prefill: q.replace(/你的/g, '我的').replace(/你/g, '我') } })}
+                            style={{
+                              background: 'rgba(192,132,252,0.08)', border: '1px solid rgba(192,132,252,0.2)',
+                              borderRadius: 10, padding: '10px 14px', textAlign: 'left',
+                              fontSize: 13, color: 'rgba(255,255,255,0.7)', cursor: 'pointer',
+                              fontFamily: 'inherit', lineHeight: 1.5,
+                            }}>
+                            💬 {q}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </>

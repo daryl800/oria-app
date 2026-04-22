@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
-from app.bazi import calculate_bazi, enrich_with_localized_pillars, analyze_three_pillars
+from app.bazi import calculate_bazi, enrich_with_localized_pillars, analyze_three_pillars, calculate_dayun
 from app.mbti import get_mbti_profile, get_mbti_bazi_combined_context
 
 app = FastAPI(title="oria-analysis-service")
@@ -17,6 +17,7 @@ class BaziRequest(BaseModel):
     location: Optional[str] = None
     time_known: Optional[bool] = None
     lang: str = "en"
+    is_male: Optional[bool] = None
 
 class MbtiRequest(BaseModel):
     mbti_type: str
@@ -44,7 +45,10 @@ def bazi_calculate(req: BaziRequest):
         )
         enrich_with_localized_pillars(result, lang=req.lang)
         analysis = analyze_three_pillars(result, lang=req.lang)
-        return {"bazi": result, "analysis": analysis}
+        dayun = None
+        if req.is_male is not None:
+            dayun = calculate_dayun(req.year, req.month, req.day, req.is_male)
+        return {"bazi": result, "analysis": analysis, "dayun": dayun}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -64,7 +64,7 @@ router.get('/today', async (req: Request, res: Response) => {
       .eq('id', userId)
       .single();
 
-    const isPro = userData?.plan === 'pro';
+    const isPro = userData?.plan === 'plus';
     const createdAt = new Date(userData?.created_at ?? Date.now());
     const daysSinceSignup = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
     const isFullGuidance = isPro || daysSinceSignup <= 5;
@@ -123,6 +123,12 @@ router.get('/today', async (req: Request, res: Response) => {
       {
         day_master: baziVersion.day_master,
         five_elements_strength: baziVersion.five_elements_strength,
+        year_pillar: baziVersion.year_pillar,
+        month_pillar: baziVersion.month_pillar,
+        day_pillar: baziVersion.day_pillar,
+        hour_pillar: baziVersion.hour_pillar,
+        birth_date: baziVersion.birth_date,
+        dayun: baziVersion.dayun,
       },
       mbtiProfile,
       stem,

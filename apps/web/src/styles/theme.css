@@ -358,3 +358,12 @@ h3 { font-size: 28px; }
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* Markdown styles in chat */
+.markdown-body p { margin-bottom: 10px; line-height: 1.7; }
+.markdown-body p:last-child { margin-bottom: 0; }
+.markdown-body strong { color: #C084FC; font-weight: 700; }
+.markdown-body h3 { font-size: 15px; color: #C084FC; margin: 14px 0 8px; font-weight: 700; letter-spacing: 0.5px; }
+.markdown-body ul, .markdown-body ol { padding-left: 20px; margin-bottom: 10px; }
+.markdown-body li { margin-bottom: 6px; line-height: 1.6; }
+.markdown-body em { color: rgba(255,255,255,0.7); font-style: italic; }

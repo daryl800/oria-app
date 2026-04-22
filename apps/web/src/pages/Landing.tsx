@@ -128,6 +128,22 @@ export default function Landing() {
           </div>
         </div>
 
+        {/* Language tip */}
+        <div style={{
+          width: '100%', maxWidth: 360, marginBottom: 16,
+          background: 'rgba(245,158,11,0.08)',
+          border: '1px solid rgba(245,158,11,0.25)',
+          borderRadius: 12, padding: '10px 14px',
+          display: 'flex', alignItems: 'flex-start', gap: 10,
+        }}>
+          <span style={{ fontSize: 22, flexShrink: 0 }}>🌐</span>
+          <p style={{ fontSize: 16, color: '#F59E0B', lineHeight: 1.6, margin: 0 }}>
+            {isZH
+              ? '開始前，請先在右上角選擇語言。語言將貫穿整個應用，之後更改不會翻譯已顯示的內容。'
+              : 'Before starting, please select your preferred language (top right). Changing it later will not translate previously shown content.'}
+          </p>
+        </div>
+
         {/* Buttons */}
         <div className="oria-buttons" style={{ width: '100%', maxWidth: 360, marginBottom: 48 }}>
           <button className="btn-signin" onClick={() => navigate('/login')}>

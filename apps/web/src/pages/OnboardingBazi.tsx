@@ -14,6 +14,7 @@ export default function OnboardingBazi() {
   const [hour, setHour] = useState('12');
   const [minute, setMinute] = useState('0');
   const [timeKnown, setTimeKnown] = useState(false);
+  const [isMale, setIsMale] = useState<boolean | null>(null);
   const [location, setLocation] = useState('Hong Kong');
   const [tzName, setTzName] = useState('Asia/Hong_Kong');
   const [saving, setSaving] = useState(false);
@@ -35,6 +36,7 @@ export default function OnboardingBazi() {
         hour: timeKnown ? parseInt(hour) : 0,
         minute: timeKnown ? parseInt(minute) : 0,
         tz_name: tzName, location, time_known: timeKnown,
+        is_male: isMale ?? true,
       };
       const { token } = await saveTempOnboarding(mbtiData, baziData);
       localStorage.removeItem('oria_mbti_result');
@@ -116,6 +118,35 @@ export default function OnboardingBazi() {
           </div>
 
           {/* Birth time */}
+          {/* Gender selector */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={labelStyle}>{isZH ? '性別' : 'Gender'}</label>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                type="button"
+                onClick={() => setIsMale(true)}
+                style={{
+                  flex: 1, padding: '12px', borderRadius: 12,
+                  border: isMale === true ? '2px solid #C084FC' : '1px solid rgba(192,132,252,0.3)',
+                  background: isMale === true ? 'rgba(192,132,252,0.15)' : 'rgba(255,255,255,0.06)',
+                  color: '#F0EDE8', cursor: 'pointer', fontFamily: 'inherit', fontSize: 16,
+                }}>
+                {isZH ? '♂ 男' : '♂ Male'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsMale(false)}
+                style={{
+                  flex: 1, padding: '12px', borderRadius: 12,
+                  border: isMale === false ? '2px solid #C084FC' : '1px solid rgba(192,132,252,0.3)',
+                  background: isMale === false ? 'rgba(192,132,252,0.15)' : 'rgba(255,255,255,0.06)',
+                  color: '#F0EDE8', cursor: 'pointer', fontFamily: 'inherit', fontSize: 16,
+                }}>
+                {isZH ? '♀ 女' : '♀ Female'}
+              </button>
+            </div>
+          </div>
+
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>
             <input type="checkbox" checked={timeKnown} onChange={e => setTimeKnown(e.target.checked)}
               style={{ width: 16, height: 16, accentColor: '#9333EA' }} />

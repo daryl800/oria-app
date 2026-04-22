@@ -68,7 +68,7 @@ export default function App() {
       .select('plan, pro_expires_at, preferred_language')
       .eq('id', userId)
       .single();
-    const pro = userRecord?.plan === 'pro' &&
+    const pro = userRecord?.plan === 'plus' &&
       (!userRecord?.pro_expires_at || new Date(userRecord.pro_expires_at) > new Date());
     setIsPro(pro);
 
