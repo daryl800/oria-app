@@ -50,6 +50,19 @@ const MBTI_DIMENSIONS: Record<string, Record<string, number>> = {
   ESFP: { E: 80, I: 20, S: 70, N: 30, T: 25, F: 75, J: 25, P: 75 },
 };
 
+const DAY_MASTER_INFO: Record<string, { en: string; zh: string; element: string }> = {
+  'Jia':  { element: 'Wood',  en: 'Towering tree — upright, growth-oriented, natural leader with strong principles.', zh: '甲木如參天大樹，正直仁愛，具天生領導力，重視原則與成長。' },
+  'Yi':   { element: 'Wood',  en: 'Gentle vine — flexible, adaptable, artistic with quiet resilience.', zh: '乙木如花草藤蔓，柔韌靈活，富藝術氣質，善於在環境中找到出路。' },
+  'Bing': { element: 'Fire',  en: 'Radiant sun — passionate, generous, naturally draws others with warmth.', zh: '丙火如太陽，熱情開朗，光芒四射，天生具有感染力與奉獻精神。' },
+  'Ding': { element: 'Fire',  en: 'Candlelight — refined, perceptive, steady inner warmth with sharp intuition.', zh: '丁火如燭光，溫和細膩，思維敏銳，內斂中帶有持久的溫暖與洞察力。' },
+  'Wu':   { element: 'Earth', en: 'Mountain — stable, trustworthy, strong capacity to support and protect others.', zh: '戊土如高山，穩重守信，包容力強，是他人可以依靠的堅實後盾。' },
+  'Ji':   { element: 'Earth', en: 'Fertile soil — nurturing, detail-oriented, patient and quietly effective.', zh: '己土如田園，謙遜包容，善於協調，以耐心和細膩成就事物。' },
+  'Geng': { element: 'Metal', en: 'Sword — decisive, courageous, strong sense of justice and loyalty.', zh: '庚金如刀劍，剛毅果斷，重義氣，具有強烈的正義感與行動力。' },
+  'Xin':  { element: 'Metal', en: 'Jewel — refined, perceptive, perfectionist with an eye for beauty and value.', zh: '辛金如珠寶，精致細膩，追求完美，對美感與價值有獨特的敏銳度。' },
+  'Ren':  { element: 'Water', en: 'River — wise, broad-minded, adaptable with deep strategic thinking.', zh: '壬水如江河，智慧通達，心胸開闊，適應力強，具深遠的策略思維。' },
+  'Gui':  { element: 'Water', en: 'Rain — intuitive, subtle, sensitive with quiet depth and strategic mind.', zh: '癸水如雨露，細膩敏感，直覺敏銳，外表低調而內心深邃。' },
+};
+
 const MBTI_DESCRIPTIONS: Record<string, { nickname: string; traits: string[] }> = {
   INTJ: { nickname: 'The Architect', traits: ['Strategic', 'Independent', 'Visionary'] },
   INTP: { nickname: 'The Thinker', traits: ['Analytical', 'Curious', 'Inventive'] },
@@ -166,6 +179,7 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
     ? Math.max(...Object.values(elements) as number[])
     : 1;
 
+
   const mbtiInfo = mbti ? MBTI_DESCRIPTIONS[mbti.mbti_type] : null;
 
   return (
@@ -208,6 +222,15 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
         <div className="oria-card" style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
             🪬 {isZH ? '八字四柱' : 'Four Pillars'}
+          </div>
+
+          {/* BaZi explanation */}
+          <div style={{ background: 'rgba(192,132,252,0.06)', borderRadius: 12, padding: '14px 16px', marginBottom: 20, borderLeft: '3px solid rgba(192,132,252,0.4)' }}>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, margin: 0 }}>
+              {isZH
+                ? `八字由年、月、日、時四柱組成，每柱含一天干一地支，記錄了你出生時天地的能量格局。日柱天干稱為「日主」，是你命盤的核心，代表你的本質與性格基調。你的日主是 ${bazi.day_master}，五行力量的強弱則反映你天生的優勢與需要平衡的面向。`
+                : `Your BaZi chart is formed by four pillars — Year, Month, Day, and Hour — each capturing the energy of heaven and earth at your birth. The Day Stem, known as your "Day Master," is the core of your chart and represents your fundamental nature. Your Day Master is ${bazi.day_master}. The Five Elements balance reveals your natural strengths and areas to cultivate.`}
+            </p>
           </div>
 
           {/* Pillars grid */}
@@ -260,43 +283,95 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
             </div>
           </div>
 
-          {/* Five Elements */}
+          {/* Five Elements — stacked bar */}
           <div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 12, letterSpacing: 1 }}>
               {isZH ? '五行力量' : 'FIVE ELEMENTS'}
             </div>
-            {Object.entries(elements).map(([element, strength]: [string, any]) => {
-              const color = ELEMENT_COLORS[element] || '#C084FC';
-              const emoji = ELEMENT_EMOJI[element] || '✦';
-              const pct = Math.round((strength / maxElement) * 100);
+
+            {/* Stacked bar */}
+            {(() => {
+              const total = Object.values(elements).reduce((a: any, b: any) => a + b, 0) as number;
+              const sorted = Object.entries(elements).sort(([,a]: any, [,b]: any) => b - a);
               return (
-                <div key={element} style={{ marginBottom: 7 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 13, color: '#F0EDE8' }}>
-                    {emoji} {isZH ? {'Fire':'火','Wood':'木','Earth':'土','Metal':'金','Water':'水'}[element] || element : element}
-                  </span>
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{strength.toFixed(1)}</span>
+                <>
+                  <div style={{ display: 'flex', height: 28, borderRadius: 14, overflow: 'hidden', marginBottom: 14 }}>
+                    {sorted.map(([element, strength]: [string, any]) => {
+                      const pct = (strength / total) * 100;
+                      const color = ELEMENT_COLORS[element] || '#C084FC';
+                      return (
+                        <div key={element} style={{
+                          width: `${pct}%`, background: color,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          transition: 'width 0.8s ease',
+                        }}>
+                          {pct > 12 && <span style={{ fontSize: 10, color: '#fff', fontWeight: 700 }}>{Math.round(pct)}%</span>}
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 4, height: 6 }}>
-                    <div style={{
-                      height: 6, borderRadius: 4,
-                      width: `${pct}%`,
-                      background: color,
-                      transition: 'width 0.8s ease',
-                    }} />
+                  {/* Legend with interpretation */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {sorted.map(([element, strength]: [string, any]) => {
+                      const pct = Math.round((strength / total) * 100);
+                      const color = ELEMENT_COLORS[element] || '#C084FC';
+                      const emoji = ELEMENT_EMOJI[element] || '✦';
+                      const zhName: Record<string, string> = { Fire:'火', Wood:'木', Earth:'土', Metal:'金', Water:'水' };
+                      
+                      const level = pct >= 35 ? (isZH ? '主導' : 'Dominant') :
+                                    pct >= 20 ? (isZH ? '強' : 'Strong') :
+                                    pct >= 10 ? (isZH ? '中' : 'Moderate') :
+                                    (isZH ? '弱' : 'Weak');
+
+                      const meanings: Record<string, { en: string; zh: string }> = {
+                        Fire:  { zh: '事業心、行動力與社交熱情', en: 'Career drive, action and social energy' },
+                        Metal: { zh: '意志力、執行力與原則性', en: 'Willpower, discipline and principles' },
+                        Wood:  { zh: '創意、成長力與人文關懷', en: 'Creativity, growth and vision' },
+                        Earth: { zh: '穩定性、包容力與可靠度', en: 'Stability, nurturing and reliability' },
+                        Water: { zh: '智慧、直覺與應變靈活性', en: 'Wisdom, intuition and adaptability' },
+                      };
+
+                      return (
+                        <div key={element} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                          <div style={{ width: 12, height: 12, borderRadius: 3, background: color, flexShrink: 0, marginTop: 3 }} />
+                          <div>
+                            <span style={{ fontSize: 14, color: '#F0EDE8', fontWeight: 600 }}>
+                              {emoji} {isZH ? zhName[element] : element} {pct}%
+                            </span>
+                            <span style={{ fontSize: 12, color: color, marginLeft: 8, fontWeight: 700 }}>
+                              {level}
+                            </span>
+                            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                              {isZH ? meanings[element].zh : meanings[element].en}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
+                </>
               );
-            })}
+            })()}
           </div>
         </div>
       )}
+
+
 
       {/* MBTI Tab */}
       {activeTab === 'mbti' && mbti && (
         <div className="oria-card" style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
             🧠 {isZH ? 'MBTI 性格' : 'MBTI Personality'}
+          </div>
+
+          {/* MBTI explanation */}
+          <div style={{ background: 'rgba(192,132,252,0.06)', borderRadius: 12, padding: '14px 16px', marginBottom: 20, borderLeft: '3px solid rgba(192,132,252,0.4)' }}>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, margin: 0 }}>
+              {isZH
+                ? `MBTI 將人的性格分為16種類型，從四個核心維度衡量你的思維、決策與社交偏好：外向/內向、實感/直覺、思考/情感、判斷/感知。你的類型是 ${mbti.mbti_type}。結合八字日主，MBTI 能從東西方兩個角度立體呈現你的性格全貌。`
+                : `MBTI identifies 16 personality types across four dimensions — how you gain energy, process information, make decisions, and approach the world. Your type is ${mbti.mbti_type}. Combined with your BaZi Day Master, MBTI offers both Eastern and Western perspectives on who you truly are.`}
+            </p>
           </div>
 
           {/* Type + nickname */}
@@ -376,6 +451,69 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
               </div>
             );
           })()}
+          {/* Dimension explanations — inside same card */}
+          <div style={{ marginTop: 20 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 12 }}>
+              {isZH ? '維度解讀' : 'DIMENSION BREAKDOWN'}
+            </div>
+          {(() => {
+            const dims = MBTI_DIMENSIONS[mbti.mbti_type];
+            const dimInfo = [
+              { leftKey: 'E', rightKey: 'I', leftZH: '外向型 E', rightZH: '內向型 I',
+                meaningLeftZH: '從社交互動中獲取能量，外向活躍，善於表達。',
+                meaningRightZH: '從獨處中恢復能量，內斂深思，專注力強。',
+                meaningLeft: 'Energised by social interaction, expressive and outgoing.',
+                meaningRight: 'Energised by solitude, reflective and deeply focused.' },
+              { leftKey: 'S', rightKey: 'N', leftZH: '實感型 S', rightZH: '直覺型 N',
+                meaningLeftZH: '注重實際與細節，以事實和經驗為基礎做判斷。',
+                meaningRightZH: '重視直覺與全局，善於看見規律與未來的可能性。',
+                meaningLeft: 'Practical, detail-focused, trusts facts and experience.',
+                meaningRight: 'Intuitive, big-picture thinker, drawn to patterns and possibilities.' },
+              { leftKey: 'T', rightKey: 'F', leftZH: '思考型 T', rightZH: '情感型 F',
+                meaningLeftZH: '邏輯客觀，以分析和理性作出決策。',
+                meaningRightZH: '富同理心，以價值觀和感受作為決策依據。',
+                meaningLeft: 'Logical and objective, makes decisions through analysis.',
+                meaningRight: 'Empathetic and values-driven, decides through feelings.' },
+              { leftKey: 'J', rightKey: 'P', leftZH: '判斷型 J', rightZH: '感知型 P',
+                meaningLeftZH: '有條理，計劃性強，傾向提前作決定，重視秩序。',
+                meaningRightZH: '靈活隨性，偏好保持選擇開放，適應力強。',
+                meaningLeft: 'Structured and planned, prefers clear decisions and organisation.',
+                meaningRight: 'Flexible and spontaneous, prefers keeping options open.' },
+            ];
+            return dimInfo.map((info) => {
+              const leftVal = dims[info.leftKey] ?? 50;
+              const rightVal = dims[info.rightKey] ?? 50;
+              const dominantLeft = leftVal >= rightVal;
+              const pct = dominantLeft ? leftVal : rightVal;
+              const dominantLabel = dominantLeft ? (isZH ? info.leftZH : `${info.leftKey} (${info.leftZH.split(' ')[0]})`) : (isZH ? info.rightZH : `${info.rightKey} (${info.rightZH.split(' ')[0]})`);
+              const meaning = dominantLeft ? (isZH ? info.meaningLeftZH : info.meaningLeft) : (isZH ? info.meaningRightZH : info.meaningRight);
+              return (
+                <div key={info.leftKey} style={{ background: 'rgba(192,132,252,0.05)', borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: '#C084FC' }}>
+                      {dominantLabel} · {pct}%
+                    </span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+                      {info.leftKey} ↔ {info.rightKey}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0 }}>
+                    {meaning}
+                  </p>
+                </div>
+              );
+            });
+          })()}
+          </div>
+          <div style={{ borderTop: '1px solid rgba(192,132,252,0.15)', paddingTop: 12, marginTop: 16, cursor: 'pointer' }}
+            onClick={() => setActiveTab('insight')}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', margin: 0 }}>
+              {isZH ? '想了解你的MBTI如何與八字相互印證，形成獨特的你？' : 'Want to see how your MBTI and BaZi combine to reveal your unique pattern?'}
+              <span style={{ color: '#C084FC', marginLeft: 6 }}>
+                {isZH ? '查看命盤解析 →' : 'See Profile Insight →'}
+              </span>
+            </p>
+          </div>
         </div>
       )}
 
