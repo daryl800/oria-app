@@ -6,12 +6,12 @@ import { getProfile, getProfileSummary } from '../services/api';
 
 // Romanized to Chinese character mappings
 const GAN_CN: Record<string, string> = {
-  'Jia':'甲','Yi':'乙','Bing':'丙','Ding':'丁','Wu':'戊',
-  'Ji':'己','Geng':'庚','Xin':'辛','Ren':'壬','Gui':'癸'
+  'Jia': '甲', 'Yi': '乙', 'Bing': '丙', 'Ding': '丁', 'Wu': '戊',
+  'Ji': '己', 'Geng': '庚', 'Xin': '辛', 'Ren': '壬', 'Gui': '癸'
 };
 const ZHI_CN: Record<string, string> = {
-  'Zi':'子','Chou':'丑','Yin':'寅','Mao':'卯','Chen':'辰',
-  'Si':'巳','Wu':'午','Wei':'未','Shen':'申','You':'酉','Xu':'戌','Hai':'亥'
+  'Zi': '子', 'Chou': '丑', 'Yin': '寅', 'Mao': '卯', 'Chen': '辰',
+  'Si': '巳', 'Wu': '午', 'Wei': '未', 'Shen': '申', 'You': '酉', 'Xu': '戌', 'Hai': '亥'
 };
 
 const ELEMENT_COLORS: Record<string, string> = {
@@ -51,16 +51,16 @@ const MBTI_DIMENSIONS: Record<string, Record<string, number>> = {
 };
 
 const DAY_MASTER_INFO: Record<string, { en: string; zh: string; element: string }> = {
-  'Jia':  { element: 'Wood',  en: 'Towering tree — upright, growth-oriented, natural leader with strong principles.', zh: '甲木如參天大樹，正直仁愛，具天生領導力，重視原則與成長。' },
-  'Yi':   { element: 'Wood',  en: 'Gentle vine — flexible, adaptable, artistic with quiet resilience.', zh: '乙木如花草藤蔓，柔韌靈活，富藝術氣質，善於在環境中找到出路。' },
-  'Bing': { element: 'Fire',  en: 'Radiant sun — passionate, generous, naturally draws others with warmth.', zh: '丙火如太陽，熱情開朗，光芒四射，天生具有感染力與奉獻精神。' },
-  'Ding': { element: 'Fire',  en: 'Candlelight — refined, perceptive, steady inner warmth with sharp intuition.', zh: '丁火如燭光，溫和細膩，思維敏銳，內斂中帶有持久的溫暖與洞察力。' },
-  'Wu':   { element: 'Earth', en: 'Mountain — stable, trustworthy, strong capacity to support and protect others.', zh: '戊土如高山，穩重守信，包容力強，是他人可以依靠的堅實後盾。' },
-  'Ji':   { element: 'Earth', en: 'Fertile soil — nurturing, detail-oriented, patient and quietly effective.', zh: '己土如田園，謙遜包容，善於協調，以耐心和細膩成就事物。' },
+  'Jia': { element: 'Wood', en: 'Towering tree — upright, growth-oriented, natural leader with strong principles.', zh: '甲木如參天大樹，正直仁愛，具天生領導力，重視原則與成長。' },
+  'Yi': { element: 'Wood', en: 'Gentle vine — flexible, adaptable, artistic with quiet resilience.', zh: '乙木如花草藤蔓，柔韌靈活，富藝術氣質，善於在環境中找到出路。' },
+  'Bing': { element: 'Fire', en: 'Radiant sun — passionate, generous, naturally draws others with warmth.', zh: '丙火如太陽，熱情開朗，光芒四射，天生具有感染力與奉獻精神。' },
+  'Ding': { element: 'Fire', en: 'Candlelight — refined, perceptive, steady inner warmth with sharp intuition.', zh: '丁火如燭光，溫和細膩，思維敏銳，內斂中帶有持久的溫暖與洞察力。' },
+  'Wu': { element: 'Earth', en: 'Mountain — stable, trustworthy, strong capacity to support and protect others.', zh: '戊土如高山，穩重守信，包容力強，是他人可以依靠的堅實後盾。' },
+  'Ji': { element: 'Earth', en: 'Fertile soil — nurturing, detail-oriented, patient and quietly effective.', zh: '己土如田園，謙遜包容，善於協調，以耐心和細膩成就事物。' },
   'Geng': { element: 'Metal', en: 'Sword — decisive, courageous, strong sense of justice and loyalty.', zh: '庚金如刀劍，剛毅果斷，重義氣，具有強烈的正義感與行動力。' },
-  'Xin':  { element: 'Metal', en: 'Jewel — refined, perceptive, perfectionist with an eye for beauty and value.', zh: '辛金如珠寶，精致細膩，追求完美，對美感與價值有獨特的敏銳度。' },
-  'Ren':  { element: 'Water', en: 'River — wise, broad-minded, adaptable with deep strategic thinking.', zh: '壬水如江河，智慧通達，心胸開闊，適應力強，具深遠的策略思維。' },
-  'Gui':  { element: 'Water', en: 'Rain — intuitive, subtle, sensitive with quiet depth and strategic mind.', zh: '癸水如雨露，細膩敏感，直覺敏銳，外表低調而內心深邃。' },
+  'Xin': { element: 'Metal', en: 'Jewel — refined, perceptive, perfectionist with an eye for beauty and value.', zh: '辛金如珠寶，精致細膩，追求完美，對美感與價值有獨特的敏銳度。' },
+  'Ren': { element: 'Water', en: 'River — wise, broad-minded, adaptable with deep strategic thinking.', zh: '壬水如江河，智慧通達，心胸開闊，適應力強，具深遠的策略思維。' },
+  'Gui': { element: 'Water', en: 'Rain — intuitive, subtle, sensitive with quiet depth and strategic mind.', zh: '癸水如雨露，細膩敏感，直覺敏銳，外表低調而內心深邃。' },
 };
 
 const MBTI_DESCRIPTIONS: Record<string, { nickname: string; traits: string[] }> = {
@@ -182,6 +182,28 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
 
   const mbtiInfo = mbti ? MBTI_DESCRIPTIONS[mbti.mbti_type] : null;
 
+  function Section({ title, children }: { title: string; children: any }) {
+    return (
+      <div style={{ marginBottom: 16 }}>
+        <div style={{
+          fontSize: 11,
+          color: '#C084FC',
+          letterSpacing: 1.5,
+          marginBottom: 6
+        }}>
+          {title}
+        </div>
+        <div style={{
+          fontSize: 14,
+          color: 'rgba(255,255,255,0.8)',
+          lineHeight: 1.7
+        }}>
+          {children}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="oria-page oria-container animate-fade-in">
       {/* Header */}
@@ -292,7 +314,7 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
             {/* Stacked bar */}
             {(() => {
               const total = Object.values(elements).reduce((a: any, b: any) => a + b, 0) as number;
-              const sorted = Object.entries(elements).sort(([,a]: any, [,b]: any) => b - a);
+              const sorted = Object.entries(elements).sort(([, a]: any, [, b]: any) => b - a);
               return (
                 <>
                   <div style={{ display: 'flex', height: 28, borderRadius: 14, overflow: 'hidden', marginBottom: 14 }}>
@@ -316,17 +338,17 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
                       const pct = Math.round((strength / total) * 100);
                       const color = ELEMENT_COLORS[element] || '#C084FC';
                       const emoji = ELEMENT_EMOJI[element] || '✦';
-                      const zhName: Record<string, string> = { Fire:'火', Wood:'木', Earth:'土', Metal:'金', Water:'水' };
-                      
+                      const zhName: Record<string, string> = { Fire: '火', Wood: '木', Earth: '土', Metal: '金', Water: '水' };
+
                       const level = pct >= 35 ? (isZH ? '主導' : 'Dominant') :
-                                    pct >= 20 ? (isZH ? '強' : 'Strong') :
-                                    pct >= 10 ? (isZH ? '中' : 'Moderate') :
-                                    (isZH ? '弱' : 'Weak');
+                        pct >= 20 ? (isZH ? '強' : 'Strong') :
+                          pct >= 10 ? (isZH ? '中' : 'Moderate') :
+                            (isZH ? '弱' : 'Weak');
 
                       const meanings: Record<string, { en: string; zh: string }> = {
-                        Fire:  { zh: '事業心、行動力與社交熱情', en: 'Career drive, action and social energy' },
+                        Fire: { zh: '事業心、行動力與社交熱情', en: 'Career drive, action and social energy' },
                         Metal: { zh: '意志力、執行力與原則性', en: 'Willpower, discipline and principles' },
-                        Wood:  { zh: '創意、成長力與人文關懷', en: 'Creativity, growth and vision' },
+                        Wood: { zh: '創意、成長力與人文關懷', en: 'Creativity, growth and vision' },
                         Earth: { zh: '穩定性、包容力與可靠度', en: 'Stability, nurturing and reliability' },
                         Water: { zh: '智慧、直覺與應變靈活性', en: 'Wisdom, intuition and adaptability' },
                       };
@@ -420,7 +442,7 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
                   const dominantColor = dominant === a ? colorA : colorB;
                   const pct = Math.max(aVal, bVal);
                   return (
-                    <div key={a+b}>
+                    <div key={a + b}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: dominant === a ? colorA : 'rgba(255,255,255,0.3)' }}>{a}</span>
                         <span style={{ fontSize: 11, color: dominantColor, background: `${dominantColor}22`, padding: '2px 10px', borderRadius: 20, fontWeight: 600 }}>{pct}% {dominant}</span>
@@ -456,54 +478,62 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 12 }}>
               {isZH ? '維度解讀' : 'DIMENSION BREAKDOWN'}
             </div>
-          {(() => {
-            const dims = MBTI_DIMENSIONS[mbti.mbti_type];
-            const dimInfo = [
-              { leftKey: 'E', rightKey: 'I', leftZH: '外向型 E', rightZH: '內向型 I',
-                meaningLeftZH: '從社交互動中獲取能量，外向活躍，善於表達。',
-                meaningRightZH: '從獨處中恢復能量，內斂深思，專注力強。',
-                meaningLeft: 'Energised by social interaction, expressive and outgoing.',
-                meaningRight: 'Energised by solitude, reflective and deeply focused.' },
-              { leftKey: 'S', rightKey: 'N', leftZH: '實感型 S', rightZH: '直覺型 N',
-                meaningLeftZH: '注重實際與細節，以事實和經驗為基礎做判斷。',
-                meaningRightZH: '重視直覺與全局，善於看見規律與未來的可能性。',
-                meaningLeft: 'Practical, detail-focused, trusts facts and experience.',
-                meaningRight: 'Intuitive, big-picture thinker, drawn to patterns and possibilities.' },
-              { leftKey: 'T', rightKey: 'F', leftZH: '思考型 T', rightZH: '情感型 F',
-                meaningLeftZH: '邏輯客觀，以分析和理性作出決策。',
-                meaningRightZH: '富同理心，以價值觀和感受作為決策依據。',
-                meaningLeft: 'Logical and objective, makes decisions through analysis.',
-                meaningRight: 'Empathetic and values-driven, decides through feelings.' },
-              { leftKey: 'J', rightKey: 'P', leftZH: '判斷型 J', rightZH: '感知型 P',
-                meaningLeftZH: '有條理，計劃性強，傾向提前作決定，重視秩序。',
-                meaningRightZH: '靈活隨性，偏好保持選擇開放，適應力強。',
-                meaningLeft: 'Structured and planned, prefers clear decisions and organisation.',
-                meaningRight: 'Flexible and spontaneous, prefers keeping options open.' },
-            ];
-            return dimInfo.map((info) => {
-              const leftVal = dims[info.leftKey] ?? 50;
-              const rightVal = dims[info.rightKey] ?? 50;
-              const dominantLeft = leftVal >= rightVal;
-              const pct = dominantLeft ? leftVal : rightVal;
-              const dominantLabel = dominantLeft ? (isZH ? info.leftZH : `${info.leftKey} (${info.leftZH.split(' ')[0]})`) : (isZH ? info.rightZH : `${info.rightKey} (${info.rightZH.split(' ')[0]})`);
-              const meaning = dominantLeft ? (isZH ? info.meaningLeftZH : info.meaningLeft) : (isZH ? info.meaningRightZH : info.meaningRight);
-              return (
-                <div key={info.leftKey} style={{ background: 'rgba(192,132,252,0.05)', borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: '#C084FC' }}>
-                      {dominantLabel} · {pct}%
-                    </span>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
-                      {info.leftKey} ↔ {info.rightKey}
-                    </span>
+            {(() => {
+              const dims = MBTI_DIMENSIONS[mbti.mbti_type];
+              const dimInfo = [
+                {
+                  leftKey: 'E', rightKey: 'I', leftZH: '外向型 E', rightZH: '內向型 I',
+                  meaningLeftZH: '從社交互動中獲取能量，外向活躍，善於表達。',
+                  meaningRightZH: '從獨處中恢復能量，內斂深思，專注力強。',
+                  meaningLeft: 'Energised by social interaction, expressive and outgoing.',
+                  meaningRight: 'Energised by solitude, reflective and deeply focused.'
+                },
+                {
+                  leftKey: 'S', rightKey: 'N', leftZH: '實感型 S', rightZH: '直覺型 N',
+                  meaningLeftZH: '注重實際與細節，以事實和經驗為基礎做判斷。',
+                  meaningRightZH: '重視直覺與全局，善於看見規律與未來的可能性。',
+                  meaningLeft: 'Practical, detail-focused, trusts facts and experience.',
+                  meaningRight: 'Intuitive, big-picture thinker, drawn to patterns and possibilities.'
+                },
+                {
+                  leftKey: 'T', rightKey: 'F', leftZH: '思考型 T', rightZH: '情感型 F',
+                  meaningLeftZH: '邏輯客觀，以分析和理性作出決策。',
+                  meaningRightZH: '富同理心，以價值觀和感受作為決策依據。',
+                  meaningLeft: 'Logical and objective, makes decisions through analysis.',
+                  meaningRight: 'Empathetic and values-driven, decides through feelings.'
+                },
+                {
+                  leftKey: 'J', rightKey: 'P', leftZH: '判斷型 J', rightZH: '感知型 P',
+                  meaningLeftZH: '有條理，計劃性強，傾向提前作決定，重視秩序。',
+                  meaningRightZH: '靈活隨性，偏好保持選擇開放，適應力強。',
+                  meaningLeft: 'Structured and planned, prefers clear decisions and organisation.',
+                  meaningRight: 'Flexible and spontaneous, prefers keeping options open.'
+                },
+              ];
+              return dimInfo.map((info) => {
+                const leftVal = dims[info.leftKey] ?? 50;
+                const rightVal = dims[info.rightKey] ?? 50;
+                const dominantLeft = leftVal >= rightVal;
+                const pct = dominantLeft ? leftVal : rightVal;
+                const dominantLabel = dominantLeft ? (isZH ? info.leftZH : `${info.leftKey} (${info.leftZH.split(' ')[0]})`) : (isZH ? info.rightZH : `${info.rightKey} (${info.rightZH.split(' ')[0]})`);
+                const meaning = dominantLeft ? (isZH ? info.meaningLeftZH : info.meaningLeft) : (isZH ? info.meaningRightZH : info.meaningRight);
+                return (
+                  <div key={info.leftKey} style={{ background: 'rgba(192,132,252,0.05)', borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: '#C084FC' }}>
+                        {dominantLabel} · {pct}%
+                      </span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+                        {info.leftKey} ↔ {info.rightKey}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0 }}>
+                      {meaning}
+                    </p>
                   </div>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0 }}>
-                    {meaning}
-                  </p>
-                </div>
-              );
-            });
-          })()}
+                );
+              });
+            })()}
           </div>
           <div style={{ borderTop: '1px solid rgba(192,132,252,0.15)', paddingTop: 12, marginTop: 16, cursor: 'pointer' }}
             onClick={() => setActiveTab('insight')}>
@@ -521,322 +551,199 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
       {activeTab === 'insight' && bazi && mbti && (
         <div className="oria-card" style={{
           marginBottom: 16,
-          background: 'rgba(192,132,252,0.08)',
-          borderColor: 'rgba(192,132,252,0.4)',
-          padding: '28px 24px',
+          padding: '26px 22px',
+          background: 'linear-gradient(180deg, rgba(192,132,252,0.10), rgba(192,132,252,0.04))',
+          border: '1px solid rgba(192,132,252,0.35)',
         }}>
-          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: 1, color: '#C084FC', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 18 }}>✦</span>
-            {isZH ? '命盤解析' : 'Profile Insight'}
+
+          {/* Header */}
+          <div style={{
+            fontSize: 20,
+            fontWeight: 800,
+            color: '#C084FC',
+            marginBottom: 18,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
+          }}>
+            ✦ {isZH ? '命盤解析' : 'Your Profile Insight'}
           </div>
-          {summaryLoading ? (
-            <div style={{ padding: '16px 0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <div style={{ fontSize: 24, color: '#C084FC', animation: 'breathe 1.5s ease-in-out infinite' }}>✦</div>
-                <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}>
-                  {isZH ? '正在解析你的命盤' : 'Analyzing your profile'}
-                  <span className="saving-btn" />
-                </div>
-              </div>
-              <div style={{ height: 4, background: 'rgba(192,132,252,0.1)', borderRadius: 2, overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%', borderRadius: 2,
-                  background: 'linear-gradient(90deg, #9333EA, #C084FC, #9333EA)',
-                  backgroundSize: '200% 100%',
-                  animation: 'shimmer 1.5s ease-in-out infinite',
-                }} />
+
+          {/* Loading */}
+          {summaryLoading && (
+            <div style={{ padding: '20px 0' }}>
+              <div style={{ color: '#C084FC' }}>
+                {isZH ? '正在解析你的命盤...' : 'Analyzing your pattern...'}
               </div>
             </div>
-          ) : summary ? (
+          )}
+
+          {/* Content */}
+          {!summaryLoading && summary && (
             <div className="animate-fade-in">
-              {/* Headline — always shown */}
-              <p style={{ lineHeight: 1.8, color: '#F0EDE8', fontSize: 17, marginBottom: 16 }}>
+
+              {/* 1. HEADLINE */}
+              <div style={{
+                fontSize: 18,
+                fontWeight: 700,
+                color: '#F0EDE8',
+                lineHeight: 1.7,
+                marginBottom: 14
+              }}>
                 {summary.headline}
-              </p>
-              {/* Summary paragraph — always shown */}
-              <p style={{ lineHeight: 1.8, color: 'rgba(255,255,255,0.75)', fontSize: 15, marginBottom: 16 }}>
+              </div>
+
+              {/* 2. SUMMARY */}
+              <div style={{
+                fontSize: 14,
+                color: 'rgba(255,255,255,0.75)',
+                lineHeight: 1.8,
+                marginBottom: 18
+              }}>
                 {summary.summary}
-              </p>
-              {/* Key strengths — always shown */}
+              </div>
+
+              {/* 3. KEY STRENGTHS */}
               {summary.key_strengths?.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-                  {summary.key_strengths.slice(0, isPro ? undefined : 2).map((s: string, i: number) => (
-                    <span key={i} style={{
-                      background: 'rgba(192,132,252,0.12)',
-                      border: '1px solid rgba(192,132,252,0.25)',
-                      borderRadius: 20, padding: '4px 12px',
-                      fontSize: 12, color: '#C084FC',
-                    }}>{s}</span>
-                  ))}
+                <div style={{ marginBottom: 18 }}>
+                  <div style={{
+                    fontSize: 11,
+                    letterSpacing: 1.5,
+                    color: '#C084FC',
+                    marginBottom: 8
+                  }}>
+                    {isZH ? '你的優勢' : 'YOUR STRENGTHS'}
+                  </div>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {summary.key_strengths
+                      .slice(0, isPro ? undefined : 2)
+                      .map((s: string, i: number) => (
+                        <span key={i} style={{
+                          padding: '5px 12px',
+                          borderRadius: 20,
+                          fontSize: 12,
+                          color: '#C084FC',
+                          background: 'rgba(192,132,252,0.12)',
+                          border: '1px solid rgba(192,132,252,0.3)'
+                        }}>
+                          {s}
+                        </span>
+                      ))}
+                  </div>
                 </div>
               )}
-              {/* Pro-only content */}
-              {isPro ? (
+
+              {/* ===== FREE USER PAYWALL ===== */}
+              {!isPro && (
+                <div
+                  onClick={() => navigate('/upgrade')}
+                  style={{
+                    marginTop: 10,
+                    padding: '16px',
+                    borderRadius: 12,
+                    background: 'rgba(192,132,252,0.08)',
+                    border: '1px solid rgba(192,132,252,0.25)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{
+                    fontSize: 14,
+                    color: 'rgba(255,255,255,0.7)',
+                    marginBottom: 10,
+                    lineHeight: 1.7
+                  }}>
+                    {isZH
+                      ? '你的命盤還隱藏著更深層的結構與人生模式。'
+                      : 'There are deeper patterns in your chart waiting to be revealed.'}
+                  </div>
+
+                  <button style={{
+                    border: '1px solid #C084FC',
+                    color: '#C084FC',
+                    background: 'none',
+                    borderRadius: 999,
+                    padding: '8px 18px',
+                    fontSize: 13,
+                    cursor: 'pointer'
+                  }}>
+                    {isZH ? '解鎖完整解析 →' : 'Unlock Full Insight →'}
+                  </button>
+                </div>
+              )}
+
+              {/* ===== PLUS CONTENT ===== */}
+              {isPro && (
                 <>
-                  {/* Day master analysis */}
+                  {/* Divider */}
+                  <div style={{
+                    height: 1,
+                    background: 'rgba(192,132,252,0.2)',
+                    margin: '20px 0'
+                  }} />
+
+                  {/* Day Master */}
                   {summary.day_master_analysis && (
-                    <div style={{ marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
-                        {isZH ? '日主解析' : 'DAY MASTER'}
-                      </div>
-                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, margin: 0 }}>
-                        {summary.day_master_analysis}
-                      </p>
-                    </div>
+                    <Section title={isZH ? '日主核心' : 'CORE NATURE'}>
+                      {summary.day_master_analysis}
+                    </Section>
                   )}
 
-                  {/* Ten Gods */}
-                  {summary.ten_gods && Object.keys(summary.ten_gods).length > 0 && (
-                    <div style={{ marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 12 }}>
-                        {isZH ? '十神格局' : 'TEN GODS'}
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                        {Object.entries(summary.ten_gods).map(([god, desc]: [string, any]) => (
-                          <div key={god} style={{ background: 'rgba(192,132,252,0.05)', borderRadius: 10, padding: '10px 14px' }}>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: '#C084FC', marginRight: 8 }}>{god}</span>
-                            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6 }}>{desc}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Decision style */}
+                  {/* Decision Style */}
                   {summary.decision_style && (
-                    <div style={{ marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
-                        {isZH ? '決策風格' : 'DECISION STYLE'}
-                      </div>
-                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, margin: 0 }}>
-                        {summary.decision_style}
-                      </p>
-                    </div>
+                    <Section title={isZH ? '決策模式' : 'DECISION STYLE'}>
+                      {summary.decision_style}
+                    </Section>
                   )}
 
-                  {/* Career favorable/unfavorable */}
+                  {/* Career */}
                   {(summary.career_favorable || summary.career_unfavorable) && (
-                    <div style={{ marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 12 }}>
-                        {isZH ? '事業方向' : 'CAREER DIRECTION'}
-                      </div>
-                      {summary.career_favorable?.length > 0 && (
-                        <div style={{ marginBottom: 8 }}>
-                          <span style={{ fontSize: 12, color: '#4ade80', marginRight: 8 }}>✓ {isZH ? '有利：' : 'Favorable: '}</span>
-                          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>{summary.career_favorable.join('、')}</span>
+                    <Section title={isZH ? '事業方向' : 'CAREER'}>
+                      {summary.career_favorable?.join('、')}
+                      {summary.career_unfavorable && (
+                        <div style={{ opacity: 0.6, marginTop: 6 }}>
+                          {isZH ? '避免：' : 'Avoid: '}
+                          {summary.career_unfavorable.join('、')}
                         </div>
                       )}
-                      {summary.career_unfavorable?.length > 0 && (
-                        <div>
-                          <span style={{ fontSize: 12, color: 'rgba(255,100,100,0.8)', marginRight: 8 }}>○ {isZH ? '不利：' : 'Unfavorable: '}</span>
-                          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>{summary.career_unfavorable.join('、')}</span>
-                        </div>
-                      )}
-                    </div>
+                    </Section>
                   )}
 
-                  {/* Career direction (old field fallback) */}
-                  {summary.career_direction && !summary.career_favorable && (
-                    <div style={{ marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
-                        {isZH ? '事業天賦' : 'CAREER DIRECTION'}
-                      </div>
-                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, margin: 0 }}>
-                        {summary.career_direction}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Relationship pattern */}
+                  {/* Relationship */}
                   {summary.relationship_pattern && (
-                    <div style={{ marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
-                        {isZH ? '感情模式' : 'RELATIONSHIP PATTERN'}
-                      </div>
-                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, margin: 0 }}>
-                        {summary.relationship_pattern}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Current year */}
-                  {summary.current_year && (
-                    <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '14px 16px', marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
-                        {isZH ? '今年流年' : 'THIS YEAR'}
-                      </div>
-                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, margin: 0 }}>
-                        {summary.current_year}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Lucky elements */}
-                  {summary.lucky_elements && (
-                    <div style={{ marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 12 }}>
-                        {isZH ? '吉祥建議' : 'LUCKY ELEMENTS'}
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {summary.lucky_elements.colors?.length > 0 && (
-                          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
-                            🎨 {isZH ? '顏色：' : 'Colors: '}{summary.lucky_elements.colors.join('、')}
-                          </div>
-                        )}
-                        {summary.lucky_elements.directions?.length > 0 && (
-                          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
-                            🧭 {isZH ? '方位：' : 'Directions: '}{summary.lucky_elements.directions.join('、')}
-                          </div>
-                        )}
-                        {summary.lucky_elements.numbers?.length > 0 && (
-                          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
-                            🔢 {isZH ? '數字：' : 'Numbers: '}{summary.lucky_elements.numbers.join('、')}
-                          </div>
-                        )}
-                        {summary.lucky_elements.items?.length > 0 && (
-                          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
-                            ✨ {isZH ? '吉祥物：' : 'Items: '}{summary.lucky_elements.items.join('、')}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Amulet */}
-                  {summary.amulet?.item && (
-                    <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '14px 16px', marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
-                        {isZH ? '🔮 吉祥物推薦' : '🔮 AMULET'}
-                      </div>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: '#F0EDE8', marginBottom: 6 }}>
-                        {summary.amulet.item}
-                      </p>
-                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, margin: 0 }}>
-                        {summary.amulet.reason}
-                      </p>
-                    </div>
+                    <Section title={isZH ? '關係模式' : 'RELATIONSHIP'}>
+                      {summary.relationship_pattern}
+                    </Section>
                   )}
 
                   {/* Final Advice */}
-                  {summary.final_advice && (
-                    <div style={{ background: 'linear-gradient(135deg, rgba(147,51,234,0.15), rgba(192,132,252,0.08))', borderRadius: 14, padding: '20px 18px', marginBottom: 20, border: '1px solid rgba(192,132,252,0.3)' }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 14 }}>
-                        {isZH ? '✦ 給你的話' : '✦ FINAL GUIDANCE'}
+                  {summary.final_advice?.overview && (
+                    <div style={{
+                      marginTop: 16,
+                      padding: '16px',
+                      borderRadius: 12,
+                      background: 'rgba(192,132,252,0.10)',
+                      border: '1px solid rgba(192,132,252,0.35)'
+                    }}>
+                      <div style={{
+                        fontSize: 12,
+                        color: '#C084FC',
+                        marginBottom: 8
+                      }}>
+                        {isZH ? '給你的建議' : 'FINAL GUIDANCE'}
                       </div>
-                      {summary.final_advice.overview && (
-                        <p style={{ fontSize: 15, color: '#F0EDE8', lineHeight: 1.8, marginBottom: 16, fontWeight: 500 }}>
-                          {summary.final_advice.overview}
-                        </p>
-                      )}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                        {[
-                          { key: 'focus', icon: '🎯', label: isZH ? '關注重點' : 'Focus' },
-                          { key: 'opportunity', icon: '✨', label: isZH ? '把握機會' : 'Opportunity' },
-                          { key: 'career', icon: '💼', label: isZH ? '事業發展' : 'Career' },
-                          { key: 'health', icon: '🌿', label: isZH ? '健康注意' : 'Health' },
-                          { key: 'relationships', icon: '❤️', label: isZH ? '關係著力' : 'Relationships' },
-                          { key: 'caution', icon: '⚠️', label: isZH ? '謹慎迴避' : 'Caution' },
-                        ].map(({ key, icon, label }) => summary.final_advice[key] && (
-                          <div key={key} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                            <span style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
-                            <div>
-                              <span style={{ fontSize: 12, color: '#C084FC', fontWeight: 700, marginRight: 6 }}>{label}</span>
-                              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6 }}>{summary.final_advice[key]}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
-                  {/* Life pattern */}
-                  {summary.life_pattern && (
-                    <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '14px 16px', marginBottom: 20, borderLeft: '3px solid #C084FC' }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
-                        {isZH ? '🔄 人生長期模式' : '🔄 LIFE PATTERN'}
-                      </div>
-                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0, fontStyle: 'italic' }}>
-                        {summary.life_pattern}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Friction point */}
-                  {summary.friction_point && (
-                    <div style={{ background: 'rgba(255,100,100,0.06)', borderRadius: 10, padding: '14px 16px', marginBottom: 20, borderLeft: '3px solid rgba(255,100,100,0.4)' }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,150,150,0.9)', marginBottom: 8 }}>
-                        {isZH ? '⚡ 人生卡點' : '⚡ FRICTION POINT'}
-                      </div>
-                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0 }}>
-                        {summary.friction_point}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* MBTI BaZi resonance */}
-                  {summary.mbti_bazi_resonance && (
-                    <p style={{ lineHeight: 1.7, color: '#C084FC', fontSize: 13, fontStyle: 'italic', marginBottom: 16 }}>
-                      {summary.mbti_bazi_resonance}
-                    </p>
-                  )}
-
-                  {/* Gentle nudge */}
-                  {summary.gentle_nudge && (
-                    <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '12px 14px', marginBottom: 16 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 6 }}>
-                        {isZH ? '成長提示' : 'GENTLE NUDGE'}
-                      </div>
-                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0 }}>
-                        {summary.gentle_nudge}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Chat teasers */}
-                  {summary.chat_teasers?.length > 0 && (
-                    <div style={{ borderTop: '1px solid rgba(192,132,252,0.15)', paddingTop: 16 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 10 }}>
-                        {isZH ? '繼續探索' : 'EXPLORE FURTHER'}
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {summary.chat_teasers.map((q: string, i: number) => (
-                          <button key={i} onClick={() => navigate('/chat', { state: { prefill: q.replace(/你的/g, '我的').replace(/你/g, '我') } })}
-                            style={{
-                              background: 'rgba(192,132,252,0.08)', border: '1px solid rgba(192,132,252,0.2)',
-                              borderRadius: 10, padding: '10px 14px', textAlign: 'left',
-                              fontSize: 13, color: 'rgba(255,255,255,0.7)', cursor: 'pointer',
-                              fontFamily: 'inherit', lineHeight: 1.5,
-                            }}>
-                            💬 {q}
-                          </button>
-                        ))}
+                      <div style={{
+                        fontSize: 14,
+                        color: '#F0EDE8',
+                        lineHeight: 1.8
+                      }}>
+                        {summary.final_advice.overview}
                       </div>
                     </div>
                   )}
                 </>
-              ) : (
-                /* Free user paywall */
-                <div style={{ borderTop: '1px solid rgba(192,132,252,0.2)', paddingTop: 16, marginTop: 8 }}
-                  onClick={() => navigate('/upgrade')} >
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 12, fontStyle: 'italic' }}>
-                    {isZH
-                      ? '這只是你命盤的一部分。你的完整命盤揭示了更深層的連結與規律。'
-                      : 'This is only part of your pattern. Your full profile reveals how everything connects beneath it.'}
-                  </p>
-                  <button style={{
-                    background: 'none', border: '1px solid rgba(192,132,252,0.4)',
-                    borderRadius: 9999, padding: '8px 20px',
-                    fontSize: 13, color: '#C084FC', cursor: 'pointer',
-                    fontFamily: 'inherit',
-                  }}>
-                    {isZH ? '解鎖完整命盤 →' : 'See your full pattern →'}
-                  </button>
-                </div>
               )}
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: 14, padding: '12px 0' }}>
-              {isZH ? '命盤解析載入中...' : 'Loading your insight...'}
             </div>
           )}
         </div>

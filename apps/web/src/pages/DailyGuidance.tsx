@@ -15,6 +15,7 @@ interface DailySummary {
   identity?: string;
   nudge: string;
   suggested_prompts: string[];
+  deeper_insight?: string;
 }
 
 const TONE_SYMBOLS: Record<string, string> = {
@@ -52,7 +53,7 @@ function getElementColor(value: string): string | null {
   return null;
 }
 
-export default function DailyGuidance({ user }: { user: User }) {
+export default function DailyGuidance({ user, isPro = false, isProLoaded = false }: { user: User; isPro?: boolean; isProLoaded?: boolean }) {
   const { t, i18n } = useTranslation();
   const isZH = i18n.language === 'zh-TW';
   const navigate = useNavigate();
@@ -236,19 +237,64 @@ export default function DailyGuidance({ user }: { user: User }) {
         </div>
       )}
 
-      <button
-        className="oria-btn-primary"
-        style={{ marginTop: 32 }}
-        onClick={() => navigate('/chat', {
-          state: { prefill: 'What should I focus on today based on my BaZi?' }
-        })}
-      >
-        {t('daily.cta')}
-      </button>
+      {/* Deeper Insight — Plus only */}
+      {isPro ? (
+        summary.deeper_insight && (
+          <div className="oria-card" style={{
+            background: 'rgba(192,132,252,0.08)',
+            border: '1px solid rgba(192,132,252,0.3)'
+          }}>
+            <div style={{
+              fontSize: 12,
+              letterSpacing: 1.5,
+              color: '#C084FC',
+              textTransform: 'uppercase',
+              marginBottom: 8
+            }}>
+              ✦ {isZH ? '更深層原因' : 'DEEPER INSIGHT'}
+            </div>
 
-      <footer className="oria-disclaimer">
-        {t('disclaimer')}
-      </footer>
+            <p style={{
+              fontSize: 15,
+              color: 'rgba(255,255,255,0.85)',
+              lineHeight: 1.6,
+              margin: 0
+            }}>
+              {summary.deeper_insight}
+            </p>
+          </div>
+        )
+      ) : (
+        <div
+          className="oria-card"
+          style={{
+            background: 'linear-gradient(135deg, rgba(192,132,252,0.15), rgba(192,132,252,0.05))',
+            border: '1px solid rgba(192,132,252,0.3)',
+            textAlign: 'center',
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate('/upgrade')}
+        >
+          <p style={{
+            fontSize: 15,
+            color: 'rgba(255,255,255,0.85)',
+            marginBottom: 10,
+            lineHeight: 1.6
+          }}>
+            {isZH
+              ? '但這種感覺背後，其實有一個更深的原因…'
+              : 'There’s a deeper reason behind this feeling today…'}
+          </p>
+
+          <div style={{
+            fontSize: 13,
+            color: '#C084FC',
+            fontWeight: 700
+          }}>
+            {isZH ? '查看完整解讀 →' : 'See full explanation →'}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

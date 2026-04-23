@@ -47,6 +47,7 @@ export default function App() {
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
   const [isPro, setIsPro] = useState(false);
+  const [isProLoaded, setIsProLoaded] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [langUserId, setLangUserId] = useState<string | null>(null);
 
@@ -71,6 +72,7 @@ export default function App() {
     const pro = userRecord?.plan === 'plus' &&
       (!userRecord?.pro_expires_at || new Date(userRecord.pro_expires_at) > new Date());
     setIsPro(pro);
+    setIsProLoaded(true);
 
     // Apply saved language or show modal if not set
     if (userRecord?.preferred_language) {
@@ -133,7 +135,7 @@ export default function App() {
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
           <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} isPro={isPro} />} />
           <Route path="/compare" element={!user ? <Navigate to="/" /> : <Compare user={user} />} />
-          <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} />} />
+          <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} isPro={isPro} isProLoaded={isProLoaded} />} />
           <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} isPro={isPro} />} />
           <Route path="/profile" element={!user ? <Navigate to="/" /> : <Profile user={user} />} />
           <Route path="/settings" element={!user ? <Navigate to="/" /> : <Settings user={user} />} />
