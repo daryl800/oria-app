@@ -749,6 +749,30 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
                     </div>
                   )}
 
+                  {/* Life pattern */}
+                  {summary.life_pattern && (
+                    <div style={{ background: 'rgba(192,132,252,0.08)', borderRadius: 10, padding: '14px 16px', marginBottom: 20, borderLeft: '3px solid #C084FC' }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', marginBottom: 8 }}>
+                        {isZH ? '🔄 人生長期模式' : '🔄 LIFE PATTERN'}
+                      </div>
+                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0, fontStyle: 'italic' }}>
+                        {summary.life_pattern}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Friction point */}
+                  {summary.friction_point && (
+                    <div style={{ background: 'rgba(255,100,100,0.06)', borderRadius: 10, padding: '14px 16px', marginBottom: 20, borderLeft: '3px solid rgba(255,100,100,0.4)' }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,150,150,0.9)', marginBottom: 8 }}>
+                        {isZH ? '⚡ 人生卡點' : '⚡ FRICTION POINT'}
+                      </div>
+                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0 }}>
+                        {summary.friction_point}
+                      </p>
+                    </div>
+                  )}
+
                   {/* MBTI BaZi resonance */}
                   {summary.mbti_bazi_resonance && (
                     <p style={{ lineHeight: 1.7, color: '#C084FC', fontSize: 13, fontStyle: 'italic', marginBottom: 16 }}>

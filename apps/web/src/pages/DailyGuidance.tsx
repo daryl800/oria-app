@@ -6,10 +6,13 @@ import { fetchDailyGuidance } from '@/services/api';
 
 interface DailySummary {
   tone: string;
+  moment?: string;
   pace: string;
+  focus?: { do: string; avoid: string };
   lucky_color?: { color: string; reason: string };
   helpful_element?: { type: string; value: string; reason: string };
   tips: { area: string; text: string }[];
+  identity?: string;
   nudge: string;
   suggested_prompts: string[];
 }
@@ -51,6 +54,7 @@ function getElementColor(value: string): string | null {
 
 export default function DailyGuidance({ user }: { user: User }) {
   const { t, i18n } = useTranslation();
+  const isZH = i18n.language === 'zh-TW';
   const navigate = useNavigate();
   const [summary, setSummary] = useState<DailySummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -139,6 +143,41 @@ export default function DailyGuidance({ user }: { user: User }) {
         </div>
       </div>
 
+      {/* Moment prediction */}
+      {summary.moment && (
+        <div className="oria-card" style={{ background: 'rgba(192,132,252,0.06)', borderLeft: '3px solid rgba(192,132,252,0.5)' }}>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 8 }}>
+            🔮 {isZH ? '今日情境' : "TODAY'S MOMENT"}
+          </div>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0, fontStyle: 'italic' }}>
+            {summary.moment}
+          </p>
+        </div>
+      )}
+
+      {/* Focus: do / avoid */}
+      {summary.focus && (
+        <div className="oria-card">
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 12 }}>
+            {isZH ? '今日聚焦' : 'FOCUS'}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {summary.focus.do && (
+              <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>✅</span>
+                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, margin: 0 }}>{summary.focus.do}</p>
+              </div>
+            )}
+            {summary.focus.avoid && (
+              <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>⚡</span>
+                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, margin: 0 }}>{summary.focus.avoid}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Nudge Card */}
       <div className="oria-card" style={{ borderLeft: '4px solid #C084FC', background: 'rgba(192, 132, 252, 0.1)', textAlign: 'center' }}>
         <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 8 }}>✦ {t('daily.nudge_label')}</div>
@@ -187,6 +226,15 @@ export default function DailyGuidance({ user }: { user: User }) {
           </p>
         </div>
       </div>
+
+      {/* Identity */}
+      {summary.identity && (
+        <div className="oria-card" style={{ background: 'rgba(192,132,252,0.06)', textAlign: 'center' }}>
+          <p style={{ fontSize: 14, color: '#C084FC', lineHeight: 1.7, margin: 0, fontStyle: 'italic' }}>
+            ✦ {summary.identity}
+          </p>
+        </div>
+      )}
 
       <button
         className="oria-btn-primary"
