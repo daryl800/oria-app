@@ -204,6 +204,81 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
     );
   }
 
+  function getFooterContent() {
+    if (activeTab === 'bazi') {
+      return {
+        reflectionTitle: isZH ? '✦ 這種能量結構，你有感覺嗎？' : '✦ Does this energy structure resonate with you?',
+        feedbackPrimary: isZH ? '有共鳴' : 'It resonates',
+        feedbackSecondary: isZH ? '不太理解' : 'Not quite yet',
+        deeperTitle: isZH ? '想再深入一點？' : 'Want to go deeper?',
+        intro: isZH
+          ? '你看到的是命格的基本結構，但它真正的影響，通常體現在你如何推進事情、如何承受壓力，以及如何失衡。'
+          : 'You have seen the basic structure of your chart, but its real impact often appears in how you move things forward, carry pressure, and lose balance.',
+        prompts: isZH
+          ? [
+              '我最強的優勢會表現在什麼地方？',
+              '我現在最需要補哪一種能量？',
+              '這種命格在壓力下會怎樣？',
+            ]
+          : [
+              'Where does my strongest advantage show up most clearly?',
+              'Which energy do I most need to develop right now?',
+              'How does this chart tend to behave under pressure?',
+            ],
+        cta: isZH ? '根據四柱深入分析 →' : 'Explore through Four Pillars →',
+        ctaPrefill: isZH ? '根據我的四柱命盤，我最應該留意什麼？' : 'Based on my Four Pillars chart, what should I pay most attention to?',
+      };
+    }
+
+    if (activeTab === 'mbti') {
+      return {
+        reflectionTitle: isZH ? '✦ 這描述像你嗎？' : '✦ Does this feel like you?',
+        feedbackPrimary: isZH ? '有點準' : 'Pretty accurate',
+        feedbackSecondary: isZH ? '不太像我' : 'Not really me',
+        deeperTitle: isZH ? '想再深入一點？' : 'Want to go deeper?',
+        intro: isZH
+          ? 'MBTI 描述的是你的偏好，但真正重要的，是這些偏好如何影響你的工作方式、關係互動與決策壓力。'
+          : 'MBTI describes your preferences, but what matters more is how they influence your work style, relationships, and decision pressure.',
+        prompts: isZH
+          ? [
+              '我為什麼這麼重視確定性？',
+              '我的盲點通常在哪裡？',
+              '我適合什麼樣的工作環境？',
+            ]
+          : [
+              'Why do I care so much about certainty?',
+              'Where are my usual blind spots?',
+              'What kind of work environment suits me best?',
+            ],
+        cta: isZH ? '根據 MBTI 深入分析 →' : 'Explore through MBTI →',
+        ctaPrefill: isZH ? '根據我的 MBTI，我最需要留意的盲點是什麼？' : 'Based on my MBTI, what blind spot should I pay most attention to?',
+      };
+    }
+
+    return {
+      reflectionTitle: isZH ? '✦ 這個分析，有觸碰到你嗎？' : '✦ Did this analysis touch something real for you?',
+      feedbackPrimary: isZH ? '有點準' : 'It feels true',
+      feedbackSecondary: isZH ? '還想再看看' : 'I need more context',
+      deeperTitle: isZH ? '想再深入一點？' : 'Want to go deeper?',
+      intro: isZH
+        ? '到這裡你看到的，已經不只是類型或結構，而是你目前這個人的底層模式。下一步，是把它放進你現在的問題裡。'
+        : 'At this point, you are no longer looking at just a type or structure, but a deeper pattern in who you are right now. The next step is to place it into your real questions.',
+      prompts: isZH
+        ? [
+            '我現在卡住的真正原因是什麼？',
+            '我下一步應該怎樣判斷？',
+            '我現在最應該調整的是什麼？',
+          ]
+        : [
+            'What is the real reason I feel stuck right now?',
+            'How should I judge my next step?',
+            'What should I adjust first right now?',
+          ],
+      cta: isZH ? '以這份命盤開始對話 →' : 'Start a conversation from this reading →',
+      ctaPrefill: isZH ? '根據我的命盤解析，我現在最應該關注什麼？' : 'Based on my profile insight, what should I focus on right now?',
+    };
+  }
+
   return (
     <div className="oria-page oria-container animate-fade-in">
       {/* Header */}
@@ -256,24 +331,64 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
           </div>
 
           {/* Pillars grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: 10,
+              marginBottom: 16,
+            }}
+          >
             {pillars.map((pillar, i) => (
-              <div key={i} style={{
-                background: 'rgba(192,132,252,0.1)',
-                border: '1px solid rgba(192,132,252,0.25)',
-                borderRadius: 10, padding: '8px 4px',
-                textAlign: 'center',
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-              }}>
-                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, marginBottom: 4, textTransform: 'uppercase' }}>
+              <div
+                key={i}
+                style={{
+                  background: 'linear-gradient(180deg, rgba(192,132,252,0.14) 0%, rgba(192,132,252,0.08) 100%)',
+                  border: '1px solid rgba(192,132,252,0.24)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
+                  borderRadius: 14,
+                  padding: '10px 6px',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  minHeight: 92,
+                  justifyContent: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 10,
+                    color: 'rgba(255,255,255,0.42)',
+                    letterSpacing: 1.2,
+                    marginBottom: 6,
+                    textTransform: 'uppercase',
+                  }}
+                >
                   {pillar.label}
                 </div>
+
                 {pillar.data ? (
                   <>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: '#F0EDE8', marginBottom: 2 }}>
+                    <div
+                      style={{
+                        fontSize: 20,
+                        fontWeight: 800,
+                        color: '#F8F4FF',
+                        marginBottom: 3,
+                        lineHeight: 1.1,
+                        textShadow: '0 0 10px rgba(192,132,252,0.12)',
+                      }}
+                    >
                       {isZH ? (GAN_CN[pillar.data.gan] || pillar.data.gan) : pillar.data.gan}
                     </div>
-                    <div style={{ fontSize: 13, color: '#C084FC' }}>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: '#D8B4FE',
+                        fontWeight: 500,
+                      }}
+                    >
                       {isZH ? (ZHI_CN[pillar.data.zhi] || pillar.data.zhi) : pillar.data.zhi}
                     </div>
                   </>
@@ -287,84 +402,374 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
           </div>
 
           {/* Day Master */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            background: 'rgba(192,132,252,0.08)',
-            border: '1px solid rgba(192,132,252,0.2)',
-            borderRadius: 10, padding: '8px 14px',
-            marginBottom: 14,
-          }}>
-            <div style={{ fontSize: 18 }}>⭐</div>
-            <div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 1 }}>
-                {isZH ? '日主' : 'Day Master'}
+          <div
+            style={{
+              background: 'linear-gradient(180deg, rgba(192,132,252,0.10) 0%, rgba(192,132,252,0.06) 100%)',
+              border: '1px solid rgba(192,132,252,0.22)',
+              borderRadius: 14,
+              padding: '12px 14px',
+              marginBottom: 16,
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(192,132,252,0.14)',
+                  border: '1px solid rgba(192,132,252,0.22)',
+                  fontSize: 16,
+                  flexShrink: 0,
+                }}
+              >
+                ⭐
               </div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#C084FC' }}>
-                {isZH ? (GAN_CN[bazi.day_master] || bazi.day_master) : bazi.day_master}
+
+              <div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: 'rgba(255,255,255,0.42)',
+                    marginBottom: 2,
+                    letterSpacing: 0.8,
+                  }}
+                >
+                  {isZH ? '日主' : 'Day Master'}
+                </div>
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: '#D8B4FE',
+                  }}
+                >
+                  {isZH ? (GAN_CN[bazi.day_master] || bazi.day_master) : bazi.day_master}
+                </div>
+              </div>
+            </div>
+
+            {/* Premium core read */}
+            <div
+              style={{
+                marginTop: 12,
+                padding: '12px 14px',
+                borderRadius: 12,
+                background: 'rgba(255,255,255,0.035)',
+                border: '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 11,
+                  color: 'rgba(255,255,255,0.4)',
+                  letterSpacing: 1,
+                  marginBottom: 6,
+                  textTransform: 'uppercase',
+                }}
+              >
+                {isZH ? '核心結構' : 'Core Pattern'}
+              </div>
+              <div
+                style={{
+                  fontSize: 13,
+                  lineHeight: 1.75,
+                  color: 'rgba(255,255,255,0.86)',
+                }}
+              >
+                {isZH
+                  ? `你的日主為${GAN_CN[bazi.day_master] || bazi.day_master}，整體呈現偏強的行動與判斷傾向。這不是單純的性格描述，而是一種你面對世界時自然會啟動的能量結構。`
+                  : `Your Day Master is ${bazi.day_master}, suggesting a naturally stronger orientation toward action, judgment, and how you engage with the world.`}
               </div>
             </div>
           </div>
 
           {/* Five Elements — stacked bar */}
           <div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 12, letterSpacing: 1 }}>
+            <div
+              style={{
+                fontSize: 12,
+                color: 'rgba(255,255,255,0.42)',
+                marginBottom: 12,
+                letterSpacing: 1.1,
+              }}
+            >
               {isZH ? '五行力量' : 'FIVE ELEMENTS'}
             </div>
 
-            {/* Stacked bar */}
             {(() => {
               const total = Object.values(elements).reduce((a: any, b: any) => a + b, 0) as number;
               const sorted = Object.entries(elements).sort(([, a]: any, [, b]: any) => b - a);
+
+              const topElement = sorted[0]?.[0];
+              const weakestElement = sorted[sorted.length - 1]?.[0];
+
+              const zhName: Record<string, string> = {
+                Fire: '火',
+                Wood: '木',
+                Earth: '土',
+                Metal: '金',
+                Water: '水',
+              };
+
+              const premiumMeanings: Record<string, { en: string; zh: string }> = {
+                Fire: {
+                  zh: '推進力、表達感與外放能量',
+                  en: 'Momentum, expression and outward energy',
+                },
+                Metal: {
+                  zh: '決斷力、邊界感與原則性',
+                  en: 'Discernment, boundaries and principles',
+                },
+                Wood: {
+                  zh: '成長性、延展力與內在發展',
+                  en: 'Growth, extension and inner development',
+                },
+                Earth: {
+                  zh: '承載力、穩定感與現實支撐',
+                  en: 'Grounding, stability and support',
+                },
+                Water: {
+                  zh: '反思力、感受流動與內在調節',
+                  en: 'Reflection, inner flow and adaptability',
+                },
+              };
+
+              const tensionMapZH: Record<string, string> = {
+                Fire: '行動與推進',
+                Metal: '判斷與決斷',
+                Wood: '成長與延展',
+                Earth: '穩定與承載',
+                Water: '反思與內在調節',
+              };
+
+              const tensionMapEN: Record<string, string> = {
+                Fire: 'drive and momentum',
+                Metal: 'judgment and decisiveness',
+                Wood: 'growth and expansion',
+                Earth: 'stability and grounding',
+                Water: 'reflection and inner regulation',
+              };
+
+              const top1 = sorted[0];
+              const top2 = sorted[1];
+              const weakest = sorted[sorted.length - 1];
+
+              const top1Name = top1?.[0];
+              const top2Name = top2?.[0];
+              const weakestName = weakest?.[0];
+
+              const top1Pct = Math.round(((top1?.[1] as number || 0) / total) * 100);
+              const top2Pct = Math.round(((top2?.[1] as number || 0) / total) * 100);
+              const weakestPct = Math.round(((weakest?.[1] as number || 0) / total) * 100);
+
+              const getTensionInsight = () => {
+                // Case B: two strong elements
+                if (top1Pct >= 30 && top2Pct >= 25) {
+                  return isZH
+                    ? `你的結構同時強調${zhName[top1Name]}與${zhName[top2Name]}：前者代表${tensionMapZH[top1Name]}，後者代表${tensionMapZH[top2Name]}。這種組合常見的張力是，你既想快速推進，也會同時要求準確與控制，所以內在容易出現「想快，但又不想出錯」的拉扯。`
+                    : `Your structure emphasizes both ${top1Name} and ${top2Name}. This often creates a tension between momentum and control: you want to move quickly, but also want things to be precise and right.`;
+                }
+
+                // Case A: one strong, one weak
+                if (top1Pct >= 35 && weakestPct <= 10) {
+                  return isZH
+                    ? `你較容易依靠${zhName[top1Name]}的方式向前推進，但在${zhName[weakestName]}相關的內在吸收、轉化或調節上，未必同樣充足。換句話說，你可能行動很快，但不一定會同步消化自己。`
+                    : `You tend to move forward through ${top1Name}, but the ${weakestName}-related capacity for reflection, absorption, or regulation may not be as strong. You may move fast without fully processing as you go.`;
+                }
+
+                // Case C: relatively balanced
+                return isZH
+                  ? `你的五行分布相對平均，沒有單一特別壓倒性的主導力量。這種結構的優勢是彈性與適應力，但張力在於：到了需要明確選擇方向的時候，你可能需要更有意識地決定，這一次要用哪一種方式發力。`
+                  : `Your elemental profile is relatively balanced, without one overwhelmingly dominant force. The advantage is flexibility, but the tension is that in important moments, you may need to consciously choose how you want to act rather than relying on one natural default.`;
+              };
+
               return (
                 <>
-                  <div style={{ display: 'flex', height: 28, borderRadius: 14, overflow: 'hidden', marginBottom: 14 }}>
-                    {sorted.map(([element, strength]: [string, any]) => {
-                      const pct = (strength / total) * 100;
-                      const color = ELEMENT_COLORS[element] || '#C084FC';
-                      return (
-                        <div key={element} style={{
-                          width: `${pct}%`, background: color,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          transition: 'width 0.8s ease',
-                        }}>
-                          {pct > 12 && <span style={{ fontSize: 10, color: '#fff', fontWeight: 700 }}>{Math.round(pct)}%</span>}
-                        </div>
-                      );
-                    })}
+                  {/* Stacked bar card */}
+                  <div
+                    style={{
+                      padding: 14,
+                      borderRadius: 16,
+                      background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      marginBottom: 14,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        height: 30,
+                        borderRadius: 999,
+                        overflow: 'hidden',
+                        marginBottom: 12,
+                        background: 'rgba(255,255,255,0.04)',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.2)',
+                      }}
+                    >
+                      {sorted.map(([element, strength]: [string, any]) => {
+                        const pct = (strength / total) * 100;
+                        const color = ELEMENT_COLORS[element] || '#C084FC';
+
+                        return (
+                          <div
+                            key={element}
+                            style={{
+                              width: `${pct}%`,
+                              background: color,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              transition: 'width 1s cubic-bezier(0.22, 1, 0.36, 1)',
+                              position: 'relative',
+                            }}
+                          >
+                            {pct > 11 && (
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  color: '#fff',
+                                  fontWeight: 700,
+                                  letterSpacing: 0.2,
+                                }}
+                              >
+                                {Math.round(pct)}%
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Premium one-line reading */}
+                    <div
+                      style={{
+                        fontSize: 13,
+                        lineHeight: 1.7,
+                        color: 'rgba(255,255,255,0.86)',
+                      }}
+                    >
+                      {isZH
+                        ? `你的五行結構以${zhName[topElement]}為主，代表你在${tensionMapZH[topElement]}上較自然有力；而${zhName[weakestElement]}偏弱，表示你在${tensionMapZH[weakestElement]}這一面，通常需要更多後天調節。`
+                        : `Your elemental structure is led by ${topElement}, showing natural strength in ${tensionMapEN[topElement]}, while ${weakestElement} is comparatively weaker and may require more conscious balancing.`}
+                    </div>
                   </div>
+
+                  {/* Tension insight */}
+                  <div
+                    style={{
+                      marginBottom: 16,
+                      padding: '12px 14px',
+                      borderRadius: 14,
+                      background: 'rgba(192,132,252,0.06)',
+                      border: '1px solid rgba(192,132,252,0.16)',
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: 'rgba(255,255,255,0.42)',
+                        letterSpacing: 1,
+                        marginBottom: 6,
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {isZH ? '內在張力' : 'Inner Tension'}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        lineHeight: 1.75,
+                        color: 'rgba(255,255,255,0.86)',
+                      }}
+                    >
+                      {getTensionInsight()}
+                    </div>
+                  </div>
+
                   {/* Legend with interpretation */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {sorted.map(([element, strength]: [string, any]) => {
                       const pct = Math.round((strength / total) * 100);
                       const color = ELEMENT_COLORS[element] || '#C084FC';
                       const emoji = ELEMENT_EMOJI[element] || '✦';
-                      const zhName: Record<string, string> = { Fire: '火', Wood: '木', Earth: '土', Metal: '金', Water: '水' };
 
-                      const level = pct >= 35 ? (isZH ? '主導' : 'Dominant') :
-                        pct >= 20 ? (isZH ? '強' : 'Strong') :
-                          pct >= 10 ? (isZH ? '中' : 'Moderate') :
-                            (isZH ? '弱' : 'Weak');
-
-                      const meanings: Record<string, { en: string; zh: string }> = {
-                        Fire: { zh: '事業心、行動力與社交熱情', en: 'Career drive, action and social energy' },
-                        Metal: { zh: '意志力、執行力與原則性', en: 'Willpower, discipline and principles' },
-                        Wood: { zh: '創意、成長力與人文關懷', en: 'Creativity, growth and vision' },
-                        Earth: { zh: '穩定性、包容力與可靠度', en: 'Stability, nurturing and reliability' },
-                        Water: { zh: '智慧、直覺與應變靈活性', en: 'Wisdom, intuition and adaptability' },
-                      };
+                      const level =
+                        pct >= 35
+                          ? isZH
+                            ? '主導'
+                            : 'Dominant'
+                          : pct >= 20
+                            ? isZH
+                              ? '強'
+                              : 'Strong'
+                            : pct >= 10
+                              ? isZH
+                                ? '中'
+                                : 'Moderate'
+                              : isZH
+                                ? '弱'
+                                : 'Weak';
 
                       return (
-                        <div key={element} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                          <div style={{ width: 12, height: 12, borderRadius: 3, background: color, flexShrink: 0, marginTop: 3 }} />
+                        <div
+                          key={element}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: 12,
+                            padding: '10px 12px',
+                            borderRadius: 12,
+                            background: 'rgba(255,255,255,0.025)',
+                            border: '1px solid rgba(255,255,255,0.05)',
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: 12,
+                              height: 12,
+                              borderRadius: 4,
+                              background: color,
+                              flexShrink: 0,
+                              marginTop: 4,
+                              boxShadow: `0 0 10px ${color}55`,
+                            }}
+                          />
                           <div>
-                            <span style={{ fontSize: 14, color: '#F0EDE8', fontWeight: 600 }}>
-                              {emoji} {isZH ? zhName[element] : element} {pct}%
-                            </span>
-                            <span style={{ fontSize: 12, color: color, marginLeft: 8, fontWeight: 700 }}>
-                              {level}
-                            </span>
-                            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
-                              {isZH ? meanings[element].zh : meanings[element].en}
+                            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                              <span
+                                style={{
+                                  fontSize: 14,
+                                  color: '#F5F0FA',
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {emoji} {isZH ? zhName[element] : element} {pct}%
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: 12,
+                                  color: color,
+                                  fontWeight: 700,
+                                }}
+                              >
+                                {level}
+                              </span>
+                            </div>
+
+                            <div
+                              style={{
+                                fontSize: 12,
+                                color: 'rgba(255,255,255,0.5)',
+                                marginTop: 4,
+                                lineHeight: 1.6,
+                              }}
+                            >
+                              {isZH ? premiumMeanings[element].zh : premiumMeanings[element].en}
                             </div>
                           </div>
                         </div>
@@ -381,14 +786,32 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
 
 
       {/* MBTI Tab */}
+      {/* MBTI Tab */}
       {activeTab === 'mbti' && mbti && (
         <div className="oria-card" style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 20 }}>
+          <div
+            style={{
+              fontSize: 16,
+              fontWeight: 700,
+              letterSpacing: 1.5,
+              color: '#C084FC',
+              textTransform: 'uppercase',
+              marginBottom: 20,
+            }}
+          >
             🧠 {isZH ? 'MBTI 性格' : 'MBTI Personality'}
           </div>
 
           {/* MBTI explanation */}
-          <div style={{ background: 'rgba(192,132,252,0.06)', borderRadius: 12, padding: '14px 16px', marginBottom: 20, borderLeft: '3px solid rgba(192,132,252,0.4)' }}>
+          <div
+            style={{
+              background: 'rgba(192,132,252,0.06)',
+              borderRadius: 12,
+              padding: '14px 16px',
+              marginBottom: 20,
+              borderLeft: '3px solid rgba(192,132,252,0.4)',
+            }}
+          >
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, margin: 0 }}>
               {isZH
                 ? `MBTI 將人的性格分為16種類型，從四個核心維度衡量你的思維、決策與社交偏好：外向/內向、實感/直覺、思考/情感、判斷/感知。你的類型是 ${mbti.mbti_type}。結合八字日主，MBTI 能從東西方兩個角度立體呈現你的性格全貌。`
@@ -398,28 +821,79 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
 
           {/* Type + nickname */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-            <div style={{
-              fontSize: 36, fontWeight: 800, color: '#C084FC',
-              background: 'rgba(192,132,252,0.1)',
-              border: '1px solid rgba(192,132,252,0.3)',
-              borderRadius: 14, padding: '10px 16px',
-              letterSpacing: 3, flexShrink: 0,
-            }}>
+            <div
+              style={{
+                fontSize: 36,
+                fontWeight: 800,
+                color: '#D8B4FE',
+                background: 'linear-gradient(135deg, rgba(192,132,252,0.24), rgba(192,132,252,0.08))',
+                border: '1px solid rgba(192,132,252,0.3)',
+                borderRadius: 16,
+                padding: '12px 18px',
+                letterSpacing: 3,
+                flexShrink: 0,
+                boxShadow: '0 0 20px rgba(192,132,252,0.12), inset 0 1px 0 rgba(255,255,255,0.05)',
+              }}
+            >
               {mbti.mbti_type}
             </div>
-            <div>
+
+            <div style={{ flex: 1 }}>
               <div style={{ fontSize: 17, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>
                 {mbtiInfo?.nickname}
               </div>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
                 {mbtiInfo?.traits.map((trait, i) => (
-                  <span key={i} style={{
-                    background: 'rgba(192,132,252,0.12)',
-                    border: '1px solid rgba(192,132,252,0.25)',
-                    borderRadius: 20, padding: '3px 10px',
-                    fontSize: 11, color: '#C084FC',
-                  }}>{trait}</span>
+                  <span
+                    key={i}
+                    style={{
+                      background: 'rgba(192,132,252,0.12)',
+                      border: '1px solid rgba(192,132,252,0.25)',
+                      borderRadius: 20,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      color: '#C084FC',
+                      boxShadow: '0 0 10px rgba(192,132,252,0.10)',
+                    }}
+                  >
+                    {trait}
+                  </span>
                 ))}
+              </div>
+
+              {/* Core Pattern */}
+              <div
+                style={{
+                  padding: '12px 14px',
+                  borderRadius: 12,
+                  background: 'rgba(255,255,255,0.035)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: 'rgba(255,255,255,0.4)',
+                    letterSpacing: 1,
+                    marginBottom: 6,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {isZH ? '核心傾向' : 'Core Pattern'}
+                </div>
+
+                <div
+                  style={{
+                    fontSize: 13,
+                    lineHeight: 1.75,
+                    color: 'rgba(255,255,255,0.86)',
+                  }}
+                >
+                  {isZH
+                    ? `你傾向以結構與確定性來理解世界，重視可靠性、秩序與可預測性。你的決策通常更依賴觀察、經驗與邏輯，而不是模糊感受或一時衝動。`
+                    : `You tend to understand the world through structure and certainty, valuing reliability, order, and predictability. Your decisions are typically grounded in observation, experience, and logic rather than ambiguity or impulse.`}
+                </div>
               </div>
             </div>
           </div>
@@ -433,101 +907,286 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
               { a: 'T', b: 'F', colorA: '#22d3ee', colorB: '#f472b6' },
               { a: 'J', b: 'P', colorA: '#fbbf24', colorB: '#a78bfa' },
             ];
+
+            const dominantLetters = pairs.map(({ a, b }) => {
+              const aVal = dims[a] ?? 50;
+              const bVal = dims[b] ?? 50;
+              return aVal >= bVal ? a : b;
+            });
+
+            const profileCode = dominantLetters.join('');
+
             return (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {pairs.map(({ a, b, colorA, colorB }) => {
-                  const aVal = dims[a];
-                  const bVal = dims[b];
-                  const dominant = aVal > bVal ? a : b;
-                  const dominantColor = dominant === a ? colorA : colorB;
-                  const pct = Math.max(aVal, bVal);
-                  return (
-                    <div key={a + b}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: dominant === a ? colorA : 'rgba(255,255,255,0.3)' }}>{a}</span>
-                        <span style={{ fontSize: 11, color: dominantColor, background: `${dominantColor}22`, padding: '2px 10px', borderRadius: 20, fontWeight: 600 }}>{pct}% {dominant}</span>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: dominant === b ? colorB : 'rgba(255,255,255,0.3)' }}>{b}</span>
-                      </div>
-                      <div style={{ position: 'relative', height: 8, background: 'rgba(255,255,255,0.06)', borderRadius: 4 }}>
-                        {dominant === a ? (
-                          <div style={{
-                            position: 'absolute', left: 0, top: 0, bottom: 0,
-                            width: `${aVal}%`, borderRadius: 4,
-                            background: colorA,
-                            boxShadow: `0 0 8px ${colorA}88`,
-                            transition: 'width 0.8s ease',
-                          }} />
-                        ) : (
-                          <div style={{
-                            position: 'absolute', right: 0, top: 0, bottom: 0,
-                            width: `${bVal}%`, borderRadius: 4,
-                            background: colorB,
-                            boxShadow: `0 0 8px ${colorB}88`,
-                            transition: 'width 0.8s ease',
-                          }} />
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <>
+                <div
+                  style={{
+                    padding: '14px 14px 12px',
+                    borderRadius: 14,
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    marginBottom: 16,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 13,
+                      marginBottom: 12,
+                      color: 'rgba(255,255,255,0.82)',
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    {isZH
+                      ? `你的性格傾向呈現明顯的「${profileCode}」結構，偏向穩定、務實、理性與可控的決策方式。`
+                      : `Your personality profile shows a strong "${profileCode}" structure, favoring stability, practicality, rationality, and controlled decision-making.`}
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {pairs.map(({ a, b, colorA, colorB }) => {
+                      const aVal = dims[a] ?? 50;
+                      const bVal = dims[b] ?? 50;
+                      const dominant = aVal > bVal ? a : b;
+                      const dominantColor = dominant === a ? colorA : colorB;
+                      const pct = Math.max(aVal, bVal);
+
+                      return (
+                        <div key={a + b}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginBottom: 6,
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 700,
+                                color: dominant === a ? colorA : 'rgba(255,255,255,0.3)',
+                              }}
+                            >
+                              {a}
+                            </span>
+
+                            <span
+                              style={{
+                                fontSize: 11,
+                                color: dominantColor,
+                                background: `${dominantColor}22`,
+                                padding: '3px 10px',
+                                borderRadius: 20,
+                                fontWeight: 700,
+                                boxShadow: `0 0 10px ${dominantColor}22`,
+                              }}
+                            >
+                              {pct}% {dominant}
+                            </span>
+
+                            <span
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 700,
+                                color: dominant === b ? colorB : 'rgba(255,255,255,0.3)',
+                              }}
+                            >
+                              {b}
+                            </span>
+                          </div>
+
+                          <div
+                            style={{
+                              position: 'relative',
+                              height: 10,
+                              background: 'rgba(255,255,255,0.06)',
+                              borderRadius: 999,
+                              overflow: 'hidden',
+                            }}
+                          >
+                            {dominant === a ? (
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  left: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  width: `${aVal}%`,
+                                  borderRadius: 999,
+                                  background: colorA,
+                                  boxShadow: `0 0 10px ${colorA}88`,
+                                  transition: 'width 0.9s cubic-bezier(0.22, 1, 0.36, 1)',
+                                }}
+                              />
+                            ) : (
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  right: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  width: `${bVal}%`,
+                                  borderRadius: 999,
+                                  background: colorB,
+                                  boxShadow: `0 0 10px ${colorB}88`,
+                                  transition: 'width 0.9s cubic-bezier(0.22, 1, 0.36, 1)',
+                                }}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Inner Tension */}
+                <div
+                  style={{
+                    marginTop: 16,
+                    padding: '12px 14px',
+                    borderRadius: 14,
+                    background: 'rgba(192,132,252,0.06)',
+                    border: '1px solid rgba(192,132,252,0.16)',
+                    marginBottom: 16,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: 'rgba(255,255,255,0.42)',
+                      letterSpacing: 1,
+                      marginBottom: 6,
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {isZH ? '內在張力' : 'Inner Tension'}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: 13,
+                      lineHeight: 1.75,
+                      color: 'rgba(255,255,255,0.86)',
+                    }}
+                  >
+                    {isZH
+                      ? `你傾向依賴結構、標準與確定性來做決定，但現實並不總是清晰可控。這會帶來一種內在張力：一方面你希望事情有邏輯、有秩序，另一方面又不得不面對模糊、變動與無法立即下定論的情境。`
+                      : `You tend to rely on structure, standards, and certainty when making decisions, but reality is not always clear or controllable. This creates an inner tension between your desire for order and the need to navigate ambiguity and change.`}
+                  </div>
+                </div>
+              </>
             );
           })()}
+
           {/* Dimension explanations — inside same card */}
           <div style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: '#C084FC', textTransform: 'uppercase', marginBottom: 12 }}>
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: 1.5,
+                color: '#C084FC',
+                textTransform: 'uppercase',
+                marginBottom: 12,
+              }}
+            >
               {isZH ? '維度解讀' : 'DIMENSION BREAKDOWN'}
             </div>
+
             {(() => {
               const dims = MBTI_DIMENSIONS[mbti.mbti_type];
               const dimInfo = [
                 {
-                  leftKey: 'E', rightKey: 'I', leftZH: '外向型 E', rightZH: '內向型 I',
-                  meaningLeftZH: '從社交互動中獲取能量，外向活躍，善於表達。',
-                  meaningRightZH: '從獨處中恢復能量，內斂深思，專注力強。',
-                  meaningLeft: 'Energised by social interaction, expressive and outgoing.',
-                  meaningRight: 'Energised by solitude, reflective and deeply focused.'
+                  leftKey: 'E',
+                  rightKey: 'I',
+                  leftZH: '外向型 E',
+                  rightZH: '內向型 I',
+                  meaningLeftZH: '傾向從互動與外在刺激中獲得能量，表達直接，行動較外放。',
+                  meaningRightZH: '傾向在安靜環境中整理思緒與恢復狀態，較重視內在節奏與專注深度。',
+                  meaningLeft: 'Tends to gain energy through interaction and external stimulation, with a more direct and outward style.',
+                  meaningRight: 'Tends to restore energy in quieter environments, valuing inner rhythm and depth of focus.',
                 },
                 {
-                  leftKey: 'S', rightKey: 'N', leftZH: '實感型 S', rightZH: '直覺型 N',
-                  meaningLeftZH: '注重實際與細節，以事實和經驗為基礎做判斷。',
-                  meaningRightZH: '重視直覺與全局，善於看見規律與未來的可能性。',
-                  meaningLeft: 'Practical, detail-focused, trusts facts and experience.',
-                  meaningRight: 'Intuitive, big-picture thinker, drawn to patterns and possibilities.'
+                  leftKey: 'S',
+                  rightKey: 'N',
+                  leftZH: '實感型 S',
+                  rightZH: '直覺型 N',
+                  meaningLeftZH: '習慣從具體事實、細節與既有經驗出發，而不是依賴抽象假設。',
+                  meaningRightZH: '傾向從整體脈絡、模式與未來可能性出發，看重方向感與想像空間。',
+                  meaningLeft: 'Starts from concrete facts, details, and lived experience rather than abstract assumptions.',
+                  meaningRight: 'Starts from patterns, context, and future possibilities, valuing direction and imagination.',
                 },
                 {
-                  leftKey: 'T', rightKey: 'F', leftZH: '思考型 T', rightZH: '情感型 F',
-                  meaningLeftZH: '邏輯客觀，以分析和理性作出決策。',
-                  meaningRightZH: '富同理心，以價值觀和感受作為決策依據。',
-                  meaningLeft: 'Logical and objective, makes decisions through analysis.',
-                  meaningRight: 'Empathetic and values-driven, decides through feelings.'
+                  leftKey: 'T',
+                  rightKey: 'F',
+                  leftZH: '思考型 T',
+                  rightZH: '情感型 F',
+                  meaningLeftZH: '做決定時較重視邏輯一致性、分析與是否合理，而非情緒感受本身。',
+                  meaningRightZH: '做決定時較重視價值觀、人際感受與是否符合內心認同。',
+                  meaningLeft: 'Makes decisions through logic, consistency, and analysis rather than emotional tone itself.',
+                  meaningRight: 'Makes decisions through values, relational impact, and inner alignment.',
                 },
                 {
-                  leftKey: 'J', rightKey: 'P', leftZH: '判斷型 J', rightZH: '感知型 P',
-                  meaningLeftZH: '有條理，計劃性強，傾向提前作決定，重視秩序。',
-                  meaningRightZH: '靈活隨性，偏好保持選擇開放，適應力強。',
-                  meaningLeft: 'Structured and planned, prefers clear decisions and organisation.',
-                  meaningRight: 'Flexible and spontaneous, prefers keeping options open.'
+                  leftKey: 'J',
+                  rightKey: 'P',
+                  leftZH: '判斷型 J',
+                  rightZH: '感知型 P',
+                  meaningLeftZH: '偏好先建立秩序與方向，提早決定，讓事情進入可掌握的節奏。',
+                  meaningRightZH: '偏好保留彈性與開放性，依情況調整，讓選擇保持流動。',
+                  meaningLeft: 'Prefers to create order early, make decisions sooner, and move within a manageable rhythm.',
+                  meaningRight: 'Prefers openness and flexibility, adjusting as circumstances change.',
                 },
               ];
+
               return dimInfo.map((info) => {
                 const leftVal = dims[info.leftKey] ?? 50;
                 const rightVal = dims[info.rightKey] ?? 50;
                 const dominantLeft = leftVal >= rightVal;
                 const pct = dominantLeft ? leftVal : rightVal;
-                const dominantLabel = dominantLeft ? (isZH ? info.leftZH : `${info.leftKey} (${info.leftZH.split(' ')[0]})`) : (isZH ? info.rightZH : `${info.rightKey} (${info.rightZH.split(' ')[0]})`);
-                const meaning = dominantLeft ? (isZH ? info.meaningLeftZH : info.meaningLeft) : (isZH ? info.meaningRightZH : info.meaningRight);
+
+                const dominantLabel = dominantLeft
+                  ? (isZH ? info.leftZH : `${info.leftKey} (${info.leftZH.split(' ')[0]})`)
+                  : (isZH ? info.rightZH : `${info.rightKey} (${info.rightZH.split(' ')[0]})`);
+
+                const meaning = dominantLeft
+                  ? (isZH ? info.meaningLeftZH : info.meaningLeft)
+                  : (isZH ? info.meaningRightZH : info.meaningRight);
+
                 return (
-                  <div key={info.leftKey} style={{ background: 'rgba(192,132,252,0.05)', borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <div
+                    key={info.leftKey}
+                    style={{
+                      background: 'rgba(192,132,252,0.05)',
+                      borderRadius: 12,
+                      padding: '13px 14px',
+                      marginBottom: 10,
+                      border: '1px solid rgba(255,255,255,0.04)',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: 6,
+                      }}
+                    >
                       <span style={{ fontSize: 15, fontWeight: 700, color: '#C084FC' }}>
                         {dominantLabel} · {pct}%
                       </span>
+
                       <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
                         {info.leftKey} ↔ {info.rightKey}
                       </span>
                     </div>
-                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0 }}>
+
+                    <p
+                      style={{
+                        fontSize: 13,
+                        color: 'rgba(255,255,255,0.62)',
+                        lineHeight: 1.7,
+                        margin: 0,
+                      }}
+                    >
                       {meaning}
                     </p>
                   </div>
@@ -535,10 +1194,62 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
               });
             })()}
           </div>
-          <div style={{ borderTop: '1px solid rgba(192,132,252,0.15)', paddingTop: 12, marginTop: 16, cursor: 'pointer' }}
-            onClick={() => setActiveTab('insight')}>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', margin: 0 }}>
-              {isZH ? '想了解你的MBTI如何與八字相互印證，形成獨特的你？' : 'Want to see how your MBTI and BaZi combine to reveal your unique pattern?'}
+
+          {/* What This Means */}
+          <div
+            style={{
+              marginTop: 16,
+              padding: '12px 14px',
+              borderRadius: 12,
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.05)',
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.4)',
+                marginBottom: 6,
+                textTransform: 'uppercase',
+                letterSpacing: 1,
+              }}
+            >
+              {isZH ? '對你的影響' : 'What This Means'}
+            </div>
+
+            <div
+              style={{
+                fontSize: 13,
+                lineHeight: 1.75,
+                color: 'rgba(255,255,255,0.85)',
+              }}
+            >
+              {isZH
+                ? `在日常生活中，你通常更適合在規則清晰、責任明確的環境中發揮，因為這能讓你的判斷力與執行力更穩定地展現。當環境變動較大時，你可能需要刻意放鬆對「一定要先有答案」的要求。`
+                : `In daily life, you tend to perform best in environments with clear expectations and defined responsibilities, where your judgment and consistency can show up fully. In more uncertain situations, you may need to consciously relax the need to have the answer too early.`}
+            </div>
+          </div>
+
+          <div
+            style={{
+              borderTop: '1px solid rgba(192,132,252,0.15)',
+              paddingTop: 12,
+              marginTop: 16,
+              cursor: 'pointer',
+            }}
+            onClick={() => setActiveTab('insight')}
+          >
+            <p
+              style={{
+                fontSize: 13,
+                color: 'rgba(255,255,255,0.4)',
+                fontStyle: 'italic',
+                margin: 0,
+              }}
+            >
+              {isZH
+                ? '想了解你的MBTI如何與八字相互印證，形成獨特的你？'
+                : 'Want to see how your MBTI and BaZi combine to reveal your unique pattern?'}
               <span style={{ color: '#C084FC', marginLeft: 6 }}>
                 {isZH ? '查看命盤解析 →' : 'See Profile Insight →'}
               </span>
@@ -750,19 +1461,80 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
       )}
 
 
-      <button
-        className="oria-btn-primary"
-        style={{ marginTop: 32 }}
-        onClick={() => navigate('/chat', {
-          state: { prefill: isZH ? '根據我的命盤，我應該關注什麼？' : 'What should I focus on based on my chart?' }
-        })}
-      >
-        {isZH ? '開啟指引對話 →' : 'Start Guidance Chat →'}
-      </button>
+      {(() => {
+        const footer = getFooterContent();
 
-      <footer className="oria-disclaimer" style={{ marginTop: 32 }}>
-        {isZH ? '這是一種反思，而非預測。決定權在你。' : 'This is a reflection, not a prediction. You hold the decisions.'}
-      </footer>
+        return (
+          <>
+            <div style={{ marginTop: 20, marginBottom: 18 }}>
+              <div
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#D8B4FE',
+                  marginBottom: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <span style={{ fontSize: 18 }}>💬</span>
+                <span>{footer.deeperTitle}</span>
+              </div>
+
+              <div
+                style={{
+                  fontSize: 14,
+                  lineHeight: 1.8,
+                  color: 'rgba(255,255,255,0.64)',
+                  marginBottom: 14,
+                }}
+              >
+                {footer.intro}
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {footer.prompts.map((prompt: string) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => navigate('/chat', { state: { prefill: prompt } })}
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '18px 20px',
+                      borderRadius: 999,
+                      background: 'linear-gradient(90deg, rgba(20,10,40,0.92) 0%, rgba(32,14,58,0.82) 100%)',
+                      border: '1px solid rgba(192,132,252,0.16)',
+                      color: '#F5F0FA',
+                      fontSize: 16,
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button
+              className="oria-btn-primary"
+              style={{ marginTop: 20 }}
+              onClick={() => navigate('/chat', {
+                state: { prefill: footer.ctaPrefill }
+              })}
+            >
+              {footer.cta}
+            </button>
+
+            <footer className="oria-disclaimer" style={{ marginTop: 28 }}>
+              {isZH ? '這是一種反思，而非預測。決定權在你。' : 'This is a reflection, not a prediction. You hold the decisions.'}
+            </footer>
+          </>
+        );
+      })()}
     </div>
   );
 }
