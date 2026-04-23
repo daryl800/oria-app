@@ -37,6 +37,8 @@ const COLOR_MAP: Record<string, string> = {
   '金色': '#d97706', '粉色': '#ec4899',
 };
 
+
+
 function getToneSymbol(tone: string): string {
   const lower = tone.toLowerCase();
   for (const [key, symbol] of Object.entries(TONE_SYMBOLS)) {
@@ -60,6 +62,15 @@ export default function DailyGuidance({ user, isPro = false, isProLoaded = false
   const [summary, setSummary] = useState<DailySummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const [resonance, setResonance] = useState<'yes' | 'no' | null>(null);
+  const [resonanceSubmitted, setResonanceSubmitted] = useState(false);
+
+  function handleResonance(value: 'yes' | 'no') {
+    if (resonanceSubmitted) return;
+    setResonance(value);
+    setResonanceSubmitted(true);
+  }
 
   useEffect(() => {
     const lang = i18n.language === 'zh-TW' ? 'zh-TW' : 'en';
@@ -118,11 +129,13 @@ export default function DailyGuidance({ user, isPro = false, isProLoaded = false
 
   return (
     <div className="oria-page oria-container animate-fade-in">
-      {/* Header */}
       <header style={{ marginBottom: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           <div className="oria-card-label">Oria</div>
-          <h1 className="text-2xl" style={{ fontSize: 36 }}>{today}</h1>
+          <h1 className="text-2xl" style={{ fontSize: 36, marginBottom: 4 }}>{today}</h1>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
+            {isZH ? '每日指引每天更新' : 'Your guidance refreshes every day'}
+          </div>
         </div>
         <div style={{ fontSize: 32, color: '#C084FC' }}>✨</div>
       </header>
@@ -143,6 +156,15 @@ export default function DailyGuidance({ user, isPro = false, isProLoaded = false
           </div>
         </div>
       </div>
+
+      {/* Identity */}
+      {summary.identity && (
+        <div className="oria-card" style={{ background: 'rgba(192,132,252,0.06)', textAlign: 'center' }}>
+          <p style={{ fontSize: 14, color: '#C084FC', lineHeight: 1.7, margin: 0, fontStyle: 'italic' }}>
+            ✦ {summary.identity}
+          </p>
+        </div>
+      )}
 
       {/* Moment prediction */}
       {summary.moment && (
@@ -228,70 +250,228 @@ export default function DailyGuidance({ user, isPro = false, isProLoaded = false
         </div>
       </div>
 
-      {/* Identity */}
-      {summary.identity && (
-        <div className="oria-card" style={{ background: 'rgba(192,132,252,0.06)', textAlign: 'center' }}>
-          <p style={{ fontSize: 14, color: '#C084FC', lineHeight: 1.7, margin: 0, fontStyle: 'italic' }}>
-            ✦ {summary.identity}
-          </p>
-        </div>
-      )}
+
 
       {/* Deeper Insight — Plus only */}
-      {isPro ? (
-        summary.deeper_insight && (
-          <div className="oria-card" style={{
-            background: 'rgba(192,132,252,0.08)',
-            border: '1px solid rgba(192,132,252,0.3)'
-          }}>
-            <div style={{
-              fontSize: 12,
-              letterSpacing: 1.5,
-              color: '#C084FC',
-              textTransform: 'uppercase',
-              marginBottom: 8
+      {isProLoaded && (
+        isPro ? (
+          summary.deeper_insight && (
+            <div className="oria-card" style={{
+              background: 'rgba(192,132,252,0.08)',
+              border: '1px solid rgba(192,132,252,0.3)'
             }}>
-              ✦ {isZH ? '更深層原因' : 'DEEPER INSIGHT'}
-            </div>
+              <div style={{
+                fontSize: 12,
+                letterSpacing: 1.5,
+                color: '#C084FC',
+                textTransform: 'uppercase',
+                marginBottom: 8
+              }}>
+                ✦ {isZH ? '更深層原因' : 'DEEPER INSIGHT'}
+              </div>
 
+              <p style={{
+                fontSize: 15,
+                color: 'rgba(255,255,255,0.85)',
+                lineHeight: 1.6,
+                margin: 0
+              }}>
+                {summary.deeper_insight}
+              </p>
+            </div>
+          )
+        ) : (
+          <div
+            className="oria-card"
+            style={{
+              background: 'linear-gradient(135deg, rgba(192,132,252,0.15), rgba(192,132,252,0.05))',
+              border: '1px solid rgba(192,132,252,0.3)',
+              textAlign: 'center',
+              cursor: 'pointer',
+            }}
+            onClick={() => navigate('/upgrade')}
+          >
             <p style={{
               fontSize: 15,
               color: 'rgba(255,255,255,0.85)',
-              lineHeight: 1.6,
-              margin: 0
+              marginBottom: 10,
+              lineHeight: 1.6
             }}>
-              {summary.deeper_insight}
+              {isZH
+                ? '但這種感覺背後，其實有一個更深的原因…'
+                : 'There’s a deeper reason behind this feeling today…'}
             </p>
+
+            <div style={{
+              fontSize: 13,
+              color: '#C084FC',
+              fontWeight: 700
+            }}>
+              {isZH ? '查看完整解讀 →' : 'See full explanation →'}
+            </div>
           </div>
         )
-      ) : (
-        <div
-          className="oria-card"
-          style={{
-            background: 'linear-gradient(135deg, rgba(192,132,252,0.15), rgba(192,132,252,0.05))',
-            border: '1px solid rgba(192,132,252,0.3)',
-            textAlign: 'center',
-            cursor: 'pointer',
-          }}
-          onClick={() => navigate('/upgrade')}
-        >
-          <p style={{
-            fontSize: 15,
-            color: 'rgba(255,255,255,0.85)',
-            marginBottom: 10,
-            lineHeight: 1.6
-          }}>
-            {isZH
-              ? '但這種感覺背後，其實有一個更深的原因…'
-              : 'There’s a deeper reason behind this feeling today…'}
-          </p>
+      )}
 
+      {/* Resonance Check */}
+      <div className="oria-card" style={{ textAlign: 'center' }}>
+        <div style={{
+          fontSize: 12,
+          fontWeight: 700,
+          letterSpacing: 1.5,
+          color: '#C084FC',
+          textTransform: 'uppercase',
+          marginBottom: 12
+        }}>
+          ✦ {isZH ? '今天有共鳴嗎？' : 'Does this resonate today?'}
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => handleResonance('yes')}
+            style={{
+              background: resonance === 'yes' ? 'rgba(192,132,252,0.18)' : 'rgba(192,132,252,0.08)',
+              border: resonance === 'yes' ? '1px solid rgba(192,132,252,0.55)' : '1px solid rgba(192,132,252,0.25)',
+              borderRadius: 9999,
+              padding: '10px 16px',
+              fontSize: 13,
+              color: resonance === 'yes' ? '#F0EDE8' : 'rgba(255,255,255,0.75)',
+              cursor: resonanceSubmitted ? 'default' : 'pointer',
+              fontFamily: 'inherit'
+            }}
+            disabled={resonanceSubmitted}
+          >
+            {isZH ? '有點準' : 'Yes, it fits'}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleResonance('no')}
+            style={{
+              background: resonance === 'no' ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.03)',
+              border: resonance === 'no' ? '1px solid rgba(255,255,255,0.28)' : '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 9999,
+              padding: '10px 16px',
+              fontSize: 13,
+              color: resonance === 'no' ? '#F0EDE8' : 'rgba(255,255,255,0.65)',
+              cursor: resonanceSubmitted ? 'default' : 'pointer',
+              fontFamily: 'inherit'
+            }}
+            disabled={resonanceSubmitted}
+          >
+            {isZH ? '不太像我' : 'Not really'}
+          </button>
+        </div>
+
+        {resonance === 'yes' && (
+          <>
+            <div style={{
+              marginTop: 12,
+              fontSize: 12,
+              color: 'rgba(255,255,255,0.55)',
+              lineHeight: 1.6
+            }}>
+              {isZH
+                ? '很好，代表今天的訊息正在對準你。你可以再深入問一個問題。'
+                : 'Good — that means today’s guidance is landing for you. You can go one step deeper.'}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => navigate('/chat', {
+                state: {
+                  prefill: isZH
+                    ? '為什麼今天這段指引會特別對我有感？'
+                    : 'Why does today’s guidance resonate with me so strongly?'
+                }
+              })}
+              className="oria-card"
+              style={{
+                marginTop: 12,
+                width: '100%',
+                textAlign: 'left',
+                cursor: 'pointer',
+                padding: '12px 14px'
+              }}
+            >
+              💬 {isZH ? '深入問問今天的關鍵原因' : 'Ask what is driving today’s pattern'}
+            </button>
+          </>
+        )}
+
+        {resonance === 'no' && (
+          <>
+            <div style={{
+              marginTop: 12,
+              fontSize: 12,
+              color: 'rgba(255,255,255,0.55)',
+              lineHeight: 1.6
+            }}>
+              {isZH
+                ? '明白，也許今天真正的重點藏在另一個面向。試試換個角度問 Oria。'
+                : 'Got it — today’s real signal may be showing up in a different area. Try asking Oria from another angle.'}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => navigate('/chat', {
+                state: {
+                  prefill: isZH
+                    ? '如果今天的指引不太像我，我真正應該注意的是什麼？'
+                    : 'If today’s guidance does not fully fit me, what should I really pay attention to?'
+                }
+              })}
+              className="oria-card"
+              style={{
+                marginTop: 12,
+                width: '100%',
+                textAlign: 'left',
+                cursor: 'pointer',
+                padding: '12px 14px'
+              }}
+            >
+              💬 {isZH ? '換個角度問 Oria' : 'Ask Oria from another angle'}
+            </button>
+          </>
+        )}
+      </div>
+
+      {summary.suggested_prompts?.length > 0 && (
+        <div style={{ marginTop: 28 }}>
           <div style={{
-            fontSize: 13,
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: 1.5,
             color: '#C084FC',
-            fontWeight: 700
+            textTransform: 'uppercase',
+            marginBottom: 12
           }}>
-            {isZH ? '查看完整解讀 →' : 'See full explanation →'}
+            💬 {isZH ? '想再深入一點？' : 'Go a little deeper'}
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {summary.suggested_prompts.slice(0, 3).map((prompt, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => navigate('/chat', { state: { prefill: prompt } })}
+                className="oria-card"
+                style={{
+                  margin: 0,
+                  padding: '14px 16px',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  background: 'rgba(192,132,252,0.06)',
+                  border: '1px solid rgba(192,132,252,0.2)',
+                  color: '#F0EDE8',
+                  fontSize: 14,
+                  lineHeight: 1.6
+                }}
+              >
+                {prompt}
+              </button>
+            ))}
           </div>
         </div>
       )}
