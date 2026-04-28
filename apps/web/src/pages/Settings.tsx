@@ -3,20 +3,20 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
+import { SUPPORTED_LANGUAGES } from '../lib/languages';
 
 const LANGUAGES = [
-  { code: 'en', label: '🇬🇧 English' },
-  { code: 'zh-TW', label: '🇭🇰 繁體中文' },
-  { code: 'zh-CN', label: '🇨🇳 简体中文' },
-  { code: 'sv', label: '🇸🇪 Svenska' },
+  ...SUPPORTED_LANGUAGES.map(language => ({
+    code: language.code,
+    label: `${language.flag} ${language.label}`,
+  })),
 ];
 
-const AVAILABLE = ['en', 'zh-TW'];
+const AVAILABLE: string[] = SUPPORTED_LANGUAGES.map(language => language.code);
 
 export default function Settings({ user }: { user: User }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const isZH = i18n.language === 'zh-TW';
   const [pendingLang, setPendingLang] = useState<string | null>(null);
 
   async function handleSignOut() {
@@ -88,9 +88,9 @@ export default function Settings({ user }: { user: User }) {
           {t('settings.about_body')}
         </p>
         <div style={{
-          borderLeft: '3px solid #C084FC',
+          borderLeft: '3px solid #C9A84C',
           padding: '12px 16px',
-          background: 'rgba(192, 132, 252, 0.05)',
+          background: 'rgba(201, 168, 76, 0.05)',
           borderRadius: '0 12px 12px 0',
           fontSize: 13, color: '#D8B4FE', fontStyle: 'italic',
         }}>
@@ -117,12 +117,10 @@ export default function Settings({ user }: { user: User }) {
           <div className="oria-card" style={{ maxWidth: 380, width: '100%', textAlign: 'center', padding: '36px 28px' }}>
             <div style={{ fontSize: 36, marginBottom: 16 }}>🌐</div>
             <h3 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 12 }}>
-              {isZH ? '更改語言' : 'Change Language'}
+              {t('settings_extra.change_language')}
             </h3>
             <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 28 }}>
-              {isZH
-                ? '之前的內容不會被翻譯。只有新內容會以新語言顯示。確定要更改嗎？'
-                : 'Previous content will not be translated. Only new content will appear in the new language. Continue?'}
+              {t('settings_extra.language_warning')}
             </p>
             <div style={{ display: 'flex', gap: 12 }}>
               <button
@@ -134,13 +132,13 @@ export default function Settings({ user }: { user: User }) {
                   color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
                   fontFamily: 'inherit', fontSize: 16,
                 }}>
-                {isZH ? '取消' : 'Cancel'}
+                {t('settings_extra.cancel')}
               </button>
               <button
                 onClick={confirmLanguageChange}
                 className="oria-btn-primary"
                 style={{ flex: 1, padding: '14px', fontSize: 16 }}>
-                {isZH ? '確認更改' : 'Confirm'}
+                {t('settings_extra.confirm')}
               </button>
             </div>
           </div>

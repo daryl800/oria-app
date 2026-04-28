@@ -1,0 +1,661 @@
+{
+  "app_name": "Oria",
+  "tagline": "運命を決めつけず、選択に静かな手がかりを。",
+  "disclaimer": "これは予言ではなく、内省のためのものです。決めるのはあなたです。",
+  "auth": {
+    "email_placeholder": "your@email.com",
+    "send_magic_link": "マジックリンクを送信",
+    "check_email": "メールに届いたマジックリンクをご確認ください。",
+    "logged_in_as": "ログイン中",
+    "user_id": "ユーザーID",
+    "sign_out": "ログアウト"
+  },
+  "nav": {
+    "daily": "今日の羅針盤",
+    "chat": "Oriaと話す",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "chart": "マイチャート",
+    "compare": "相性",
+    "home": "ホーム",
+    "people": "関係性インサイト"
+  },
+  "daily": {
+    "title": "Daily Guidance",
+    "subtitle": "每日明燈",
+    "tone_label": "Today's Tone · 今日氣場",
+    "pace_label": "Today's pace",
+    "nudge_label": "✦ Today's Light · 明燈",
+    "helpful_label": "Helpful",
+    "cta": "Open Guidance Chat →",
+    "loading": "今日の光を読み解いています...",
+    "error_no_profile": "Complete your profile first →",
+    "profile_incomplete": "プロフィールが未完成です",
+    "complete_profile": "プロフィールを完成する",
+    "refresh": "ガイダンスは毎日更新されます",
+    "rhythm": "今日のリズム",
+    "guidance": "今日のガイダンス",
+    "lean_into": "進めるとよいこと",
+    "avoid": "今は避けたいこと",
+    "reminder": "今日のひとこと",
+    "chat_prompt": "もう少し深く見ますか？",
+    "chat_cta": "Oriaと話す",
+    "deep_open": "今日のガイダンスを展開 ↓",
+    "deep_close": "今日のガイダンスを閉じる ↑",
+    "moment": "今日の状況",
+    "color": "今日の色",
+    "deeper_reason": "深い理由",
+    "upgrade_body": "この感覚の裏には、もう一段深い理由があります。",
+    "upgrade_cta": "完全な洞察を解放 ✦",
+    "chat_prefill": "今日のガイダンスでは「{{text}}」と出ています。どう調整すればいいですか？",
+    "pro_cta_title": "さらに深く見ますか？",
+    "pro_cta_subtext": "今日の方向性と次の一歩を整理する",
+    "locked_cta_title": "さらに深く見ますか？",
+    "locked_cta_subtext": "全体のパターンと次にすべきことを見る",
+    "locked_cta_button": "完全な洞察を解放 ✦",
+    "color_micro_action": "今日の服装や持ち物におすすめ",
+    "color_locked": "ロック中",
+    "color_locked_teaser": "今日に合う色とリズムを見る",
+    "color_locked_microcopy": "解放すると今日に合う色とリズムを確認できます"
+  },
+  "chat": {
+    "title": "今、何を考えていますか？",
+    "empty_title": "Ask Oria anything",
+    "empty_subtitle": "Your BaZi and MBTI are your guide",
+    "try_asking": "✦ Try asking",
+    "placeholder": "考えていることを書いてみてください...",
+    "thinking": "考えています...",
+    "history": "履歴",
+    "new": "新しい会話を始める",
+    "previous_conversations": "過去の会話",
+    "no_conversations": "まだ過去の会話はありません。",
+    "safety_response": "— Oriaの安全応答",
+    "subtitle": "深く考えすぎなくて大丈夫。どこからでも話し始めてください。",
+    "untitled": "無題の会話",
+    "quick_label": "迷ったらここから",
+    "quick_hint": "タップして入力、あとで編集",
+    "send": "メッセージを送信",
+    "paywall_title": "Oriaと話す",
+    "paywall_body": "Oria Plusにアップグレードすると、より深く継続的な個人ガイダンスを受けられます。",
+    "paywall_cta": "Oria Plusにアップグレード ✦",
+    "quick_starts": [
+      {
+        "label": "少し詰まっている",
+        "value": "最近少し詰まっていて、次に何をすればいいか分かりません"
+      },
+      {
+        "label": "次の一歩",
+        "value": "今の自分に合う次の一歩を見てみたいです"
+      },
+      {
+        "label": "気になること",
+        "value": "ずっと気になっていることがあり、少し整理したいです"
+      },
+      {
+        "label": "自分を知りたい",
+        "value": "今の自分をもう少し理解したいです"
+      },
+      {
+        "label": "少し疲れた",
+        "value": "少し疲れていて、方向性がよく分かりません"
+      },
+      {
+        "label": "聞きたいこと",
+        "value": "聞きたいことがありますが、まだうまく言葉にできません"
+      }
+    ]
+  },
+  "profile": {
+    "title": "プロフィール",
+    "bazi_title": "BaZi · 出生データ",
+    "bazi_subtitle": "四柱推命",
+    "mbti_title": "MBTI · 性格",
+    "mbti_subtitle": "Myers-Briggsタイプ",
+    "summary_title": "プロフィール概要",
+    "summary_subtitle": "BaZi + MBTIからAI生成",
+    "saved": "✓ 保存済み",
+    "year": "年",
+    "month": "月",
+    "day": "日",
+    "hour": "時 (0-23)",
+    "minute": "分",
+    "time_known": "正確な出生時間を知っています",
+    "birth_location": "出生地",
+    "timezone": "タイムゾーン",
+    "save_bazi": "BaZiを保存",
+    "update_bazi": "出生データを更新",
+    "saving": "保存中...",
+    "take_quiz": "✦ MBTI質問に答える →",
+    "select_type": "またはタイプを直接選択",
+    "select_placeholder": "MBTIタイプを選択",
+    "save_mbti": "MBTIを保存",
+    "update_mbti": "性格タイプを更新",
+    "strengths": "✦ 強み",
+    "growth": "↑ 成長",
+    "generate_summary": "✦ プロフィール概要を生成",
+    "generating": "概要を生成中...",
+    "loading": "プロフィールを読み込み中...",
+    "error_date": "生年月日を入力してください。",
+    "error_mbti": "MBTIタイプを選択してください。",
+    "reset_warning_title": "出生データを更新しますか？",
+    "reset_warning_body": "出生データを更新すると、会話履歴と毎日のガイダンスが消去されます。",
+    "reset_cancel": "キャンセル",
+    "reset_confirm": "はい、更新"
+  },
+  "mbti": {
+    "title": "MBTI質問",
+    "your_result": "あなたの結果",
+    "your_type": "あなたのMBTIタイプ",
+    "based_on": "20問への回答に基づいています",
+    "dimension_breakdown": "次元の内訳",
+    "continue": "プロフィールへ進む →",
+    "question_of": "質問 {{current}} / {{total}}",
+    "answered": "{{count}} / {{total}} 回答済み",
+    "get_type": "MBTIタイプを取得 →",
+    "calculating": "計算中...",
+    "loading": "質問を読み込み中...",
+    "error_incomplete": "送信前にすべての質問に回答してください。",
+    "previous": "← 前へ",
+    "next": "次へ →",
+    "dimension": "次元"
+  },
+  "settings": {
+    "title": "設定",
+    "account": "アカウント",
+    "language": "言語",
+    "language_label": "表示言語",
+    "about_title": "Oriaについて",
+    "about_body": "OriaはBaZi出生チャートとMBTI性格を組み合わせ、静かで内省的なガイダンスを提供します。指示ではなく、提案します。",
+    "about_quote": "道を照らす光。地図でも命令でもなく、ただ明確さを。",
+    "sign_out": "ログアウト",
+    "coming_soon": "近日公開"
+  },
+  "errors": {
+    "generic": "問題が発生しました。もう一度お試しください。"
+  },
+  "home": {
+    "daily_desc": "Get personalised daily guidance based on your BaZi and MBTI",
+    "chat_desc": "Chat with your AI guide about career, relationships and health",
+    "chart_desc": "Explore your BaZi birth chart and MBTI personality profile",
+    "compare_desc": "大切な相手との関係性の流れを理解する",
+    "headline": "今日はどこから始めますか？",
+    "subtext": "今この瞬間に何をすべきか、導きが教えてくれます。",
+    "primary": {
+      "label": "デイリーガイダンス",
+      "title": "今日のエネルギーと流れを見て、自然に進む。",
+      "subtext": "",
+      "cta": "今日のガイダンスを開始"
+    },
+    "chat": {
+      "label": "リアルタイム対話",
+      "title": "思考を整理し、決断をシンプルにする。",
+      "subtitle": ""
+    },
+    "chart": {
+      "label": "マイチャート",
+      "title": "自分の深いパターンを理解し、判断をより明確にする。",
+      "subtitle": ""
+    },
+    "compare": {
+      "label": "関係性インサイト",
+      "title": "お互いを理解し、より自然に関われるようにする。",
+      "subtitle": ""
+    },
+    "footer": "Oriaコンパス・フォーカスドリーディング"
+  },
+  "page_taglines": {
+    "chat": "これは予測ではなく、内省です。選ぶのはあなたです。",
+    "chart": "これはラベルではなく、あなたの在り方です。",
+    "relationship": "これは相性ではなく、関係の理解です。"
+  },
+  "common": {
+    "oria": "Oria",
+    "oria_compass": "Oria Compass",
+    "back": "戻る",
+    "loading": "読み込み中...",
+    "unknown": "不明"
+  },
+  "landing": {
+    "kicker": "Oria Compass",
+    "headline": "あなたの才能は八字に表れ\nあなたの性格はMBTIに表れる",
+    "subtitle": "それらを組み合わせることで、\n全体像を見極め、より良い選択ができる。",
+    "result": "約60秒で完了 • 契約不要",
+    "primary_cta": "1分の洞察を受け取る →",
+    "signin": "すでにアカウントがありますか？ログイン",
+    "lead": "次の一歩を決めるのは\nどちらか一つではなく",
+    "emphasis": "その組み合わせ",
+    "method": "東洋の命理 × 西洋の心理学",
+    "disclaimer": "本アプリは、八字命理とMBTIに基づく性格的視点を組み合わせ、自己理解の参考として提供します。\n内容はインスピレーションおよびエンターテインメントを目的としたものであり、専門的な助言ではありません。"
+  },
+  "login": {
+    "title_signin": "おかえりなさい",
+    "title_signup": "アカウント作成",
+    "google_signin": "Googleでログイン",
+    "google_signup": "Googleで登録",
+    "google_loading": "ログイン中...",
+    "divider": "または",
+    "email_placeholder": "メールアドレス",
+    "password_placeholder": "パスワード",
+    "submit_signin": "ログイン",
+    "submit_signup": "登録",
+    "processing": "処理中...",
+    "secure": "安全でプライベート",
+    "switch_to_signin_prefix": "すでにアカウントがありますか？",
+    "switch_to_signup_prefix": "アカウントをお持ちでないですか？",
+    "signin_link": "ログイン",
+    "signup_link": "登録",
+    "back": "戻る",
+    "error_google": "ログインに失敗しました。もう一度お試しください。",
+    "error_required": "メールアドレスとパスワードを入力してください。",
+    "error_password": "パスワードは6文字以上必要です。",
+    "error_invalid": "メールアドレスまたはパスワードが違います。",
+    "unlock_title": "完全なリーディングの準備ができました",
+    "unlock_subtitle": "ログインすると、Oriaの完全なリーディングを確認し、保存できます。",
+    "google_unlock": "Googleで続ける",
+    "submit_unlock": "ログインして結果を見る"
+  },
+  "chart": {
+    "header": "マイチャート",
+    "tabs": {
+      "bazi": "🪬 BaZiチャート",
+      "mbti": "🧠 MBTIタイプ",
+      "insight": "✦ 洞察"
+    },
+    "loading": "Loading your chart...",
+    "bazi": {
+      "section": "Four Pillars",
+      "explanation": "Your BaZi chart is formed by four pillars: Year, Month, Day, and Hour. The Day Stem, known as your Day Master, is the core of the chart.",
+      "pillars": {
+        "year": "Year",
+        "month": "Month",
+        "day": "Day",
+        "hour": "Hour"
+      },
+      "day_master": "Day Master",
+      "core_pattern": "Core Pattern",
+      "core_text": "Your Day Master is {{dayMaster}}, suggesting a naturally stronger orientation toward action, judgment, and how you engage with the world.",
+      "chat_cta": "Start a conversation from Four Pillars",
+      "chat_prefill": "Based on my Four Pillars chart and Day Master {{dayMaster}}, what should I pay attention to right now?",
+      "deep_open": "See Four Pillars details ↓",
+      "deep_close": "Hide Four Pillars details ↑",
+      "five_elements": "Five Elements",
+      "inner_tension": "Inner Tension",
+      "levels": {
+        "dominant": "Dominant",
+        "strong": "Strong",
+        "moderate": "Moderate",
+        "weak": "Weak"
+      },
+      "meanings": {
+        "Fire": "Momentum, expression and outward energy",
+        "Metal": "Discernment, boundaries and principles",
+        "Wood": "Growth, extension and inner development",
+        "Earth": "Grounding, stability and support",
+        "Water": "Reflection, inner flow and adaptability"
+      },
+      "tension_terms": {
+        "Fire": "drive and momentum",
+        "Metal": "judgment and decisiveness",
+        "Wood": "growth and expansion",
+        "Earth": "stability and grounding",
+        "Water": "reflection and inner regulation"
+      },
+      "element_summary": "Your elemental structure is led by {{topElement}}, showing natural strength in {{topTerm}}, while {{weakestElement}} is comparatively weaker and may require more conscious balancing.",
+      "tension_two": "Your structure emphasizes both {{top1}} and {{top2}}. This often creates a tension between momentum and control: you want to move quickly, but also want things to be precise and right.",
+      "tension_one": "You tend to move forward through {{top1}}, but the {{weakest}}-related capacity for reflection, absorption, or regulation may not be as strong. You may move fast without fully processing as you go.",
+      "tension_balanced": "Your elemental profile is relatively balanced, without one overwhelmingly dominant force. The advantage is flexibility, but the tension is that in important moments, you may need to consciously choose how you want to act rather than relying on one natural default."
+    },
+    "mbti": {
+      "section": "MBTI Personality",
+      "identity": "{{type}}: {{nickname}}",
+      "key_insight": "One key insight",
+      "key_insight_text": "You work best when you can clarify the facts, then make a steady and practical decision.",
+      "chat_cta": "Start a conversation from this type",
+      "chat_prefill": "Based on my {{type}} personality, what should I pay attention to when making decisions?",
+      "deep_open": "See personality details ↓",
+      "deep_close": "Hide personality details ↑",
+      "explanation": "MBTI describes your preferences, not your limits. It helps reveal how you take in information, make decisions, and respond under pressure.",
+      "profile_text": "Your personality profile shows a strong {{profileCode}} structure, favoring stability, practicality, rationality, and controlled decision-making.",
+      "inner_tension": "Inner Tension",
+      "inner_tension_text": "You tend to rely on structure, standards, and certainty when making decisions, but reality is not always clear or controllable. This creates an inner tension between your desire for order and the need to navigate ambiguity and change.",
+      "dimension_breakdown": "Dimension Breakdown",
+      "impact": "What This Means",
+      "impact_text": "In daily life, you tend to perform best in environments with clear expectations and defined responsibilities, where your judgment and consistency can show up fully. In more uncertain situations, you may need to consciously relax the need to have the answer too early.",
+      "cross_link_text": "Want to see how your MBTI and BaZi combine to reveal your unique pattern?",
+      "cross_link": "See Profile Insight →",
+      "dimensions": {
+        "E": {
+          "label": "E (Extroversion)",
+          "meaning": "Tends to gain energy through interaction and external stimulation, with a more direct and outward style."
+        },
+        "I": {
+          "label": "I (Introversion)",
+          "meaning": "Tends to restore energy in quieter environments, valuing inner rhythm and depth of focus."
+        },
+        "S": {
+          "label": "S (Sensing)",
+          "meaning": "Starts from concrete facts, details, and lived experience rather than abstract assumptions."
+        },
+        "N": {
+          "label": "N (Intuition)",
+          "meaning": "Starts from patterns, context, and future possibilities, valuing direction and imagination."
+        },
+        "T": {
+          "label": "T (Thinking)",
+          "meaning": "Makes decisions through logic, consistency, and analysis rather than emotional tone itself."
+        },
+        "F": {
+          "label": "F (Feeling)",
+          "meaning": "Makes decisions through values, relational impact, and inner alignment."
+        },
+        "J": {
+          "label": "J (Judging)",
+          "meaning": "Prefers to create order early, make decisions sooner, and move within a manageable rhythm."
+        },
+        "P": {
+          "label": "P (Perceiving)",
+          "meaning": "Prefers openness and flexibility, adjusting as circumstances change."
+        }
+      },
+      "types": {
+        "INTJ": {
+          "nickname": "建築家",
+          "traits": [
+            "戦略的",
+            "独立心",
+            "ビジョン型"
+          ]
+        },
+        "INTP": {
+          "nickname": "思索家",
+          "traits": [
+            "分析的",
+            "好奇心",
+            "発明的"
+          ]
+        },
+        "ENTJ": {
+          "nickname": "指揮官",
+          "traits": [
+            "大胆",
+            "決断力",
+            "リーダー型"
+          ]
+        },
+        "ENTP": {
+          "nickname": "討論者",
+          "traits": [
+            "機転",
+            "革新的",
+            "魅力的"
+          ]
+        },
+        "INFJ": {
+          "nickname": "提唱者",
+          "traits": [
+            "共感力",
+            "信念",
+            "ビジョン型"
+          ]
+        },
+        "INFP": {
+          "nickname": "仲介者",
+          "traits": [
+            "創造的",
+            "共感力",
+            "理想主義"
+          ]
+        },
+        "ENFJ": {
+          "nickname": "主人公",
+          "traits": [
+            "鼓舞する",
+            "共感力",
+            "リーダー型"
+          ]
+        },
+        "ENFP": {
+          "nickname": "広報運動家",
+          "traits": [
+            "情熱的",
+            "創造的",
+            "楽観的"
+          ]
+        },
+        "ISTJ": {
+          "nickname": "管理者",
+          "traits": [
+            "信頼性",
+            "実務的",
+            "細部重視"
+          ]
+        },
+        "ISFJ": {
+          "nickname": "擁護者",
+          "traits": [
+            "温かい",
+            "献身的",
+            "観察力"
+          ]
+        },
+        "ESTJ": {
+          "nickname": "幹部",
+          "traits": [
+            "組織的",
+            "決断力",
+            "誠実"
+          ]
+        },
+        "ESFJ": {
+          "nickname": "領事",
+          "traits": [
+            "思いやり",
+            "社交的",
+            "誠実"
+          ]
+        },
+        "ISTP": {
+          "nickname": "巨匠",
+          "traits": [
+            "実務的",
+            "観察力",
+            "独立心"
+          ]
+        },
+        "ISFP": {
+          "nickname": "冒険家",
+          "traits": [
+            "芸術的",
+            "自然体",
+            "共感力"
+          ]
+        },
+        "ESTP": {
+          "nickname": "起業家",
+          "traits": [
+            "大胆",
+            "鋭い",
+            "エネルギッシュ"
+          ]
+        },
+        "ESFP": {
+          "nickname": "エンターテイナー",
+          "traits": [
+            "自然体",
+            "活発",
+            "楽しいこと好き"
+          ]
+        }
+      }
+    },
+    "insight": {
+      "title": "Your Profile Insight",
+      "analyzing": "Analyzing your pattern...",
+      "key_traits": "Key traits",
+      "key_insight": "One key insight",
+      "chat_cta": "Start a conversation from this reading",
+      "chat_prefill": "Based on my chart traits {{traits}}, what should I focus on right now?",
+      "deep_open": "✦ Deeper content ↓",
+      "deep_close": "Hide deeper content ↑",
+      "day_master": "☉ Core nature",
+      "decision_style": "◇ Decision style",
+      "career": "✧ Career direction",
+      "avoid_prefix": "Avoid for now: ",
+      "relationship": "☽ Relationship patterns",
+      "final_guidance": "Final guidance",
+      "locked_body": "Decision style, career direction, and relationship patterns are available in the full insight.",
+      "locked_cta": "Unlock full insight →"
+    }
+  },
+  "compare": {
+    "title": "相性分析",
+    "body": "近日公開 — 友人とBaZiチャートを比較して、相性を見てみましょう。",
+    "cta": "近日公開"
+  },
+  "upgrade": {
+    "title": "あなたの本当のパターンを見る",
+    "unlock_title": "Plusで解放される内容",
+    "benefits": [
+      "完全なプロフィール洞察（BaZi + MBTI統合）",
+      "人生パターンと重要な転機",
+      "無制限のAIガイダンスチャット",
+      "個別化された方向性とアドバイス"
+    ],
+    "free_title": "無料のままだと",
+    "price_note": "月額 · いつでも解約可能",
+    "cta": "完全な洞察を解放 →",
+    "trust": "安全な決済 · いつでも解約 · 縛りなし",
+    "back": "戻る",
+    "hero_subtitle": "あなたのチャートはすでに方向性を示しています。ただ、まだ全体像を見ていないだけです。",
+    "free_body": "見えるのは断片だけで、深いパターンは隠れたままです。"
+  },
+  "onboarding": {
+    "transition": {
+      "skip": "スキップ",
+      "messages": [
+        "リーディングを準備しています",
+        "現在の焦点とあなたの個人パターンをつなげています",
+        "もうすぐ完了です"
+      ]
+    },
+    "mbti": {
+      "submitting": "性格を読み解いています...",
+      "step_label": "{{current}} / {{total}}",
+      "intro": "直感で答えてください。最初の反応がいちばん正確なことが多いです。",
+      "reveal": "性格分析の結果を見ますか？✦",
+      "back": "前の質問",
+      "question_step": "{{current}} / {{total}}",
+      "context_hook": "✦ Oriaが実際の状況でのあなたの自然な反応を理解する助けになります",
+      "first_question": "社交の場で、あなたは自然にどうしますか？"
+    },
+    "summary": {
+      "label": "✦ あなたの性格解析",
+      "teaser": "これはまだ表層です。あなたの決め方やプレッシャーへの反応の奥には、さらに深いパターンがあります。",
+      "continue": "深いパターンを見る →",
+      "footer": "次へ：性格パターンとより深いタイミングをつなげます。",
+      "headline": "最初のパターンが見えてきました",
+      "subheadline": "MBTIは、あなたがどのように決め、反応し、エネルギーを守る傾向があるかを示します。",
+      "cta_microcopy": "1分以内で完了",
+      "preview_label": "✦ 深いパターンのプレビュー"
+    },
+    "bazi": {
+      "error_birth_date": "生年月日を選択してください。",
+      "title": "より深い層を追加する",
+      "year": "年",
+      "year_placeholder": "年を選択",
+      "month": "月",
+      "month_placeholder": "月",
+      "day": "日",
+      "day_placeholder": "日",
+      "gender": "性別",
+      "male": "♂ 男性",
+      "female": "♀ 女性",
+      "time_known": "正確な出生時間を知っています",
+      "hour": "時 (0-23)",
+      "minute": "分",
+      "birth_location": "出生地",
+      "location_placeholder": "出生都市を検索",
+      "timezone": "タイムゾーン",
+      "body": "MBTIはあなたの行動傾向を示します。BaZiは、その下にあるタイミング、プレッシャー、自然なパターンを明らかにします。",
+      "saving": "星を読み解いています...",
+      "submit": "完全なリーディングを見る →",
+      "location_helper": "出生都市を検索してください（例：香港、東京）",
+      "location_required": "リストから出生都市を選択してください。"
+    },
+    "result": {
+      "step": "ステップ3/4",
+      "type_label": "あなたの性格タイプ",
+      "bazi_title": "出生チャートはさらに多くを示します",
+      "bazi_body": "MBTIとBaZi出生チャートを組み合わせ、あなただけの完全なプロフィールを作ります。",
+      "signup": "登録して自分をもっと深く知る →",
+      "retake": "もう一度テストする",
+      "free_note": "無料アカウント · クレジットカード不要",
+      "fallback_nickname": "ユニーク",
+      "fallback_tagline": "唯一無二のあなた。"
+    },
+    "context": {
+      "step": "ステップ1/4",
+      "title": "今、何に向き合っていますか？",
+      "subtitle": "Oriaが今あなたの状況を理解するための手がかりになります。",
+      "instruction": "当てはまるものをすべて選択",
+      "continue": "続ける →",
+      "skip": "今はスキップ",
+      "back": "← 戻る",
+      "options": {
+        "career_change": "キャリアチェンジ",
+        "move_city_country": "新しい都市／国への移動",
+        "relationship_direction": "関係性の方向",
+        "work_life_balance": "仕事と生活のバランス",
+        "retirement_next_chapter": "退職／次の章",
+        "personal_reinvention": "自分を作り直す",
+        "better_daily_decisions": "よりよい日々の判断"
+      }
+    }
+  },
+  "language_modal": {
+    "title_en": "Choose your language",
+    "title_zh": "言語を選択",
+    "body": "すべてのガイダンスと洞察の言語を設定します。後でプロフィールから変更できます。"
+  },
+  "profile_extra": {
+    "title": "あなたの個人プロフィール",
+    "reset_body": "生年月日データを更新すると、解釈が更新され、関連する履歴がリセットされます。",
+    "saved": "プロフィール保存済み",
+    "year_placeholder": "年を選択",
+    "month_placeholder": "月",
+    "day_placeholder": "日",
+    "bazi_update_warning": "生年月日データを更新すると、解釈が更新され、関連する履歴がリセットされます。",
+    "mbti_type": "あなたのMBTIタイプ",
+    "mbti_help": "この結果はMBTIテストから取得されています。手動で変更することも、再テストすることもできます。",
+    "mbti_placeholder": "タイプを選択...",
+    "mbti_update_warning": "MBTI を更新すると、性格に基づく解釈が更新されます。",
+    "view_chart": "完全なチャートを見る →",
+    "personal_profile": "あなたの個人プロフィール",
+    "fallback_name": "あなたのプロフィール",
+    "profile_saved": "プロフィール保存済み",
+    "updated_today": "本日更新済み",
+    "bazi_helper": "毎日のガイダンスと長期的な傾向の解釈に影響します。",
+    "update_birth_data": "出生データを更新",
+    "mbti_helper": "Oria があなたの意思決定スタイルをより正確に理解するのに役立ちます。",
+    "update_personality_type": "性格タイプを更新",
+    "preferences": "設定",
+    "interface_language": "表示言語",
+    "account": "アカウント",
+    "signed_in_as": "ログイン中",
+    "about_oria": "Oria について",
+    "sign_out": "サインアウト",
+    "reflection_footer": "これは予測ではなく、内省のためのものです。決めるのはあなた自身です。",
+    "location_placeholder": "出生都市を検索",
+    "location_helper": "出生都市を検索してください（例：香港、東京）",
+    "location_required": "リストから出生都市を選択してください。"
+  },
+  "settings_extra": {
+    "change_language": "言語を変更",
+    "language_warning": "インターフェース言語はすぐに更新されます。生成済みのリーディングは元の言語のまま残り、新しいリーディングには新しい言語が使われます。変更しますか？",
+    "cancel": "キャンセル",
+    "confirm": "変更を確認"
+  },
+  "generated_content": {
+    "label": "{{language}}で生成済み"
+  }
+}

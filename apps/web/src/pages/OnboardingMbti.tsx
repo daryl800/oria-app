@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getPublicMbtiQuestions, submitPublicMbtiAnswers } from '@/services/api';
+import { normalizeLanguage } from '@/lib/languages';
 
 interface Question {
   id: number;
@@ -12,7 +13,7 @@ interface Question {
 
 export default function OnboardingMbti() {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -26,9 +27,7 @@ export default function OnboardingMbti() {
   const progress = questions.length > 0 ? answeredCount / questions.length : 0;
   const isLastQuestion = currentIndex === questions.length - 1;
   const allAnswered = answeredCount === questions.length;
-  const qNum = String(currentIndex + 1).padStart(2, '0');
-
-  const isZH = i18n.language === 'zh-TW';
+  const questionText = currentQuestion?.text;
 
   useEffect(() => {
     // Entrance delay — gives transition page time to feel complete
@@ -38,7 +37,7 @@ export default function OnboardingMbti() {
 
   useEffect(() => {
     setLoading(true);
-    getPublicMbtiQuestions(i18n.language)
+    getPublicMbtiQuestions(normalizeLanguage(i18n.language))
       .then(data => setQuestions(data.questions))
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
@@ -69,12 +68,10 @@ export default function OnboardingMbti() {
   async function handleSubmit() {
     setSubmitting(true);
     try {
-      const data = await submitPublicMbtiAnswers(answers, i18n.language);
+      const data = await submitPublicMbtiAnswers(answers, normalizeLanguage(i18n.language));
       localStorage.setItem('oria_mbti_answers', JSON.stringify(answers));
       localStorage.setItem('oria_mbti_result', JSON.stringify(data));
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      navigate('/onboarding/mbti-summary');
+      navigate('/onboarding/transition', { state: { nextPath: '/onboarding/mbti-summary' } });
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -87,7 +84,7 @@ export default function OnboardingMbti() {
       minHeight: '100vh', display: 'flex',
       alignItems: 'center', justifyContent: 'center',
     }}>
-      <div style={{ fontSize: 48, color: '#C084FC' }}>☽</div>
+      <div style={{ fontSize: 48, color: '#C9A84C' }}>☽</div>
     </div>
   );
 
@@ -97,9 +94,9 @@ export default function OnboardingMbti() {
       alignItems: 'center', justifyContent: 'center',
       flexDirection: 'column', gap: 20,
     }}>
-      <div style={{ fontSize: 48, color: '#C084FC', animation: 'breathe 1.5s ease-in-out infinite' }}>✦</div>
-      <p style={{ fontSize: 18, color: '#C084FC', fontStyle: 'italic', letterSpacing: 1 }}>
-        {isZH ? '解讀中...' : 'Reading your personality...'}
+      <div style={{ fontSize: 48, color: '#C9A84C', animation: 'breathe 1.5s ease-in-out infinite' }}>✦</div>
+      <p style={{ fontSize: 18, color: '#C9A84C', fontStyle: 'italic', letterSpacing: 1 }}>
+        {t('onboarding.mbti.submitting')}
       </p>
     </div>
   );
@@ -113,48 +110,58 @@ export default function OnboardingMbti() {
           display: flex;
           align-items: center;
           gap: 20px;
-          padding: 16px 20px;
-          background: rgba(45, 27, 84, 0.5);
-          border: 1.5px solid rgba(192, 132, 252, 0.2);
-          border-radius: 12px;
+          padding: 18px 20px;
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(107, 33, 168, 0.11)),
+            rgba(21, 9, 39, 0.76);
+          border: 1px solid rgba(216, 180, 254, 0.18);
+          border-radius: 20px;
           cursor: pointer;
           text-align: left;
-          transition: all 0.2s;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.045), 0 16px 44px rgba(2, 0, 16, 0.18);
+          transition: transform 170ms ease, border-color 170ms ease, box-shadow 170ms ease, background 170ms ease;
           font-family: inherit;
           width: 100%;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
         }
         .mbti-option:hover {
-          background: rgba(45, 27, 84, 0.8);
-          border-color: rgba(192, 132, 252, 0.5);
+          transform: translateY(-1px);
+          border-color: rgba(216, 180, 254, 0.36);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 50px rgba(40, 8, 72, 0.28);
         }
         .mbti-option.selected {
-          background: rgba(192, 132, 252, 0.2);
-          border-color: rgba(192, 132, 252, 0.8);
+          background:
+            linear-gradient(135deg, rgba(168, 85, 247, 0.24), rgba(88, 28, 135, 0.20)),
+            rgba(31, 12, 58, 0.88);
+          border-color: rgba(216, 180, 254, 0.72);
+          box-shadow: 0 0 0 1px rgba(216, 180, 254, 0.16), 0 20px 54px rgba(126, 34, 206, 0.28);
         }
         .mbti-option-letter {
           width: 34px; height: 34px;
           border-radius: 50%;
           display: flex; align-items: center; justify-content: center;
-          background: rgba(192, 132, 252, 0.1);
-          border: 1px solid rgba(192, 132, 252, 0.3);
+          background: rgba(201, 168, 76, 0.1);
+          border: 1px solid rgba(201, 168, 76, 0.3);
           font-size: 12px; font-weight: 700;
-          color: #C084FC; flex-shrink: 0;
+          color: #C9A84C; flex-shrink: 0;
           transition: all 0.2s;
         }
         .mbti-option:hover .mbti-option-letter {
-          background: rgba(192, 132, 252, 0.25);
-          border-color: rgba(192, 132, 252, 0.7);
+          background: rgba(201, 168, 76, 0.25);
+          border-color: rgba(201, 168, 76, 0.7);
           color: #FFFFFF;
         }
         .mbti-option.selected .mbti-option-letter {
-          background: rgba(192, 132, 252, 0.4);
-          border-color: rgba(192, 132, 252, 1);
+          background: rgba(201, 168, 76, 0.4);
+          border-color: rgba(201, 168, 76, 1);
           color: #FFFFFF;
         }
         .mbti-option-text {
-          font-size: 15px; color: #D8B4FE;
-          line-height: 1.5; transition: color 0.2s;
+          font-size: 19px;
+          color: rgba(255, 255, 255, 0.88);
+          font-weight: 600;
+          line-height: 1.35;
+          transition: color 0.2s;
         }
         .mbti-option.selected .mbti-option-text,
         .mbti-option:hover .mbti-option-text { color: #FFFFFF; }
@@ -168,17 +175,6 @@ export default function OnboardingMbti() {
         zIndex: 10,
         padding: '20px 0 0',
       }}>
-        {/* Step label + counter — centered */}
-        <div style={{
-          display: 'flex', justifyContent: 'center',
-          alignItems: 'center', gap: 12,
-          marginBottom: 12,
-        }}>
-          <div style={{ fontSize: 11, letterSpacing: 2, color: '#C4B0E0', fontWeight: 600, textTransform: 'uppercase' }}>
-            {isZH ? `第 1 步，共 3 步 · ${currentIndex + 1} / ${questions.length}` : `Step 1 of 3 · ${currentIndex + 1} / ${questions.length}`}
-          </div>
-        </div>
-
         {/* Thin progress bar — not full width, centered with padding */}
         <div style={{
           margin: '0 auto',
@@ -190,7 +186,7 @@ export default function OnboardingMbti() {
           }}>
             <div style={{
               height: '100%', width: `${progress * 100}%`,
-              background: '#C084FC', borderRadius: 1,
+              background: '#C9A84C', borderRadius: 1,
               transition: 'width 0.4s ease',
             }} />
           </div>
@@ -200,7 +196,7 @@ export default function OnboardingMbti() {
       {/* Main content */}
       <div style={{
         flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        paddingTop: currentIndex === 0 ? 20 : 130, paddingBottom: 120,
+        paddingTop: currentIndex === 0 ? 92 : 130, paddingBottom: 120,
         position: 'relative', zIndex: 1,
       }}>
         <div style={{
@@ -210,32 +206,51 @@ export default function OnboardingMbti() {
           transition: 'opacity 0.5s ease',
         }}>
           {currentIndex === 0 && (
-            <p style={{
-              fontSize: 18, lineHeight: 1.9,
-              color: '#C084FC',
-              marginBottom: 48, textAlign: 'center',
-              fontStyle: 'italic',
-              padding: '0 24px',
+            <div style={{
+              textAlign: 'center',
+              maxWidth: 620,
+              margin: '0 auto 44px',
             }}>
-              {isZH
-                ? '接下來，我將帶你完成一個約3分鐘的性格測驗。沒有對錯之分——憑第一感覺作答，你會更清楚地認識自己。就算做過類似測驗，現在的你或許已有所不同，值得重新探索。準備好就立即開始吧！'
-                : "In the next 3 minutes, we'll walk through a short personality quiz. There are no right or wrong answers — just go with your first instinct. Even if you've taken a similar test before, you may have grown since then. Ready? Let's begin!"}
-            </p>
+              <div style={{
+                color: 'rgba(216, 180, 254, 0.78)',
+                fontSize: 14,
+                lineHeight: 1.6,
+                fontWeight: 700,
+                marginBottom: 12,
+              }}>
+                {t('onboarding.mbti.context_hook')}
+              </div>
+
+              <p style={{
+                fontSize: 18,
+                lineHeight: 1.7,
+                color: 'rgba(255, 255, 255, 0.78)',
+                margin: 0,
+              }}>
+                {t('onboarding.mbti.intro')}
+              </p>
+            </div>
           )}
+
           <div className="oria-card" style={{ padding: '32px 32px 24px' }}>
             <div style={{
-              fontSize: 12, color: '#C084FC',
-              letterSpacing: 3, marginBottom: 16, fontWeight: 600,
+              color: 'rgba(216, 180, 254, 0.55)',
+              fontSize: 14,
+              fontWeight: 700,
+              letterSpacing: 0,
+              marginBottom: 14,
             }}>
-              {qNum}
+              {t('onboarding.mbti.question_step', { current: currentIndex + 1, total: questions.length })}
             </div>
 
             <div style={{
-              fontSize: 20, fontWeight: 600,
-              color: '#FFFFFF', lineHeight: 1.55,
+              fontSize: 24,
+              fontWeight: 650,
+              color: '#FFFFFF',
+              lineHeight: 1.35,
               marginBottom: 28,
             }}>
-              {currentQuestion?.text}
+              {questionText}
             </div>
 
             {(['A', 'B'] as const).map(option => {
@@ -270,19 +285,19 @@ export default function OnboardingMbti() {
           {allAnswered && isLastQuestion && (
             <button onClick={handleSubmit} style={{
               width: '100%',
-              background: 'linear-gradient(135deg, #9333EA 0%, #7C3AED 100%)',
+              background: 'linear-gradient(135deg, #C9A84C 0%, #B89435 100%)',
               border: 'none', borderRadius: 9999,
               padding: '20px 32px',
               fontSize: 17, fontWeight: 700,
               color: '#fff', cursor: 'pointer',
               fontFamily: 'inherit',
-              boxShadow: '0 8px 24px rgba(147,51,234,0.4)',
+              boxShadow: '0 8px 24px rgba(201,168,76,0.4)',
               marginBottom: 8,
               opacity: readyVisible ? 1 : 0,
               transform: readyVisible ? 'translateY(0)' : 'translateY(10px)',
               transition: 'opacity 0.5s ease, transform 0.5s ease',
             }}>
-              {isZH ? '想看你的性格分析結果？✦' : 'Curious about your personality? Tap to reveal ✦'}
+              {t('onboarding.mbti.reveal')}
             </button>
           )}
         </div>
@@ -293,7 +308,7 @@ export default function OnboardingMbti() {
             <div key={q.id} onClick={() => setCurrentIndex(i)} style={{
               width: 6, height: 6, borderRadius: '50%',
               cursor: 'pointer', transition: 'background 0.2s',
-              background: answers[q.id] ? '#C084FC'
+              background: answers[q.id] ? '#C9A84C'
                 : i === currentIndex ? 'rgba(255,255,255,0.8)'
                 : 'rgba(255,255,255,0.3)',
             }} />
@@ -302,15 +317,21 @@ export default function OnboardingMbti() {
 
         {/* Back */}
         <button
-          onClick={() => currentIndex > 0 && setCurrentIndex(prev => prev - 1)}
+          onClick={() => {
+            if (currentIndex > 0) {
+              setCurrentIndex(prev => prev - 1);
+              return;
+            }
+            navigate('/onboarding/context');
+          }}
           style={{
             background: 'none', border: 'none',
-            color: currentIndex > 0 ? '#C4B0E0' : 'transparent',
-            fontSize: 12, cursor: currentIndex > 0 ? 'pointer' : 'default',
+            color: '#C4B0E0',
+            fontSize: 12, cursor: 'pointer',
             letterSpacing: 1, fontFamily: 'inherit',
           }}
         >
-          ← {isZH ? '上一題' : 'back'}
+          ← {t('onboarding.mbti.back')}
         </button>
       </div>
     </div>

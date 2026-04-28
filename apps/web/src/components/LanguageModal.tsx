@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function LanguageModal({ userId, onDone }: Props) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [saving, setSaving] = useState(false);
 
   async function handleSelect(lang: string) {
@@ -29,16 +29,13 @@ export default function LanguageModal({ userId, onDone }: Props) {
       <div className="oria-card" style={{ maxWidth: 400, width: '100%', textAlign: 'center', padding: '48px 32px' }}>
         <div style={{ fontSize: 48, marginBottom: 16 }}>🌐</div>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>
-          Choose your language
+          {t('language_modal.title_en')}
         </h2>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>
-          選擇你的語言
+          {t('language_modal.title_zh')}
         </h2>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 32, lineHeight: 1.6 }}>
-          This sets the language for all your guidance and insights.
-          You can change it later in Settings.
-          <br /><br />
-          此設定將應用於所有指引內容，之後可在設定中更改。
+          {t('language_modal.body')}
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

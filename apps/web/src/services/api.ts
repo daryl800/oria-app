@@ -33,6 +33,16 @@ export async function saveBazi(data: {
   minute: number;
   tz_name: string;
   location: string;
+  city?: string;
+  lat?: number;
+  lng?: number;
+  timezone?: string;
+  location_data?: {
+    city: string;
+    lat: number;
+    lng: number;
+    timezone: string;
+  };
   time_known: boolean;
 }) {
   const headers = await getHeaders();
@@ -133,6 +143,8 @@ export async function resetBazi(data: {
   year: number; month: number; day: number;
   hour: number; minute: number;
   tz_name: string; location: string; time_known: boolean;
+  city?: string; lat?: number; lng?: number; timezone?: string;
+  location_data?: { city: string; lat: number; lng: number; timezone: string };
 }) {
   const headers = await getHeaders();
   const res = await fetch(`${API_URL}/api/profile/bazi/reset`, {
@@ -159,11 +171,19 @@ export async function submitPublicMbtiAnswers(answers: Record<number, string>, l
   return res.json();
 }
 
-export async function saveTempOnboarding(mbtiData: any, baziData: any) {
+export async function saveTempOnboarding(
+  mbtiData: any,
+  baziData: any,
+  options: { context_focus?: string[] } = {},
+) {
   const res = await fetch(`${API_URL}/api/profile/temp-save`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mbti_data: mbtiData, bazi_data: baziData }),
+    body: JSON.stringify({
+      mbti_data: mbtiData,
+      bazi_data: baziData,
+      context_focus: options.context_focus ?? [],
+    }),
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
@@ -175,6 +195,52 @@ export async function transferTempOnboarding(token: string) {
     method: 'POST',
     headers,
     body: JSON.stringify({ token }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function getPersons() {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/persons`, { headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function addPerson(data: {
+  name: string;
+  relationship: string;
+  birth_date: string;
+  birth_time?: string;
+  birth_location?: string;
+  mbti_type?: string;
+}) {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/persons`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function deletePerson(id: string) {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/persons/${id}`, {
+    method: 'DELETE',
+    headers,
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function comparePerson(person_id: string) {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/compare`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ person_id }),
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json();

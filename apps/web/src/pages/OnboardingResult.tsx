@@ -23,8 +23,7 @@ const MBTI_DESCRIPTIONS: Record<string, { nickname: string; tagline: string; tra
 
 export default function OnboardingResult() {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
-  const isZH = i18n.language === 'zh-TW';
+  const { t } = useTranslation();
   const [result, setResult] = useState<any>(null);
   const [leaving, setLeaving] = useState(false);
 
@@ -45,7 +44,9 @@ export default function OnboardingResult() {
   if (!result) return null;
 
   const { mbti_type, dimension_results } = result;
-  const desc = MBTI_DESCRIPTIONS[mbti_type] || { nickname: 'Unique', tagline: 'One of a kind.', traits: [] };
+  const desc = MBTI_DESCRIPTIONS[mbti_type] || { nickname: t('onboarding.result.fallback_nickname'), tagline: t('onboarding.result.fallback_tagline'), traits: [] };
+  const nickname = t(`chart.mbti.types.${mbti_type}.nickname`, { defaultValue: desc.nickname });
+  const traits = t(`chart.mbti.types.${mbti_type}.traits`, { returnObjects: true, defaultValue: desc.traits }) as string[];
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: 40, opacity: leaving ? 0 : 1, transition: 'opacity 0.6s ease' }}>
@@ -53,13 +54,13 @@ export default function OnboardingResult() {
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '28px 0 20px' }}>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 4, color: '#C084FC', textTransform: 'uppercase' }}>Oria</span>
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Step 2 of 3</span>
+          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 4, color: '#C9A84C', textTransform: 'uppercase' }}>Oria</span>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{t('onboarding.result.step')}</span>
         </div>
 
         {/* Type reveal */}
         <div style={{
-          background: 'rgba(255,255,255,0.95)',
+          background: 'rgba(19,19,30,0.94)',
           borderRadius: 20, padding: '32px 28px',
           marginBottom: 14, textAlign: 'center',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
@@ -67,35 +68,35 @@ export default function OnboardingResult() {
         }}>
           <div style={{
             position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse at top, rgba(147,51,234,0.06) 0%, transparent 60%)',
+            background: 'radial-gradient(ellipse at top, rgba(201,168,76,0.06) 0%, transparent 60%)',
             pointerEvents: 'none',
           }} />
           <div style={{ position: 'relative' }}>
             <div style={{
               display: 'inline-block',
-              background: '#f3e8ff', borderRadius: 20,
+              background: 'rgba(201,168,76,0.12)', borderRadius: 20,
               padding: '5px 16px', fontSize: 11,
               fontWeight: 700, letterSpacing: 2,
-              color: '#7e22ce', textTransform: 'uppercase',
+              color: '#C9A84C', textTransform: 'uppercase',
               marginBottom: 16,
             }}>
-              Your personality type
+              {t('onboarding.result.type_label')}
             </div>
-            <div style={{ fontSize: 72, fontWeight: 800, color: '#1a0a2e', lineHeight: 1, marginBottom: 8 }}>
+            <div style={{ fontSize: 72, fontWeight: 800, color: '#F0EDE8', lineHeight: 1, marginBottom: 8 }}>
               {mbti_type}
             </div>
-            <div style={{ fontSize: 20, fontWeight: 600, color: '#9333EA', marginBottom: 8 }}>
-              {desc.nickname}
+            <div style={{ fontSize: 20, fontWeight: 600, color: '#C9A84C', marginBottom: 8 }}>
+              {nickname}
             </div>
-            <div style={{ fontSize: 16, color: '#555', lineHeight: 1.6, marginBottom: 16 }}>
-              {desc.tagline}
+            <div style={{ fontSize: 16, color: '#8A879A', lineHeight: 1.6, marginBottom: 16 }}>
+              {t('chart.mbti.identity', { type: mbti_type, nickname })}
             </div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-              {desc.traits.map((trait, i) => (
+              {traits.map((trait, i) => (
                 <span key={i} style={{
-                  background: '#f3e8ff', borderRadius: 20,
+                  background: 'rgba(201,168,76,0.12)', borderRadius: 20,
                   padding: '4px 14px', fontSize: 13,
-                  fontWeight: 600, color: '#7e22ce',
+                  fontWeight: 600, color: '#C9A84C',
                 }}>
                   {trait}
                 </span>
@@ -106,7 +107,7 @@ export default function OnboardingResult() {
 
         {/* Dimension bars */}
         <div style={{
-          background: 'rgba(255,255,255,0.95)',
+          background: 'rgba(19,19,30,0.94)',
           borderRadius: 20, padding: '20px 24px',
           marginBottom: 14,
           boxShadow: '0 2px 16px rgba(0,0,0,0.12)',
@@ -120,12 +121,12 @@ export default function OnboardingResult() {
             return (
               <div key={dim} style={{ marginBottom: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 14 }}>
-                  <span style={{ fontWeight: scores.dominant === a ? 700 : 400, color: scores.dominant === a ? '#7e22ce' : '#888' }}>{a}</span>
-                  <span style={{ fontWeight: scores.dominant === b ? 700 : 400, color: scores.dominant === b ? '#7e22ce' : '#888' }}>{b}</span>
+                  <span style={{ fontWeight: scores.dominant === a ? 700 : 400, color: scores.dominant === a ? '#C9A84C' : '#888' }}>{a}</span>
+                  <span style={{ fontWeight: scores.dominant === b ? 700 : 400, color: scores.dominant === b ? '#C9A84C' : '#888' }}>{b}</span>
                 </div>
-                <div style={{ background: '#f3e8ff', borderRadius: 8, height: 8 }}>
+                <div style={{ background: 'rgba(201,168,76,0.12)', borderRadius: 8, height: 8 }}>
                   <div style={{
-                    background: 'linear-gradient(90deg, #9333EA, #C084FC)',
+                    background: 'linear-gradient(90deg, #C9A84C, #C9A84C)',
                     borderRadius: 8, height: 8,
                     width: `${aPercent}%`,
                     transition: 'width 0.6s ease',
@@ -138,17 +139,17 @@ export default function OnboardingResult() {
 
         {/* Teaser — BaZi hook */}
         <div style={{
-          background: 'rgba(147,51,234,0.15)',
-          border: '1px solid rgba(192,132,252,0.3)',
+          background: 'rgba(201,168,76,0.15)',
+          border: '1px solid rgba(201,168,76,0.3)',
           borderRadius: 20, padding: '20px 24px',
           marginBottom: 20, textAlign: 'center',
         }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>🔮</div>
           <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 6 }}>
-            {isZH ? '你的八字命盤揭示更多' : 'Your birth chart reveals even more'}
+            {t('onboarding.result.bazi_title')}
           </div>
           <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>
-            {isZH ? '結合你的MBTI與八字命盤，打造獨一無二的宇宙命盤。' : 'Combine your MBTI with your BaZi birth chart for a complete cosmic profile — unique to you.'}
+            {t('onboarding.result.bazi_body')}
           </div>
         </div>
 
@@ -157,15 +158,15 @@ export default function OnboardingResult() {
           onClick={handleSignup}
           style={{
             display: 'block', width: '100%',
-            background: '#9333EA', border: 'none',
+            background: '#C9A84C', border: 'none',
             borderRadius: 16, padding: '18px',
             fontSize: 17, fontWeight: 700,
             color: '#fff', cursor: 'pointer',
-            boxShadow: '0 4px 24px rgba(147,51,234,0.5)',
+            boxShadow: '0 4px 24px rgba(201,168,76,0.5)',
             marginBottom: 12,
           }}
         >
-          {isZH ? '註冊以深入了解自己 →' : 'Sign up to understand yourself better →'}
+          {t('onboarding.result.signup')}
         </button>
 
         <button
@@ -179,11 +180,11 @@ export default function OnboardingResult() {
             cursor: 'pointer', fontFamily: 'inherit',
           }}
         >
-          {isZH ? '重新測驗' : 'Retake the quiz'}
+          {t('onboarding.result.retake')}
         </button>
 
         <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 20 }}>
-          Free account · No credit card required
+          {t('onboarding.result.free_note')}
         </div>
       </div>
     </div>

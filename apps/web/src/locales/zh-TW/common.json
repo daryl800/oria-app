@@ -12,12 +12,13 @@
   },
   "nav": {
     "daily": "每日羅盤",
-    "chat": "與大師對話",
+    "chat": "與 Oria 對話",
     "profile": "資料",
     "settings": "設定",
     "chart": "我的命盤",
     "compare": "相容性分析",
-    "home": "首頁"
+    "home": "首頁",
+    "people": "關係解析"
   },
   "daily": {
     "title": "每日指引",
@@ -28,26 +29,87 @@
     "helpful_label": "有益元素",
     "cta": "開啟指引對話 →",
     "loading": "正在解讀今日明燈...",
-    "error_no_profile": "請先完成你的資料 →"
+    "error_no_profile": "請先完成你的資料 →",
+    "profile_incomplete": "資料尚未完成",
+    "complete_profile": "完成個人資料",
+    "refresh": "每日指引每天更新",
+    "rhythm": "今日節奏",
+    "guidance": "今日建議",
+    "lean_into": "適合推進什麼",
+    "avoid": "暫時避免什麼",
+    "reminder": "今日提醒",
+    "chat_prompt": "想深入看看？",
+    "chat_cta": "與 Oria 對話",
+    "deep_open": "展開今日解讀 ↓",
+    "deep_close": "收起今日解讀 ↑",
+    "moment": "今日情境",
+    "color": "今日顏色",
+    "deeper_reason": "深層原因",
+    "upgrade_body": "這種感覺背後，還有更深一層的原因。",
+    "upgrade_cta": "解鎖完整解讀 ✦",
+    "chat_prefill": "我今天的指引提到「{{text}}」，應該怎麼調整？",
+    "pro_cta_title": "想看更深一層？",
+    "pro_cta_subtext": "釐清今天的方向與選擇",
+    "locked_cta_title": "想看更深一層？",
+    "locked_cta_subtext": "看見更完整的模式與下一步方向",
+    "locked_cta_button": "解鎖完整解讀 ✦",
+    "color_micro_action": "適合今天的穿搭或隨身物件",
+    "color_locked": "已鎖定",
+    "color_locked_teaser": "看看今天適合的顏色與節奏",
+    "color_locked_microcopy": "解鎖後可查看今天適合的顏色與節奏"
   },
   "chat": {
-    "title": "指引對話",
+    "title": "你現在在想什麼？",
     "empty_title": "向Oria提問",
     "empty_subtitle": "你的八字和MBTI是你的指引",
     "try_asking": "✦ 嘗試問問",
-    "placeholder": "向Oria提問...",
+    "placeholder": "打下你在想的事…",
     "thinking": "思考中...",
-    "history": "☰ 歷史",
-    "new": "+ 新對話",
+    "history": "歷史",
+    "new": "開始新對話",
     "previous_conversations": "過往對話",
     "no_conversations": "暫無過往對話。",
-    "safety_response": "— Oria 安全回應"
+    "safety_response": "— Oria 安全回應",
+    "subtitle": "不用想太多，隨便說說也可以",
+    "untitled": "未命名對話",
+    "quick_label": "可以從這裡開始",
+    "quick_hint": "點一下，自己再改",
+    "send": "送出訊息",
+    "paywall_title": "與 Oria 深度對話",
+    "paywall_body": "升級至 Oria Plus，即可與 Oria 進行更深入、持續的個人化對話。",
+    "paywall_cta": "升級至 Oria Plus ✦",
+    "quick_starts": [
+      {
+        "label": "最近有點卡住",
+        "value": "最近有點卡住，不太確定下一步應該怎麼做"
+      },
+      {
+        "label": "想看看下一步",
+        "value": "想看看下一步現在比較適合怎麼走"
+      },
+      {
+        "label": "有件事在想",
+        "value": "有件事一直在想，想慢慢整理一下"
+      },
+      {
+        "label": "想了解自己",
+        "value": "想了解自己多一點，看看最近的狀態代表什麼"
+      },
+      {
+        "label": "有點累",
+        "value": "最近有點累，不太確定方向在哪裡"
+      },
+      {
+        "label": "我想退休",
+        "value": "我想退休"
+      }
+    ]
   },
   "profile": {
     "title": "我的資料",
     "bazi_title": "八字 · 出生資料",
     "bazi_subtitle": "四柱命理",
-    "mbti_title": "MBTI · 性格類型",
+    "mbti_title": "MBTI · 人格類型",
     "mbti_subtitle": "Myers-Briggs 類型",
     "summary_title": "個人總結",
     "summary_subtitle": "由你的八字 + MBTI 生成",
@@ -61,13 +123,13 @@
     "birth_location": "出生地點",
     "timezone": "時區",
     "save_bazi": "儲存八字",
-    "update_bazi": "更新八字",
+    "update_bazi": "更新出生資料",
     "saving": "儲存中...",
     "take_quiz": "✦ 進行 MBTI 問卷 →",
     "select_type": "或直接選擇你的類型",
     "select_placeholder": "選擇你的 MBTI 類型",
     "save_mbti": "儲存 MBTI",
-    "update_mbti": "更新 MBTI",
+    "update_mbti": "更新人格類型",
     "strengths": "✦ 優點",
     "growth": "↑ 成長空間",
     "generate_summary": "✦ 生成我的個人總結",
@@ -115,6 +177,485 @@
     "daily_desc": "根據你的八字命盤獲取個性化的每日指引",
     "chat_desc": "與 AI 對話，獲取關於職業、感情和健康的建議",
     "chart_desc": "探索你的八字命盤與 MBTI 性格分析",
-    "compare_desc": "與朋友比較八字，發現宇宙相容性"
+    "compare_desc": "解析你與重要對象之間的關係動態",
+    "headline": "今天想從哪裡開始？",
+    "subtext": "讓指引告訴你，此刻適合怎麼做。",
+    "primary": {
+      "label": "每日盤",
+      "title": "看清今天的能量節奏，順勢過好這一天。",
+      "subtext": "",
+      "cta": "開始今天指引"
+    },
+    "chat": {
+      "label": "即時對話",
+      "title": "釐清思緒，讓決定變得簡單。",
+      "subtitle": ""
+    },
+    "chart": {
+      "label": "我的命盤",
+      "title": "看懂你的深層模式，讓判斷更清楚。",
+      "subtitle": ""
+    },
+    "compare": {
+      "label": "關係解析",
+      "title": "理解彼此，讓相處更自在。",
+      "subtitle": ""
+    },
+    "footer": "Oria 指引 · 專注解讀"
+  },
+  "page_taglines": {
+    "chat": "這是一種反思，而非預測。決定權在你。",
+    "chart": "這不是標籤，而是你運作的方式。",
+    "relationship": "這不是配對，而是理解彼此的方式。"
+  },
+  "common": {
+    "oria": "Oria",
+    "oria_compass": "Oria Compass",
+    "back": "返回",
+    "loading": "載入中...",
+    "unknown": "未知"
+  },
+  "landing": {
+    "kicker": "Oria Compass",
+    "headline": "你的天賦在八字\n你的性格在 MBTI",
+    "subtitle": "合在一起，讓你看清局勢，做出更明智的抉擇。",
+    "result": "約 60 秒完成 • 無需承諾",
+    "primary_cta": "取得我的 1 分鐘洞察 →",
+    "signin": "已有帳號？登入",
+    "lead": "決定你下一步的\n不是其中一個",
+    "emphasis": "而是它們的組合",
+    "method": "東方命理 × 西方心理",
+    "disclaimer": "本 app 結合八字命理與 MBTI 心理學，作為自我探索的參考視角。\n內容僅供啟發與娛樂，並非專業建議。"
+  },
+  "login": {
+    "title_signin": "歡迎回來",
+    "title_signup": "建立帳號",
+    "unlock_title": "你的完整解讀已準備好",
+    "unlock_subtitle": "登入即可查看完整 Oria 解讀，並為你保存結果。",
+    "google_signin": "使用 Google 登入",
+    "google_signup": "使用 Google 註冊",
+    "google_unlock": "使用 Google 繼續",
+    "google_loading": "登入中...",
+    "divider": "或",
+    "email_placeholder": "電郵地址",
+    "password_placeholder": "密碼",
+    "submit_signin": "登入",
+    "submit_signup": "註冊",
+    "submit_unlock": "登入查看我的結果",
+    "processing": "處理中...",
+    "secure": "安全且私密",
+    "switch_to_signin_prefix": "已有帳號？",
+    "switch_to_signup_prefix": "還沒有帳號？",
+    "signin_link": "登入",
+    "signup_link": "註冊",
+    "back": "返回",
+    "error_google": "登入失敗，請再試一次",
+    "error_required": "請輸入電郵和密碼",
+    "error_password": "密碼至少需要6個字符",
+    "error_invalid": "電郵或密碼錯誤"
+  },
+  "chart": {
+    "header": "我的命盤",
+    "tabs": {
+      "bazi": "🪬 八字命盤",
+      "mbti": "🧠 MBTI 性格",
+      "insight": "✦ 命盤解析"
+    },
+    "loading": "載入命盤中...",
+    "bazi": {
+      "section": "八字四柱",
+      "explanation": "八字由年、月、日、時四柱組成，每柱含一天干一地支，記錄了你出生時天地的能量格局。日柱天干稱為「日主」，是你命盤的核心。",
+      "pillars": {
+        "year": "年柱",
+        "month": "月柱",
+        "day": "日柱",
+        "hour": "時柱"
+      },
+      "day_master": "日主",
+      "core_pattern": "核心結構",
+      "core_text": "你的日主為{{dayMaster}}，整體呈現偏強的行動與判斷傾向。這不是單純的性格描述，而是一種你面對世界時自然會啟動的能量結構。",
+      "chat_cta": "以四柱命盤開始對話",
+      "chat_prefill": "根據我的四柱命盤和日主「{{dayMaster}}」，我現在最應該留意什麼？",
+      "deep_open": "深入四柱 ↓",
+      "deep_close": "收起四柱細節 ↑",
+      "five_elements": "五行力量",
+      "inner_tension": "內在張力",
+      "levels": {
+        "dominant": "主導",
+        "strong": "強",
+        "moderate": "中",
+        "weak": "弱"
+      },
+      "meanings": {
+        "Fire": "推進力、表達感與外放能量",
+        "Metal": "決斷力、邊界感與原則性",
+        "Wood": "成長性、延展力與內在發展",
+        "Earth": "承載力、穩定感與現實支撐",
+        "Water": "反思力、感受流動與內在調節"
+      },
+      "tension_terms": {
+        "Fire": "行動與推進",
+        "Metal": "判斷與決斷",
+        "Wood": "成長與延展",
+        "Earth": "穩定與承載",
+        "Water": "反思與內在調節"
+      },
+      "element_summary": "你的五行結構以{{topElement}}為主，代表你在{{topTerm}}上較自然有力；而{{weakestElement}}偏弱，表示你在{{weakestTerm}}這一面，通常需要更多後天調節。",
+      "tension_two": "你的結構同時強調{{top1}}與{{top2}}：前者代表{{top1Term}}，後者代表{{top2Term}}。這種組合常見的張力是，你既想快速推進，也會同時要求準確與控制，所以內在容易出現「想快，但又不想出錯」的拉扯。",
+      "tension_one": "你較容易依靠{{top1}}的方式向前推進，但在{{weakest}}相關的內在吸收、轉化或調節上，未必同樣充足。換句話說，你可能行動很快，但不一定會同步消化自己。",
+      "tension_balanced": "你的五行分布相對平均，沒有單一特別壓倒性的主導力量。這種結構的優勢是彈性與適應力，但張力在於：到了需要明確選擇方向的時候，你可能需要更有意識地決定，這一次要用哪一種方式發力。"
+    },
+    "mbti": {
+      "section": "MBTI 性格",
+      "identity": "{{type}}：穩定、務實、重視可靠判斷",
+      "key_insight": "一個重點",
+      "key_insight_text": "你適合先把事情看清楚，再做穩定、可執行的判斷。",
+      "chat_cta": "用這個性格開始對話",
+      "chat_prefill": "根據我的 {{type}} 性格，我在做決定時最需要注意什麼？",
+      "deep_open": "深入性格細節 ↓",
+      "deep_close": "收起性格細節 ↑",
+      "explanation": "MBTI 描述你的偏好，不是限制。它可以幫你看見自己如何吸收資訊、做決定，以及在壓力下如何反應。",
+      "profile_text": "你的性格傾向呈現明顯的「{{profileCode}}」結構，偏向穩定、務實、理性與可控的決策方式。",
+      "inner_tension": "內在張力",
+      "inner_tension_text": "你傾向依賴結構、標準與確定性來做決定，但現實並不總是清晰可控。這會帶來一種內在張力：一方面你希望事情有邏輯、有秩序，另一方面又不得不面對模糊、變動與無法立即下定論的情境。",
+      "dimension_breakdown": "維度解讀",
+      "impact": "對你的影響",
+      "impact_text": "在日常生活中，你通常更適合在規則清晰、責任明確的環境中發揮，因為這能讓你的判斷力與執行力更穩定地展現。當環境變動較大時，你可能需要刻意放鬆對「一定要先有答案」的要求。",
+      "cross_link_text": "想了解你的MBTI如何與八字相互印證，形成獨特的你？",
+      "cross_link": "查看命盤解析 →",
+      "dimensions": {
+        "E": {
+          "label": "外向型 E",
+          "meaning": "傾向從互動與外在刺激中獲得能量，表達直接，行動較外放。"
+        },
+        "I": {
+          "label": "內向型 I",
+          "meaning": "傾向在安靜環境中整理思緒與恢復狀態，較重視內在節奏與專注深度。"
+        },
+        "S": {
+          "label": "實感型 S",
+          "meaning": "習慣從具體事實、細節與既有經驗出發，而不是依賴抽象假設。"
+        },
+        "N": {
+          "label": "直覺型 N",
+          "meaning": "傾向從整體脈絡、模式與未來可能性出發，看重方向感與想像空間。"
+        },
+        "T": {
+          "label": "思考型 T",
+          "meaning": "做決定時較重視邏輯一致性、分析與是否合理，而非情緒感受本身。"
+        },
+        "F": {
+          "label": "情感型 F",
+          "meaning": "做決定時較重視價值觀、人際感受與是否符合內心認同。"
+        },
+        "J": {
+          "label": "判斷型 J",
+          "meaning": "偏好先建立秩序與方向，提早決定，讓事情進入可掌握的節奏。"
+        },
+        "P": {
+          "label": "感知型 P",
+          "meaning": "偏好保留彈性與開放性，依情況調整，讓選擇保持流動。"
+        }
+      },
+      "types": {
+        "INTJ": {
+          "nickname": "建築師",
+          "traits": [
+            "策略",
+            "獨立",
+            "有遠見"
+          ]
+        },
+        "INTP": {
+          "nickname": "思考者",
+          "traits": [
+            "分析",
+            "好奇",
+            "創新"
+          ]
+        },
+        "ENTJ": {
+          "nickname": "指揮官",
+          "traits": [
+            "果斷",
+            "領導",
+            "有魄力"
+          ]
+        },
+        "ENTP": {
+          "nickname": "辯論家",
+          "traits": [
+            "機敏",
+            "創新",
+            "有魅力"
+          ]
+        },
+        "INFJ": {
+          "nickname": "提倡者",
+          "traits": [
+            "共感",
+            "原則",
+            "有遠見"
+          ]
+        },
+        "INFP": {
+          "nickname": "調停者",
+          "traits": [
+            "創意",
+            "共感",
+            "理想主義"
+          ]
+        },
+        "ENFJ": {
+          "nickname": "主人公",
+          "traits": [
+            "鼓舞",
+            "共感",
+            "領導"
+          ]
+        },
+        "ENFP": {
+          "nickname": "競選者",
+          "traits": [
+            "熱情",
+            "創意",
+            "樂觀"
+          ]
+        },
+        "ISTJ": {
+          "nickname": "物流師",
+          "traits": [
+            "可靠",
+            "務實",
+            "重視細節"
+          ]
+        },
+        "ISFJ": {
+          "nickname": "守衛者",
+          "traits": [
+            "溫暖",
+            "投入",
+            "觀察細膩"
+          ]
+        },
+        "ESTJ": {
+          "nickname": "總經理",
+          "traits": [
+            "有組織",
+            "果斷",
+            "忠誠"
+          ]
+        },
+        "ESFJ": {
+          "nickname": "執政官",
+          "traits": [
+            "關懷",
+            "社交",
+            "忠誠"
+          ]
+        },
+        "ISTP": {
+          "nickname": "鑑賞家",
+          "traits": [
+            "務實",
+            "觀察敏銳",
+            "獨立"
+          ]
+        },
+        "ISFP": {
+          "nickname": "探險家",
+          "traits": [
+            "藝術感",
+            "自發",
+            "共感"
+          ]
+        },
+        "ESTP": {
+          "nickname": "企業家",
+          "traits": [
+            "大膽",
+            "敏銳",
+            "有活力"
+          ]
+        },
+        "ESFP": {
+          "nickname": "表演者",
+          "traits": [
+            "自發",
+            "有活力",
+            "愛玩"
+          ]
+        }
+      }
+    },
+    "insight": {
+      "title": "命盤解析",
+      "analyzing": "正在解析你的命盤...",
+      "key_traits": "關鍵特質",
+      "key_insight": "一個重點",
+      "chat_cta": "以這份命盤開始對話",
+      "chat_prefill": "根據我的命盤特質「{{traits}}」，我現在最應該關注什麼？",
+      "deep_open": "✦ 深入內容 ↓",
+      "deep_close": "收起深入內容 ↑",
+      "day_master": "☉ 日主核心",
+      "decision_style": "◇ 決策模式",
+      "career": "✧ 事業方向",
+      "avoid_prefix": "暫時避免：",
+      "relationship": "☽ 關係模式",
+      "final_guidance": "給你的建議",
+      "locked_body": "更深層的決策模式、事業方向與關係模式可以在完整解析中查看。",
+      "locked_cta": "解鎖完整解析 →"
+    }
+  },
+  "compare": {
+    "title": "相容性分析",
+    "body": "即將推出 — 與朋友比較八字命盤，看看你們的相容性。",
+    "cta": "敬請期待"
+  },
+  "upgrade": {
+    "title": "看清你的人生模式",
+    "unlock_title": "Plus 解鎖內容",
+    "benefits": [
+      "完整命盤解析（八字 + MBTI 深度整合）",
+      "深入人生模式與關鍵轉折點",
+      "無限 AI 指引對話（不限次數）",
+      "專屬個人化建議與方向"
+    ],
+    "free_title": "如果你不升級",
+    "price_note": "每月 · 隨時取消",
+    "cta": "立即解鎖完整命盤 →",
+    "trust": "安全付款 · 隨時取消 · 無需承諾",
+    "back": "返回",
+    "hero_subtitle": "你的命盤已經揭示了方向，只是你還沒看到完整答案。",
+    "free_body": "你只能看到片段，而真正的關鍵模式會被隱藏。"
+  },
+  "onboarding": {
+    "transition": {
+      "skip": "跳過",
+      "messages": [
+        "正在準備你的解讀",
+        "連結你的當前關注與個人模式",
+        "快好了"
+      ]
+    },
+    "mbti": {
+      "submitting": "解讀中...",
+      "step_label": "{{current}} / {{total}}",
+      "intro": "請用直覺回答，你的第一反應通常最準確。",
+      "reveal": "想看你的性格分析結果？✦",
+      "back": "上一題",
+      "question_step": "{{current}} / {{total}}",
+      "context_hook": "✦ 這能幫助 Oria 了解你在真實情境中的自然反應方式",
+      "first_question": "在社交場合中，你自然會怎麼做？"
+    },
+    "summary": {
+      "label": "✦ 你的性格解析",
+      "headline": "你的第一層模式已經出現",
+      "subheadline": "MBTI 顯示你傾向如何決定、反應，以及保護自己的能量。",
+      "teaser": "這只是表層。在你如何做決定、如何面對壓力的背後，還有更深的模式。",
+      "continue": "揭示我的深層模式 →",
+      "footer": "下一步：把你的性格模式與更深層的時間節奏連起來。",
+      "cta_microcopy": "少於 1 分鐘",
+      "preview_label": "✦ 深層模式預覽"
+    },
+    "bazi": {
+      "error_birth_date": "請選擇你的出生日期",
+      "title": "加入更深的一層",
+      "year": "年份",
+      "year_placeholder": "選擇年份",
+      "month": "月份",
+      "month_placeholder": "月",
+      "day": "日期",
+      "day_placeholder": "日",
+      "gender": "性別",
+      "male": "♂ 男",
+      "female": "♀ 女",
+      "time_known": "我知道確切的出生時間",
+      "hour": "時 (0-23)",
+      "minute": "分",
+      "birth_location": "出生地點",
+      "location_placeholder": "搜尋出生城市",
+      "timezone": "時區",
+      "body": "MBTI 顯示你傾向如何行動；八字則幫助 Oria 看見更深層的時間節奏、壓力來源與命格底色。",
+      "saving": "正在解析命盤...",
+      "submit": "查看完整解讀 →",
+      "location_helper": "請搜尋你的出生城市（例如：香港、東京）",
+      "location_required": "請從清單中選擇你的出生城市。"
+    },
+    "result": {
+      "step": "第 3 步，共 4 步",
+      "type_label": "你的性格類型",
+      "bazi_title": "你的八字命盤揭示更多",
+      "bazi_body": "結合你的MBTI與八字命盤，打造獨一無二的宇宙命盤。",
+      "signup": "註冊以深入了解自己 →",
+      "retake": "重新測驗",
+      "free_note": "免費帳號 · 無需信用卡",
+      "fallback_nickname": "獨特類型",
+      "fallback_tagline": "獨一無二的你。"
+    },
+    "context": {
+      "step": "第 1 步，共 4 步",
+      "title": "你現在正在面對什麼？",
+      "subtitle": "這能幫助 Oria 理解你現在正在處理的事情。",
+      "instruction": "可多選",
+      "continue": "繼續 →",
+      "skip": "暫時跳過",
+      "back": "← 返回",
+      "options": {
+        "career_change": "職涯轉變",
+        "move_city_country": "搬到新城市／國家",
+        "relationship_direction": "關係方向",
+        "work_life_balance": "工作與生活平衡",
+        "retirement_next_chapter": "退休／下一章",
+        "personal_reinvention": "重新塑造自己",
+        "better_daily_decisions": "更好的每日決定"
+      }
+    }
+  },
+  "language_modal": {
+    "title_en": "Choose your language",
+    "title_zh": "選擇你的語言",
+    "body": "此設定將應用於所有指引內容，之後可在個人檔案中更改。"
+  },
+  "profile_extra": {
+    "title": "你的個人檔案",
+    "reset_body": "更新八字資料會重新整理你的解讀，並重置相關紀錄。",
+    "saved": "檔案已儲存",
+    "year_placeholder": "選擇年份",
+    "month_placeholder": "月",
+    "day_placeholder": "日",
+    "bazi_update_warning": "更新八字資料會重新整理你的解讀，並重置相關紀錄。",
+    "mbti_type": "你的MBTI類型",
+    "mbti_help": "此結果來自你的MBTI測驗。你可以手動更改，或重做測驗以獲取更準確的結果。",
+    "mbti_placeholder": "選擇你的類型...",
+    "mbti_update_warning": "更新 MBTI 會重新整理你的人格相關解讀。",
+    "view_chart": "探索完整命盤 →",
+    "personal_profile": "你的個人檔案",
+    "fallback_name": "你的檔案",
+    "profile_saved": "檔案已儲存",
+    "updated_today": "今日已更新",
+    "bazi_helper": "會影響你的每日指引與長期模式解讀。",
+    "update_birth_data": "更新出生資料",
+    "mbti_helper": "幫助 Oria 更準確理解你的決策方式。",
+    "update_personality_type": "更新人格類型",
+    "preferences": "偏好設定",
+    "interface_language": "介面語言",
+    "account": "帳戶",
+    "signed_in_as": "登入帳戶",
+    "about_oria": "關於 Oria",
+    "sign_out": "登出",
+    "reflection_footer": "這是一種映照，不是預言。決定權始終在你手上。",
+    "location_placeholder": "搜尋出生城市",
+    "location_helper": "請搜尋你的出生城市（例如：香港、東京）",
+    "location_required": "請從清單中選擇你的出生城市。"
+  },
+  "settings_extra": {
+    "change_language": "更改語言",
+    "language_warning": "介面語言會立即更新。已生成的解讀內容會保留原本語言；新的解讀會使用新語言。確定要更改嗎？",
+    "cancel": "取消",
+    "confirm": "確認更改"
+  },
+  "generated_content": {
+    "label": "以{{language}}生成"
   }
 }

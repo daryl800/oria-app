@@ -1,19 +1,19 @@
+// TopBar.tsx
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { User } from '@supabase/supabase-js';
+import { Globe2, UserRound } from 'lucide-react';
 import '../styles/theme.css';
+import { SUPPORTED_LANGUAGES } from '../lib/languages';
+import OriaLogo from './OriaLogo';
 
-const LANGUAGES = [
-  { code: 'en',    flag: '🇬🇧', label: 'EN',    available: true },
-  { code: 'zh-TW', flag: '🇭🇰', label: '中文',  available: true },
-  { code: 'zh-CN', flag: '🇨🇳', label: '简中',  available: false },
-  { code: 'sv',    flag: '🇸🇪', label: 'SV',    available: false },
-];
+const LANGUAGES = SUPPORTED_LANGUAGES;
 
 const NAV_ITEMS = [
   { path: '/home',    labelKey: 'nav.home' },
   { path: '/daily',   labelKey: 'nav.daily' },
   { path: '/chat',    labelKey: 'nav.chat' },
+  { path: '/relationship-insights',  labelKey: 'nav.people' },
   { path: '/chart',   labelKey: 'nav.chart' },
 ];
 
@@ -31,7 +31,7 @@ export default function TopBar({ user, isPro = false }: TopBarProps) {
   function handleLanguageChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const code = e.target.value;
     const lang = LANGUAGES.find(l => l.code === code);
-    if (lang?.available) {
+    if (lang) {
       i18n.changeLanguage(code);
       localStorage.setItem('oria_language', code);
     }
@@ -39,125 +39,70 @@ export default function TopBar({ user, isPro = false }: TopBarProps) {
 
   return (
     <>
-      <div className="oria-glass" style={{
-        position: 'fixed', top: 0, left: 0, right: 0,
-        height: 'var(--oria-nav-height)',
-        borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-        display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 24px',
-        zIndex: 1000,
-      }}>
-        {/* Left — logo */}
-        <button
-          onClick={() => navigate(isLoggedIn ? '/home' : '/')}
-          style={{
-            background: 'none', border: 'none',
-            cursor: 'pointer', display: 'flex',
-            alignItems: 'center', gap: 10,
-          }}
-        >
-          <span style={{ fontSize: 20, color: '#C084FC', filter: 'drop-shadow(0 0 8px rgba(192,132,252,0.5))' }}>✦</span>
-          <span className="oria-card-label" style={{ margin: 0, fontSize: 14 }}>Oria</span>
-        </button>
-
-        {/* Center — desktop nav */}
-        {isLoggedIn && (
-          <div className="oria-desktop-nav" style={{ display: 'none', gap: 8 }}>
-            {NAV_ITEMS.map(item => (
-              <button 
-                key={item.path} 
-                onClick={() => navigate(item.path)} 
-                className={location.pathname === item.path ? 'active' : ''}
-                style={{
-                  background: location.pathname === item.path ? 'rgba(192,132,252,0.1)' : 'transparent',
-                  border: 'none', borderRadius: 12,
-                  padding: '8px 16px', fontSize: 14,
-                  color: location.pathname === item.path ? '#C084FC' : 'rgba(255,255,255,0.5)',
-                  cursor: 'pointer', fontWeight: location.pathname === item.path ? 600 : 500,
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                {item.labelKey ? t(item.labelKey) : item.label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Right */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Language dropdown — only shown when not logged in */}
-          {!isLoggedIn && <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-            <span style={{ position: 'absolute', left: 12, fontSize: 14, pointerEvents: 'none', opacity: 0.7 }}>
-              🌐
+      <div className="oria-topbar">
+        <div className="oria-topbar-inner oria-glass">
+          <button
+            onClick={() => navigate(isLoggedIn ? '/home' : '/')}
+            className="oria-topbar-brand"
+          >
+            <span className="oria-topbar-mark">
+              <OriaLogo size={42} />
             </span>
-            <select
-              value={i18n.language}
-              onChange={handleLanguageChange}
-              style={{
-                background: 'rgba(192, 132, 252, 0.08)',
-                border: '1px solid rgba(192, 132, 252, 0.2)',
-                borderRadius: 20, padding: '6px 12px 6px 34px',
-                fontSize: 13, cursor: 'pointer',
-                color: 'rgba(248, 247, 255, 0.85)',
-                fontFamily: 'inherit',
-                outline: 'none',
-                appearance: 'none',
-                WebkitAppearance: 'none',
-              }}
-            >
-              {LANGUAGES.map(lang => (
-                <option
-                  key={lang.code}
-                  value={lang.code}
-                  disabled={!lang.available}
-                  style={{ background: '#1a0a2e', color: lang.available ? '#fff' : '#666' }}
+            <span className="oria-topbar-wordmark">
+              <span className="oria-card-label" style={{ margin: 0, fontSize: 15, lineHeight: 1 }}>Oria</span>
+            </span>
+          </button>
+
+          {isLoggedIn && (
+            <div className="oria-desktop-nav">
+              {NAV_ITEMS.map(item => (
+                <button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  className={`oria-desktop-nav-item ${location.pathname.startsWith(item.path) ? 'active' : ''}`}
                 >
-                  {lang.flag} {lang.label}
-                </option>
+                  {t(item.labelKey)}
+                </button>
               ))}
-            </select>
-          </div>}
-
-          {/* Pro badge */}
-          {isPro && (
-            <div style={{
-              background: 'linear-gradient(135deg, #9333EA, #C084FC)',
-              borderRadius: 9999, padding: '4px 10px',
-              fontSize: 11, fontWeight: 700, color: '#fff',
-              letterSpacing: 1,
-            }}>PLUS</div>
+            </div>
           )}
 
-          {/* Profile icon */}
-          {isLoggedIn && (
-            <button onClick={() => navigate('/profile')} style={{
-              width: 34, height: 34, borderRadius: '50%',
-              background: location.pathname === '/profile' ? 'rgba(192,132,252,0.2)' : 'transparent',
-              border: '1px solid rgba(192,132,252,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 16, color: '#C084FC',
-            }}>👤</button>
-          )}
+          <div className="oria-topbar-actions">
+            {!isLoggedIn && (
+              <div className="oria-language-select-wrap">
+                <span><Globe2 size={14} strokeWidth={2} /></span>
+                <select
+                  value={i18n.language}
+                  onChange={handleLanguageChange}
+                  className="oria-language-select"
+                >
+                  {LANGUAGES.map(lang => (
+                    <option
+                      key={lang.code}
+                      value={lang.code}
+                      style={{ background: '#0b1226', color: '#fff' }}
+                    >
+                      {lang.flag} {lang.shortLabel}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-          {/* Settings icon */}
-          {isLoggedIn && (
-            <button onClick={() => navigate('/settings')} style={{
-              width: 34, height: 34, borderRadius: '50%',
-              background: location.pathname === '/settings' ? 'rgba(192,132,252,0.2)' : 'transparent',
-              border: '1px solid rgba(192,132,252,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 16, color: '#C084FC',
-            }}>⚙️</button>
-          )}
+            {isPro && <div className="oria-plus-badge">PLUS</div>}
+
+            {isLoggedIn && (
+              <button
+                onClick={() => navigate('/profile')}
+                className={`oria-icon-button ${location.pathname === '/profile' ? 'active' : ''}`}
+                aria-label="Profile"
+              >
+                <UserRound size={18} strokeWidth={2.2} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
-
-      <style>{`
-        @media (min-width: 768px) {
-          .oria-desktop-nav { display: flex !important; }
-        }
-      `}</style>
     </>
   );
 }

@@ -1,0 +1,661 @@
+{
+  "app_name": "Oria",
+  "tagline": "운명을 단정하지 않고 선택에 조용한 실마리를 줍니다.",
+  "disclaimer": "이것은 예측이 아니라 성찰입니다. 결정은 당신의 몫입니다.",
+  "auth": {
+    "email_placeholder": "your@email.com",
+    "send_magic_link": "매직 링크 보내기",
+    "check_email": "이메일에서 매직 링크를 확인하세요.",
+    "logged_in_as": "로그인 계정",
+    "user_id": "사용자 ID",
+    "sign_out": "로그아웃"
+  },
+  "nav": {
+    "daily": "오늘의 나침반",
+    "chat": "Oria와 대화",
+    "profile": "프로필",
+    "settings": "설정",
+    "chart": "내 차트",
+    "compare": "궁합",
+    "home": "홈",
+    "people": "관계 인사이트"
+  },
+  "daily": {
+    "title": "Daily Guidance",
+    "subtitle": "每日明燈",
+    "tone_label": "Today's Tone · 今日氣場",
+    "pace_label": "Today's pace",
+    "nudge_label": "✦ Today's Light · 明燈",
+    "helpful_label": "Helpful",
+    "cta": "Open Guidance Chat →",
+    "loading": "오늘의 빛을 읽는 중...",
+    "error_no_profile": "Complete your profile first →",
+    "profile_incomplete": "프로필이 완성되지 않았습니다",
+    "complete_profile": "프로필 완성하기",
+    "refresh": "가이드는 매일 업데이트됩니다",
+    "rhythm": "오늘의 리듬",
+    "guidance": "오늘의 가이드",
+    "lean_into": "밀어붙이면 좋은 것",
+    "avoid": "잠시 피할 것",
+    "reminder": "오늘의提醒",
+    "chat_prompt": "더 깊이 볼까요?",
+    "chat_cta": "Oria와 대화하기",
+    "deep_open": "오늘의 가이드 펼치기 ↓",
+    "deep_close": "오늘의 가이드 접기 ↑",
+    "moment": "오늘의 상황",
+    "color": "오늘의 색",
+    "deeper_reason": "깊은 이유",
+    "upgrade_body": "이 패턴 뒤에는 더 깊은 이유가 있습니다.",
+    "upgrade_cta": "전체 인사이트 잠금 해제 ✦",
+    "chat_prefill": "오늘의 가이드에서 \"{{text}}\"라고 했습니다. 어떻게 조정하면 좋을까요?",
+    "pro_cta_title": "더 깊이 볼까요?",
+    "pro_cta_subtext": "오늘의 방향과 다음 단계를 명확히 하기",
+    "locked_cta_title": "더 깊이 볼까요?",
+    "locked_cta_subtext": "전체 패턴과 다음에 할 일을 확인하기",
+    "locked_cta_button": "전체 인사이트 잠금 해제 ✦",
+    "color_micro_action": "오늘 입거나 지니는 물건에 좋습니다",
+    "color_locked": "잠김",
+    "color_locked_teaser": "오늘의 색과 리듬 보기",
+    "color_locked_microcopy": "잠금 해제 후 오늘의 색과 리듬을 확인하세요"
+  },
+  "chat": {
+    "title": "지금 무슨 생각을 하고 있나요?",
+    "empty_title": "Ask Oria anything",
+    "empty_subtitle": "Your BaZi and MBTI are your guide",
+    "try_asking": "✦ Try asking",
+    "placeholder": "지금 생각나는 것을 적어보세요...",
+    "thinking": "생각 중...",
+    "history": "기록",
+    "new": "새 대화 시작",
+    "previous_conversations": "이전 대화",
+    "no_conversations": "아직 이전 대화가 없습니다.",
+    "safety_response": "— Oria 안전 응답",
+    "subtitle": "너무 깊이 생각하지 않아도 됩니다. 어디서든 시작해 보세요.",
+    "untitled": "제목 없는 대화",
+    "quick_label": "도움이 되면 여기서 시작",
+    "quick_hint": "탭해서 채우고 수정하세요",
+    "send": "메시지 보내기",
+    "paywall_title": "Oria와 대화",
+    "paywall_body": "Oria Plus로 업그레이드하면 더 깊고 지속적인 개인 가이드를 받을 수 있습니다.",
+    "paywall_cta": "Oria Plus로 업그레이드 ✦",
+    "quick_starts": [
+      {
+        "label": "조금 막힌 느낌",
+        "value": "요즘 조금 막힌 느낌이고 다음에 무엇을 해야 할지 모르겠습니다"
+      },
+      {
+        "label": "다음 단계",
+        "value": "지금 나에게 맞는 다음 단계를 보고 싶습니다"
+      },
+      {
+        "label": "생각나는 일",
+        "value": "계속 생각나는 일이 있어서 천천히 정리하고 싶습니다"
+      },
+      {
+        "label": "나를 이해하기",
+        "value": "지금의 나를 조금 더 이해하고 싶습니다"
+      },
+      {
+        "label": "조금 지침",
+        "value": "조금 지치고 방향이 잘 보이지 않습니다"
+      },
+      {
+        "label": "질문하기",
+        "value": "묻고 싶은 것이 있지만 아직 어떻게 말해야 할지 모르겠습니다"
+      }
+    ]
+  },
+  "profile": {
+    "title": "내 프로필",
+    "bazi_title": "BaZi · 출생 정보",
+    "bazi_subtitle": "사주 네 기둥",
+    "mbti_title": "MBTI · 성격",
+    "mbti_subtitle": "Myers-Briggs 유형",
+    "summary_title": "프로필 요약",
+    "summary_subtitle": "BaZi + MBTI 기반 AI 생성",
+    "saved": "✓ 저장됨",
+    "year": "연도",
+    "month": "월",
+    "day": "일",
+    "hour": "시 (0-23)",
+    "minute": "분",
+    "time_known": "정확한 출생 시간을 알고 있습니다",
+    "birth_location": "출생지",
+    "timezone": "시간대",
+    "save_bazi": "BaZi 저장",
+    "update_bazi": "출생 정보 업데이트",
+    "saving": "저장 중...",
+    "take_quiz": "✦ MBTI 설문하기 →",
+    "select_type": "또는 유형 직접 선택",
+    "select_placeholder": "MBTI 유형 선택",
+    "save_mbti": "MBTI 저장",
+    "update_mbti": "성격 유형 업데이트",
+    "strengths": "✦ 강점",
+    "growth": "↑ 성장",
+    "generate_summary": "✦ 내 프로필 요약 생성",
+    "generating": "요약 생성 중...",
+    "loading": "프로필 불러오는 중...",
+    "error_date": "생년월일을 입력하세요.",
+    "error_mbti": "MBTI 유형을 선택하세요.",
+    "reset_warning_title": "출생 정보를 업데이트할까요?",
+    "reset_warning_body": "출생 데이터를 업데이트하면 모든 대화 기록과 일일 가이드가 삭제됩니다.",
+    "reset_cancel": "취소",
+    "reset_confirm": "예, 업데이트"
+  },
+  "mbti": {
+    "title": "MBTI 설문",
+    "your_result": "당신의 결과",
+    "your_type": "당신의 MBTI 유형",
+    "based_on": "20개 질문에 대한 답변 기반",
+    "dimension_breakdown": "차원 분석",
+    "continue": "프로필로 계속 →",
+    "question_of": "{{current}} / {{total}}번 질문",
+    "answered": "{{count}} / {{total}} 답변됨",
+    "get_type": "내 MBTI 유형 보기 →",
+    "calculating": "계산 중...",
+    "loading": "질문 불러오는 중...",
+    "error_incomplete": "제출 전 모든 질문에 답해주세요.",
+    "previous": "← 이전",
+    "next": "다음 →",
+    "dimension": "차원"
+  },
+  "settings": {
+    "title": "설정",
+    "account": "계정",
+    "language": "언어",
+    "language_label": "인터페이스 언어",
+    "about_title": "Oria 소개",
+    "about_body": "Oria는 BaZi 출생 차트와 MBTI 성격을 결합해 차분하고 성찰적인 가이드를 제공합니다. 지시하지 않고 제안합니다.",
+    "about_quote": "길 위의 빛 — 지도도 명령도 아닌, 단지 명확함.",
+    "sign_out": "로그아웃",
+    "coming_soon": "곧 제공"
+  },
+  "errors": {
+    "generic": "문제가 발생했습니다. 다시 시도하세요."
+  },
+  "home": {
+    "daily_desc": "Get personalised daily guidance based on your BaZi and MBTI",
+    "chat_desc": "Chat with your AI guide about career, relationships and health",
+    "chart_desc": "Explore your BaZi birth chart and MBTI personality profile",
+    "compare_desc": "중요한 사람과의 관계 흐름을 이해합니다",
+    "headline": "오늘은 어디서부터 시작할까요?",
+    "subtext": "지금 이 순간, 무엇이 맞는지 안내가 보여드립니다.",
+    "primary": {
+      "label": "데일리 가이던스",
+      "title": "오늘의 에너지와 흐름을 보고 자연스럽게 나아가기.",
+      "subtext": "",
+      "cta": "오늘의 가이드 시작"
+    },
+    "chat": {
+      "label": "실시간 대화",
+      "title": "생각을 정리하고, 결정을 더 간단하게.",
+      "subtitle": ""
+    },
+    "chart": {
+      "label": "나의 차트",
+      "title": "내 깊은 패턴을 이해하고, 판단을 더 명확하게.",
+      "subtitle": ""
+    },
+    "compare": {
+      "label": "관계 인사이트",
+      "title": "서로를 이해하고, 더 편안하게 관계를 이어가기.",
+      "subtitle": ""
+    },
+    "footer": "Oria 나침반 · 집중된 해석"
+  },
+  "page_taglines": {
+    "chat": "이것은 예측이 아니라 성찰입니다. 선택은 당신의 몫입니다.",
+    "chart": "이것은 낙인이 아니라, 당신이 작동하는 방식입니다.",
+    "relationship": "이것은 궁합이 아니라, 관계를 이해하는 방식입니다."
+  },
+  "common": {
+    "oria": "Oria",
+    "oria_compass": "Oria Compass",
+    "back": "뒤로",
+    "loading": "불러오는 중...",
+    "unknown": "알 수 없음"
+  },
+  "landing": {
+    "kicker": "Oria Compass",
+    "headline": "당신의 재능은 사주에 담겨 있고\n당신의 성격은 MBTI에 드러납니다",
+    "subtitle": "이 둘이 만나면,\n상황을 명확히 보고 더 현명한 선택을 할 수 있습니다.",
+    "result": "약 60초 소요 • 약정 없음",
+    "primary_cta": "1분 인사이트 받기 →",
+    "signin": "이미 계정이 있나요? 로그인",
+    "lead": "다음 선택을 결정하는 것은\n둘 중 하나가 아니라",
+    "emphasis": "그 조합입니다",
+    "method": "동양 명리 × 서양 심리",
+    "disclaimer": "본 앱은 사주명리와 MBTI 기반 성격 관점을 결합하여 자기 이해를 위한 참고 자료로 제공합니다.\n콘텐츠는 영감과 엔터테인먼트를 위한 것이며, 전문적인 조언이 아닙니다."
+  },
+  "login": {
+    "title_signin": "다시 오신 것을 환영합니다",
+    "title_signup": "계정 만들기",
+    "google_signin": "Google로 로그인",
+    "google_signup": "Google로 가입",
+    "google_loading": "로그인 중...",
+    "divider": "또는",
+    "email_placeholder": "이메일",
+    "password_placeholder": "비밀번호",
+    "submit_signin": "로그인",
+    "submit_signup": "가입",
+    "processing": "처리 중...",
+    "secure": "안전하고 비공개",
+    "switch_to_signin_prefix": "이미 계정이 있나요?",
+    "switch_to_signup_prefix": "계정이 없나요?",
+    "signin_link": "로그인",
+    "signup_link": "가입",
+    "back": "뒤로",
+    "error_google": "로그인에 실패했습니다. 다시 시도하세요.",
+    "error_required": "이메일과 비밀번호를 입력하세요.",
+    "error_password": "비밀번호는 최소 6자여야 합니다.",
+    "error_invalid": "이메일 또는 비밀번호가 올바르지 않습니다.",
+    "unlock_title": "전체 리딩이 준비되었습니다",
+    "unlock_subtitle": "로그인하면 전체 Oria 리딩을 보고 저장할 수 있습니다.",
+    "google_unlock": "Google로 계속하기",
+    "submit_unlock": "로그인하고 내 결과 보기"
+  },
+  "chart": {
+    "header": "내 차트",
+    "tabs": {
+      "bazi": "🪬 BaZi 차트",
+      "mbti": "🧠 MBTI 유형",
+      "insight": "✦ 인사이트"
+    },
+    "loading": "Loading your chart...",
+    "bazi": {
+      "section": "Four Pillars",
+      "explanation": "Your BaZi chart is formed by four pillars: Year, Month, Day, and Hour. The Day Stem, known as your Day Master, is the core of the chart.",
+      "pillars": {
+        "year": "Year",
+        "month": "Month",
+        "day": "Day",
+        "hour": "Hour"
+      },
+      "day_master": "Day Master",
+      "core_pattern": "Core Pattern",
+      "core_text": "Your Day Master is {{dayMaster}}, suggesting a naturally stronger orientation toward action, judgment, and how you engage with the world.",
+      "chat_cta": "Start a conversation from Four Pillars",
+      "chat_prefill": "Based on my Four Pillars chart and Day Master {{dayMaster}}, what should I pay attention to right now?",
+      "deep_open": "See Four Pillars details ↓",
+      "deep_close": "Hide Four Pillars details ↑",
+      "five_elements": "Five Elements",
+      "inner_tension": "Inner Tension",
+      "levels": {
+        "dominant": "Dominant",
+        "strong": "Strong",
+        "moderate": "Moderate",
+        "weak": "Weak"
+      },
+      "meanings": {
+        "Fire": "Momentum, expression and outward energy",
+        "Metal": "Discernment, boundaries and principles",
+        "Wood": "Growth, extension and inner development",
+        "Earth": "Grounding, stability and support",
+        "Water": "Reflection, inner flow and adaptability"
+      },
+      "tension_terms": {
+        "Fire": "drive and momentum",
+        "Metal": "judgment and decisiveness",
+        "Wood": "growth and expansion",
+        "Earth": "stability and grounding",
+        "Water": "reflection and inner regulation"
+      },
+      "element_summary": "Your elemental structure is led by {{topElement}}, showing natural strength in {{topTerm}}, while {{weakestElement}} is comparatively weaker and may require more conscious balancing.",
+      "tension_two": "Your structure emphasizes both {{top1}} and {{top2}}. This often creates a tension between momentum and control: you want to move quickly, but also want things to be precise and right.",
+      "tension_one": "You tend to move forward through {{top1}}, but the {{weakest}}-related capacity for reflection, absorption, or regulation may not be as strong. You may move fast without fully processing as you go.",
+      "tension_balanced": "Your elemental profile is relatively balanced, without one overwhelmingly dominant force. The advantage is flexibility, but the tension is that in important moments, you may need to consciously choose how you want to act rather than relying on one natural default."
+    },
+    "mbti": {
+      "section": "MBTI Personality",
+      "identity": "{{type}}: {{nickname}}",
+      "key_insight": "One key insight",
+      "key_insight_text": "You work best when you can clarify the facts, then make a steady and practical decision.",
+      "chat_cta": "Start a conversation from this type",
+      "chat_prefill": "Based on my {{type}} personality, what should I pay attention to when making decisions?",
+      "deep_open": "See personality details ↓",
+      "deep_close": "Hide personality details ↑",
+      "explanation": "MBTI describes your preferences, not your limits. It helps reveal how you take in information, make decisions, and respond under pressure.",
+      "profile_text": "Your personality profile shows a strong {{profileCode}} structure, favoring stability, practicality, rationality, and controlled decision-making.",
+      "inner_tension": "Inner Tension",
+      "inner_tension_text": "You tend to rely on structure, standards, and certainty when making decisions, but reality is not always clear or controllable. This creates an inner tension between your desire for order and the need to navigate ambiguity and change.",
+      "dimension_breakdown": "Dimension Breakdown",
+      "impact": "What This Means",
+      "impact_text": "In daily life, you tend to perform best in environments with clear expectations and defined responsibilities, where your judgment and consistency can show up fully. In more uncertain situations, you may need to consciously relax the need to have the answer too early.",
+      "cross_link_text": "Want to see how your MBTI and BaZi combine to reveal your unique pattern?",
+      "cross_link": "See Profile Insight →",
+      "dimensions": {
+        "E": {
+          "label": "E (Extroversion)",
+          "meaning": "Tends to gain energy through interaction and external stimulation, with a more direct and outward style."
+        },
+        "I": {
+          "label": "I (Introversion)",
+          "meaning": "Tends to restore energy in quieter environments, valuing inner rhythm and depth of focus."
+        },
+        "S": {
+          "label": "S (Sensing)",
+          "meaning": "Starts from concrete facts, details, and lived experience rather than abstract assumptions."
+        },
+        "N": {
+          "label": "N (Intuition)",
+          "meaning": "Starts from patterns, context, and future possibilities, valuing direction and imagination."
+        },
+        "T": {
+          "label": "T (Thinking)",
+          "meaning": "Makes decisions through logic, consistency, and analysis rather than emotional tone itself."
+        },
+        "F": {
+          "label": "F (Feeling)",
+          "meaning": "Makes decisions through values, relational impact, and inner alignment."
+        },
+        "J": {
+          "label": "J (Judging)",
+          "meaning": "Prefers to create order early, make decisions sooner, and move within a manageable rhythm."
+        },
+        "P": {
+          "label": "P (Perceiving)",
+          "meaning": "Prefers openness and flexibility, adjusting as circumstances change."
+        }
+      },
+      "types": {
+        "INTJ": {
+          "nickname": "전략가",
+          "traits": [
+            "전략적",
+            "독립적",
+            "비전형"
+          ]
+        },
+        "INTP": {
+          "nickname": "사색가",
+          "traits": [
+            "분석적",
+            "호기심",
+            "창의적"
+          ]
+        },
+        "ENTJ": {
+          "nickname": "지휘관",
+          "traits": [
+            "대담함",
+            "결단력",
+            "리더형"
+          ]
+        },
+        "ENTP": {
+          "nickname": "토론가",
+          "traits": [
+            "순발력",
+            "혁신적",
+            "매력적"
+          ]
+        },
+        "INFJ": {
+          "nickname": "옹호자",
+          "traits": [
+            "공감력",
+            "원칙적",
+            "비전형"
+          ]
+        },
+        "INFP": {
+          "nickname": "중재자",
+          "traits": [
+            "창의적",
+            "공감력",
+            "이상주의"
+          ]
+        },
+        "ENFJ": {
+          "nickname": "선도자",
+          "traits": [
+            "영감을 줌",
+            "공감력",
+            "리더형"
+          ]
+        },
+        "ENFP": {
+          "nickname": "활동가",
+          "traits": [
+            "열정적",
+            "창의적",
+            "낙관적"
+          ]
+        },
+        "ISTJ": {
+          "nickname": "현실주의자",
+          "traits": [
+            "신뢰성",
+            "실용적",
+            "세부 중시"
+          ]
+        },
+        "ISFJ": {
+          "nickname": "수호자",
+          "traits": [
+            "따뜻함",
+            "헌신적",
+            "관찰력"
+          ]
+        },
+        "ESTJ": {
+          "nickname": "경영자",
+          "traits": [
+            "체계적",
+            "결단력",
+            "충실함"
+          ]
+        },
+        "ESFJ": {
+          "nickname": "집정관",
+          "traits": [
+            "배려심",
+            "사교적",
+            "충실함"
+          ]
+        },
+        "ISTP": {
+          "nickname": "장인",
+          "traits": [
+            "실용적",
+            "관찰력",
+            "독립적"
+          ]
+        },
+        "ISFP": {
+          "nickname": "모험가",
+          "traits": [
+            "예술적",
+            "즉흥적",
+            "공감력"
+          ]
+        },
+        "ESTP": {
+          "nickname": "사업가",
+          "traits": [
+            "대담함",
+            "예리함",
+            "활력"
+          ]
+        },
+        "ESFP": {
+          "nickname": "연예인",
+          "traits": [
+            "즉흥적",
+            "활력",
+            "즐거움 추구"
+          ]
+        }
+      }
+    },
+    "insight": {
+      "title": "Your Profile Insight",
+      "analyzing": "Analyzing your pattern...",
+      "key_traits": "Key traits",
+      "key_insight": "One key insight",
+      "chat_cta": "Start a conversation from this reading",
+      "chat_prefill": "Based on my chart traits {{traits}}, what should I focus on right now?",
+      "deep_open": "✦ Deeper content ↓",
+      "deep_close": "Hide deeper content ↑",
+      "day_master": "☉ Core nature",
+      "decision_style": "◇ Decision style",
+      "career": "✧ Career direction",
+      "avoid_prefix": "Avoid for now: ",
+      "relationship": "☽ Relationship patterns",
+      "final_guidance": "Final guidance",
+      "locked_body": "Decision style, career direction, and relationship patterns are available in the full insight.",
+      "locked_cta": "Unlock full insight →"
+    }
+  },
+  "compare": {
+    "title": "궁합 분석",
+    "body": "곧 제공됩니다 — 친구와 BaZi 차트를 비교해 궁합을 살펴보세요.",
+    "cta": "곧 제공"
+  },
+  "upgrade": {
+    "title": "진짜 패턴 보기",
+    "unlock_title": "Plus에서 열리는 것",
+    "benefits": [
+      "전체 프로필 인사이트 (BaZi + MBTI 통합)",
+      "삶의 패턴과 중요한 전환점",
+      "무제한 AI 가이드 대화",
+      "개인화된 방향과 조언"
+    ],
+    "free_title": "무료로 유지하면",
+    "price_note": "월간 · 언제든 해지 가능",
+    "cta": "전체 인사이트 열기 →",
+    "trust": "안전한 결제 · 언제든 해지 · 약정 없음",
+    "back": "뒤로",
+    "hero_subtitle": "당신의 차트는 이미 방향을 보여줍니다. 아직 전체 그림을 보지 못했을 뿐입니다.",
+    "free_body": "보이는 것은 일부 조각뿐이고, 더 깊은 패턴은 숨겨져 있습니다."
+  },
+  "onboarding": {
+    "transition": {
+      "skip": "건너뛰기",
+      "messages": [
+        "리딩을 준비하고 있습니다",
+        "현재의 관심사와 개인 패턴을 연결하고 있습니다",
+        "거의 준비되었습니다"
+      ]
+    },
+    "mbti": {
+      "submitting": "성격을 읽는 중...",
+      "step_label": "{{current}} / {{total}}",
+      "intro": "직감적으로 답하세요. 첫 반응이 보통 가장 정확합니다.",
+      "reveal": "성격 분석 결과를 볼까요? ✦",
+      "back": "이전 질문",
+      "question_step": "{{current}} / {{total}}",
+      "context_hook": "✦ Oria가 실제 상황에서 당신이 자연스럽게 반응하는 방식을 이해하는 데 도움이 됩니다",
+      "first_question": "사교 모임에서 당신은 자연스럽게 어떻게 하나요?"
+    },
+    "summary": {
+      "label": "✦ 당신의 성격 분석",
+      "teaser": "이것은 표면일 뿐입니다. 당신이 결정하고 압박에 반응하는 방식 뒤에는 더 깊은 패턴이 있습니다.",
+      "continue": "내 깊은 패턴 보기 →",
+      "footer": "다음 단계: 성격 패턴과 더 깊은 타이밍을 연결합니다.",
+      "headline": "첫 번째 패턴이 보이기 시작했습니다",
+      "subheadline": "MBTI는 당신이 결정하고 반응하며 에너지를 보호하는 방식을 보여줍니다.",
+      "cta_microcopy": "1분 이내 소요",
+      "preview_label": "✦ 깊은 패턴 미리보기"
+    },
+    "bazi": {
+      "error_birth_date": "생년월일을 선택하세요.",
+      "title": "더 깊은 층 추가하기",
+      "year": "연도",
+      "year_placeholder": "연도 선택",
+      "month": "월",
+      "month_placeholder": "월",
+      "day": "일",
+      "day_placeholder": "일",
+      "gender": "성별",
+      "male": "♂ 남성",
+      "female": "♀ 여성",
+      "time_known": "정확한 출생 시간을 알고 있습니다",
+      "hour": "시 (0-23)",
+      "minute": "분",
+      "birth_location": "출생지",
+      "location_placeholder": "출생 도시 검색",
+      "timezone": "시간대",
+      "body": "MBTI는 당신이 어떻게 행동하는지 보여줍니다. BaZi는 그 아래의 타이밍, 압박, 자연스러운 패턴을 드러내는 데 도움을 줍니다.",
+      "saving": "별을 읽는 중...",
+      "submit": "전체 리딩 보기 →",
+      "location_helper": "출생 도시를 검색하세요 (예: 홍콩, 도쿄)",
+      "location_required": "목록에서 출생 도시를 선택해 주세요."
+    },
+    "result": {
+      "step": "3/4단계",
+      "type_label": "당신의 성격 유형",
+      "bazi_title": "출생 차트는 더 많은 것을 보여줍니다",
+      "bazi_body": "MBTI와 BaZi 출생 차트를 결합해 당신만의 완전한 프로필을 만듭니다.",
+      "signup": "가입하고 나를 더 깊이 이해하기 →",
+      "retake": "테스트 다시 하기",
+      "free_note": "무료 계정 · 신용카드 불필요",
+      "fallback_nickname": "고유한 유형",
+      "fallback_tagline": "오직 당신만의 모습입니다."
+    },
+    "context": {
+      "step": "1/4단계",
+      "title": "지금 무엇을 헤쳐 나가고 있나요?",
+      "subtitle": "Oria가 지금 당신이 다루는 일을 이해하는 데 도움이 됩니다.",
+      "instruction": "해당되는 것을 모두 선택",
+      "continue": "계속 →",
+      "skip": "지금은 건너뛰기",
+      "back": "← 뒤로",
+      "options": {
+        "career_change": "커리어 변화",
+        "move_city_country": "새 도시/국가로 이동",
+        "relationship_direction": "관계의 방향",
+        "work_life_balance": "일과 삶의 균형",
+        "retirement_next_chapter": "은퇴 / 다음 장",
+        "personal_reinvention": "개인적 재정의",
+        "better_daily_decisions": "더 나은 일상 결정"
+      }
+    }
+  },
+  "language_modal": {
+    "title_en": "Choose your language",
+    "title_zh": "언어 선택",
+    "body": "모든 가이드와 인사이트에 사용할 언어를 설정합니다. 나중에 프로필에서 변경할 수 있습니다."
+  },
+  "profile_extra": {
+    "title": "나의 개인 프로필",
+    "reset_body": "사주 정보를 업데이트하면 해석이 새로고침되고 관련 기록이 초기화됩니다.",
+    "saved": "프로필 저장됨",
+    "year_placeholder": "연도 선택",
+    "month_placeholder": "월",
+    "day_placeholder": "일",
+    "bazi_update_warning": "사주 정보를 업데이트하면 해석이 새로고침되고 관련 기록이 초기화됩니다.",
+    "mbti_type": "나의 MBTI 유형",
+    "mbti_help": "이 결과는 MBTI 테스트에서 가져온 것입니다. 직접 변경하거나 다시 테스트할 수 있습니다.",
+    "mbti_placeholder": "유형 선택...",
+    "mbti_update_warning": "MBTI를 업데이트하면 성격 기반 해석이 새로고침됩니다.",
+    "view_chart": "전체 차트 보기 →",
+    "personal_profile": "나의 개인 프로필",
+    "fallback_name": "내 프로필",
+    "profile_saved": "프로필 저장됨",
+    "updated_today": "오늘 업데이트됨",
+    "bazi_helper": "일일 가이드와 장기적인 패턴 해석에 영향을 줍니다.",
+    "update_birth_data": "출생 정보 업데이트",
+    "mbti_helper": "Oria가 당신의 의사결정 방식을 더 정확히 이해하도록 돕습니다.",
+    "update_personality_type": "성격 유형 업데이트",
+    "preferences": "환경설정",
+    "interface_language": "인터페이스 언어",
+    "account": "계정",
+    "signed_in_as": "로그인 계정",
+    "about_oria": "Oria 소개",
+    "sign_out": "로그아웃",
+    "reflection_footer": "이것은 예측이 아니라 성찰입니다. 결정은 당신의 몫입니다.",
+    "location_placeholder": "출생 도시 검색",
+    "location_helper": "출생 도시를 검색하세요 (예: 홍콩, 도쿄)",
+    "location_required": "목록에서 출생 도시를 선택해 주세요."
+  },
+  "settings_extra": {
+    "change_language": "언어 변경",
+    "language_warning": "인터페이스 언어는 즉시 업데이트됩니다. 이미 생성된 리딩은 원래 언어로 유지되고, 새 리딩은 새 언어로 생성됩니다. 변경할까요?",
+    "cancel": "취소",
+    "confirm": "변경 확인"
+  },
+  "generated_content": {
+    "label": "{{language}}로 생성됨"
+  }
+}

@@ -12,12 +12,13 @@
   },
   "nav": {
     "daily": "Daily Compass",
-    "chat": "AI Master",
+    "chat": "Talk with Oria",
     "profile": "Profile",
     "settings": "Settings",
     "chart": "My Chart",
     "compare": "Compatibility",
-    "home": "Home"
+    "home": "Home",
+    "people": "Relationship Insights"
   },
   "daily": {
     "title": "Daily Guidance",
@@ -27,21 +28,82 @@
     "nudge_label": "✦ Today's Light · 明燈",
     "helpful_label": "Helpful",
     "cta": "Open Guidance Chat →",
-    "loading": "Reading today's light...",
-    "error_no_profile": "Complete your profile first →"
+    "loading": "Reading today’s light...",
+    "error_no_profile": "Complete your profile first →",
+    "profile_incomplete": "Profile Incomplete",
+    "complete_profile": "Complete Profile",
+    "refresh": "Your guidance refreshes every day",
+    "rhythm": "Today’s rhythm",
+    "guidance": "Today’s guidance",
+    "lean_into": "Lean into",
+    "avoid": "Avoid for now",
+    "reminder": "Today’s reminder",
+    "chat_prompt": "Want to look a little deeper?",
+    "chat_cta": "Talk with Oria",
+    "deep_open": "Expand today’s guidance ↓",
+    "deep_close": "Hide today’s guidance ↑",
+    "moment": "Today’s moment",
+    "color": "Today’s color",
+    "deeper_reason": "Deeper reason",
+    "upgrade_body": "There is a deeper reason behind this pattern.",
+    "upgrade_cta": "Unlock full insight ✦",
+    "chat_prefill": "Today’s guidance says {{text}}. How should I work with that?",
+    "pro_cta_title": "Want to go deeper?",
+    "pro_cta_subtext": "Clarify today’s direction and next step",
+    "locked_cta_title": "Want to go deeper?",
+    "locked_cta_subtext": "See the full pattern and what to do next",
+    "locked_cta_button": "Unlock full insight ✦",
+    "color_micro_action": "Good for what you wear or carry today",
+    "color_locked": "Locked",
+    "color_locked_teaser": "See today’s color and rhythm",
+    "color_locked_microcopy": "Unlock to see today’s color and rhythm"
   },
   "chat": {
-    "title": "Guidance Chat",
+    "title": "What is on your mind?",
     "empty_title": "Ask Oria anything",
     "empty_subtitle": "Your BaZi and MBTI are your guide",
     "try_asking": "✦ Try asking",
-    "placeholder": "Ask Oria anything...",
+    "placeholder": "Write what is on your mind…",
     "thinking": "Thinking...",
-    "history": "☰ History",
-    "new": "+ New",
+    "history": "History",
+    "new": "Start new conversation",
     "previous_conversations": "Previous Conversations",
     "no_conversations": "No previous conversations yet.",
-    "safety_response": "— Oria safety response"
+    "safety_response": "— Oria safety response",
+    "subtitle": "No need to overthink it. Just start anywhere.",
+    "untitled": "Untitled conversation",
+    "quick_label": "Start here if it helps",
+    "quick_hint": "Tap to fill, then edit",
+    "send": "Send message",
+    "paywall_title": "Chat with Oria",
+    "paywall_body": "Upgrade to Oria Plus for deeper, ongoing personalized guidance conversations.",
+    "paywall_cta": "Upgrade to Oria Plus ✦",
+    "quick_starts": [
+      {
+        "label": "Feeling stuck",
+        "value": "I have been feeling stuck and I am not sure what to do next"
+      },
+      {
+        "label": "Next step",
+        "value": "I want to look at what next step fits this moment"
+      },
+      {
+        "label": "One thing",
+        "value": "There is one thing on my mind and I want to sort it out"
+      },
+      {
+        "label": "Understand myself",
+        "value": "I want to understand myself a little more right now"
+      },
+      {
+        "label": "A bit tired",
+        "value": "I feel a bit tired and not very sure about my direction"
+      },
+      {
+        "label": "Ask something",
+        "value": "I want to ask something, but I am not sure how to phrase it yet"
+      }
+    ]
   },
   "profile": {
     "title": "My Profile",
@@ -61,13 +123,13 @@
     "birth_location": "Birth Location",
     "timezone": "Timezone",
     "save_bazi": "Save BaZi",
-    "update_bazi": "Update BaZi",
+    "update_bazi": "Update Birth Data",
     "saving": "Saving...",
     "take_quiz": "✦ Take the MBTI questionnaire →",
     "select_type": "Or select your type directly",
     "select_placeholder": "Select your MBTI type",
     "save_mbti": "Save MBTI",
-    "update_mbti": "Update MBTI",
+    "update_mbti": "Update Personality Type",
     "strengths": "✦ Strengths",
     "growth": "↑ Growth",
     "generate_summary": "✦ Generate my profile summary",
@@ -115,6 +177,485 @@
     "daily_desc": "Get personalised daily guidance based on your BaZi and MBTI",
     "chat_desc": "Chat with your AI guide about career, relationships and health",
     "chart_desc": "Explore your BaZi birth chart and MBTI personality profile",
-    "compare_desc": "Compare BaZi charts with friends to discover cosmic compatibility"
+    "compare_desc": "Understand relationship dynamics with someone important",
+    "headline": "Where would you like to begin?",
+    "subtext": "Let your guidance show what’s right to do in this moment.",
+    "primary": {
+      "label": "Daily Guidance",
+      "title": "See today’s energy and pace, and move with it.",
+      "subtext": "",
+      "cta": "Start today’s guidance"
+    },
+    "chat": {
+      "label": "Live Chat",
+      "title": "Clarify your thoughts and make decisions simpler.",
+      "subtitle": ""
+    },
+    "chart": {
+      "label": "My Chart",
+      "title": "Understand your deeper patterns and make your judgment clearer.",
+      "subtitle": ""
+    },
+    "compare": {
+      "label": "Relationship Insights",
+      "title": "Understand each other and make interactions more at ease.",
+      "subtitle": ""
+    },
+    "footer": "Oria Compass · Focused Reading"
+  },
+  "page_taglines": {
+    "chat": "This is reflection, not prediction. The choice is yours.",
+    "chart": "This is not a label, but how you operate.",
+    "relationship": "This is not matching, but understanding how you relate."
+  },
+  "common": {
+    "oria": "Oria",
+    "oria_compass": "Oria Compass",
+    "back": "Back",
+    "loading": "Loading...",
+    "unknown": "—"
+  },
+  "landing": {
+    "kicker": "Oria Compass",
+    "headline": "Your strengths are written in your BaZi\nYour personality is reflected in your MBTI",
+    "subtitle": "",
+    "result": "Takes about 60 seconds • No commitment",
+    "primary_cta": "Get my 1-minute insight →",
+    "signin": "Already have an account? Sign in",
+    "lead": "What determines your next move\nis not either one alone",
+    "emphasis": "but the combination of both",
+    "method": "Eastern metaphysics × Western psychology",
+    "disclaimer": "This app combines BaZi and MBTI-based personality perspectives as a reference for self-exploration.\nContent is for inspiration and entertainment only, not professional advice."
+  },
+  "login": {
+    "title_signin": "Welcome back",
+    "title_signup": "Create account",
+    "unlock_title": "Your full reading is ready",
+    "unlock_subtitle": "Sign in to view your complete Oria reading and keep it saved.",
+    "google_signin": "Sign in with Google",
+    "google_signup": "Sign up with Google",
+    "google_unlock": "Continue with Google",
+    "google_loading": "Signing in...",
+    "divider": "or",
+    "email_placeholder": "Email",
+    "password_placeholder": "Password",
+    "submit_signin": "Sign in",
+    "submit_signup": "Sign up",
+    "submit_unlock": "Sign in to view my result",
+    "processing": "Processing...",
+    "secure": "Secure and private",
+    "switch_to_signin_prefix": "Already have an account?",
+    "switch_to_signup_prefix": "Don’t have an account?",
+    "signin_link": "Sign in",
+    "signup_link": "Sign up",
+    "back": "Back",
+    "error_google": "Sign in failed. Please try again.",
+    "error_required": "Please enter your email and password.",
+    "error_password": "Password must be at least 6 characters.",
+    "error_invalid": "Invalid email or password."
+  },
+  "chart": {
+    "header": "My Chart",
+    "tabs": {
+      "bazi": "🪬 BaZi Chart",
+      "mbti": "🧠 MBTI Type",
+      "insight": "✦ Insight"
+    },
+    "loading": "Loading your chart...",
+    "bazi": {
+      "section": "Four Pillars",
+      "explanation": "Your BaZi chart is formed by four pillars: Year, Month, Day, and Hour. The Day Stem, known as your Day Master, is the core of the chart.",
+      "pillars": {
+        "year": "Year",
+        "month": "Month",
+        "day": "Day",
+        "hour": "Hour"
+      },
+      "day_master": "Day Master",
+      "core_pattern": "Core Pattern",
+      "core_text": "Your Day Master is {{dayMaster}}, suggesting a naturally stronger orientation toward action, judgment, and how you engage with the world.",
+      "chat_cta": "Start a conversation from Four Pillars",
+      "chat_prefill": "Based on my Four Pillars chart and Day Master {{dayMaster}}, what should I pay attention to right now?",
+      "deep_open": "See Four Pillars details ↓",
+      "deep_close": "Hide Four Pillars details ↑",
+      "five_elements": "Five Elements",
+      "inner_tension": "Inner Tension",
+      "levels": {
+        "dominant": "Dominant",
+        "strong": "Strong",
+        "moderate": "Moderate",
+        "weak": "Weak"
+      },
+      "meanings": {
+        "Fire": "Momentum, expression and outward energy",
+        "Metal": "Discernment, boundaries and principles",
+        "Wood": "Growth, extension and inner development",
+        "Earth": "Grounding, stability and support",
+        "Water": "Reflection, inner flow and adaptability"
+      },
+      "tension_terms": {
+        "Fire": "drive and momentum",
+        "Metal": "judgment and decisiveness",
+        "Wood": "growth and expansion",
+        "Earth": "stability and grounding",
+        "Water": "reflection and inner regulation"
+      },
+      "element_summary": "Your elemental structure is led by {{topElement}}, showing natural strength in {{topTerm}}, while {{weakestElement}} is comparatively weaker and may require more conscious balancing.",
+      "tension_two": "Your structure emphasizes both {{top1}} and {{top2}}. This often creates a tension between momentum and control: you want to move quickly, but also want things to be precise and right.",
+      "tension_one": "You tend to move forward through {{top1}}, but the {{weakest}}-related capacity for reflection, absorption, or regulation may not be as strong. You may move fast without fully processing as you go.",
+      "tension_balanced": "Your elemental profile is relatively balanced, without one overwhelmingly dominant force. The advantage is flexibility, but the tension is that in important moments, you may need to consciously choose how you want to act rather than relying on one natural default."
+    },
+    "mbti": {
+      "section": "MBTI Personality",
+      "identity": "{{type}}: {{nickname}}",
+      "key_insight": "One key insight",
+      "key_insight_text": "You work best when you can clarify the facts, then make a steady and practical decision.",
+      "chat_cta": "Start a conversation from this type",
+      "chat_prefill": "Based on my {{type}} personality, what should I pay attention to when making decisions?",
+      "deep_open": "See personality details ↓",
+      "deep_close": "Hide personality details ↑",
+      "explanation": "MBTI describes your preferences, not your limits. It helps reveal how you take in information, make decisions, and respond under pressure.",
+      "profile_text": "Your personality profile shows a strong {{profileCode}} structure, favoring stability, practicality, rationality, and controlled decision-making.",
+      "inner_tension": "Inner Tension",
+      "inner_tension_text": "You tend to rely on structure, standards, and certainty when making decisions, but reality is not always clear or controllable. This creates an inner tension between your desire for order and the need to navigate ambiguity and change.",
+      "dimension_breakdown": "Dimension Breakdown",
+      "impact": "What This Means",
+      "impact_text": "In daily life, you tend to perform best in environments with clear expectations and defined responsibilities, where your judgment and consistency can show up fully. In more uncertain situations, you may need to consciously relax the need to have the answer too early.",
+      "cross_link_text": "Want to see how your MBTI and BaZi combine to reveal your unique pattern?",
+      "cross_link": "See Profile Insight →",
+      "dimensions": {
+        "E": {
+          "label": "E (Extroversion)",
+          "meaning": "Tends to gain energy through interaction and external stimulation, with a more direct and outward style."
+        },
+        "I": {
+          "label": "I (Introversion)",
+          "meaning": "Tends to restore energy in quieter environments, valuing inner rhythm and depth of focus."
+        },
+        "S": {
+          "label": "S (Sensing)",
+          "meaning": "Starts from concrete facts, details, and lived experience rather than abstract assumptions."
+        },
+        "N": {
+          "label": "N (Intuition)",
+          "meaning": "Starts from patterns, context, and future possibilities, valuing direction and imagination."
+        },
+        "T": {
+          "label": "T (Thinking)",
+          "meaning": "Makes decisions through logic, consistency, and analysis rather than emotional tone itself."
+        },
+        "F": {
+          "label": "F (Feeling)",
+          "meaning": "Makes decisions through values, relational impact, and inner alignment."
+        },
+        "J": {
+          "label": "J (Judging)",
+          "meaning": "Prefers to create order early, make decisions sooner, and move within a manageable rhythm."
+        },
+        "P": {
+          "label": "P (Perceiving)",
+          "meaning": "Prefers openness and flexibility, adjusting as circumstances change."
+        }
+      },
+      "types": {
+        "INTJ": {
+          "nickname": "The Architect",
+          "traits": [
+            "Strategic",
+            "Independent",
+            "Visionary"
+          ]
+        },
+        "INTP": {
+          "nickname": "The Thinker",
+          "traits": [
+            "Analytical",
+            "Curious",
+            "Inventive"
+          ]
+        },
+        "ENTJ": {
+          "nickname": "The Commander",
+          "traits": [
+            "Bold",
+            "Decisive",
+            "Leader"
+          ]
+        },
+        "ENTP": {
+          "nickname": "The Debater",
+          "traits": [
+            "Quick-witted",
+            "Innovative",
+            "Charismatic"
+          ]
+        },
+        "INFJ": {
+          "nickname": "The Advocate",
+          "traits": [
+            "Empathetic",
+            "Principled",
+            "Visionary"
+          ]
+        },
+        "INFP": {
+          "nickname": "The Mediator",
+          "traits": [
+            "Creative",
+            "Empathetic",
+            "Idealistic"
+          ]
+        },
+        "ENFJ": {
+          "nickname": "The Protagonist",
+          "traits": [
+            "Inspiring",
+            "Empathetic",
+            "Leader"
+          ]
+        },
+        "ENFP": {
+          "nickname": "The Campaigner",
+          "traits": [
+            "Enthusiastic",
+            "Creative",
+            "Optimistic"
+          ]
+        },
+        "ISTJ": {
+          "nickname": "The Logistician",
+          "traits": [
+            "Reliable",
+            "Practical",
+            "Detail-oriented"
+          ]
+        },
+        "ISFJ": {
+          "nickname": "The Defender",
+          "traits": [
+            "Warm",
+            "Dedicated",
+            "Observant"
+          ]
+        },
+        "ESTJ": {
+          "nickname": "The Executive",
+          "traits": [
+            "Organised",
+            "Decisive",
+            "Loyal"
+          ]
+        },
+        "ESFJ": {
+          "nickname": "The Consul",
+          "traits": [
+            "Caring",
+            "Social",
+            "Loyal"
+          ]
+        },
+        "ISTP": {
+          "nickname": "The Virtuoso",
+          "traits": [
+            "Practical",
+            "Observant",
+            "Independent"
+          ]
+        },
+        "ISFP": {
+          "nickname": "The Adventurer",
+          "traits": [
+            "Artistic",
+            "Spontaneous",
+            "Empathetic"
+          ]
+        },
+        "ESTP": {
+          "nickname": "The Entrepreneur",
+          "traits": [
+            "Bold",
+            "Perceptive",
+            "Energetic"
+          ]
+        },
+        "ESFP": {
+          "nickname": "The Entertainer",
+          "traits": [
+            "Spontaneous",
+            "Energetic",
+            "Fun-loving"
+          ]
+        }
+      }
+    },
+    "insight": {
+      "title": "Your Profile Insight",
+      "analyzing": "Analyzing your pattern...",
+      "key_traits": "Key traits",
+      "key_insight": "One key insight",
+      "chat_cta": "Start a conversation from this reading",
+      "chat_prefill": "Based on my chart traits {{traits}}, what should I focus on right now?",
+      "deep_open": "✦ Deeper content ↓",
+      "deep_close": "Hide deeper content ↑",
+      "day_master": "☉ Core nature",
+      "decision_style": "◇ Decision style",
+      "career": "✧ Career direction",
+      "avoid_prefix": "Avoid for now: ",
+      "relationship": "☽ Relationship patterns",
+      "final_guidance": "Final guidance",
+      "locked_body": "Decision style, career direction, and relationship patterns are available in the full insight.",
+      "locked_cta": "Unlock full insight →"
+    }
+  },
+  "compare": {
+    "title": "Compatibility Analysis",
+    "body": "Coming soon — compare BaZi charts with friends to discover your cosmic compatibility.",
+    "cta": "Coming Soon"
+  },
+  "upgrade": {
+    "title": "See Your Real Pattern",
+    "unlock_title": "What You Unlock",
+    "benefits": [
+      "Full profile insight (BaZi + MBTI combined)",
+      "Your life patterns & key turning points",
+      "Unlimited AI guidance chat",
+      "Personalised direction & advice"
+    ],
+    "free_title": "If you stay Free",
+    "price_note": "per month · cancel anytime",
+    "cta": "Unlock Full Insight →",
+    "trust": "Secure payment · Cancel anytime · No commitment",
+    "back": "Back",
+    "hero_subtitle": "Your chart already reveals your direction — you just haven’t seen the full picture yet.",
+    "free_body": "You only see fragments — the deeper pattern stays hidden."
+  },
+  "onboarding": {
+    "transition": {
+      "skip": "Skip",
+      "messages": [
+        "PREPARING YOUR READING",
+        "Connecting your current focus with your personal pattern",
+        "Almost ready"
+      ]
+    },
+    "mbti": {
+      "submitting": "Reading your personality...",
+      "step_label": "{{current}} of {{total}}",
+      "intro": "Answer instinctively — your first reaction is usually the most accurate.",
+      "reveal": "Curious about your personality? Tap to reveal ✦",
+      "back": "back",
+      "question_step": "{{current}} of {{total}}",
+      "context_hook": "✦ This helps Oria understand how you naturally respond in real situations",
+      "first_question": "At a social gathering, what do you naturally do?"
+    },
+    "summary": {
+      "label": "✦ Your Personality Type",
+      "headline": "Your first pattern is visible",
+      "subheadline": "Your MBTI shows how you tend to decide, respond, and protect your energy.",
+      "teaser": "This is only the surface. There’s a deeper pattern behind how you make decisions and respond to pressure.",
+      "continue": "Reveal my deeper pattern →",
+      "footer": "Next: connect your personality pattern with your deeper timing.",
+      "cta_microcopy": "Takes less than 1 minute",
+      "preview_label": "✦ Deeper pattern preview"
+    },
+    "bazi": {
+      "error_birth_date": "Please select your birth date.",
+      "title": "Add the deeper layer",
+      "year": "Year",
+      "year_placeholder": "Year",
+      "month": "Month",
+      "month_placeholder": "M",
+      "day": "Day",
+      "day_placeholder": "D",
+      "gender": "Gender",
+      "male": "♂ Male",
+      "female": "♀ Female",
+      "time_known": "I know my exact birth time",
+      "hour": "Hour (0-23)",
+      "minute": "Minute",
+      "birth_location": "Birth Location",
+      "location_placeholder": "Search your birth city",
+      "timezone": "Timezone",
+      "body": "Your MBTI shows how you tend to act. BaZi helps reveal the timing, pressure, and natural pattern beneath it.",
+      "saving": "Reading your stars...",
+      "submit": "Reveal my full reading →",
+      "location_helper": "Search your birth city (e.g. Hong Kong, Tokyo)",
+      "location_required": "Please select your birth city from the list."
+    },
+    "result": {
+      "step": "Step 3 of 4",
+      "type_label": "Your personality type",
+      "bazi_title": "Your birth chart reveals even more",
+      "bazi_body": "Combine your MBTI with your BaZi birth chart for a complete cosmic profile — unique to you.",
+      "signup": "Sign up to understand yourself better →",
+      "retake": "Retake the quiz",
+      "free_note": "Free account · No credit card required",
+      "fallback_nickname": "Unique",
+      "fallback_tagline": "One of a kind."
+    },
+    "context": {
+      "step": "STEP 1 OF 4",
+      "title": "What are you navigating right now?",
+      "subtitle": "This helps Oria understand what you’re dealing with right now.",
+      "instruction": "Select all that apply",
+      "continue": "Continue →",
+      "skip": "Skip for now",
+      "back": "← Back",
+      "options": {
+        "career_change": "Career change",
+        "move_city_country": "Move to a new city/country",
+        "relationship_direction": "Relationship direction",
+        "work_life_balance": "Work-life balance",
+        "retirement_next_chapter": "Retirement / next chapter",
+        "personal_reinvention": "Personal reinvention",
+        "better_daily_decisions": "Better daily decisions"
+      }
+    }
+  },
+  "language_modal": {
+    "title_en": "Choose your language",
+    "title_zh": "選擇你的語言",
+    "body": "This sets the language for all your guidance and insights. You can change it later in Profile."
+  },
+  "profile_extra": {
+    "title": "Your Personal Profile",
+    "reset_body": "Updating BaZi will refresh your insights and reset related history.",
+    "saved": "Profile saved",
+    "year_placeholder": "Year",
+    "month_placeholder": "Month",
+    "day_placeholder": "Day",
+    "bazi_update_warning": "Updating BaZi will refresh your insights and reset related history.",
+    "mbti_type": "Your MBTI Type",
+    "mbti_help": "This result is from your MBTI quiz. You can manually change it, or retake the quiz for a more accurate result.",
+    "mbti_placeholder": "Choose your type...",
+    "mbti_update_warning": "Updating MBTI will refresh your personality-based insight.",
+    "view_chart": "Explore Your Full Chart →",
+    "personal_profile": "Your Personal Profile",
+    "fallback_name": "Your Profile",
+    "profile_saved": "Profile saved",
+    "updated_today": "Last updated today",
+    "bazi_helper": "Affects your daily guidance and long-term patterns.",
+    "update_birth_data": "Update Birth Data",
+    "mbti_helper": "Refines how Oria interprets your decisions.",
+    "update_personality_type": "Update Personality Type",
+    "preferences": "Preferences",
+    "interface_language": "Interface Language",
+    "account": "Account",
+    "signed_in_as": "Signed in as",
+    "about_oria": "About Oria",
+    "sign_out": "Sign Out",
+    "reflection_footer": "This is a reflection, not a prediction. You hold the decisions.",
+    "location_placeholder": "Search your birth city",
+    "location_helper": "Search your birth city (e.g. Hong Kong, Tokyo)",
+    "location_required": "Please select your birth city from the list."
+  },
+  "settings_extra": {
+    "change_language": "Change language",
+    "language_warning": "The interface language will update immediately. Already generated readings will stay in their original language; new readings will use the new language. Continue?",
+    "cancel": "Cancel",
+    "confirm": "Confirm change"
+  },
+  "generated_content": {
+    "label": "Generated in {{language}}"
   }
 }

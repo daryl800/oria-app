@@ -2,8 +2,7 @@ import { useTranslation } from 'react-i18next';
 import type { User } from '@supabase/supabase-js';
 
 export default function Compare({ user }: { user: User }) {
-  const { i18n } = useTranslation();
-  const isZH = i18n.language === 'zh-TW';
+  const { t } = useTranslation();
 
   return (
     <div style={{
@@ -14,22 +13,20 @@ export default function Compare({ user }: { user: User }) {
       <div>
         <div style={{ fontSize: 64, marginBottom: 24 }}>👥</div>
         <h2 style={{ fontSize: 24, fontWeight: 700, color: '#F0EDE8', marginBottom: 12 }}>
-          {isZH ? '相容性分析' : 'Compatibility Analysis'}
+          {t('compare.title')}
         </h2>
         <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, maxWidth: 320 }}>
-          {isZH
-            ? '即將推出 — 與朋友比較八字，發現你們的宇宙相容性。'
-            : 'Coming soon — compare BaZi charts with friends to discover your cosmic compatibility.'}
+          {t('compare.body')}
         </p>
         <div style={{
           marginTop: 24,
           display: 'inline-block',
-          background: 'rgba(192,132,252,0.15)',
-          border: '1px solid rgba(192,132,252,0.3)',
+          background: 'rgba(201,168,76,0.15)',
+          border: '1px solid rgba(201,168,76,0.3)',
           borderRadius: 20, padding: '6px 16px',
-          fontSize: 13, color: '#C084FC',
+          fontSize: 13, color: '#C9A84C',
         }}>
-          {isZH ? '敬請期待' : 'Coming Soon'}
+          {t('compare.cta')}
         </div>
       </div>
     </div>

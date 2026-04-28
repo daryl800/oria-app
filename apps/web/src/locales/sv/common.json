@@ -1,0 +1,661 @@
+{
+  "app_name": "Oria",
+  "tagline": "Ge dina val en knuff, utan att bestämma ditt öde.",
+  "disclaimer": "Detta är reflektion, inte en förutsägelse. Besluten är dina.",
+  "auth": {
+    "email_placeholder": "din@email.com",
+    "send_magic_link": "Skicka magisk länk",
+    "check_email": "Kontrollera din e-post för en magisk länk.",
+    "logged_in_as": "Inloggad som",
+    "user_id": "Användar-ID",
+    "sign_out": "Logga ut"
+  },
+  "nav": {
+    "daily": "Daglig kompass",
+    "chat": "Prata med Oria",
+    "profile": "Profil",
+    "settings": "Inställningar",
+    "chart": "Mitt diagram",
+    "compare": "Kompatibilitet",
+    "home": "Hem",
+    "people": "Relationsinsikter"
+  },
+  "daily": {
+    "title": "Daily Guidance",
+    "subtitle": "每日明燈",
+    "tone_label": "Today's Tone · 今日氣場",
+    "pace_label": "Today's pace",
+    "nudge_label": "✦ Today's Light · 明燈",
+    "helpful_label": "Helpful",
+    "cta": "Open Guidance Chat →",
+    "loading": "Läser dagens ljus...",
+    "error_no_profile": "Complete your profile first →",
+    "profile_incomplete": "Profilen är inte komplett",
+    "complete_profile": "Slutför profil",
+    "refresh": "Din vägledning uppdateras varje dag",
+    "rhythm": "Dagens rytm",
+    "guidance": "Dagens vägledning",
+    "lean_into": "Fokusera på",
+    "avoid": "Undvik just nu",
+    "reminder": "Dagens påminnelse",
+    "chat_prompt": "Vill du titta djupare?",
+    "chat_cta": "Prata med Oria",
+    "deep_open": "Expandera dagens vägledning ↓",
+    "deep_close": "Dölj dagens vägledning ↑",
+    "moment": "Dagens läge",
+    "color": "Dagens färg",
+    "deeper_reason": "Djupare orsak",
+    "upgrade_body": "Det finns en djupare orsak bakom det här mönstret.",
+    "upgrade_cta": "Lås upp full insikt ✦",
+    "chat_prefill": "Dagens vägledning säger \"{{text}}\". Hur ska jag arbeta med det?",
+    "pro_cta_title": "Vill du gå djupare?",
+    "pro_cta_subtext": "Klargör dagens riktning och nästa steg",
+    "locked_cta_title": "Vill du gå djupare?",
+    "locked_cta_subtext": "Se hela mönstret och vad du kan göra härnäst",
+    "locked_cta_button": "Lås upp full insikt ✦",
+    "color_micro_action": "Bra för det du bär eller har med dig idag",
+    "color_locked": "Låst",
+    "color_locked_teaser": "Se dagens färg och rytm",
+    "color_locked_microcopy": "Lås upp för att se dagens färg och rytm"
+  },
+  "chat": {
+    "title": "Vad tänker du på just nu?",
+    "empty_title": "Ask Oria anything",
+    "empty_subtitle": "Your BaZi and MBTI are your guide",
+    "try_asking": "✦ Try asking",
+    "placeholder": "Skriv vad du tänker på...",
+    "thinking": "Tänker...",
+    "history": "Historik",
+    "new": "Starta nytt samtal",
+    "previous_conversations": "Tidigare samtal",
+    "no_conversations": "Inga tidigare samtal ännu.",
+    "safety_response": "— Orias säkerhetssvar",
+    "subtitle": "Du behöver inte tänka för mycket. Börja var som helst.",
+    "untitled": "Namnlöst samtal",
+    "quick_label": "Börja här om det hjälper",
+    "quick_hint": "Tryck för att fylla i, redigera sedan",
+    "send": "Skicka meddelande",
+    "paywall_title": "Prata med Oria",
+    "paywall_body": "Uppgradera till Oria Plus för djupare, löpande personlig vägledning.",
+    "paywall_cta": "Uppgradera till Oria Plus ✦",
+    "quick_starts": [
+      {
+        "label": "Känner mig fast",
+        "value": "Jag känner mig fast och vet inte riktigt vad nästa steg är"
+      },
+      {
+        "label": "Nästa steg",
+        "value": "Jag vill se vilket nästa steg som passar just nu"
+      },
+      {
+        "label": "En sak",
+        "value": "Det finns en sak jag tänker på och vill reda ut"
+      },
+      {
+        "label": "Förstå mig själv",
+        "value": "Jag vill förstå mig själv lite bättre just nu"
+      },
+      {
+        "label": "Lite trött",
+        "value": "Jag känner mig lite trött och osäker på riktningen"
+      },
+      {
+        "label": "Fråga något",
+        "value": "Jag vill fråga något men vet inte riktigt hur jag ska formulera det"
+      }
+    ]
+  },
+  "profile": {
+    "title": "Min profil",
+    "bazi_title": "BaZi · Födelsedata",
+    "bazi_subtitle": "Fyra pelare",
+    "mbti_title": "MBTI · Personlighet",
+    "mbti_subtitle": "Myers-Briggs-typ",
+    "summary_title": "Profilsammanfattning",
+    "summary_subtitle": "AI-genererad från BaZi + MBTI",
+    "saved": "✓ Sparat",
+    "year": "År",
+    "month": "Månad",
+    "day": "Dag",
+    "hour": "Timme (0-23)",
+    "minute": "Minut",
+    "time_known": "Jag vet min exakta födelsetid",
+    "birth_location": "Födelseplats",
+    "timezone": "Tidszon",
+    "save_bazi": "Spara BaZi",
+    "update_bazi": "Uppdatera födelsedata",
+    "saving": "Sparar...",
+    "take_quiz": "✦ Gör MBTI-frågeformuläret →",
+    "select_type": "Eller välj din typ direkt",
+    "select_placeholder": "Välj din MBTI-typ",
+    "save_mbti": "Spara MBTI",
+    "update_mbti": "Uppdatera personlighetstyp",
+    "strengths": "✦ Styrkor",
+    "growth": "↑ Utveckling",
+    "generate_summary": "✦ Skapa min profilsammanfattning",
+    "generating": "Skapar din sammanfattning...",
+    "loading": "Laddar profil...",
+    "error_date": "Ange ditt födelsedatum.",
+    "error_mbti": "Välj din MBTI-typ.",
+    "reset_warning_title": "Uppdatera födelsedata?",
+    "reset_warning_body": "Att uppdatera dina födelsedata rensar alla samtal och daglig vägledning. Det gör att framtida vägledning speglar ditt diagram korrekt.",
+    "reset_cancel": "Avbryt",
+    "reset_confirm": "Ja, uppdatera"
+  },
+  "mbti": {
+    "title": "MBTI-frågeformulär",
+    "your_result": "Ditt resultat",
+    "your_type": "Din MBTI-typ",
+    "based_on": "Baserat på dina svar på 20 frågor",
+    "dimension_breakdown": "Dimensionsöversikt",
+    "continue": "Fortsätt till profil →",
+    "question_of": "Fråga {{current}} av {{total}}",
+    "answered": "{{count}} / {{total}} besvarade",
+    "get_type": "Hämta min MBTI-typ →",
+    "calculating": "Beräknar...",
+    "loading": "Laddar frågor...",
+    "error_incomplete": "Svara på alla frågor innan du skickar in.",
+    "previous": "← Föregående",
+    "next": "Nästa →",
+    "dimension": "dimension"
+  },
+  "settings": {
+    "title": "Inställningar",
+    "account": "Konto",
+    "language": "Språk",
+    "language_label": "Gränssnittsspråk",
+    "about_title": "Om Oria",
+    "about_body": "Oria kombinerar ditt BaZi-födelsediagram och din MBTI-personlighet för att erbjuda lugn, reflekterande vägledning. Den föreslår, men bestämmer aldrig.",
+    "about_quote": "Ett ljus på vägen — inte en karta, inte order. Bara klarhet.",
+    "sign_out": "Logga ut",
+    "coming_soon": "kommer snart"
+  },
+  "errors": {
+    "generic": "Något gick fel. Försök igen."
+  },
+  "home": {
+    "daily_desc": "Get personalised daily guidance based on your BaZi and MBTI",
+    "chat_desc": "Chat with your AI guide about career, relationships and health",
+    "chart_desc": "Explore your BaZi birth chart and MBTI personality profile",
+    "compare_desc": "Förstå dynamiken med någon viktig",
+    "headline": "Var vill du börja idag?",
+    "subtext": "Låt vägledningen visa vad som passar just nu.",
+    "primary": {
+      "label": "Daglig vägledning",
+      "title": "Se dagens energi och tempo, och följ det naturligt.",
+      "subtext": "",
+      "cta": "Starta dagens vägledning"
+    },
+    "chat": {
+      "label": "Direkt samtal",
+      "title": "Klargör dina tankar och gör beslut enklare.",
+      "subtitle": ""
+    },
+    "chart": {
+      "label": "Min karta",
+      "title": "Förstå dina djupare mönster och gör dina bedömningar tydligare.",
+      "subtitle": ""
+    },
+    "compare": {
+      "label": "Relationsinsikter",
+      "title": "Förstå varandra och gör samspelet mer naturligt.",
+      "subtitle": ""
+    },
+    "footer": "Oria Compass · Fokuserad vägledning"
+  },
+  "page_taglines": {
+    "chat": "Detta är reflektion, inte förutsägelse. Valet är ditt.",
+    "chart": "Detta är inte en etikett, utan hur du fungerar.",
+    "relationship": "Detta är inte matchning, utan att förstå hur ni relaterar."
+  },
+  "common": {
+    "oria": "Oria",
+    "oria_compass": "Oria Compass",
+    "back": "Tillbaka",
+    "loading": "Laddar...",
+    "unknown": "Okänt"
+  },
+  "landing": {
+    "kicker": "Oria Compass",
+    "headline": "Dina styrkor syns i din BaZi\nDin personlighet speglas i MBTI",
+    "subtitle": "En snabb personlig läsning av ditt nuläge — och nästa steg som faktiskt passar dig.",
+    "result": "Tar cirka 60 sekunder • Ingen bindning",
+    "primary_cta": "Få min 1-minutsinsikt →",
+    "signin": "Har du redan konto? Logga in",
+    "lead": "Det som formar ditt nästa steg\när inte bara det ena",
+    "emphasis": "utan kombinationen av båda",
+    "method": "Österländsk metafysik × Västerländsk psykologi",
+    "disclaimer": "Den här appen kombinerar BaZi och MBTI-baserade personlighetsperspektiv som stöd för självutforskning.\nInnehållet är endast för inspiration och underhållning, inte professionell rådgivning."
+  },
+  "login": {
+    "title_signin": "Välkommen tillbaka",
+    "title_signup": "Skapa konto",
+    "google_signin": "Logga in med Google",
+    "google_signup": "Registrera med Google",
+    "google_loading": "Loggar in...",
+    "divider": "eller",
+    "email_placeholder": "E-post",
+    "password_placeholder": "Lösenord",
+    "submit_signin": "Logga in",
+    "submit_signup": "Registrera",
+    "processing": "Bearbetar...",
+    "secure": "Säkert och privat",
+    "switch_to_signin_prefix": "Har du redan konto?",
+    "switch_to_signup_prefix": "Har du inget konto?",
+    "signin_link": "Logga in",
+    "signup_link": "Registrera",
+    "back": "Tillbaka",
+    "error_google": "Inloggningen misslyckades. Försök igen.",
+    "error_required": "Ange e-post och lösenord.",
+    "error_password": "Lösenordet måste vara minst 6 tecken.",
+    "error_invalid": "Fel e-post eller lösenord.",
+    "unlock_title": "Din fulla läsning är klar",
+    "unlock_subtitle": "Logga in för att se din kompletta Oria-läsning och spara den.",
+    "google_unlock": "Fortsätt med Google",
+    "submit_unlock": "Logga in för att se mitt resultat"
+  },
+  "chart": {
+    "header": "Mitt diagram",
+    "tabs": {
+      "bazi": "🪬 BaZi-diagram",
+      "mbti": "🧠 MBTI-typ",
+      "insight": "✦ Insikt"
+    },
+    "loading": "Laddar ditt diagram...",
+    "bazi": {
+      "section": "Fyra pelare",
+      "explanation": "Ditt BaZi-diagram formas av fyra pelare: år, månad, dag och timme. Dagstammen, din Day Master, är diagrammets kärna.",
+      "pillars": {
+        "year": "År",
+        "month": "Månad",
+        "day": "Dag",
+        "hour": "Timme"
+      },
+      "day_master": "Day Master",
+      "core_pattern": "Kärnmönster",
+      "core_text": "Din Day Master är {{dayMaster}}, vilket tyder på en naturligt starkare riktning mot handling, omdöme och hur du möter världen.",
+      "chat_cta": "Starta samtal från Fyra pelare",
+      "chat_prefill": "Utifrån mitt Fyra pelare-diagram och Day Master \"{{dayMaster}}\", vad bör jag vara mest uppmärksam på just nu?",
+      "deep_open": "Se detaljer för Fyra pelare ↓",
+      "deep_close": "Dölj detaljer för Fyra pelare ↑",
+      "five_elements": "Fem element",
+      "inner_tension": "Inre spänning",
+      "levels": {
+        "dominant": "Dominerande",
+        "strong": "Stark",
+        "moderate": "Måttlig",
+        "weak": "Svag"
+      },
+      "meanings": {
+        "Fire": "Driv, uttryck och utåtriktad energi",
+        "Metal": "Urskiljning, gränser och principer",
+        "Wood": "Tillväxt, utvidgning och inre utveckling",
+        "Earth": "Förankring, stabilitet och stöd",
+        "Water": "Reflektion, inre flöde och anpassning"
+      },
+      "tension_terms": {
+        "Fire": "driv och framåtrörelse",
+        "Metal": "omdöme och beslutsamhet",
+        "Wood": "tillväxt och expansion",
+        "Earth": "stabilitet och förankring",
+        "Water": "reflektion och inre reglering"
+      },
+      "element_summary": "Din elementstruktur leds av {{topElement}}, vilket visar naturlig styrka i {{topTerm}}, medan {{weakestElement}} är svagare och kan behöva mer medveten balans.",
+      "tension_two": "Din struktur betonar både {{top1}} och {{top2}}. Det skapar ofta spänning mellan fart och kontroll: du vill röra dig snabbt men också göra saker precist och rätt.",
+      "tension_one": "Du tenderar att gå framåt genom {{top1}}, men kapaciteten kopplad till {{weakest}} för reflektion, upptag eller reglering kan vara mindre stark. Du kan röra dig snabbt utan att hinna bearbeta allt.",
+      "tension_balanced": "Din elementprofil är relativt balanserad, utan en överväldigande dominerande kraft. Fördelen är flexibilitet, men i viktiga ögonblick kan du behöva välja mer medvetet hur du vill agera."
+    },
+    "mbti": {
+      "section": "MBTI-personlighet",
+      "identity": "{{type}}: {{nickname}}",
+      "key_insight": "En viktig insikt",
+      "key_insight_text": "Du fungerar bäst när du kan reda ut fakta och sedan fatta ett stabilt, praktiskt beslut.",
+      "chat_cta": "Starta samtal från den här typen",
+      "chat_prefill": "Utifrån min {{type}}-personlighet, vad bör jag tänka på när jag fattar beslut?",
+      "deep_open": "Se personlighetsdetaljer ↓",
+      "deep_close": "Dölj personlighetsdetaljer ↑",
+      "explanation": "MBTI beskriver dina preferenser, inte dina gränser. Det hjälper dig se hur du tar in information, fattar beslut och reagerar under press.",
+      "profile_text": "Din personlighetsprofil visar en tydlig \"{{profileCode}}\"-struktur med fokus på stabilitet, praktiskhet, rationalitet och kontrollerade beslut.",
+      "inner_tension": "Inre spänning",
+      "inner_tension_text": "Du tenderar att luta dig mot struktur, standarder och säkerhet när du fattar beslut, men verkligheten är inte alltid tydlig eller kontrollerbar. Det skapar en spänning mellan ordning och behovet att hantera osäkerhet.",
+      "dimension_breakdown": "Dimensionsöversikt",
+      "impact": "Vad det betyder",
+      "impact_text": "I vardagen fungerar du ofta bäst i miljöer med tydliga förväntningar och definierat ansvar. I mer osäkra lägen kan du behöva släppa kravet på att ha svaret för tidigt.",
+      "cross_link_text": "Vill du se hur MBTI och BaZi kombineras för att visa ditt unika mönster?",
+      "cross_link": "Se profilinsikt →",
+      "dimensions": {
+        "E": {
+          "label": "E (Extraversion)",
+          "meaning": "Får ofta energi genom interaktion och yttre stimulans, med en mer direkt och utåtriktad stil."
+        },
+        "I": {
+          "label": "I (Introversion)",
+          "meaning": "Återhämtar ofta energi i lugnare miljöer och värdesätter inre rytm och djup fokusering."
+        },
+        "S": {
+          "label": "S (Sensing)",
+          "meaning": "Utgår från konkreta fakta, detaljer och erfarenhet snarare än abstrakta antaganden."
+        },
+        "N": {
+          "label": "N (Intuition)",
+          "meaning": "Utgår från mönster, sammanhang och framtida möjligheter."
+        },
+        "T": {
+          "label": "T (Thinking)",
+          "meaning": "Fattar beslut genom logik, konsekvens och analys snarare än känsloton."
+        },
+        "F": {
+          "label": "F (Feeling)",
+          "meaning": "Fattar beslut genom värderingar, relationell påverkan och inre samklang."
+        },
+        "J": {
+          "label": "J (Judging)",
+          "meaning": "Föredrar att skapa ordning tidigt, fatta beslut snabbare och röra sig i en hanterbar rytm."
+        },
+        "P": {
+          "label": "P (Perceiving)",
+          "meaning": "Föredrar öppenhet och flexibilitet och anpassar sig när omständigheter förändras."
+        }
+      },
+      "types": {
+        "INTJ": {
+          "nickname": "The Architect",
+          "traits": [
+            "Strategic",
+            "Independent",
+            "Visionary"
+          ]
+        },
+        "INTP": {
+          "nickname": "The Thinker",
+          "traits": [
+            "Analytical",
+            "Curious",
+            "Inventive"
+          ]
+        },
+        "ENTJ": {
+          "nickname": "The Commander",
+          "traits": [
+            "Bold",
+            "Decisive",
+            "Leader"
+          ]
+        },
+        "ENTP": {
+          "nickname": "The Debater",
+          "traits": [
+            "Quick-witted",
+            "Innovative",
+            "Charismatic"
+          ]
+        },
+        "INFJ": {
+          "nickname": "The Advocate",
+          "traits": [
+            "Empathetic",
+            "Principled",
+            "Visionary"
+          ]
+        },
+        "INFP": {
+          "nickname": "The Mediator",
+          "traits": [
+            "Creative",
+            "Empathetic",
+            "Idealistic"
+          ]
+        },
+        "ENFJ": {
+          "nickname": "The Protagonist",
+          "traits": [
+            "Inspiring",
+            "Empathetic",
+            "Leader"
+          ]
+        },
+        "ENFP": {
+          "nickname": "The Campaigner",
+          "traits": [
+            "Enthusiastic",
+            "Creative",
+            "Optimistic"
+          ]
+        },
+        "ISTJ": {
+          "nickname": "The Logistician",
+          "traits": [
+            "Reliable",
+            "Practical",
+            "Detail-oriented"
+          ]
+        },
+        "ISFJ": {
+          "nickname": "The Defender",
+          "traits": [
+            "Warm",
+            "Dedicated",
+            "Observant"
+          ]
+        },
+        "ESTJ": {
+          "nickname": "The Executive",
+          "traits": [
+            "Organised",
+            "Decisive",
+            "Loyal"
+          ]
+        },
+        "ESFJ": {
+          "nickname": "The Consul",
+          "traits": [
+            "Caring",
+            "Social",
+            "Loyal"
+          ]
+        },
+        "ISTP": {
+          "nickname": "The Virtuoso",
+          "traits": [
+            "Practical",
+            "Observant",
+            "Independent"
+          ]
+        },
+        "ISFP": {
+          "nickname": "The Adventurer",
+          "traits": [
+            "Artistic",
+            "Spontaneous",
+            "Empathetic"
+          ]
+        },
+        "ESTP": {
+          "nickname": "The Entrepreneur",
+          "traits": [
+            "Bold",
+            "Perceptive",
+            "Energetic"
+          ]
+        },
+        "ESFP": {
+          "nickname": "The Entertainer",
+          "traits": [
+            "Spontaneous",
+            "Energetic",
+            "Fun-loving"
+          ]
+        }
+      }
+    },
+    "insight": {
+      "title": "Din profilinsikt",
+      "analyzing": "Analyserar ditt mönster...",
+      "key_traits": "Viktiga drag",
+      "key_insight": "En viktig insikt",
+      "chat_cta": "Starta samtal från den här läsningen",
+      "chat_prefill": "Utifrån mina diagramdrag \"{{traits}}\", vad bör jag fokusera på just nu?",
+      "deep_open": "✦ Djupare innehåll ↓",
+      "deep_close": "Dölj djupare innehåll ↑",
+      "day_master": "☉ Kärnnatur",
+      "decision_style": "◇ Beslutsstil",
+      "career": "✧ Karriärriktning",
+      "avoid_prefix": "Undvik just nu: ",
+      "relationship": "☽ Relationsmönster",
+      "final_guidance": "Slutlig vägledning",
+      "locked_body": "Beslutsstil, karriärriktning och relationsmönster finns i den fullständiga insikten.",
+      "locked_cta": "Lås upp full insikt →"
+    }
+  },
+  "compare": {
+    "title": "Kompatibilitetsanalys",
+    "body": "Kommer snart — jämför BaZi-diagram med vänner för att upptäcka er kompatibilitet.",
+    "cta": "Kommer snart"
+  },
+  "upgrade": {
+    "title": "Se ditt verkliga mönster",
+    "unlock_title": "Vad du låser upp",
+    "benefits": [
+      "Full profilinsikt (BaZi + MBTI kombinerat)",
+      "Dina livsmönster och viktiga vändpunkter",
+      "Obegränsad AI-vägledningschatt",
+      "Personlig riktning och råd"
+    ],
+    "free_title": "Om du stannar på gratisnivån",
+    "price_note": "per månad · avsluta när som helst",
+    "cta": "Lås upp full insikt →",
+    "trust": "Säker betalning · Avsluta när som helst · Ingen bindning",
+    "back": "Tillbaka",
+    "hero_subtitle": "Ditt diagram visar redan riktningen — du har bara inte sett hela bilden än.",
+    "free_body": "Du ser bara fragment — det djupare mönstret förblir dolt."
+  },
+  "onboarding": {
+    "transition": {
+      "skip": "Hoppa över",
+      "messages": [
+        "FÖRBEREDER DIN LÄSNING",
+        "Kopplar ditt nuvarande fokus till ditt personliga mönster",
+        "Nästan klart"
+      ]
+    },
+    "mbti": {
+      "submitting": "Läser din personlighet...",
+      "step_label": "{{current}} av {{total}}",
+      "intro": "Svara instinktivt — din första reaktion är oftast mest träffsäker.",
+      "reveal": "Nyfiken på din personlighetsanalys? Tryck för att visa ✦",
+      "back": "tillbaka",
+      "question_step": "{{current}} av {{total}}",
+      "context_hook": "✦ Det hjälper Oria att förstå hur du naturligt reagerar i verkliga situationer",
+      "first_question": "På en social tillställning, vad gör du naturligt?"
+    },
+    "summary": {
+      "label": "✦ Din personlighetstyp",
+      "teaser": "Det här är bara ytan. Det finns ett djupare mönster bakom hur du fattar beslut och reagerar på press.",
+      "continue": "Visa mitt djupare mönster →",
+      "footer": "Nästa steg: koppla ditt personlighetsmönster till din djupare timing.",
+      "headline": "Ditt första mönster syns nu",
+      "subheadline": "MBTI visar hur du tenderar att besluta, reagera och skydda din energi.",
+      "cta_microcopy": "Tar mindre än 1 minut",
+      "preview_label": "✦ Förhandsvisning av djupare mönster"
+    },
+    "bazi": {
+      "error_birth_date": "Välj ditt födelsedatum.",
+      "title": "Lägg till det djupare lagret",
+      "year": "År",
+      "year_placeholder": "År",
+      "month": "Månad",
+      "month_placeholder": "M",
+      "day": "Dag",
+      "day_placeholder": "D",
+      "gender": "Kön",
+      "male": "♂ Man",
+      "female": "♀ Kvinna",
+      "time_known": "Jag vet min exakta födelsetid",
+      "hour": "Timme (0-23)",
+      "minute": "Minut",
+      "birth_location": "Födelseplats",
+      "location_placeholder": "Sök födelsestad",
+      "timezone": "Tidszon",
+      "body": "Din MBTI visar hur du tenderar att agera. BaZi hjälper till att avslöja timing, press och det naturliga mönstret under.",
+      "saving": "Läser dina stjärnor...",
+      "submit": "Visa min fulla läsning →",
+      "location_helper": "Sök din födelsestad (t.ex. Hongkong, Tokyo)",
+      "location_required": "Välj din födelsestad från listan."
+    },
+    "result": {
+      "step": "Steg 3 av 4",
+      "type_label": "Din personlighetstyp",
+      "bazi_title": "Ditt födelsediagram visar mer",
+      "bazi_body": "Kombinera din MBTI med ditt BaZi-diagram för en komplett kosmisk profil — unik för dig.",
+      "signup": "Registrera dig för att förstå dig själv bättre →",
+      "retake": "Gör om testet",
+      "free_note": "Gratis konto · Inget kreditkort krävs",
+      "fallback_nickname": "Unik",
+      "fallback_tagline": "En av sitt slag."
+    },
+    "context": {
+      "step": "STEG 1 AV 4",
+      "title": "Vad navigerar du just nu?",
+      "subtitle": "Det hjälper Oria att förstå vad du hanterar just nu.",
+      "instruction": "Välj allt som stämmer",
+      "continue": "Fortsätt →",
+      "skip": "Hoppa över nu",
+      "back": "← Tillbaka",
+      "options": {
+        "career_change": "Karriärbyte",
+        "move_city_country": "Flytt till ny stad/land",
+        "relationship_direction": "Relationsriktning",
+        "work_life_balance": "Balans mellan arbete och liv",
+        "retirement_next_chapter": "Pension / nästa kapitel",
+        "personal_reinvention": "Personlig nystart",
+        "better_daily_decisions": "Bättre dagliga beslut"
+      }
+    }
+  },
+  "language_modal": {
+    "title_en": "Choose your language",
+    "title_zh": "選擇你的語言",
+    "body": "Detta anger språk för all vägledning och alla insikter. Du kan ändra det senare i Profil."
+  },
+  "profile_extra": {
+    "title": "Din personliga profil",
+    "reset_body": "När du uppdaterar BaZi uppdateras dina insikter och relaterad historik återställs.",
+    "saved": "Profil sparad",
+    "year_placeholder": "År",
+    "month_placeholder": "Månad",
+    "day_placeholder": "Dag",
+    "bazi_update_warning": "När du uppdaterar BaZi uppdateras dina insikter och relaterad historik återställs.",
+    "mbti_type": "Din MBTI-typ",
+    "mbti_help": "Det här resultatet kommer från ditt MBTI-test. Du kan ändra det manuellt eller göra om testet för ett mer exakt resultat.",
+    "mbti_placeholder": "Välj din typ...",
+    "mbti_update_warning": "När du uppdaterar MBTI uppdateras din personlighetsbaserade insikt.",
+    "view_chart": "Utforska hela din chart →",
+    "personal_profile": "Din personliga profil",
+    "fallback_name": "Din profil",
+    "profile_saved": "Profil sparad",
+    "updated_today": "Uppdaterad idag",
+    "bazi_helper": "Påverkar din dagliga vägledning och dina långsiktiga mönster.",
+    "update_birth_data": "Uppdatera födelsedata",
+    "mbti_helper": "Hjälper Oria att tolka hur du fattar beslut.",
+    "update_personality_type": "Uppdatera personlighetstyp",
+    "preferences": "Inställningar",
+    "interface_language": "Gränssnittsspråk",
+    "account": "Konto",
+    "signed_in_as": "Inloggad som",
+    "about_oria": "Om Oria",
+    "sign_out": "Logga ut",
+    "reflection_footer": "Detta är en reflektion, inte en förutsägelse. Det är du som fattar besluten.",
+    "location_placeholder": "Sök födelsestad",
+    "location_helper": "Sök din födelsestad (t.ex. Hongkong, Tokyo)",
+    "location_required": "Välj din födelsestad från listan."
+  },
+  "settings_extra": {
+    "change_language": "Byt språk",
+    "language_warning": "Gränssnittets språk uppdateras direkt. Redan genererade läsningar behåller sitt ursprungliga språk; nya läsningar använder det nya språket. Fortsätta?",
+    "cancel": "Avbryt",
+    "confirm": "Bekräfta ändring"
+  },
+  "generated_content": {
+    "label": "Genererad på {{language}}"
+  }
+}

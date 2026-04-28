@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { transferTempOnboarding } from '../services/api';
+import OriaLogo from '../components/OriaLogo';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ export default function AuthCallback() {
       alignItems: 'center', justifyContent: 'center',
       flexDirection: 'column', gap: 16,
     }}>
-      <div style={{ fontSize: 48, color: '#C084FC', animation: 'breathe 2s infinite' }}>✦</div>
+      <OriaLogo className="oria-loading-logo animate-breathe" size={72} />
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15 }}>{status}</p>
     </div>
   );
