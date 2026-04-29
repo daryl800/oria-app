@@ -1,8 +1,9 @@
 // TopBar.tsx
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { User } from '@supabase/supabase-js';
-import { Globe2, UserRound } from 'lucide-react';
+import { UserRound } from 'lucide-react';
 import '../styles/theme.css';
 import { SUPPORTED_LANGUAGES } from '../lib/languages';
 import OriaLogo from './OriaLogo';
@@ -27,13 +28,27 @@ export default function TopBar({ user, isPro = false }: TopBarProps) {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const isLoggedIn = !!user;
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const languageMenuRef = useRef<HTMLDivElement | null>(null);
+  const selectedLanguage = LANGUAGES.find(lang => lang.code === i18n.language) || LANGUAGES[0];
 
-  function handleLanguageChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const code = e.target.value;
+  useEffect(() => {
+    function handlePointerDown(event: PointerEvent) {
+      if (!languageMenuRef.current?.contains(event.target as Node)) {
+        setLanguageOpen(false);
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, []);
+
+  function handleLanguageSelect(code: string) {
     const lang = LANGUAGES.find(l => l.code === code);
     if (lang) {
       i18n.changeLanguage(code);
       localStorage.setItem('oria_language', code);
+      setLanguageOpen(false);
     }
   }
 
@@ -49,7 +64,7 @@ export default function TopBar({ user, isPro = false }: TopBarProps) {
               <OriaLogo size={42} />
             </span>
             <span className="oria-topbar-wordmark">
-              <span className="oria-card-label" style={{ margin: 0, fontSize: 15, lineHeight: 1 }}>Oria</span>
+              <span className="oria-card-label oria-brand-text" style={{ margin: 0, fontSize: 18, lineHeight: 1 }}>oria</span>
             </span>
           </button>
 
@@ -69,23 +84,35 @@ export default function TopBar({ user, isPro = false }: TopBarProps) {
 
           <div className="oria-topbar-actions">
             {!isLoggedIn && (
-              <div className="oria-language-select-wrap">
-                <span><Globe2 size={14} strokeWidth={2} /></span>
-                <select
-                  value={i18n.language}
-                  onChange={handleLanguageChange}
-                  className="oria-language-select"
+              <div className="oria-language-select-wrap" ref={languageMenuRef}>
+                <button
+                  type="button"
+                  className="oria-language-trigger"
+                  onClick={() => setLanguageOpen(open => !open)}
+                  aria-haspopup="listbox"
+                  aria-expanded={languageOpen}
                 >
-                  {LANGUAGES.map(lang => (
-                    <option
-                      key={lang.code}
-                      value={lang.code}
-                      style={{ background: '#0b1226', color: '#fff' }}
-                    >
-                      {lang.flag} {lang.shortLabel}
-                    </option>
-                  ))}
-                </select>
+                  <span className="oria-language-trigger-flag">{selectedLanguage.flag}</span>
+                  <span className="oria-language-trigger-label">{selectedLanguage.shortLabel}</span>
+                </button>
+
+                {languageOpen && (
+                  <div className="oria-language-menu" role="listbox">
+                    {LANGUAGES.map(lang => (
+                      <button
+                        key={lang.code}
+                        type="button"
+                        role="option"
+                        aria-selected={lang.code === selectedLanguage.code}
+                        className={`oria-language-option ${lang.code === selectedLanguage.code ? 'active' : ''}`}
+                        onClick={() => handleLanguageSelect(lang.code)}
+                      >
+                        <span className="oria-language-option-flag">{lang.flag}</span>
+                        <span>{lang.shortLabel}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

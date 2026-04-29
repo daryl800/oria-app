@@ -5,11 +5,7 @@ export default function Compare({ user }: { user: User }) {
   const { t } = useTranslation();
 
   return (
-    <div style={{
-      minHeight: '100vh', display: 'flex',
-      alignItems: 'center', justifyContent: 'center',
-      padding: '0 24px', textAlign: 'center',
-    }}>
+    <div className="oria-page oria-page-center" style={{ textAlign: 'center' }}>
       <div>
         <div style={{ fontSize: 64, marginBottom: 24 }}>👥</div>
         <h2 style={{ fontSize: 24, fontWeight: 700, color: '#F0EDE8', marginBottom: 12 }}>

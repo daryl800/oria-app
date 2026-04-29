@@ -6,6 +6,11 @@ import { profileSummaryPrompt } from '../lib/prompts';
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
 
+function isPlusUser(userRecord: any): boolean {
+  const plan = String(userRecord?.plan ?? '').toLowerCase();
+  return plan === 'plus';
+}
+
 // analysis service uses 'cn' not 'zh-TW'
 function toAnalysisLang(lang: string): string {
   return lang === 'zh-TW' ? 'cn' : 'en';
@@ -45,8 +50,7 @@ router.get('/me', async (req: Request, res: Response) => {
       .eq('id', userId)
       .single();
 
-    const isPro = userRecord?.plan === 'plus' &&
-      (!userRecord?.pro_expires_at || new Date(userRecord.pro_expires_at) > new Date());
+    const isPro = isPlusUser(userRecord);
 
     return res.json({ profile, bazi, mbti, plan: userRecord?.plan ?? 'free', isPro });
   } catch (err: any) {
@@ -198,6 +202,7 @@ router.post('/summary', async (req: Request, res: Response) => {
       { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength, year_pillar: bazi.year_pillar, month_pillar: bazi.month_pillar, day_pillar: bazi.day_pillar, hour_pillar: bazi.hour_pillar, birth_date: bazi.birth_date, dayun: bazi.dayun },
       mbtiProfile,
       lang,
+      mbti.context_focus ?? [],
     );
     const raw = await complete(messages);
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();

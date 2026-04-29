@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { addPerson } from '../services/api';
 
 const MBTI_TYPES = [
@@ -32,6 +33,7 @@ interface FormData {
 
 export default function AddPerson() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [form, setForm] = useState<FormData>({
     name: '',
     relationship: '',
@@ -84,7 +86,7 @@ export default function AddPerson() {
       if (err.response?.status === 402) {
         setError(
           err.response.data?.message ??
-            'Free accounts can save one person. Upgrade to Oria Pro to add more.'
+            'Free accounts can save one person. Upgrade to oria Plus to add more.'
         );
       } else {
         setError('Something went wrong. Please try again.');
@@ -95,15 +97,16 @@ export default function AddPerson() {
   };
 
   return (
-    <div className="oria-page add-person-page animate-fade-in">
-      <div className="add-person-header">
-        <button className="back-btn" onClick={() => navigate('/relationship-insights')}>
+    <div className="oria-page oria-container add-person-page animate-fade-in">
+      <div className="oria-page-header add-person-header">
+        <button className="oria-btn-outline add-person-back" onClick={() => navigate('/relationship-insights')}>
           ← Back
         </button>
-        <h1>Add person</h1>
+        <div className="oria-card-label">{t('nav.people')}</div>
+        <h1 className="oria-page-title">Add person</h1>
       </div>
 
-      <div className="add-person-form">
+      <div className="oria-card oria-card-elevated add-person-form">
         {/* Name */}
         <div className="form-field">
           <label htmlFor="name">Name</label>
@@ -111,6 +114,7 @@ export default function AddPerson() {
             id="name"
             name="name"
             type="text"
+            className="oria-input"
             placeholder="e.g. Alex"
             value={form.name}
             onChange={handleChange}
@@ -124,6 +128,7 @@ export default function AddPerson() {
           <select
             id="relationship"
             name="relationship"
+            className="oria-input"
             value={form.relationship}
             onChange={handleChange}
           >
@@ -145,6 +150,7 @@ export default function AddPerson() {
             id="birth_date"
             name="birth_date"
             type="date"
+            className="oria-input"
             value={form.birth_date}
             onChange={handleChange}
           />
@@ -159,6 +165,7 @@ export default function AddPerson() {
             id="birth_time"
             name="birth_time"
             type="time"
+            className="oria-input"
             value={form.birth_time}
             onChange={handleChange}
           />
@@ -173,6 +180,7 @@ export default function AddPerson() {
             id="birth_location"
             name="birth_location"
             type="text"
+            className="oria-input"
             placeholder="e.g. Hong Kong"
             value={form.birth_location}
             onChange={handleChange}
@@ -186,6 +194,7 @@ export default function AddPerson() {
           <select
             id="mbti_type"
             name="mbti_type"
+            className="oria-input"
             value={form.mbti_type}
             onChange={handleChange}
           >
@@ -209,7 +218,7 @@ export default function AddPerson() {
         )}
 
         <button
-          className="btn-submit"
+          className="oria-btn-primary btn-submit"
           onClick={handleSubmit}
           disabled={submitting}
         >
@@ -221,52 +230,27 @@ export default function AddPerson() {
         .add-person-page {
           width: min(760px, 100%);
           margin: 0 auto;
-          padding: 0 24px calc(var(--oria-nav-height) + 32px);
         }
 
         .add-person-header {
           display: grid;
-          gap: 18px;
-          margin-bottom: 24px;
+          gap: 12px;
         }
 
-        .back-btn {
+        .add-person-back {
           width: fit-content;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid var(--oria-border);
-          border-radius: var(--oria-radius-pill);
-          color: var(--oria-text-dim);
-          cursor: pointer;
-          padding: 10px 16px;
+          justify-self: start;
+          min-height: 40px;
+          padding: 9px 15px;
           font-size: 14px;
-          font-weight: 700;
-        }
-
-        .back-btn:hover {
-          border-color: var(--oria-border-strong);
-          color: var(--oria-text);
-        }
-
-        .add-person-header h1 {
-          font-family: var(--oria-serif);
-          font-size: clamp(2rem, 4vw, 3rem);
-          font-weight: 600;
-          letter-spacing: -0.035em;
-          line-height: 1.04;
-          margin: 0;
-          color: var(--oria-text);
+          margin-bottom: 6px;
         }
 
         .add-person-form {
           display: grid;
           gap: 18px;
-          background:
-            linear-gradient(180deg, rgba(31, 12, 58, 0.90), rgba(17, 6, 34, 0.88)),
-            rgba(24, 8, 45, 0.78);
-          border: 1px solid var(--oria-border);
-          border-radius: var(--oria-radius-lg);
-          box-shadow: var(--oria-card-shadow);
           padding: 30px;
+          margin-bottom: 0;
         }
 
         .form-field {
@@ -293,16 +277,6 @@ export default function AddPerson() {
 
         .form-field input,
         .form-field select {
-          width: 100%;
-          min-height: 56px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(162, 180, 255, 0.18);
-          border-radius: var(--oria-radius-md);
-          padding: 16px 18px;
-          font-size: 16px;
-          color: var(--oria-text);
-          box-sizing: border-box;
-          outline: none;
           -webkit-appearance: none;
           appearance: none;
         }
@@ -317,7 +291,6 @@ export default function AddPerson() {
 
         .form-field input:focus,
         .form-field select:focus {
-          background: rgba(255, 255, 255, 0.06);
           border-color: rgba(201, 168, 76, 0.34);
         }
 
@@ -345,30 +318,7 @@ export default function AddPerson() {
         }
 
         .btn-submit {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 56px;
-          background: linear-gradient(135deg, #C9A84C 0%, #E7D59A 100%);
-          color: #16120A;
-          border: none;
-          border-radius: var(--oria-radius-pill);
-          padding: 16px 24px;
-          font-size: 16px;
-          font-weight: 800;
-          cursor: pointer;
           margin-top: 8px;
-          box-shadow: 0 18px 38px rgba(201, 168, 76, 0.32);
-        }
-
-        .btn-submit:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 0 22px 46px rgba(201, 168, 76, 0.40);
-        }
-
-        .btn-submit:disabled {
-          opacity: 0.64;
-          cursor: not-allowed;
         }
 
         @media (max-width: 720px) {

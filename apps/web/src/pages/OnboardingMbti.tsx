@@ -80,20 +80,13 @@ export default function OnboardingMbti() {
   }
 
   if (loading) return (
-    <div style={{
-      minHeight: '100vh', display: 'flex',
-      alignItems: 'center', justifyContent: 'center',
-    }}>
+    <div className="oria-page oria-page-center">
       <div style={{ fontSize: 48, color: '#C9A84C' }}>☽</div>
     </div>
   );
 
   if (submitting) return (
-    <div style={{
-      minHeight: '100vh', display: 'flex',
-      alignItems: 'center', justifyContent: 'center',
-      flexDirection: 'column', gap: 20,
-    }}>
+    <div className="oria-page oria-page-center" style={{ gap: 20 }}>
       <div style={{ fontSize: 48, color: '#C9A84C', animation: 'breathe 1.5s ease-in-out infinite' }}>✦</div>
       <p style={{ fontSize: 18, color: '#C9A84C', fontStyle: 'italic', letterSpacing: 1 }}>
         {t('onboarding.mbti.submitting')}
@@ -104,7 +97,7 @@ export default function OnboardingMbti() {
 
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="oria-page oria-page-fill" style={{ display: 'flex', flexDirection: 'column', padding: 0 }}>
       <style>{`
         .mbti-option {
           display: flex;

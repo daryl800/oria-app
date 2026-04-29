@@ -1,5 +1,5 @@
 {
-  "app_name": "Oria",
+  "app_name": "oria",
   "tagline": "Ge dina val en knuff, utan att bestämma ditt öde.",
   "disclaimer": "Detta är reflektion, inte en förutsägelse. Besluten är dina.",
   "auth": {
@@ -12,7 +12,7 @@
   },
   "nav": {
     "daily": "Daglig kompass",
-    "chat": "Prata med Oria",
+    "chat": "Prata med oria",
     "profile": "Profil",
     "settings": "Inställningar",
     "chart": "Mitt diagram",
@@ -39,7 +39,7 @@
     "avoid": "Undvik just nu",
     "reminder": "Dagens påminnelse",
     "chat_prompt": "Vill du titta djupare?",
-    "chat_cta": "Prata med Oria",
+    "chat_cta": "Prata med oria",
     "deep_open": "Expandera dagens vägledning ↓",
     "deep_close": "Dölj dagens vägledning ↑",
     "moment": "Dagens läge",
@@ -60,7 +60,7 @@
   },
   "chat": {
     "title": "Vad tänker du på just nu?",
-    "empty_title": "Ask Oria anything",
+    "empty_title": "Ask oria anything",
     "empty_subtitle": "Your BaZi and MBTI are your guide",
     "try_asking": "✦ Try asking",
     "placeholder": "Skriv vad du tänker på...",
@@ -69,15 +69,15 @@
     "new": "Starta nytt samtal",
     "previous_conversations": "Tidigare samtal",
     "no_conversations": "Inga tidigare samtal ännu.",
-    "safety_response": "— Orias säkerhetssvar",
+    "safety_response": "— orias säkerhetssvar",
     "subtitle": "Du behöver inte tänka för mycket. Börja var som helst.",
     "untitled": "Namnlöst samtal",
     "quick_label": "Börja här om det hjälper",
     "quick_hint": "Tryck för att fylla i, redigera sedan",
     "send": "Skicka meddelande",
-    "paywall_title": "Prata med Oria",
-    "paywall_body": "Uppgradera till Oria Plus för djupare, löpande personlig vägledning.",
-    "paywall_cta": "Uppgradera till Oria Plus ✦",
+    "paywall_title": "Prata med oria",
+    "paywall_body": "Uppgradera till oria Plus för djupare, löpande personlig vägledning.",
+    "paywall_cta": "Uppgradera till oria Plus ✦",
     "quick_starts": [
       {
         "label": "Känner mig fast",
@@ -164,8 +164,8 @@
     "account": "Konto",
     "language": "Språk",
     "language_label": "Gränssnittsspråk",
-    "about_title": "Om Oria",
-    "about_body": "Oria kombinerar ditt BaZi-födelsediagram och din MBTI-personlighet för att erbjuda lugn, reflekterande vägledning. Den föreslår, men bestämmer aldrig.",
+    "about_title": "Om oria",
+    "about_body": "oria kombinerar ditt BaZi-födelsediagram och din MBTI-personlighet för att erbjuda lugn, reflekterande vägledning. Den föreslår, men bestämmer aldrig.",
     "about_quote": "Ett ljus på vägen — inte en karta, inte order. Bara klarhet.",
     "sign_out": "Logga ut",
     "coming_soon": "kommer snart"
@@ -201,7 +201,7 @@
       "title": "Förstå varandra och gör samspelet mer naturligt.",
       "subtitle": ""
     },
-    "footer": "Oria Compass · Fokuserad vägledning"
+    "footer": "oria Compass · Fokuserad vägledning"
   },
   "page_taglines": {
     "chat": "Detta är reflektion, inte förutsägelse. Valet är ditt.",
@@ -209,14 +209,14 @@
     "relationship": "Detta är inte matchning, utan att förstå hur ni relaterar."
   },
   "common": {
-    "oria": "Oria",
-    "oria_compass": "Oria Compass",
+    "oria": "oria",
+    "oria_compass": "oria Compass",
     "back": "Tillbaka",
     "loading": "Laddar...",
     "unknown": "Okänt"
   },
   "landing": {
-    "kicker": "Oria Compass",
+    "kicker": "oria Compass",
     "headline": "Dina styrkor syns i din BaZi\nDin personlighet speglas i MBTI",
     "subtitle": "En snabb personlig läsning av ditt nuläge — och nästa steg som faktiskt passar dig.",
     "result": "Tar cirka 60 sekunder • Ingen bindning",
@@ -250,7 +250,7 @@
     "error_password": "Lösenordet måste vara minst 6 tecken.",
     "error_invalid": "Fel e-post eller lösenord.",
     "unlock_title": "Din fulla läsning är klar",
-    "unlock_subtitle": "Logga in för att se din kompletta Oria-läsning och spara den.",
+    "unlock_subtitle": "Logga in för att se din kompletta oria-läsning och spara den.",
     "google_unlock": "Fortsätt med Google",
     "submit_unlock": "Logga in för att se mitt resultat"
   },
@@ -545,7 +545,7 @@
       "reveal": "Nyfiken på din personlighetsanalys? Tryck för att visa ✦",
       "back": "tillbaka",
       "question_step": "{{current}} av {{total}}",
-      "context_hook": "✦ Det hjälper Oria att förstå hur du naturligt reagerar i verkliga situationer",
+      "context_hook": "✦ Det hjälper oria att förstå hur du naturligt reagerar i verkliga situationer",
       "first_question": "På en social tillställning, vad gör du naturligt?"
     },
     "summary": {
@@ -596,7 +596,7 @@
     "context": {
       "step": "STEG 1 AV 4",
       "title": "Vad navigerar du just nu?",
-      "subtitle": "Det hjälper Oria att förstå vad du hanterar just nu.",
+      "subtitle": "Det hjälper oria att förstå vad du hanterar just nu.",
       "instruction": "Välj allt som stämmer",
       "continue": "Fortsätt →",
       "skip": "Hoppa över nu",
@@ -636,13 +636,13 @@
     "updated_today": "Uppdaterad idag",
     "bazi_helper": "Påverkar din dagliga vägledning och dina långsiktiga mönster.",
     "update_birth_data": "Uppdatera födelsedata",
-    "mbti_helper": "Hjälper Oria att tolka hur du fattar beslut.",
+    "mbti_helper": "Hjälper oria att tolka hur du fattar beslut.",
     "update_personality_type": "Uppdatera personlighetstyp",
     "preferences": "Inställningar",
     "interface_language": "Gränssnittsspråk",
     "account": "Konto",
     "signed_in_as": "Inloggad som",
-    "about_oria": "Om Oria",
+    "about_oria": "Om oria",
     "sign_out": "Logga ut",
     "reflection_footer": "Detta är en reflektion, inte en förutsägelse. Det är du som fattar besluten.",
     "location_placeholder": "Sök födelsestad",
@@ -657,5 +657,42 @@
   },
   "generated_content": {
     "label": "Genererad på {{language}}"
+  },
+  "people": {
+    "add_person": "Lägg till person",
+    "loading": "Laddar…",
+    "load_error": "Kunde inte läsa in dina relationsinsikter.",
+    "remove_confirm": "Ta bort den här personen?",
+    "remove_error": "Kunde inte ta bort personen. Försök igen.",
+    "try_again": "Försök igen",
+    "empty_title": "Ingen relation har lagts till än.",
+    "empty_hint": "Lägg till någon för att utforska dynamiken mellan er.",
+    "view_insight": "Visa insikt →",
+    "remove_label": "Ta bort {{name}}",
+    "relationships": {
+      "partner": "Partner",
+      "spouse": "Make/maka",
+      "family": "Familj",
+      "friend": "Vän",
+      "colleague": "Kollega",
+      "other": "Annat"
+    },
+    "page_title": "Förstå varandra och hur ni kan relatera bättre"
+  },
+  "compare_result": {
+    "loading": "Läser dynamiken…",
+    "person_not_found": "Personen hittades inte.",
+    "generate_error": "Kunde inte skapa relationsinsikten. Försök igen.",
+    "this_person": "den här personen",
+    "locked_section": "Den här insikten är tillgänglig med oria Plus.",
+    "unlock_cta": "Lås upp med oria Plus →",
+    "energetic_pattern": "Energimönster",
+    "sections": {
+      "overall_dynamic": "Övergripande dynamik",
+      "tension": "Där spänning kan uppstå",
+      "complement": "Där ni kompletterar varandra",
+      "how_to_handle": "Hur ni kan navigera detta"
+    },
+    "upgrade_message": "Lås upp hela jämförelsen med oria Plus."
   }
 }

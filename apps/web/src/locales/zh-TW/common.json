@@ -1,5 +1,5 @@
 {
-  "app_name": "Oria",
+  "app_name": "oria",
   "tagline": "無論你走到哪個路口，明燈都在照著你。",
   "disclaimer": "這是一種反思，而非預測。決定權在你。",
   "auth": {
@@ -12,7 +12,7 @@
   },
   "nav": {
     "daily": "每日羅盤",
-    "chat": "與 Oria 對話",
+    "chat": "與 oria 對話",
     "profile": "資料",
     "settings": "設定",
     "chart": "我的命盤",
@@ -39,7 +39,7 @@
     "avoid": "暫時避免什麼",
     "reminder": "今日提醒",
     "chat_prompt": "想深入看看？",
-    "chat_cta": "與 Oria 對話",
+    "chat_cta": "與 oria 對話",
     "deep_open": "展開今日解讀 ↓",
     "deep_close": "收起今日解讀 ↑",
     "moment": "今日情境",
@@ -60,7 +60,7 @@
   },
   "chat": {
     "title": "你現在在想什麼？",
-    "empty_title": "向Oria提問",
+    "empty_title": "向oria提問",
     "empty_subtitle": "你的八字和MBTI是你的指引",
     "try_asking": "✦ 嘗試問問",
     "placeholder": "打下你在想的事…",
@@ -69,15 +69,15 @@
     "new": "開始新對話",
     "previous_conversations": "過往對話",
     "no_conversations": "暫無過往對話。",
-    "safety_response": "— Oria 安全回應",
+    "safety_response": "— oria 安全回應",
     "subtitle": "不用想太多，隨便說說也可以",
     "untitled": "未命名對話",
     "quick_label": "可以從這裡開始",
     "quick_hint": "點一下，自己再改",
     "send": "送出訊息",
-    "paywall_title": "與 Oria 深度對話",
-    "paywall_body": "升級至 Oria Plus，即可與 Oria 進行更深入、持續的個人化對話。",
-    "paywall_cta": "升級至 Oria Plus ✦",
+    "paywall_title": "與 oria 深度對話",
+    "paywall_body": "升級至 oria Plus，即可與 oria 進行更深入、持續的個人化對話。",
+    "paywall_cta": "升級至 oria Plus ✦",
     "quick_starts": [
       {
         "label": "最近有點卡住",
@@ -164,8 +164,8 @@
     "account": "帳戶",
     "language": "語言",
     "language_label": "介面語言",
-    "about_title": "關於 Oria",
-    "about_body": "Oria 結合你的八字命盤和 MBTI 性格，提供平靜、反思性的指引。它建議，從不指令。",
+    "about_title": "關於 oria",
+    "about_body": "oria 結合你的八字命盤和 MBTI 性格，提供平靜、反思性的指引。它建議，從不指令。",
     "about_quote": "道路上的一盞燈——不是地圖，不是命令。只是清晰。",
     "sign_out": "登出",
     "coming_soon": "即將推出"
@@ -201,7 +201,7 @@
       "title": "理解彼此，讓相處更自在。",
       "subtitle": ""
     },
-    "footer": "Oria 指引 · 專注解讀"
+    "footer": "oria 指引 · 專注解讀"
   },
   "page_taglines": {
     "chat": "這是一種反思，而非預測。決定權在你。",
@@ -209,14 +209,14 @@
     "relationship": "這不是配對，而是理解彼此的方式。"
   },
   "common": {
-    "oria": "Oria",
-    "oria_compass": "Oria Compass",
+    "oria": "oria",
+    "oria_compass": "oria Compass",
     "back": "返回",
     "loading": "載入中...",
     "unknown": "未知"
   },
   "landing": {
-    "kicker": "Oria Compass",
+    "kicker": "oria Compass",
     "headline": "你的天賦在八字\n你的性格在 MBTI",
     "subtitle": "合在一起，讓你看清局勢，做出更明智的抉擇。",
     "result": "約 60 秒完成 • 無需承諾",
@@ -231,7 +231,7 @@
     "title_signin": "歡迎回來",
     "title_signup": "建立帳號",
     "unlock_title": "你的完整解讀已準備好",
-    "unlock_subtitle": "登入即可查看完整 Oria 解讀，並為你保存結果。",
+    "unlock_subtitle": "登入即可查看完整 oria 解讀，並為你保存結果。",
     "google_signin": "使用 Google 登入",
     "google_signup": "使用 Google 註冊",
     "google_unlock": "使用 Google 繼續",
@@ -545,7 +545,7 @@
       "reveal": "想看你的性格分析結果？✦",
       "back": "上一題",
       "question_step": "{{current}} / {{total}}",
-      "context_hook": "✦ 這能幫助 Oria 了解你在真實情境中的自然反應方式",
+      "context_hook": "✦ 這能幫助 oria 了解你在真實情境中的自然反應方式",
       "first_question": "在社交場合中，你自然會怎麼做？"
     },
     "summary": {
@@ -576,7 +576,7 @@
       "birth_location": "出生地點",
       "location_placeholder": "搜尋出生城市",
       "timezone": "時區",
-      "body": "MBTI 顯示你傾向如何行動；八字則幫助 Oria 看見更深層的時間節奏、壓力來源與命格底色。",
+      "body": "MBTI 顯示你傾向如何行動；八字則幫助 oria 看見更深層的時間節奏、壓力來源與命格底色。",
       "saving": "正在解析命盤...",
       "submit": "查看完整解讀 →",
       "location_helper": "請搜尋你的出生城市（例如：香港、東京）",
@@ -596,7 +596,7 @@
     "context": {
       "step": "第 1 步，共 4 步",
       "title": "你現在正在面對什麼？",
-      "subtitle": "這能幫助 Oria 理解你現在正在處理的事情。",
+      "subtitle": "這能幫助 oria 理解你現在正在處理的事情。",
       "instruction": "可多選",
       "continue": "繼續 →",
       "skip": "暫時跳過",
@@ -636,13 +636,13 @@
     "updated_today": "今日已更新",
     "bazi_helper": "會影響你的每日指引與長期模式解讀。",
     "update_birth_data": "更新出生資料",
-    "mbti_helper": "幫助 Oria 更準確理解你的決策方式。",
+    "mbti_helper": "幫助 oria 更準確理解你的決策方式。",
     "update_personality_type": "更新人格類型",
     "preferences": "偏好設定",
     "interface_language": "介面語言",
     "account": "帳戶",
     "signed_in_as": "登入帳戶",
-    "about_oria": "關於 Oria",
+    "about_oria": "關於 oria",
     "sign_out": "登出",
     "reflection_footer": "這是一種映照，不是預言。決定權始終在你手上。",
     "location_placeholder": "搜尋出生城市",
@@ -657,5 +657,42 @@
   },
   "generated_content": {
     "label": "以{{language}}生成"
+  },
+  "people": {
+    "add_person": "新增對象",
+    "loading": "載入中…",
+    "load_error": "無法載入你的關係解析。",
+    "remove_confirm": "確定要移除此對象嗎？",
+    "remove_error": "無法移除此對象，請再試一次。",
+    "try_again": "重試",
+    "empty_title": "還沒有加入關係對象。",
+    "empty_hint": "加入一位對象，看看你們之間的互動模式。",
+    "view_insight": "看看解析 →",
+    "remove_label": "移除 {{name}}",
+    "relationships": {
+      "partner": "伴侶",
+      "spouse": "配偶",
+      "family": "家人",
+      "friend": "朋友",
+      "colleague": "同事",
+      "other": "其他"
+    },
+    "page_title": "理解彼此，懂得如何相處"
+  },
+  "compare_result": {
+    "loading": "正在解讀你們的關係動態…",
+    "person_not_found": "找不到此對象。",
+    "generate_error": "無法生成關係解析，請再試一次。",
+    "this_person": "這位對象",
+    "locked_section": "此解析需使用 oria Plus 查看。",
+    "unlock_cta": "使用 oria Plus 解鎖 →",
+    "energetic_pattern": "能量模式",
+    "sections": {
+      "overall_dynamic": "整體互動",
+      "tension": "張力可能出現的地方",
+      "complement": "彼此互補的地方",
+      "how_to_handle": "如何相處與調整"
+    },
+    "upgrade_message": "使用 oria Plus 解鎖完整關係解析。"
   }
 }

@@ -48,8 +48,9 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
   }, [location.state]);
 
   useEffect(() => {
+    if (messages.length === 0 && !loading) return;
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]);
+  }, [messages.length, loading]);
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -198,7 +199,8 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
+        height: 'calc(100svh - var(--oria-shell-top-offset, 0px))',
+        minHeight: 'calc(100svh - var(--oria-shell-top-offset, 0px))',
         padding: 0,
       }}
     >
@@ -208,8 +210,9 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
         style={{
           padding: '14px 22px',
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           alignItems: 'center',
+          gap: 12,
           borderTop: 'none',
           borderLeft: 'none',
           borderRight: 'none',
@@ -219,8 +222,7 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
       >
         <button
           onClick={loadHistory}
-          className="oria-btn-outline"
-          style={{ width: 'auto', minHeight: 40, padding: '8px 14px', fontSize: 14 }}
+          className="oria-chat-secondary-action"
         >
           {historyLoading ? '...' : t('chat.history')}
         </button>
@@ -258,7 +260,7 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
                 <button
                   key={conv.id}
                   onClick={() => loadConversation(conv)}
-                  className="oria-card"
+                  className="oria-card oria-card-elevated"
                   style={{
                     display: 'block',
                     width: '100%',
@@ -282,44 +284,16 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
           <div className="oria-container" style={{ padding: messages.length === 0 ? '32px 20px 20px' : '28px 20px 20px' }}>
             {messages.length === 0 && (
               <div className="animate-fade-in" style={{ maxWidth: 980, margin: '0 auto' }}>
-                <div style={{ textAlign: 'center', marginTop: 20, marginBottom: 30 }}>
-                  <div
-                    style={{
-                      width: 84,
-                      height: 84,
-                      margin: '0 auto 18px',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 40,
-                      background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.32), rgba(201,168,76,0.18) 45%, rgba(201,168,76,0.12) 100%)',
-                      border: '1px solid rgba(255,255,255,0.18)',
-                      boxShadow: '0 12px 40px rgba(147, 51, 234, 0.24)',
-                    }}
-                  >
-                    ◎
-                  </div>
-
-                  <h2
-                    style={{
-                      marginBottom: 10,
-                      fontSize: 38,
-                      lineHeight: 1.15,
-                      color: '#F8F3FF',
-                      fontWeight: 800,
-                    }}
-                  >
+                <div className="oria-page-header" style={{ marginTop: 20, marginBottom: 30 }}>
+                  <div className="oria-card-label">{t('nav.chat')}</div>
+                  <h1 className="oria-page-title">
                     {t('chat.title')}
-                  </h2>
+                  </h1>
 
                   <p
+                    className="oria-page-subtitle"
                     style={{
-                      color: 'rgba(255,255,255,0.72)',
-                      fontSize: 17,
-                      lineHeight: 1.7,
                       maxWidth: 560,
-                      margin: '0 auto',
                     }}
                   >
                     {t('chat.subtitle')}
@@ -365,7 +339,7 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
                           setInput(quickStart.value);
                           textareaRef.current?.focus();
                         }}
-                        className="oria-card"
+                        className={`oria-card oria-card-elevated${selected ? ' oria-chat-quick-selected' : ''}`}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -376,14 +350,11 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
                           minHeight: 62,
                           padding: '14px 16px',
                           borderRadius: 22,
-                          background: selected
-                            ? 'linear-gradient(135deg, rgba(201,168,76,0.24), rgba(201,168,76,0.18))'
-                            : 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(201,168,76,0.08))',
                           border: selected
                             ? '1px solid rgba(201,168,76,0.45)'
-                            : '1px solid rgba(201,168,76,0.24)',
+                            : undefined,
                           transition: 'all 0.2s ease',
-                          boxShadow: selected ? '0 10px 28px rgba(201,168,76,0.16)' : 'none',
+                          boxShadow: selected ? '0 18px 42px rgba(201,168,76,0.18), inset 0 1px 0 rgba(255,255,255,0.06)' : undefined,
                         }}
                       >
                         <span
@@ -521,14 +492,13 @@ export default function Chat({ user, isPro = false }: { user: User; isPro?: bool
                 </div>
 
                 <div
-                  className="oria-card"
+                  className="oria-card oria-card-elevated"
                   style={{
                     padding: '14px 18px',
                     margin: 0,
                     color: '#FFFFFF',
                     fontSize: 15,
                     borderRadius: 18,
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(201,168,76,0.10))',
                   }}
                 >
                   <span style={{ animation: 'pulse 1.5s infinite' }}>{t('chat.thinking')}</span>

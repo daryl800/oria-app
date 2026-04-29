@@ -211,6 +211,7 @@ router.post('/send', async (req: Request, res: Response) => {
       summary,
       lang,
       userName,
+      mbti.context_focus ?? [],
     );
 
     const response = await complete(messages);

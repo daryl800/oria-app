@@ -6,8 +6,8 @@ type OriaLogoProps = {
 export default function OriaLogo({ className = '', size = 32 }: OriaLogoProps) {
   return (
     <img
-      src="/oria-navbar-symbol.png"
-      alt="Oria"
+      src="/oria-navbar-symbol-transparent.png?v=14"
+      alt="oria"
       className={className}
       width={size}
       height={size}

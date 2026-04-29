@@ -43,10 +43,10 @@ export default function OnboardingContextFocus() {
   }
 
   return (
-    <div className="oria-context-page animate-fade-in">
+    <div className="oria-page oria-context-page animate-fade-in">
       <style>{`
         .oria-context-page {
-          min-height: 100vh;
+          min-height: calc(100svh - var(--oria-shell-top-offset, 0px));
           padding: 72px 24px 48px;
           background:
             radial-gradient(circle at 50% -12%, rgba(118, 35, 190, 0.46), transparent 30%),

@@ -1,4 +1,7 @@
 from fastapi import FastAPI, HTTPException
+from timezonefinder import TimezoneFinder
+
+_tf = TimezoneFinder()
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
@@ -80,6 +83,17 @@ class QuestionnaireRequest(BaseModel):
 class AnswerRequest(BaseModel):
     answers: dict
     lang: str = "en"
+
+class TimezoneRequest(BaseModel):
+    lat: float
+    lng: float
+
+@app.post("/timezone/lookup")
+def timezone_lookup(req: TimezoneRequest):
+    tz = _tf.timezone_at(lat=req.lat, lng=req.lng)
+    if not tz:
+        raise HTTPException(status_code=404, detail="Timezone not found for given coordinates")
+    return {"timezone": tz}
 
 @app.get("/mbti/questions")
 def mbti_questions(lang: str = "en"):

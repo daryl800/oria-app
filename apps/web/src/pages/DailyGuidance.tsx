@@ -192,15 +192,12 @@ export default function DailyGuidance({ user, isPro = false, isProLoaded = false
 
   return (
     <div className="oria-page oria-container animate-fade-in">
-      <header style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <div>
-          <div className="oria-card-label">Oria</div>
-          <h1 className="text-2xl" style={{ fontSize: 36, marginBottom: 4 }}>{today}</h1>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
-            {t('daily.refresh')}
-          </div>
+      <header className="oria-page-header">
+        <div className="oria-card-label">{t('nav.daily')}</div>
+        <h1 className="oria-page-title">{today}</h1>
+        <div className="oria-page-subtitle">
+          {t('daily.refresh')}
         </div>
-        <div style={{ fontSize: 32, color: '#C9A84C' }}>✨</div>
       </header>
 
       {showGeneratedLanguage && (

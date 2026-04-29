@@ -27,8 +27,7 @@ export default function OnboardingTransition() {
   const messages = t('onboarding.transition.messages', { returnObjects: true }) as string[];
 
   return (
-    <div style={{
-      minHeight: '100vh',
+    <div className="oria-page" style={{
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       textAlign: 'center', padding: '0 32px',

@@ -30,8 +30,8 @@ function trimGuidanceForFree(summary: any, lang: string): any {
   // Keep key fields but shorten the main content
   const trimmed = { ...summary };
   const nudge = lang === 'zh-TW'
-    ? '\n\n今日還有更深層的指引。升級至 Oria Pro，解鎖完整每日洞察。'
-    : '\n\nThere\'s more to this pattern today. Unlock full daily guidance with Oria Pro.';
+    ? '\n\n今日還有更深層的指引。升級至 oria Plus，解鎖完整每日洞察。'
+    : '\n\nThere\'s more to this pattern today. Unlock full daily guidance with oria Plus.';
 
   if (trimmed.summary && typeof trimmed.summary === 'string') {
     const sentences = trimmed.summary.split(/(?<=[.!?。！？])\s*/);

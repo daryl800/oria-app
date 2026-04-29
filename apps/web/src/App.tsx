@@ -45,6 +45,26 @@ function AppShell({ user, isPro, children }: { user: User | null; isPro: boolean
   );
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const previousScrollBehavior = root.style.scrollBehavior;
+
+    root.style.scrollBehavior = 'auto';
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    root.style.scrollBehavior = previousScrollBehavior;
+  }, [pathname]);
+
+  return null;
+}
+
+function isPlusUser(userRecord: any): boolean {
+  const plan = String(userRecord?.plan ?? '').toLowerCase();
+  return plan === 'plus';
+}
+
 export default function App() {
   // undefined = not yet checked, null = checked and no user, User = logged in
   const { i18n } = useTranslation();
@@ -73,8 +93,7 @@ export default function App() {
       .select('plan, pro_expires_at, preferred_language')
       .eq('id', userId)
       .single();
-    const pro = userRecord?.plan === 'plus' &&
-      (!userRecord?.pro_expires_at || new Date(userRecord.pro_expires_at) > new Date());
+    const pro = isPlusUser(userRecord);
     setIsPro(pro);
     setIsProLoaded(true);
 
@@ -121,6 +140,7 @@ export default function App() {
   // Auth checked — render app
   return (
     <BrowserRouter>
+      <ScrollToTop />
       {showLanguageModal && langUserId && (
         <LanguageModal
           userId={langUserId}

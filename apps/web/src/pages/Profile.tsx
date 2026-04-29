@@ -18,7 +18,7 @@ const MBTI_TYPES = [
 
 const LANGUAGES = SUPPORTED_LANGUAGES.map(language => ({
   code: language.code,
-  label: `${language.flag} ${language.label}`,
+  label: `${language.flag} ${language.shortLabel}`,
 }));
 
 function getDisplayName(user: User) {
@@ -206,9 +206,9 @@ export default function Profile({ user }: { user: User }) {
 
   return (
     <div className="oria-page oria-container animate-fade-in">
-      <header style={{ marginBottom: 32, textAlign: 'center' }}>
-        <div className="oria-card-label">Oria</div>
-        <h1 className="text-2xl" style={{ marginBottom: 8 }}>{identityName}</h1>
+      <header className="oria-page-header">
+        <div className="oria-card-label">{t('nav.profile')}</div>
+        <h1 className="oria-page-title">{identityName}</h1>
         <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 17, fontWeight: 700, marginBottom: profileChip ? 12 : 0 }}>
           {t('profile_extra.personal_profile')}
         </div>
@@ -389,7 +389,6 @@ export default function Profile({ user }: { user: User }) {
       {/* Preferences */}
       <div className="oria-card">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
-          <span style={{ fontSize: 24 }}>🌐</span>
           <h2 className="text-lg">{t('profile_extra.preferences')}</h2>
         </div>
         <label className="oria-card-label">{t('profile_extra.interface_language')}</label>

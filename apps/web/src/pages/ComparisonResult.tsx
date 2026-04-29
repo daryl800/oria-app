@@ -25,22 +25,22 @@ interface CompareResponse {
 const SECTION_META = [
   {
     key: 'overall_dynamic' as keyof ComparisonData,
-    title: 'Overall Dynamic',
+    titleKey: 'compare_result.sections.overall_dynamic',
     icon: '◎',
   },
   {
     key: 'tension' as keyof ComparisonData,
-    title: 'Where Tension May Appear',
+    titleKey: 'compare_result.sections.tension',
     icon: '△',
   },
   {
     key: 'complement' as keyof ComparisonData,
-    title: 'Where You Complement Each Other',
+    titleKey: 'compare_result.sections.complement',
     icon: '◇',
   },
   {
     key: 'how_to_handle' as keyof ComparisonData,
-    title: 'How To Navigate This',
+    titleKey: 'compare_result.sections.how_to_handle',
     icon: '☽',
   },
 ];
@@ -70,30 +70,36 @@ export default function ComparisonResult() {
       setResult(res);
     } catch (err: any) {
       if (err.response?.status === 404) {
-        setError('Person not found.');
+        setError(t('compare_result.person_not_found'));
       } else {
-        setError('Could not generate comparison. Please try again.');
+        setError(t('compare_result.generate_error'));
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const personName = result?.person_name ?? personFromState?.name ?? 'this person';
+  const personName = result?.person_name ?? personFromState?.name ?? t('compare_result.this_person');
   const relationship = result?.relationship ?? personFromState?.relationship ?? '';
+  const relationshipLabel = relationship
+    ? t(`people.relationships.${relationship}`, {
+        defaultValue: relationship.charAt(0).toUpperCase() + relationship.slice(1),
+      })
+    : '';
 
   return (
     <div className="oria-page oria-container comparison-page animate-fade-in">
       {/* Header */}
-      <div className="comparison-header">
-        <button className="back-btn" onClick={() => navigate('/relationship-insights')}>
-          ← Relationship Insights
+      <div className="oria-page-header comparison-header">
+        <button className="oria-btn-outline comparison-back" onClick={() => navigate('/relationship-insights')}>
+          ← {t('nav.people')}
         </button>
+        <div className="oria-card-label">{t('nav.people')}</div>
         <div className="comparison-title-block">
-          <h1>{personName}</h1>
+          <h1 className="oria-page-title">{personName}</h1>
           {relationship && (
             <span className="relationship-badge">
-              {relationship.charAt(0).toUpperCase() + relationship.slice(1)}
+              {relationshipLabel}
             </span>
           )}
         </div>
@@ -103,7 +109,7 @@ export default function ComparisonResult() {
       {loading && (
         <div className="comparison-loading">
           <div className="loading-orb" />
-          <p>Reading the dynamic…</p>
+          <p>{t('compare_result.loading')}</p>
         </div>
       )}
 
@@ -111,40 +117,40 @@ export default function ComparisonResult() {
       {!loading && error && (
         <div className="comparison-error">
           <p>{error}</p>
-          <button onClick={fetchComparison}>Try again</button>
+          <button className="oria-btn-outline" onClick={fetchComparison}>{t('people.try_again')}</button>
         </div>
       )}
 
       {/* Free user: locked preview */}
       {!loading && !error && result?.locked && (
         <div className="comparison-locked">
-            <div className="oria-card preview-card">
+            <div className="oria-card oria-card-elevated preview-card">
             <div className="preview-icon">✦</div>
             <p className="preview-text">{result.preview}</p>
           </div>
 
           <div className="locked-sections">
             {SECTION_META.map((section) => (
-              <div key={section.key} className="oria-card section-locked">
+              <div key={section.key} className="oria-card oria-card-elevated section-locked">
                 <div className="section-header-locked">
                   <span className="section-icon">{section.icon}</span>
-                  <span className="section-title">{section.title}</span>
+                  <span className="section-title">{t(section.titleKey)}</span>
                   <span className="lock-icon">🔒</span>
                 </div>
                 <div className="section-blur">
-                  This insight is available with Oria Pro.
+                  {t('compare_result.locked_section')}
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="oria-card upgrade-card">
-            <p>{result.upgrade_message}</p>
+          <div className="oria-card oria-card-elevated upgrade-card">
+            <p>{t('compare_result.upgrade_message')}</p>
             <button
               className="oria-btn-premium upgrade-btn"
               onClick={() => navigate('/upgrade')}
             >
-              Unlock with Oria Pro →
+              {t('compare_result.unlock_cta')}
             </button>
           </div>
         </div>
@@ -155,10 +161,10 @@ export default function ComparisonResult() {
         <div className="comparison-full">
           {/* Main four sections */}
           {SECTION_META.map((section) => (
-            <div key={section.key} className="oria-card comparison-section">
+            <div key={section.key} className="oria-card oria-card-elevated comparison-section">
               <div className="section-header">
                 <span className="section-icon">{section.icon}</span>
-                <h2 className="section-title">{section.title}</h2>
+                <h2 className="section-title">{t(section.titleKey)}</h2>
               </div>
               <p className="section-body">{result.comparison![section.key]}</p>
             </div>
@@ -166,18 +172,14 @@ export default function ComparisonResult() {
 
           {/* Energetic Pattern — secondary */}
           {result.comparison.energetic_pattern && (
-            <div className="oria-card energetic-pattern">
-              <p className="energetic-label">Energetic Pattern</p>
+            <div className="oria-card oria-card-elevated energetic-pattern">
+              <p className="energetic-label">{t('compare_result.energetic_pattern')}</p>
               <p className="energetic-body">
                 {result.comparison.energetic_pattern}
               </p>
             </div>
           )}
 
-          {/* Disclaimer */}
-          <p className="oria-disclaimer disclaimer">
-            {t('page_taglines.relationship')}
-          </p>
         </div>
       )}
 
@@ -187,42 +189,24 @@ export default function ComparisonResult() {
         }
 
         .comparison-header {
-          margin-bottom: 28px;
+          max-width: none;
         }
 
-        .back-btn {
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid var(--oria-border);
-          border-radius: var(--oria-radius-pill);
+        .comparison-back {
+          width: fit-content;
+          justify-self: start;
+          min-height: 40px;
+          padding: 9px 15px;
           font-size: 14px;
-          color: var(--oria-text-dim);
-          cursor: pointer;
-          padding: 10px 16px;
           margin-bottom: 18px;
-          display: block;
-          font-weight: 700;
-        }
-
-        .back-btn:hover {
-          border-color: var(--oria-border-strong);
-          color: var(--oria-text);
         }
 
         .comparison-title-block {
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 14px;
           flex-wrap: wrap;
-        }
-
-        .comparison-title-block h1 {
-          font-family: var(--oria-serif);
-          font-size: clamp(2.15rem, 4vw, 3.2rem);
-          line-height: 1.04;
-          letter-spacing: -0.035em;
-          font-weight: 600;
-          margin: 0;
-          color: var(--oria-text);
         }
 
         .relationship-badge {
@@ -264,21 +248,16 @@ export default function ComparisonResult() {
         /* Error */
         .comparison-error {
           text-align: center;
-          padding: 48px 0;
+          padding: 48px 24px;
           color: var(--oria-text-dim);
           font-size: 15px;
         }
 
-        .comparison-error button {
-          margin-top: 12px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid var(--oria-border);
-          border-radius: var(--oria-radius-pill);
+        .comparison-error .oria-btn-outline {
+          width: fit-content;
+          min-height: 42px;
+          margin: 14px auto 0;
           padding: 10px 18px;
-          cursor: pointer;
-          font-size: 14px;
-          color: var(--oria-text);
-          font-weight: 700;
         }
 
         /* Locked state */

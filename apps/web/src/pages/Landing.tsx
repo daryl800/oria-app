@@ -28,6 +28,11 @@ export default function Landing() {
 
       <div className="oria-landing-overlay animate-fade-in">
         <section className="oria-landing-focus">
+          <div className="mb-6 text-center">
+            <div className="oria-brand-text text-[26px] text-[#C9A84C] md:text-[34px]">
+              oria
+            </div>
+          </div>
           <h1 className="oria-landing-title">
             {t('landing.headline')}
           </h1>

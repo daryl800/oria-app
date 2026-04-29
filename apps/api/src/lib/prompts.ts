@@ -1,3 +1,4 @@
+// prompts.ts
 import type OpenAI from 'openai';
 
 type Messages = OpenAI.ChatCompletionMessageParam[];
@@ -37,7 +38,10 @@ function getDateContext(): { gregorian: string; dayOfWeek: string } {
   return { gregorian, dayOfWeek };
 }
 
-function getDominantElement(five_elements_strength: Record<string, number>): string {
+function getDominantElement(five_elements_strength: Record<string, number> | null | undefined): string {
+  if (!five_elements_strength || Object.keys(five_elements_strength).length === 0) {
+    return '未知';
+  }
   return Object.entries(five_elements_strength)
     .sort(([, a], [, b]) => b - a)[0][0];
 }
@@ -78,6 +82,7 @@ function getLiunianContext(years: number = 5): string {
 }
 
 function getBaziContext(bazi: any): string {
+  if (!bazi) return '八字資料未提供';
   const dominantElement = getDominantElement(bazi.five_elements_strength);
   const birthDate = bazi.birth_date ? `出生日期：${bazi.birth_date}` : '';
   const currentYear = new Date().getFullYear();
@@ -121,7 +126,24 @@ function getMbtiContext(mbti: any): string {
 function getRespondIn(lang: string): string {
   if (lang === 'zh-TW') return '請用繁體中文回應。';
   if (lang === 'zh-CN') return '请用简体中文回应。';
+  if (lang === 'ja') return '日本語で回答してください。';
+  if (lang === 'ko') return '한국어로 답변해 주세요.';
+  if (lang === 'sv') return 'Svara på svenska.';
   return 'Please respond in English.';
+}
+
+function getContextFocusSection(context_focus: string[] = [], lang: string = 'en'): string {
+  if (!context_focus?.length) return '';
+  const labels: Record<string, string> = {
+    'zh-TW': '用戶關注重點',
+    'zh-CN': '用户关注重点',
+    'ja': 'ユーザーの関心領域',
+    'ko': '사용자 관심 영역',
+    'sv': 'Användarens fokusområden',
+  };
+  const label = labels[lang] ?? 'User focus areas';
+  const separator = ['zh-TW', 'zh-CN', 'ja'].includes(lang) ? '、' : ', ';
+  return `${label}: ${context_focus.join(separator)}`;
 }
 
 const STEM_ELEMENT: Record<string, string> = {
@@ -146,11 +168,12 @@ const STEM_TONE: Record<string, { en: string; zh: string }> = {
   '癸': { en: 'Gentle Water', zh: '沉穩癸水' }, 'Gui': { en: 'Gentle Water', zh: '沉穩癸水' },
 };
 
-export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en'): Messages {
+export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = []): Messages {
   const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
   const respondIn = getRespondIn(lang);
+  const contextFocusSection = getContextFocusSection(context_focus, lang);
   const currentYear = new Date().getFullYear();
 
   return [
@@ -174,6 +197,7 @@ ${SAFETY_CLAUSE}`,
 
 ${baziCtx}
 ${mbtiCtx}
+${contextFocusSection ? `\n${contextFocusSection}` : ''}
 
 分析要求（嚴格執行）：
 1. 以五行數值為基礎判斷日主強弱
@@ -335,12 +359,14 @@ export function chatPrompt(
   summary: string = '',
   lang: string = 'en',
   userName: string = '',
+  context_focus: string[] = [],
 ): Messages {
   const { gregorian, dayOfWeek } = getDateContext();
   const name = userName || '用戶';
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
   const respondIn = getRespondIn(lang);
+  const contextFocusSection = getContextFocusSection(context_focus, lang);
 
   const systemContent = `你是 Oria，一位結合八字命理與 MBTI 性格分析的個人引導助手。
 
@@ -354,7 +380,7 @@ export function chatPrompt(
 【用戶資料】
 ${baziCtx}
 ${mbtiCtx}
-
+${contextFocusSection ? `${contextFocusSection}\n` : ''}
 —————————————————
 
 【你的理解方式】
@@ -591,6 +617,77 @@ export function summarizationPrompt(messages: { role: string; content: string }[
     {
       role: 'user',
       content: `請摘要以下對話：\\n\\n${formatted}\\n\\n${respondIn}`,
+    },
+  ];
+}
+
+export function comparisonPrompt(
+  userBazi: any,
+  userMbti: any,
+  personName: string,
+  personRelationship: string,
+  personBazi: any,
+  personMbtiType: string | null,
+  lang: string = 'en',
+  userName: string = 'You',
+): Messages {
+  const { gregorian } = getDateContext();
+  const userBaziCtx = getBaziContext(userBazi);
+  const userMbtiCtx = getMbtiContext(userMbti);
+  const respondIn = getRespondIn(lang);
+
+  const personElementStr = `木${personBazi.five_elements_strength?.Wood ?? 0} 火${personBazi.five_elements_strength?.Fire ?? 0} 土${personBazi.five_elements_strength?.Earth ?? 0} 金${personBazi.five_elements_strength?.Metal ?? 0} 水${personBazi.five_elements_strength?.Water ?? 0}`;
+
+  return [
+    {
+      role: 'system',
+      content: `你是Oria的人際命盤解析師，精通八字五行與MBTI的互動分析。
+你的目標是幫助用戶理解兩人之間的能量動態——不是預測關係命運，而是揭示模式與可能的張力。
+核心原則：
+1. 永遠以五行互動（生、剋、洩、耗、比）為分析基礎
+2. 結合MBTI說明行為層面的差異
+3. 不做吉凶判斷，只描述傾向與模式
+4. 語氣溫和、有洞察力，不說教
+5. 必須讓用戶感覺「這說的就是我們」
+今天日期：${gregorian}
+${SAFETY_CLAUSE}`,
+    },
+    {
+      role: 'user',
+      content: `請分析以下兩人的命盤互動，以JSON回應。
+
+【${userName}（Person A）】
+${userBaziCtx}
+${userMbtiCtx}
+
+【${personName}（Person B，${personRelationship}）】
+日主：${personBazi.day_master}
+五行力量：${personElementStr}
+MBTI：${personMbtiType ?? '未知'}
+
+分析要求：
+1. 找出兩人五行之間最顯著的互動（生或剋）
+2. 說明這種互動在日常相處中如何具體呈現
+3. 找出最容易產生摩擦的場景
+4. 找出兩人最自然互補的地方
+5. 給出一個具體可行的相處建議
+
+分析時請根據兩人的關係類型（${personRelationship}）調整場景與語氣。
+如果是伴侶，重點放在親密關係與情緒節奏；
+如果是朋友，重點放在相處頻率、支持方式與界線；
+如果是家人，重點放在習慣、責任與長期互動；
+如果是同事，重點放在溝通、分工與壓力處理。
+若 Person B 的 MBTI 未知，不要猜測，只使用五行與已知資料。
+
+以JSON回應，包含以下五個鍵：
+{
+  "overall_dynamic": "2-3句描述兩人整體能量動態（基於五行互動），使用真實姓名而非Person A/B",
+  "tension": "2-3句描述最容易出現摩擦的場景或模式",
+  "complement": "2-3句描述兩人最自然互補的地方",
+  "how_to_handle": "2-3句溫和且具體的相處建議",
+  "energetic_pattern": "1-2句點出兩人關係中反覆出現的深層模式"
+}
+只回傳JSON。${respondIn}`,
     },
   ];
 }

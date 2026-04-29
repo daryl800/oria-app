@@ -96,8 +96,8 @@ export default function OnboardingBazi() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
-      <div style={{ maxWidth: 480, width: '100%' }}>
+    <div className="oria-page oria-page-center">
+      <div className="oria-page-form">
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>

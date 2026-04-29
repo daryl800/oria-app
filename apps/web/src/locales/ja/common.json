@@ -1,5 +1,5 @@
 {
-  "app_name": "Oria",
+  "app_name": "oria",
   "tagline": "運命を決めつけず、選択に静かな手がかりを。",
   "disclaimer": "これは予言ではなく、内省のためのものです。決めるのはあなたです。",
   "auth": {
@@ -12,7 +12,7 @@
   },
   "nav": {
     "daily": "今日の羅針盤",
-    "chat": "Oriaと話す",
+    "chat": "oriaと話す",
     "profile": "プロフィール",
     "settings": "設定",
     "chart": "マイチャート",
@@ -39,7 +39,7 @@
     "avoid": "今は避けたいこと",
     "reminder": "今日のひとこと",
     "chat_prompt": "もう少し深く見ますか？",
-    "chat_cta": "Oriaと話す",
+    "chat_cta": "oriaと話す",
     "deep_open": "今日のガイダンスを展開 ↓",
     "deep_close": "今日のガイダンスを閉じる ↑",
     "moment": "今日の状況",
@@ -60,7 +60,7 @@
   },
   "chat": {
     "title": "今、何を考えていますか？",
-    "empty_title": "Ask Oria anything",
+    "empty_title": "Ask oria anything",
     "empty_subtitle": "Your BaZi and MBTI are your guide",
     "try_asking": "✦ Try asking",
     "placeholder": "考えていることを書いてみてください...",
@@ -69,15 +69,15 @@
     "new": "新しい会話を始める",
     "previous_conversations": "過去の会話",
     "no_conversations": "まだ過去の会話はありません。",
-    "safety_response": "— Oriaの安全応答",
+    "safety_response": "— oriaの安全応答",
     "subtitle": "深く考えすぎなくて大丈夫。どこからでも話し始めてください。",
     "untitled": "無題の会話",
     "quick_label": "迷ったらここから",
     "quick_hint": "タップして入力、あとで編集",
     "send": "メッセージを送信",
-    "paywall_title": "Oriaと話す",
-    "paywall_body": "Oria Plusにアップグレードすると、より深く継続的な個人ガイダンスを受けられます。",
-    "paywall_cta": "Oria Plusにアップグレード ✦",
+    "paywall_title": "oriaと話す",
+    "paywall_body": "oria Plusにアップグレードすると、より深く継続的な個人ガイダンスを受けられます。",
+    "paywall_cta": "oria Plusにアップグレード ✦",
     "quick_starts": [
       {
         "label": "少し詰まっている",
@@ -164,8 +164,8 @@
     "account": "アカウント",
     "language": "言語",
     "language_label": "表示言語",
-    "about_title": "Oriaについて",
-    "about_body": "OriaはBaZi出生チャートとMBTI性格を組み合わせ、静かで内省的なガイダンスを提供します。指示ではなく、提案します。",
+    "about_title": "oriaについて",
+    "about_body": "oriaはBaZi出生チャートとMBTI性格を組み合わせ、静かで内省的なガイダンスを提供します。指示ではなく、提案します。",
     "about_quote": "道を照らす光。地図でも命令でもなく、ただ明確さを。",
     "sign_out": "ログアウト",
     "coming_soon": "近日公開"
@@ -201,7 +201,7 @@
       "title": "お互いを理解し、より自然に関われるようにする。",
       "subtitle": ""
     },
-    "footer": "Oriaコンパス・フォーカスドリーディング"
+    "footer": "oriaコンパス・フォーカスドリーディング"
   },
   "page_taglines": {
     "chat": "これは予測ではなく、内省です。選ぶのはあなたです。",
@@ -209,14 +209,14 @@
     "relationship": "これは相性ではなく、関係の理解です。"
   },
   "common": {
-    "oria": "Oria",
-    "oria_compass": "Oria Compass",
+    "oria": "oria",
+    "oria_compass": "oria Compass",
     "back": "戻る",
     "loading": "読み込み中...",
     "unknown": "不明"
   },
   "landing": {
-    "kicker": "Oria Compass",
+    "kicker": "oria Compass",
     "headline": "あなたの才能は八字に表れ\nあなたの性格はMBTIに表れる",
     "subtitle": "それらを組み合わせることで、\n全体像を見極め、より良い選択ができる。",
     "result": "約60秒で完了 • 契約不要",
@@ -250,7 +250,7 @@
     "error_password": "パスワードは6文字以上必要です。",
     "error_invalid": "メールアドレスまたはパスワードが違います。",
     "unlock_title": "完全なリーディングの準備ができました",
-    "unlock_subtitle": "ログインすると、Oriaの完全なリーディングを確認し、保存できます。",
+    "unlock_subtitle": "ログインすると、oriaの完全なリーディングを確認し、保存できます。",
     "google_unlock": "Googleで続ける",
     "submit_unlock": "ログインして結果を見る"
   },
@@ -545,7 +545,7 @@
       "reveal": "性格分析の結果を見ますか？✦",
       "back": "前の質問",
       "question_step": "{{current}} / {{total}}",
-      "context_hook": "✦ Oriaが実際の状況でのあなたの自然な反応を理解する助けになります",
+      "context_hook": "✦ oriaが実際の状況でのあなたの自然な反応を理解する助けになります",
       "first_question": "社交の場で、あなたは自然にどうしますか？"
     },
     "summary": {
@@ -596,7 +596,7 @@
     "context": {
       "step": "ステップ1/4",
       "title": "今、何に向き合っていますか？",
-      "subtitle": "Oriaが今あなたの状況を理解するための手がかりになります。",
+      "subtitle": "oriaが今あなたの状況を理解するための手がかりになります。",
       "instruction": "当てはまるものをすべて選択",
       "continue": "続ける →",
       "skip": "今はスキップ",
@@ -636,13 +636,13 @@
     "updated_today": "本日更新済み",
     "bazi_helper": "毎日のガイダンスと長期的な傾向の解釈に影響します。",
     "update_birth_data": "出生データを更新",
-    "mbti_helper": "Oria があなたの意思決定スタイルをより正確に理解するのに役立ちます。",
+    "mbti_helper": "oria があなたの意思決定スタイルをより正確に理解するのに役立ちます。",
     "update_personality_type": "性格タイプを更新",
     "preferences": "設定",
     "interface_language": "表示言語",
     "account": "アカウント",
     "signed_in_as": "ログイン中",
-    "about_oria": "Oria について",
+    "about_oria": "oria について",
     "sign_out": "サインアウト",
     "reflection_footer": "これは予測ではなく、内省のためのものです。決めるのはあなた自身です。",
     "location_placeholder": "出生都市を検索",
@@ -657,5 +657,42 @@
   },
   "generated_content": {
     "label": "{{language}}で生成済み"
+  },
+  "people": {
+    "add_person": "相手を追加",
+    "loading": "読み込み中…",
+    "load_error": "関係性インサイトを読み込めませんでした。",
+    "remove_confirm": "この相手を削除しますか？",
+    "remove_error": "削除できませんでした。もう一度お試しください。",
+    "try_again": "もう一度試す",
+    "empty_title": "まだ相手が追加されていません。",
+    "empty_hint": "相手を追加して、二人の関係の流れを見てみましょう。",
+    "view_insight": "インサイトを見る →",
+    "remove_label": "{{name}} を削除",
+    "relationships": {
+      "partner": "パートナー",
+      "spouse": "配偶者",
+      "family": "家族",
+      "friend": "友人",
+      "colleague": "同僚",
+      "other": "その他"
+    },
+    "page_title": "お互いを理解し、より自然に関わる"
+  },
+  "compare_result": {
+    "loading": "二人の関係性を読み解いています…",
+    "person_not_found": "相手が見つかりません。",
+    "generate_error": "関係性インサイトを生成できませんでした。もう一度お試しください。",
+    "this_person": "この相手",
+    "locked_section": "このインサイトは oria Plus で利用できます。",
+    "unlock_cta": "oria Plus で解放 →",
+    "energetic_pattern": "エネルギーパターン",
+    "sections": {
+      "overall_dynamic": "全体の関係性",
+      "tension": "緊張が生まれやすいところ",
+      "complement": "互いに補い合うところ",
+      "how_to_handle": "この関係との向き合い方"
+    },
+    "upgrade_message": "oria Plus で完全な関係性インサイトを解放できます。"
   }
 }

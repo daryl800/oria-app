@@ -1,5 +1,5 @@
 {
-  "app_name": "Oria",
+  "app_name": "oria",
   "tagline": "Nudge your choices, never dictate your fate.",
   "disclaimer": "This is a reflection, not a prediction. You hold the decisions.",
   "auth": {
@@ -12,7 +12,7 @@
   },
   "nav": {
     "daily": "Daily Compass",
-    "chat": "Talk with Oria",
+    "chat": "Talk with oria",
     "profile": "Profile",
     "settings": "Settings",
     "chart": "My Chart",
@@ -39,7 +39,7 @@
     "avoid": "Avoid for now",
     "reminder": "Today’s reminder",
     "chat_prompt": "Want to look a little deeper?",
-    "chat_cta": "Talk with Oria",
+    "chat_cta": "Talk with oria",
     "deep_open": "Expand today’s guidance ↓",
     "deep_close": "Hide today’s guidance ↑",
     "moment": "Today’s moment",
@@ -60,7 +60,7 @@
   },
   "chat": {
     "title": "What is on your mind?",
-    "empty_title": "Ask Oria anything",
+    "empty_title": "Ask oria anything",
     "empty_subtitle": "Your BaZi and MBTI are your guide",
     "try_asking": "✦ Try asking",
     "placeholder": "Write what is on your mind…",
@@ -69,15 +69,15 @@
     "new": "Start new conversation",
     "previous_conversations": "Previous Conversations",
     "no_conversations": "No previous conversations yet.",
-    "safety_response": "— Oria safety response",
+    "safety_response": "— oria safety response",
     "subtitle": "No need to overthink it. Just start anywhere.",
     "untitled": "Untitled conversation",
     "quick_label": "Start here if it helps",
     "quick_hint": "Tap to fill, then edit",
     "send": "Send message",
-    "paywall_title": "Chat with Oria",
-    "paywall_body": "Upgrade to Oria Plus for deeper, ongoing personalized guidance conversations.",
-    "paywall_cta": "Upgrade to Oria Plus ✦",
+    "paywall_title": "Chat with oria",
+    "paywall_body": "Upgrade to oria Plus for deeper, ongoing personalized guidance conversations.",
+    "paywall_cta": "Upgrade to oria Plus ✦",
     "quick_starts": [
       {
         "label": "Feeling stuck",
@@ -164,8 +164,8 @@
     "account": "Account",
     "language": "Language",
     "language_label": "Interface language · 介面語言",
-    "about_title": "About Oria",
-    "about_body": "Oria combines your BaZi birth chart and MBTI personality to offer calm, reflective guidance. It suggests, never prescribes.",
+    "about_title": "About oria",
+    "about_body": "oria combines your BaZi birth chart and MBTI personality to offer calm, reflective guidance. It suggests, never prescribes.",
     "about_quote": "A light on the path — not a map, not orders. Just clarity.",
     "sign_out": "Sign Out",
     "coming_soon": "Coming soon"
@@ -201,7 +201,7 @@
       "title": "Understand each other and make interactions more at ease.",
       "subtitle": ""
     },
-    "footer": "Oria Compass · Focused Reading"
+    "footer": "oria Compass · Focused Reading"
   },
   "page_taglines": {
     "chat": "This is reflection, not prediction. The choice is yours.",
@@ -209,14 +209,14 @@
     "relationship": "This is not matching, but understanding how you relate."
   },
   "common": {
-    "oria": "Oria",
-    "oria_compass": "Oria Compass",
+    "oria": "oria",
+    "oria_compass": "oria Compass",
     "back": "Back",
     "loading": "Loading...",
     "unknown": "—"
   },
   "landing": {
-    "kicker": "Oria Compass",
+    "kicker": "oria Compass",
     "headline": "Your strengths are written in your BaZi\nYour personality is reflected in your MBTI",
     "subtitle": "",
     "result": "Takes about 60 seconds • No commitment",
@@ -231,7 +231,7 @@
     "title_signin": "Welcome back",
     "title_signup": "Create account",
     "unlock_title": "Your full reading is ready",
-    "unlock_subtitle": "Sign in to view your complete Oria reading and keep it saved.",
+    "unlock_subtitle": "Sign in to view your complete oria reading and keep it saved.",
     "google_signin": "Sign in with Google",
     "google_signup": "Sign up with Google",
     "google_unlock": "Continue with Google",
@@ -545,7 +545,7 @@
       "reveal": "Curious about your personality? Tap to reveal ✦",
       "back": "back",
       "question_step": "{{current}} of {{total}}",
-      "context_hook": "✦ This helps Oria understand how you naturally respond in real situations",
+      "context_hook": "✦ This helps oria understand how you naturally respond in real situations",
       "first_question": "At a social gathering, what do you naturally do?"
     },
     "summary": {
@@ -596,7 +596,7 @@
     "context": {
       "step": "STEP 1 OF 4",
       "title": "What are you navigating right now?",
-      "subtitle": "This helps Oria understand what you’re dealing with right now.",
+      "subtitle": "This helps oria understand what you’re dealing with right now.",
       "instruction": "Select all that apply",
       "continue": "Continue →",
       "skip": "Skip for now",
@@ -636,13 +636,13 @@
     "updated_today": "Last updated today",
     "bazi_helper": "Affects your daily guidance and long-term patterns.",
     "update_birth_data": "Update Birth Data",
-    "mbti_helper": "Refines how Oria interprets your decisions.",
+    "mbti_helper": "Refines how oria interprets your decisions.",
     "update_personality_type": "Update Personality Type",
     "preferences": "Preferences",
     "interface_language": "Interface Language",
     "account": "Account",
     "signed_in_as": "Signed in as",
-    "about_oria": "About Oria",
+    "about_oria": "About oria",
     "sign_out": "Sign Out",
     "reflection_footer": "This is a reflection, not a prediction. You hold the decisions.",
     "location_placeholder": "Search your birth city",
@@ -657,5 +657,42 @@
   },
   "generated_content": {
     "label": "Generated in {{language}}"
+  },
+  "people": {
+    "add_person": "Add person",
+    "loading": "Loading…",
+    "load_error": "Could not load your relationship insights.",
+    "remove_confirm": "Remove this person?",
+    "remove_error": "Could not remove this person. Please try again.",
+    "try_again": "Try again",
+    "empty_title": "No relationship added yet.",
+    "empty_hint": "Add someone to explore the dynamic between you.",
+    "view_insight": "View insight →",
+    "remove_label": "Remove {{name}}",
+    "relationships": {
+      "partner": "Partner",
+      "spouse": "Spouse",
+      "family": "Family",
+      "friend": "Friend",
+      "colleague": "Colleague",
+      "other": "Other"
+    },
+    "page_title": "Understand each other, and know how to relate"
+  },
+  "compare_result": {
+    "loading": "Reading the dynamic…",
+    "person_not_found": "Person not found.",
+    "generate_error": "Could not generate comparison. Please try again.",
+    "this_person": "this person",
+    "locked_section": "This insight is available with oria Plus.",
+    "unlock_cta": "Unlock with oria Plus →",
+    "energetic_pattern": "Energetic Pattern",
+    "sections": {
+      "overall_dynamic": "Overall Dynamic",
+      "tension": "Where Tension May Appear",
+      "complement": "Where You Complement Each Other",
+      "how_to_handle": "How To Navigate This"
+    },
+    "upgrade_message": "Unlock the full comparison with oria Plus."
   }
 }

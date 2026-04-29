@@ -69,6 +69,26 @@ apiRouter.post('/profile/temp-save', async (req: Request, res: Response) => {
   }
 });
 
+// public timezone lookup (no auth required)
+apiRouter.post('/public/timezone/lookup', async (req: Request, res: Response) => {
+  try {
+    const { lat, lng } = req.body;
+    if (lat === undefined || lng === undefined) {
+      return res.status(400).json({ error: 'lat and lng are required' });
+    }
+    const r = await fetch(`${ANALYSIS_SERVICE_URL}/timezone/lookup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lat, lng }),
+    });
+    if (!r.ok) throw new Error('Timezone lookup failed');
+    const data = await r.json();
+    return res.json(data);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // oria routes (auth protected)
 apiRouter.use(Paths.DailyGuidance._, authMiddleware, dailyGuidanceRouter);
 apiRouter.use(Paths.Profile._, authMiddleware, profileRouter);

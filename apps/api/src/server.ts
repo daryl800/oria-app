@@ -9,6 +9,8 @@ import Paths from '@src/common/constants/Paths';
 import { RouteError } from '@src/common/utils/route-errors';
 import BaseRouter from '@src/routes/apiRouter';
 import EnvVars, { NodeEnvs } from './common/constants/env';
+import personsRouter from '@src/routes/persons';
+import compareRouter from '@src/routes/compare';
 
 const app = express();
 
@@ -53,5 +55,8 @@ app.get('/', (_: Request, res: Response) => {
 app.get('/users', (_: Request, res: Response) => {
   return res.sendFile('users.html', { root: viewsDir });
 });
+
+app.use('/api/persons', personsRouter);
+app.use('/api/compare', compareRouter);
 
 export default app;

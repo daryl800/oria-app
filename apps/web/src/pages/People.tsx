@@ -35,20 +35,20 @@ export default function RelationshipInsights() {
       const res = await getPersons();
       setPersons(res.persons);
     } catch (err: any) {
-      setError('Could not load your relationship insights.');
+      setError(t('people.load_error'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Remove this person?')) return;
+    if (!window.confirm(t('people.remove_confirm'))) return;
     setDeletingId(id);
     try {
       await deletePerson(id);
       setPersons((prev) => prev.filter((p) => p.id !== id));
     } catch {
-      alert('Could not remove this person. Please try again.');
+      alert(t('people.remove_error'));
     } finally {
       setDeletingId(null);
     }
@@ -59,45 +59,44 @@ export default function RelationshipInsights() {
   };
 
   const relationshipLabel = (rel: string) =>
-    rel.charAt(0).toUpperCase() + rel.slice(1);
+    t(`people.relationships.${rel}`, { defaultValue: rel.charAt(0).toUpperCase() + rel.slice(1) });
 
   return (
     <div className="oria-page oria-container people-page animate-fade-in">
-      <div className="people-header">
+      <div className="oria-page-header people-header">
         <div className="people-header-text">
-          <div className="oria-card-label">Relationship Insights</div>
-          <h1>Relationship Insights</h1>
-          <p>Understand your dynamic with someone important.</p>
+          <div className="oria-card-label">{t('nav.people')}</div>
+          <h1 className="oria-page-title">{t('people.page_title')}</h1>
         </div>
         <button
           className="oria-btn-primary btn-add-person"
           onClick={() => navigate('/relationship-insights/add')}
         >
-          + Add person
+          + {t('people.add_person')}
         </button>
       </div>
 
       {loading && (
-        <div className="people-loading">
-          <span>Loading…</span>
+        <div className="oria-card people-loading">
+          <span>{t('people.loading')}</span>
         </div>
       )}
 
       {error && (
         <div className="oria-card people-error">
           <p>{error}</p>
-          <button className="oria-btn-outline" onClick={fetchPersons}>Try again</button>
+          <button className="oria-btn-outline" onClick={fetchPersons}>{t('people.try_again')}</button>
         </div>
       )}
 
       {!loading && !error && persons.length === 0 && (
         <div className="oria-card people-empty">
-          <p>No relationship added yet.</p>
+          <p>{t('people.empty_title')}</p>
           <p className="people-empty-hint">
-            Add someone to explore the dynamic between you.
+            {t('people.empty_hint')}
           </p>
           <button className="oria-btn-primary people-empty-cta" onClick={() => navigate('/relationship-insights/add')}>
-            Add person
+            {t('people.add_person')}
           </button>
         </div>
       )}
@@ -105,7 +104,7 @@ export default function RelationshipInsights() {
       {!loading && !error && persons.length > 0 && (
         <ul className="persons-list">
           {persons.map((person) => (
-            <li key={person.id} className="oria-card person-card">
+            <li key={person.id} className="oria-card oria-card-elevated person-card">
               <button
                 className="person-card-main"
                 onClick={() => handleCompare(person)}
@@ -119,13 +118,13 @@ export default function RelationshipInsights() {
                     <span className="person-mbti">{person.mbti_type}</span>
                   )}
                 </div>
-                <span className="person-cta">View insight →</span>
+                <span className="person-cta">{t('people.view_insight')}</span>
               </button>
               <button
                 className="person-delete"
                 onClick={() => handleDelete(person.id)}
                 disabled={deletingId === person.id}
-                aria-label={`Remove ${person.name}`}
+                aria-label={t('people.remove_label', { name: person.name })}
               >
                 {deletingId === person.id ? '…' : '×'}
               </button>
@@ -134,57 +133,48 @@ export default function RelationshipInsights() {
         </ul>
       )}
 
-      <footer className="oria-disclaimer">{t('page_taglines.relationship')}</footer>
-
       <style>{`
         .people-page {
           padding-bottom: calc(var(--oria-nav-height) + 32px);
         }
 
         .people-header {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          margin-bottom: 28px;
+          display: grid;
           gap: 24px;
         }
 
         .people-header-text h1 {
-          font-family: var(--oria-serif);
-          font-size: clamp(2.15rem, 4vw, 3.2rem);
-          font-weight: 600;
-          letter-spacing: -0.035em;
-          line-height: 1.02;
-          margin: 0 0 12px;
-          color: var(--oria-text);
+          margin-bottom: 12px;
         }
 
         .people-header-text p {
-          font-size: 16px;
-          line-height: 1.65;
-          color: var(--oria-text-dim);
-          margin: 0;
+          max-width: 520px;
         }
 
         .btn-add-person {
           width: auto;
-          min-height: 48px;
+          min-height: 42px;
           flex-shrink: 0;
-          padding: 13px 22px;
+          padding: 11px 17px;
           white-space: nowrap;
+          font-size: 14px;
+          letter-spacing: 0.04em;
+          box-shadow: 0 12px 28px rgba(201, 168, 76, 0.20);
         }
 
         .people-loading {
           text-align: center;
-          padding: 48px 0;
+          padding: 38px 24px;
           color: var(--oria-text-dim);
           font-size: 15px;
+          margin-bottom: 0;
         }
 
         .people-error,
         .people-empty {
           text-align: center;
           padding: 34px;
+          margin-bottom: 0;
         }
 
         .people-error p,
@@ -201,8 +191,14 @@ export default function RelationshipInsights() {
         }
 
         .people-empty-cta {
+          width: fit-content;
+          min-height: 42px;
           max-width: 260px;
           margin: 24px auto 0;
+          padding: 11px 17px;
+          font-size: 14px;
+          letter-spacing: 0.04em;
+          box-shadow: 0 12px 28px rgba(201, 168, 76, 0.20);
         }
 
         .persons-list {
@@ -245,17 +241,17 @@ export default function RelationshipInsights() {
 
         .person-name {
           font-family: var(--oria-serif);
-          font-size: 24px;
+          font-size: 22px;
           line-height: 1.15;
           font-weight: 600;
           color: var(--oria-text);
         }
 
         .person-relationship {
-          font-size: 13px;
+          font-size: 15px;
           color: var(--oria-accent-strong);
           font-weight: 800;
-          letter-spacing: 0.12em;
+          letter-spacing: 0.08em;
           text-transform: uppercase;
         }
 
@@ -266,7 +262,7 @@ export default function RelationshipInsights() {
         }
 
         .person-cta {
-          font-size: 14px;
+          font-size: 16px;
           color: var(--oria-highlight);
           font-weight: 800;
           white-space: nowrap;
@@ -299,7 +295,8 @@ export default function RelationshipInsights() {
           }
 
           .btn-add-person {
-            width: 100%;
+            width: fit-content;
+            max-width: 100%;
           }
 
           .persons-list {

@@ -49,12 +49,12 @@ export default function OnboardingResult() {
   const traits = t(`chart.mbti.types.${mbti_type}.traits`, { returnObjects: true, defaultValue: desc.traits }) as string[];
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: 40, opacity: leaving ? 0 : 1, transition: 'opacity 0.6s ease' }}>
+    <div className="oria-page" style={{ opacity: leaving ? 0 : 1, transition: 'opacity 0.6s ease' }}>
       <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 20px' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '28px 0 20px' }}>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 4, color: '#C9A84C', textTransform: 'uppercase' }}>Oria</span>
+          <span className="oria-brand-text" style={{ fontSize: 12, color: '#C9A84C' }}>oria</span>
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{t('onboarding.result.step')}</span>
         </div>
 

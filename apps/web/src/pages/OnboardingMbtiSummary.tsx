@@ -42,10 +42,7 @@ export default function OnboardingMbtiSummary({ user }: { user?: User }) {
 
   if (!mbtiType) {
     return (
-      <div style={{
-        minHeight: '100vh', display: 'flex',
-        alignItems: 'center', justifyContent: 'center',
-      }}>
+      <div className="oria-page oria-page-center">
         <div style={{ fontSize: 48, color: '#C9A84C' }}>✦</div>
       </div>
     );
@@ -58,10 +55,10 @@ export default function OnboardingMbtiSummary({ user }: { user?: User }) {
   const traits = Array.isArray(rawTraits) ? rawTraits : [];
 
   return (
-    <div style={{
-      minHeight: '100vh', display: 'flex', flexDirection: 'column',
+    <div className="oria-page" style={{
+      display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
-      padding: '40px 24px', textAlign: 'center',
+      textAlign: 'center',
       opacity: visible && !leaving ? 1 : 0, transition: 'opacity 1s ease',
     }}>
       <div style={{ maxWidth: 480, width: '100%' }}>

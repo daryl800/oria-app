@@ -96,7 +96,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
       <div className="oria-container">
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '28px 0 20px' }}>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 4, color: '#C9A84C', textTransform: 'uppercase' }}>Oria</span>
+          <span className="oria-brand-text" style={{ fontSize: 12, color: '#C9A84C' }}>oria</span>
           <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, color: '#C9A84C', textTransform: 'uppercase' }}>{t('mbti.your_result')}</span>
         </div>
 
@@ -170,7 +170,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '28px 0 20px' }}>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 4, color: '#C9A84C', textTransform: 'uppercase' }}>Oria</span>
+          <span className="oria-brand-text" style={{ fontSize: 12, color: '#C9A84C' }}>oria</span>
           <span style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.75)' }}>
             {t('mbti.answered', { count: answeredCount, total: questions.length })}
           </span>

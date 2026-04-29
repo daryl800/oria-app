@@ -287,11 +287,11 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
   return (
     <div className="oria-page oria-container animate-fade-in">
       {/* Header */}
-      <header style={{ marginBottom: 32, textAlign: 'center' }}>
-        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: '#C9A84C', textTransform: 'uppercase', marginBottom: 8 }}>
+      <header className="oria-page-header">
+        <div className="oria-card-label">
           {t('chart.header')}
         </div>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: '#F0EDE8' }}>
+        <h1 className="oria-page-title">
           {(() => {
             const raw = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
             return raw.includes('.') ? raw.split('.').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : raw;
