@@ -235,9 +235,9 @@ export async function deletePerson(id: string) {
   return res.json();
 }
 
-export async function comparePerson(person_id: string) {
+export async function comparePerson(person_id: string, lang: string = 'en') {
   const headers = await getHeaders();
-  const res = await fetch(`${API_URL}/api/compare`, {
+  const res = await fetch(`${API_URL}/api/compare?lang=${lang}`, {
     method: 'POST',
     headers,
     body: JSON.stringify({ person_id }),

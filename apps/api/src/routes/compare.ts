@@ -22,8 +22,8 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
     .eq('id', userId)
     .single();
 
-  const isPro = userData?.plan === 'plus';
-  console.log('[compare] userId:', userId, 'plan:', userData?.plan, 'isPro:', isPro);
+  const isPlus = userData?.plan === 'plus';
+  console.log('[compare] userId:', userId, 'plan:', userData?.plan, 'isPlus:', isPlus);
 
   const { person_id } = req.body;
 
@@ -70,8 +70,22 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Person not found.' });
   }
 
-  // 3. Free user: return preview immediately (no LLM cost)
-  if (!isPro) {
+  // 3. Check cache for Plus users before hitting LLM
+  const lang = (req.query.lang as string) ?? userData?.preferred_language ?? 'en';
+  if (isPlus && person.comparison_result) {
+    console.log('[compare] serving cached comparison for person:', person.id);
+    return res.status(200).json({
+      locked: false,
+      person_name: person.name,
+      relationship: person.relationship,
+      comparison: person.comparison_result,
+      comparison_lang: person.comparison_lang,
+      cached: true,
+    });
+  }
+
+  // 3b. Free user: return preview immediately (no LLM cost)
+  if (!isPlus) {
     return res.status(200).json({
       locked: true,
       person_name: person.name,
@@ -151,7 +165,7 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
       person.relationship,
       { ...personPillars.bazi, day_master: personPillars.bazi.day_master, five_elements_strength: personPillars.bazi.five_elements_strength },
       person.mbti_type ?? null,
-      (req.query.lang as string) ?? userData?.lang ?? 'zh-TW',
+      lang,
       (req as any).userName ?? 'You',
     );
     const raw = await complete(messages);
@@ -162,11 +176,23 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Failed to generate comparison.' });
   }
 
+  // Save comparison to cache on persons table
+  await supabase
+    .from('persons')
+    .update({
+      comparison_result: comparison,
+      comparison_lang: lang,
+      comparison_cached_at: new Date().toISOString(),
+    })
+    .eq('id', person.id)
+    .eq('user_id', userId);
+
   return res.status(200).json({
     locked: false,
     person_name: person.name,
     relationship: person.relationship,
     comparison,
+    cached: false,
   });
 });
 
