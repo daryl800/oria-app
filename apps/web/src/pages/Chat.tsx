@@ -208,7 +208,7 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
       <div
         className="oria-glass"
         style={{
-          padding: '14px 22px',
+          padding: '20px 22px 16px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -266,8 +266,8 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
                     width: '100%',
                     textAlign: 'left',
                     cursor: 'pointer',
-                    marginBottom: 14,
-                    padding: '18px 18px',
+                    marginBottom: 8,
+                    padding: '12px 16px',
                   }}
                 >
                   <div style={{ marginBottom: 6, fontSize: 17, fontWeight: 650 }}>
@@ -517,11 +517,12 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
       <div
         className="oria-glass"
         style={{
-          padding: '16px 20px 26px',
+          padding: '12px 20px 16px',
           borderBottom: 'none',
           borderLeft: 'none',
           borderRight: 'none',
           backdropFilter: 'blur(16px)',
+          marginBottom: 'calc(var(--oria-nav-height) + 8px)',
         }}
       >
         <style>{`
