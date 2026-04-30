@@ -107,6 +107,7 @@ export default function LocationAutocomplete({
 
     setTzLoading(true);
     setOpen(false);
+    userTyped.current = false;
     onInputChange(`${city}${flag ? ' ' + flag : ''}, ${country}`);
 
     try {
