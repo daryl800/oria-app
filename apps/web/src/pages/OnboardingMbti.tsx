@@ -189,7 +189,7 @@ export default function OnboardingMbti() {
       {/* Main content */}
       <div style={{
         flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        paddingTop: currentIndex === 0 ? 92 : 130, paddingBottom: 120,
+        paddingTop: currentIndex === 0 ? 48 : 80, paddingBottom: 120,
         position: 'relative', zIndex: 1,
       }}>
         <div style={{

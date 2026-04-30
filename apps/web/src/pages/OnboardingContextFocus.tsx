@@ -47,7 +47,7 @@ export default function OnboardingContextFocus() {
       <style>{`
         .oria-context-page {
           min-height: calc(100svh - var(--oria-shell-top-offset, 0px));
-          padding: 72px 24px 48px;
+          padding: 24px 24px 48px;
           background:
             radial-gradient(circle at 50% -12%, rgba(118, 35, 190, 0.46), transparent 30%),
             radial-gradient(circle at 20% 28%, rgba(103, 58, 183, 0.22), transparent 24%),
