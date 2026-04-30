@@ -89,7 +89,7 @@ export default function LocationAutocomplete({
         });
         const data: NominatimResult[] = await res.json();
         setSuggestions(data);
-        setOpen(true);
+        if (userTyped.current) setOpen(true);
       } catch {
         setSuggestions([]);
       } finally {
