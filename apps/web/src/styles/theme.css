@@ -1344,6 +1344,10 @@ html[lang^="zh"] .oria-landing-title {
   font-size: 13px;
 }
 
+.oria-home-footer {
+  padding-bottom: calc(var(--oria-nav-height) + 16px);
+}
+
 .oria-home-page {
   position: relative;
   display: grid;
@@ -1367,12 +1371,12 @@ html[lang^="zh"] .oria-landing-title {
 }
 
 .oria-home-hero {
-  gap: 0;
+  gap: 8px;
   margin-bottom: 2px;
 }
 
 .oria-home-hero .oria-card-label {
-  margin-bottom: -2px;
+  margin-bottom: 0;
 }
 
 .oria-home-hero .oria-page-title {
@@ -1397,8 +1401,8 @@ html[lang^="zh"] .oria-landing-title {
 
 .oria-home-primary-card h2 {
   margin: 0;
-  font-size: clamp(1.42rem, 2.4vw, 2rem);
-  line-height: 1.14;
+  font-size: clamp(1.15rem, 2vw, 1.6rem);
+  line-height: 1.2;
 }
 
 .oria-home-primary-subtext {
@@ -1454,6 +1458,15 @@ html[lang^="zh"] .oria-home-primary-card h2 {
 .oria-home-secondary-grid .oria-feature-card {
   min-height: 156px;
   padding: 20px;
+}
+
+.oria-home-secondary-grid .text-lg {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.oria-home-secondary-grid .oria-feature-desc {
+  font-size: 13px;
 }
 
 .oria-home-secondary-grid .oria-feature-card::before {
