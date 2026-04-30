@@ -39,7 +39,7 @@
     "avoid": "Undvik just nu",
     "reminder": "Dagens påminnelse",
     "chat_prompt": "Vill du titta djupare?",
-    "chat_cta": "Prata med oria",
+    "chat_cta": "Prata med Oria om idag",
     "deep_open": "Expandera dagens vägledning ↓",
     "deep_close": "Dölj dagens vägledning ↑",
     "moment": "Dagens läge",
@@ -274,7 +274,7 @@
       "day_master": "Day Master",
       "core_pattern": "Kärnmönster",
       "core_text": "Din Day Master är {{dayMaster}}, vilket tyder på en naturligt starkare riktning mot handling, omdöme och hur du möter världen.",
-      "chat_cta": "Starta samtal från Fyra pelare",
+      "chat_cta": "Frågor om din Bazi?",
       "chat_prefill": "Utifrån mitt Fyra pelare-diagram och Day Master \"{{dayMaster}}\", vad bör jag vara mest uppmärksam på just nu?",
       "deep_open": "Se detaljer för Fyra pelare ↓",
       "deep_close": "Dölj detaljer för Fyra pelare ↑",
@@ -310,7 +310,7 @@
       "identity": "{{type}}: {{nickname}}",
       "key_insight": "En viktig insikt",
       "key_insight_text": "Du fungerar bäst när du kan reda ut fakta och sedan fatta ett stabilt, praktiskt beslut.",
-      "chat_cta": "Starta samtal från den här typen",
+      "chat_cta": "Vill du utforska din MBTI mer?",
       "chat_prefill": "Utifrån min {{type}}-personlighet, vad bör jag tänka på när jag fattar beslut?",
       "deep_open": "Se personlighetsdetaljer ↓",
       "deep_close": "Dölj personlighetsdetaljer ↑",
@@ -493,7 +493,7 @@
       "analyzing": "Analyserar ditt mönster...",
       "key_traits": "Viktiga drag",
       "key_insight": "En viktig insikt",
-      "chat_cta": "Starta samtal från den här läsningen",
+      "chat_cta": "Frågor om din karta?",
       "chat_prefill": "Utifrån mina diagramdrag \"{{traits}}\", vad bör jag fokusera på just nu?",
       "deep_open": "✦ Djupare innehåll ↓",
       "deep_close": "Dölj djupare innehåll ↑",
@@ -694,5 +694,23 @@
       "how_to_handle": "Hur ni kan navigera detta"
     },
     "upgrade_message": "Lås upp hela jämförelsen med oria Plus."
+  },
+  "chatEntry": {
+    "daily": {
+      "button": "Prata med Oria om dagens riktning",
+      "prompt": "Vad bör jag fokusera på idag utifrån mitt nuvarande läge? Finns det något jag bör vara försiktig med?"
+    },
+    "bazi": {
+      "button": "Utforska din situation genom Bazi",
+      "prompt": "Utifrån min Bazi, hur ser min nuvarande utveckling ut? Vad bör jag följa eller undvika?"
+    },
+    "mbti": {
+      "button": "Reflektera över dina tankar med MBTI",
+      "prompt": "Utifrån min MBTI-typ, vad bör jag tänka på när jag fattar beslut? Har jag några blinda fläckar?"
+    },
+    "chart": {
+      "button": "Utforska din riktning genom din karta",
+      "prompt": "Utifrån min karta, vad bör jag fokusera på just nu i livet? Vilken riktning passar mig bäst?"
+    }
   }
 }

@@ -39,7 +39,7 @@
     "avoid": "今は避けたいこと",
     "reminder": "今日のひとこと",
     "chat_prompt": "もう少し深く見ますか？",
-    "chat_cta": "oriaと話す",
+    "chat_cta": "今日のことを Oria に聞く",
     "deep_open": "今日のガイダンスを展開 ↓",
     "deep_close": "今日のガイダンスを閉じる ↑",
     "moment": "今日の状況",
@@ -274,7 +274,7 @@
       "day_master": "Day Master",
       "core_pattern": "Core Pattern",
       "core_text": "Your Day Master is {{dayMaster}}, suggesting a naturally stronger orientation toward action, judgment, and how you engage with the world.",
-      "chat_cta": "Start a conversation from Four Pillars",
+      "chat_cta": "八字について質問する",
       "chat_prefill": "Based on my Four Pillars chart and Day Master {{dayMaster}}, what should I pay attention to right now?",
       "deep_open": "See Four Pillars details ↓",
       "deep_close": "Hide Four Pillars details ↑",
@@ -310,7 +310,7 @@
       "identity": "{{type}}: {{nickname}}",
       "key_insight": "One key insight",
       "key_insight_text": "You work best when you can clarify the facts, then make a steady and practical decision.",
-      "chat_cta": "Start a conversation from this type",
+      "chat_cta": "MBTIについてもっと知りたい？",
       "chat_prefill": "Based on my {{type}} personality, what should I pay attention to when making decisions?",
       "deep_open": "See personality details ↓",
       "deep_close": "Hide personality details ↑",
@@ -493,7 +493,7 @@
       "analyzing": "Analyzing your pattern...",
       "key_traits": "Key traits",
       "key_insight": "One key insight",
-      "chat_cta": "Start a conversation from this reading",
+      "chat_cta": "命盤について質問する",
       "chat_prefill": "Based on my chart traits {{traits}}, what should I focus on right now?",
       "deep_open": "✦ Deeper content ↓",
       "deep_close": "Hide deeper content ↑",
@@ -694,5 +694,23 @@
       "how_to_handle": "この関係との向き合い方"
     },
     "upgrade_message": "oria Plus で完全な関係性インサイトを解放できます。"
+  },
+  "chatEntry": {
+    "daily": {
+      "button": "今日の流れについて Oria と話す",
+      "prompt": "今の自分の状態から見て、今日は何に集中すべきですか？注意すべきことはありますか？"
+    },
+    "bazi": {
+      "button": "八字から今の流れを見る",
+      "prompt": "私の八字から見ると、今の運勢はどんな流れですか？従うべきこと、避けるべきことは？"
+    },
+    "mbti": {
+      "button": "MBTIで自分の考えを整理する",
+      "prompt": "私のMBTIタイプから見て、意思決定の際に気をつけるべきことは何ですか？盲点はありますか？"
+    },
+    "chart": {
+      "button": "命盤から方向性を探る",
+      "prompt": "私の命盤から見て、今どこに力を入れるべきですか？どんな方向が合っていますか？"
+    }
   }
 }

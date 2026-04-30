@@ -39,7 +39,7 @@
     "avoid": "暂时避免什么",
     "reminder": "今日提醒",
     "chat_prompt": "想深入看看？",
-    "chat_cta": "与 oria 对话",
+    "chat_cta": "今天想和 Oria 聊聊？",
     "deep_open": "展开今日解读 ↓",
     "deep_close": "收起今日解读 ↑",
     "moment": "今日情境",
@@ -274,7 +274,7 @@
       "day_master": "日主",
       "core_pattern": "核心结构",
       "core_text": "你的日主为{{dayMaster}}，整体呈现偏强的行動与判断傾向。这不是单純的性格描述，而是一種你面对世界时自然会启動的能量结构。",
-      "chat_cta": "以四柱命盘开始对话",
+      "chat_cta": "有关于八字的问题吗？",
       "chat_prefill": "根据我的四柱命盘和日主「{{dayMaster}}」，我现在最应该留意什么？",
       "deep_open": "深入四柱 ↓",
       "deep_close": "收起四柱细节 ↑",
@@ -310,7 +310,7 @@
       "identity": "{{type}}：穩定、务实、重視可靠判断",
       "key_insight": "一个重点",
       "key_insight_text": "你适合先把事情看清楚，再做穩定、可執行的判断。",
-      "chat_cta": "用这个性格开始对话",
+      "chat_cta": "想了解更多关于MBTI的问题吗？",
       "chat_prefill": "根据我的 {{type}} 性格，我在做决定时最需要注意什么？",
       "deep_open": "深入性格细节 ↓",
       "deep_close": "收起性格细节 ↑",
@@ -493,7 +493,7 @@
       "analyzing": "正在解析你的命盘...",
       "key_traits": "关鍵特質",
       "key_insight": "一个重点",
-      "chat_cta": "以这份命盘开始对话",
+      "chat_cta": "有没有什么关于你的命盘的问题吗？",
       "chat_prefill": "根据我的命盘特質「{{traits}}」，我现在最应该关注什么？",
       "deep_open": "✦ 深入内容 ↓",
       "deep_close": "收起深入内容 ↑",
@@ -694,5 +694,23 @@
       "how_to_handle": "如何相处与调整"
     },
     "upgrade_message": "使用 oria Plus 解锁完整关系解析。"
+  },
+  "chatEntry": {
+    "daily": {
+      "button": "今天想和 Oria 聊聊？",
+      "prompt": "我今天的状态适合专注在哪里？有什么需要特别注意的吗？"
+    },
+    "bazi": {
+      "button": "有关于八字的问题吗？",
+      "prompt": "从我的八字来看，我现在的运势是偏什么方向？有什么应该顺势或避免的？"
+    },
+    "mbti": {
+      "button": "想了解更多关于MBTI的问题吗？",
+      "prompt": "以我的 MBTI 性格，我在做决定时应该注意什么？我有没有什么盲点？"
+    },
+    "chart": {
+      "button": "有没有什么关于你的命盘的问题吗？",
+      "prompt": "从我的命盘来看，我目前的人生重点应该放在哪里？接下来比较适合怎样走？"
+    }
   }
 }

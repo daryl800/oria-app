@@ -39,7 +39,7 @@
     "avoid": "Avoid for now",
     "reminder": "Today’s reminder",
     "chat_prompt": "Want to look a little deeper?",
-    "chat_cta": "Talk with oria",
+    "chat_cta": "Talk to Oria about today",
     "deep_open": "Expand today’s guidance ↓",
     "deep_close": "Hide today’s guidance ↑",
     "moment": "Today’s moment",
@@ -274,7 +274,7 @@
       "day_master": "Day Master",
       "core_pattern": "Core Pattern",
       "core_text": "Your Day Master is {{dayMaster}}, suggesting a naturally stronger orientation toward action, judgment, and how you engage with the world.",
-      "chat_cta": "Start a conversation from Four Pillars",
+      "chat_cta": "Questions about your BaZi?",
       "chat_prefill": "Based on my Four Pillars chart and Day Master {{dayMaster}}, what should I pay attention to right now?",
       "deep_open": "See Four Pillars details ↓",
       "deep_close": "Hide Four Pillars details ↑",
@@ -310,7 +310,7 @@
       "identity": "{{type}}: {{nickname}}",
       "key_insight": "One key insight",
       "key_insight_text": "You work best when you can clarify the facts, then make a steady and practical decision.",
-      "chat_cta": "Start a conversation from this type",
+      "chat_cta": "Want to explore your MBTI more?",
       "chat_prefill": "Based on my {{type}} personality, what should I pay attention to when making decisions?",
       "deep_open": "See personality details ↓",
       "deep_close": "Hide personality details ↑",
@@ -493,7 +493,7 @@
       "analyzing": "Analyzing your pattern...",
       "key_traits": "Key traits",
       "key_insight": "One key insight",
-      "chat_cta": "Start a conversation from this reading",
+      "chat_cta": "Questions about your chart?",
       "chat_prefill": "Based on my chart traits {{traits}}, what should I focus on right now?",
       "deep_open": "✦ Deeper content ↓",
       "deep_close": "Hide deeper content ↑",
@@ -694,5 +694,23 @@
       "how_to_handle": "How To Navigate This"
     },
     "upgrade_message": "Unlock the full comparison with oria Plus."
+  },
+  "chatEntry": {
+    "daily": {
+      "button": "Talk to Oria about today's direction",
+      "prompt": "What should I focus on today based on my current state? Is there anything I should be careful about?"
+    },
+    "bazi": {
+      "button": "Explore your current situation through Bazi",
+      "prompt": "Based on my Bazi, what is the current trend of my luck? What should I follow or avoid?"
+    },
+    "mbti": {
+      "button": "Reflect on your thoughts with MBTI",
+      "prompt": "Based on my MBTI type, what should I be aware of when making decisions? Do I have any blind spots?"
+    },
+    "chart": {
+      "button": "Explore your direction through your chart",
+      "prompt": "Based on my chart, where should I focus in life right now? What direction suits me best?"
+    }
   }
 }
