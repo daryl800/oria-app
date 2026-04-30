@@ -123,6 +123,15 @@ function getMbtiContext(mbti: any): string {
 感情風格：${mbti.relationship_style || ''}`;
 }
 
+
+function getZodiacContext(zodiac: any): string {
+  if (!zodiac) return '星座：未知';
+  return `星座：${zodiac.sign || ''}
+元素：${zodiac.element || ''}
+模式：${zodiac.modality || ''}
+性格提示：${zodiac.traits?.join('、') || ''}`;
+}
+
 function getRespondIn(lang: string): string {
   if (lang === 'zh-TW') return '請用繁體中文回應。';
   if (lang === 'zh-CN') return '请用简体中文回应。';
@@ -168,10 +177,11 @@ const STEM_TONE: Record<string, { en: string; zh: string }> = {
   '癸': { en: 'Gentle Water', zh: '沉穩癸水' }, 'Gui': { en: 'Gentle Water', zh: '沉穩癸水' },
 };
 
-export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = []): Messages {
+export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = [], zodiac: any = null): Messages {
   const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
+  const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
   const contextFocusSection = getContextFocusSection(context_focus, lang);
   const currentYear = new Date().getFullYear();
@@ -188,6 +198,9 @@ export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en', 
 4. 所有描述必須積極正向、以優勢為主，將限制描述為「情境性考量」而非缺陷
 5. 結合MBTI從東西方雙角度呈現性格全貌
 語氣：有洞察力、直接、溫暖，不說教，不做絕對預測。
+星座只作為輔助人格語氣層，不得凌駕八字與 MBTI。
+八字負責深層結構與時運節奏；MBTI 負責行為與決策模式；星座負責情緒表達、社交氣質與用戶容易共鳴的描述。
+若三者衝突，以八字與 MBTI 為主，星座只作補充說明。
 今天日期：${gregorian}
 ${SAFETY_CLAUSE}`,
     },
@@ -197,6 +210,7 @@ ${SAFETY_CLAUSE}`,
 
 ${baziCtx}
 ${mbtiCtx}
+${zodiacCtx}
 ${contextFocusSection ? `\n${contextFocusSection}` : ''}
 
 分析要求（嚴格執行）：
@@ -248,6 +262,7 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
   "friction_point": "一個具體且帶情緒的人生卡點場景（描述用戶在什麼具體情況下容易猶豫或停滯，要有畫面感）",
   "mbti_bazi_resonance": "一句話精準說明八字與MBTI如何相互印證",
   "gentle_nudge": "一句溫和而有力的鼓勵",
+  "zodiac_resonance": "1句說明星座如何補充八字與 MBTI 的人格描述，只能作輔助，不可作主結論",
   "chat_teasers": [
     "留給對話探索的問題1（必須用第一人稱）",
     "留給對話探索的問題2（第一人稱）",
@@ -274,10 +289,12 @@ export function dailyGuidancePrompt(
   todayStem: string,
   todayBranch: string,
   lang: string = 'en',
+  zodiac: any = null,
 ): Messages {
   const { gregorian, dayOfWeek } = getDateContext();
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
+  const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
   const todayElement = STEM_ELEMENT[todayStem] ?? '土';
   const todayTone = STEM_TONE[todayStem] ?? { en: 'Steady Earth', zh: '穩重土氣' };
@@ -294,6 +311,7 @@ export function dailyGuidancePrompt(
 - 不說教，不使用通用成功學語句
 - 全文30秒內可讀完
 - 必須讓內容看起來「只屬於這個人」
+星座在每日指引中只能用於補充今日情緒語氣或社交反應，不得主導今日判斷。
 今天日期：${gregorian}
 ${SAFETY_CLAUSE}`,
     },
@@ -308,6 +326,7 @@ ${SAFETY_CLAUSE}`,
 用戶命盤：
 ${baziCtx}
 ${mbtiCtx}
+${zodiacCtx}
 
 【核心分析邏輯（必須執行）】
 1. 判斷今日${todayElement}與日主${bazi.day_master}的關係（生 / 剋 / 洩 / 耗 / 比）
@@ -344,7 +363,8 @@ ${mbtiCtx}
   "tension": "一句描述今日可能出現的內在張力或矛盾（例如：想推進但能量不足）",
   "nudge": "一句短而有力的提醒，必須帶對比或反直覺",
   "deeper_insight": "（Plus專屬）2-3句更深層的洞察，結合今日干支與大運的互動，指出今天對用戶長期命盤的意義",
-  "suggested_prompts": ["更深入探索今天情緒或決策的問題","與命盤相關的個人問題","延伸今日情境的提問"]
+  "suggested_prompts": ["更深入探索今天情緒或決策的問題","與命盤相關的個人問題","延伸今日情境的提問"],
+  "zodiac_tone": "一句可選內容：用星座補充今天的情緒或社交語氣；若星座未知，請留空字串"
 }
 只回傳JSON。${respondIn}`,
     },
@@ -360,11 +380,13 @@ export function chatPrompt(
   lang: string = 'en',
   userName: string = '',
   context_focus: string[] = [],
+  zodiac: any = null,
 ): Messages {
   const { gregorian, dayOfWeek } = getDateContext();
   const name = userName || '用戶';
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
+  const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
   const contextFocusSection = getContextFocusSection(context_focus, lang);
 
@@ -380,12 +402,13 @@ export function chatPrompt(
 【用戶資料】
 ${baziCtx}
 ${mbtiCtx}
+${zodiacCtx}
 ${contextFocusSection ? `${contextFocusSection}\n` : ''}
 —————————————————
 
 【你的理解方式】
 
-每次回應，請自然結合三層：
+每次回應，請自然結合四層：
 
 1. 八字（先天）
 - 日主：${bazi.day_master}
@@ -396,7 +419,11 @@ ${contextFocusSection ? `${contextFocusSection}\n` : ''}
 - 決策方式
 - 壓力反應
 
-3. 當下問題（情境）
+3. 星座（情緒與社交氣質，輔助）
+- 只在與情緒、人際、關係、自我感受相關時自然帶入
+- 不必每次都提
+
+4. 當下問題（情境）
 - 用戶正在面對的選擇或狀態
 
 👉 重點：幫助用戶理解「為什麼會這樣」與「可以怎樣應對」
@@ -630,10 +657,14 @@ export function comparisonPrompt(
   personMbtiType: string | null,
   lang: string = 'en',
   userName: string = 'You',
+  userZodiac: any = null,
+  personZodiac: any = null,
 ): Messages {
   const { gregorian } = getDateContext();
   const userBaziCtx = getBaziContext(userBazi);
   const userMbtiCtx = getMbtiContext(userMbti);
+  const userZodiacCtx = getZodiacContext(userZodiac);
+  const personZodiacCtx = getZodiacContext(personZodiac);
   const respondIn = getRespondIn(lang);
 
   const personElementStr = `木${personBazi.five_elements_strength?.Wood ?? 0} 火${personBazi.five_elements_strength?.Fire ?? 0} 土${personBazi.five_elements_strength?.Earth ?? 0} 金${personBazi.five_elements_strength?.Metal ?? 0} 水${personBazi.five_elements_strength?.Water ?? 0}`;
@@ -649,6 +680,9 @@ export function comparisonPrompt(
 3. 不做吉凶判斷，只描述傾向與模式
 4. 語氣溫和、有洞察力，不說教
 5. 必須讓用戶感覺「這說的就是我們」
+星座只作為輔助人格語氣層，不得凌駕八字與 MBTI。
+八字負責深層結構與時運節奏；MBTI 負責行為與決策模式；星座負責情緒表達、社交氣質與用戶容易共鳴的描述。
+若三者衝突，以八字與 MBTI 為主，星座只作補充說明。
 今天日期：${gregorian}
 ${SAFETY_CLAUSE}`,
     },
@@ -659,11 +693,13 @@ ${SAFETY_CLAUSE}`,
 【${userName}（Person A）】
 ${userBaziCtx}
 ${userMbtiCtx}
+${userZodiacCtx}
 
 【${personName}（Person B，${personRelationship}）】
 日主：${personBazi.day_master}
 五行力量：${personElementStr}
 MBTI：${personMbtiType ?? '未知'}
+${personZodiacCtx}
 
 分析要求：
 1. 找出兩人五行之間最顯著的互動（生或剋）
@@ -671,6 +707,7 @@ MBTI：${personMbtiType ?? '未知'}
 3. 找出最容易產生摩擦的場景
 4. 找出兩人最自然互補的地方
 5. 給出一個具體可行的相處建議
+6. 若雙方星座資料存在，請用星座補充兩人的情緒節奏、相處氣質與社交反應；但主要判斷仍以五行互動與 MBTI 為主
 
 分析時請根據兩人的關係類型（${personRelationship}）調整場景與語氣。
 如果是伴侶，重點放在親密關係與情緒節奏；
@@ -685,7 +722,8 @@ MBTI：${personMbtiType ?? '未知'}
   "tension": "2-3句描述最容易出現摩擦的場景或模式",
   "complement": "2-3句描述兩人最自然互補的地方",
   "how_to_handle": "2-3句溫和且具體的相處建議",
-  "energetic_pattern": "1-2句點出兩人關係中反覆出現的深層模式"
+  "energetic_pattern": "1-2句點出兩人關係中反覆出現的深層模式",
+  "zodiac_tone": "1-2句說明星座如何補充兩人的相處氣質；若資料不足，請留空字串"
 }
 只回傳JSON。${respondIn}`,
     },
