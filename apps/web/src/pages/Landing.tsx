@@ -39,10 +39,7 @@ export default function Landing() {
           <p className="oria-landing-lead">
             {t('landing.lead')}
             {' '}{t('landing.emphasis')}
-          </p>
-
-          <p className="oria-landing-method">
-            {t('landing.method')}
+            <span className="oria-landing-method-inline">{t('landing.method')}</span>
           </p>
 
           <div className="oria-landing-actions">
