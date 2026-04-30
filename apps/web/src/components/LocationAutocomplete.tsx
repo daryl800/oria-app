@@ -67,6 +67,7 @@ export default function LocationAutocomplete({
   labelStyle,
 }: LocationAutocompleteProps) {
   const [open, setOpen] = useState(false);
+  const userTyped = useRef(false);
   const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [tzLoading, setTzLoading] = useState(false);
@@ -148,7 +149,7 @@ export default function LocationAutocomplete({
         style={{ ...inputStyle, appearance: 'none' }}
         placeholder={placeholder}
         value={value}
-        onFocus={() => value.length >= 2 && suggestions.length > 0 && setOpen(true)}
+        onFocus={() => userTyped.current && value.length >= 2 && suggestions.length > 0 && setOpen(true)}
         onChange={e => {
           onInputChange(e.target.value);
           if (selectedLocation) onSelect(null as any); // clear selection on edit
