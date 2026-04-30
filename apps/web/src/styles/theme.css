@@ -1266,13 +1266,9 @@ html[lang^="zh"] .oria-landing-title {
 }
 
 .oria-landing-disclaimer {
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  bottom: 24px;
+  position: relative;
   max-width: 420px;
-  margin: 0 auto;
-  margin-bottom: 0;
+  margin: 12px auto 0;
   color: #8E879A;
   font-size: 11px;
   line-height: 1.7;
