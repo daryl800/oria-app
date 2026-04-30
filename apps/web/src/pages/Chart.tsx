@@ -480,14 +480,12 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
             className="oria-btn-primary"
             onClick={() => navigate('/chat', {
               state: {
-                prefill: t('chart.bazi.chat_prefill', {
-                  dayMaster: isZH ? (GAN_CN[bazi.day_master] || bazi.day_master) : bazi.day_master,
-                })
+                prefill: t('chatEntry.bazi.prompt')
               }
             })}
             style={{ marginBottom: 14 }}
           >
-            💬 {t('chart.bazi.chat_cta')}
+            💬 {t('chatEntry.bazi.button')}
           </button>
 
           <button
@@ -824,12 +822,12 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
             className="oria-btn-primary"
             onClick={() => navigate('/chat', {
               state: {
-                prefill: t('chart.mbti.chat_prefill', { type: mbti.mbti_type })
+                prefill: t('chatEntry.mbti.prompt')
               }
             })}
             style={{ marginBottom: 14 }}
           >
-            💬 {t('chart.mbti.chat_cta')}
+            💬 {t('chatEntry.mbti.button')}
           </button>
 
           <button
@@ -1240,14 +1238,12 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
                 className="oria-btn-primary"
                 onClick={() => navigate('/chat', {
                   state: {
-                    prefill: t('chart.insight.chat_prefill', {
-                      traits: summary.key_strengths?.slice(0, 2).join(isZH ? '、' : ', ') || summary.headline,
-                    })
+                    prefill: t('chatEntry.chart.prompt')
                   }
                 })}
                 style={{ marginBottom: 14 }}
               >
-                💬 {t('chart.insight.chat_cta')}
+                💬 {t('chatEntry.chart.button')}
               </button>
 
               <button
