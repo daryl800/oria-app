@@ -50,9 +50,9 @@ router.get('/me', async (req: Request, res: Response) => {
       .eq('id', userId)
       .single();
 
-    const isPro = isPlusUser(userRecord);
+    const isPlus = isPlusUser(userRecord);
 
-    return res.json({ profile, bazi, mbti, plan: userRecord?.plan ?? 'free', isPro });
+    return res.json({ profile, bazi, mbti, plan: userRecord?.plan ?? 'free', isPlus });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }

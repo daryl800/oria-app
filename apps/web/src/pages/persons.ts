@@ -11,7 +11,7 @@ const router = Router();
 
 router.post('/', requireAuth, async (req: Request, res: Response) => {
   const userId = req.user!.id;
-  const isPro =
+  const isPlus =
     req.user!.subscription_status === 'active' &&
     new Date(req.user!.current_period_end) > new Date();
 
@@ -24,7 +24,7 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
   }
 
   // Free tier: enforce 1-person limit
-  if (!isPro) {
+  if (!isPlus) {
     const { count, error: countError } = await supabase
       .from('persons')
       .select('id', { count: 'exact', head: true })

@@ -53,7 +53,7 @@ const MBTI_DIMENSIONS: Record<string, Record<string, number>> = {
   ESFP: { E: 80, I: 20, S: 70, N: 30, T: 25, F: 75, J: 25, P: 75 },
 };
 
-export default function Chart({ user, isPro = false }: { user: User; isPro?: boolean }) {
+export default function Chart({ user, isPlus = false }: { user: User; isPlus?: boolean }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const isZH = i18n.language === 'zh-TW';
@@ -1261,7 +1261,7 @@ export default function Chart({ user, isPro = false }: { user: User; isPro?: boo
 
                   {showDeepInsight && (
                 <div className="animate-fade-in" style={{ display: 'grid', gap: 12, marginTop: 18 }}>
-                  {isPro ? (
+                  {isPlus ? (
                     <>
                       {summary.day_master_analysis && (
                         <Section title={t('chart.insight.day_master')}>

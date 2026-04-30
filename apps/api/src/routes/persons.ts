@@ -25,7 +25,7 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
       .eq('id', userId)
       .single();
 
-    const isPro = isPlusUser(userData);
+    const isPlus = isPlusUser(userData);
 
     const { name, relationship, birth_date, birth_time, birth_location, mbti_type } = req.body;
 
@@ -37,7 +37,7 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
     }
 
     // Free tier: check person count
-    if (!isPro) {
+    if (!isPlus) {
         const { count, error: countError } = await supabase
             .from('persons')
             .select('id', { count: 'exact', head: true })

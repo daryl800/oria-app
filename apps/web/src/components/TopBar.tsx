@@ -20,10 +20,10 @@ const NAV_ITEMS = [
 
 interface TopBarProps {
   user?: User | null;
-  isPro?: boolean;
+  isPlus?: boolean;
 }
 
-export default function TopBar({ user, isPro = false }: TopBarProps) {
+export default function TopBar({ user, isPlus = false }: TopBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
@@ -116,7 +116,7 @@ export default function TopBar({ user, isPro = false }: TopBarProps) {
               </div>
             )}
 
-            {isPro && <div className="oria-plus-badge">PLUS</div>}
+            {isPlus && <div className="oria-plus-badge">PLUS</div>}
 
             {isLoggedIn && (
               <button

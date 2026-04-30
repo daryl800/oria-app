@@ -8,7 +8,6 @@ import Home from './pages/Home';
 import Chart from './pages/Chart';
 import Landing from './pages/Landing';
 import OnboardingMbti from './pages/OnboardingMbti';
-import OnboardingContextFocus from './pages/OnboardingContextFocus';
 import OnboardingTransition from './pages/OnboardingTransition';
 import OnboardingSignup from './pages/OnboardingSignup';
 import OnboardingMbtiSummary from './pages/OnboardingMbtiSummary';
@@ -17,6 +16,7 @@ import OnboardingBazi from './pages/OnboardingBazi';
 import DailyGuidance from './pages/DailyGuidance';
 import Profile from './pages/Profile';
 import Chat from './pages/Chat';
+import Settings from './pages/Settings';
 import MbtiQuestionnaire from './pages/MbtiQuestionnaire';
 import Compare from './pages/Compare';
 import LanguageModal from './components/LanguageModal';
@@ -24,45 +24,21 @@ import Upgrade from './pages/Upgrade';
 import AuthCallback from './pages/AuthCallback';
 import BottomNav from './components/BottomNav';
 import TopBar from './components/TopBar';
-import OriaLogo from './components/OriaLogo';
-import RelationshipInsights from './pages/People';
-import AddPerson from './pages/AddPerson';
-import ComparisonResult from './pages/ComparisonResult';
 
-function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
+function AppShell({ user, isPro, children }: { user: User | null; isPro: boolean; children: React.ReactNode }) {
   const location = useLocation();
   const isLoggedIn = !!user;
-  const onboardingPaths = ['/onboarding/bazi', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/transition', '/onboarding/context', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup'];
+  const onboardingPaths = ['/onboarding/bazi', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup'];
   const showBottomNav = isLoggedIn && !onboardingPaths.includes(location.pathname);
   return (
-    <div className="oria-shell">
-      <TopBar user={user} isPlus={isPlus} />
-      <div className="oria-shell-frame" style={{ paddingBottom: showBottomNav ? 110 : 24 }}>
+    <>
+      <TopBar user={user} isPro={isPro} />
+      <div style={{ paddingTop: 56, paddingBottom: showBottomNav ? 64 : 0 }}>
         {children}
       </div>
       {showBottomNav && <BottomNav />}
-    </div>
+    </>
   );
-}
-
-function ScrollToTop() {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    const root = document.documentElement;
-    const previousScrollBehavior = root.style.scrollBehavior;
-
-    root.style.scrollBehavior = 'auto';
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-    root.style.scrollBehavior = previousScrollBehavior;
-  }, [pathname]);
-
-  return null;
-}
-
-function isPlusUser(userRecord: any): boolean {
-  const plan = String(userRecord?.plan ?? '').toLowerCase();
-  return plan === 'plus';
 }
 
 export default function App() {
@@ -70,8 +46,8 @@ export default function App() {
   const { i18n } = useTranslation();
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
-  const [isPlus, setIsPro] = useState(false);
-  const [isPlusLoaded, setIsProLoaded] = useState(false);
+  const [isPro, setIsPro] = useState(false);
+  const [isProLoaded, setIsProLoaded] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [langUserId, setLangUserId] = useState<string | null>(null);
 
@@ -93,7 +69,8 @@ export default function App() {
       .select('plan, pro_expires_at, preferred_language')
       .eq('id', userId)
       .single();
-    const pro = isPlusUser(userRecord);
+    const pro = userRecord?.plan === 'plus' &&
+      (!userRecord?.pro_expires_at || new Date(userRecord.pro_expires_at) > new Date());
     setIsPro(pro);
     setIsProLoaded(true);
 
@@ -129,10 +106,8 @@ export default function App() {
   // Still checking auth or onboarding — show spinner
   if (user === undefined || (user && onboardingComplete === null)) return (
     <BrowserRouter>
-      <div className="oria-page oria-loading">
-        <div className="oria-card" style={{ width: 160, textAlign: 'center', marginBottom: 0 }}>
-          <OriaLogo className="oria-loading-logo animate-breathe" size={72} />
-        </div>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0614' }}>
+        <div style={{ fontSize: 48, color: '#C084FC' }}>✦</div>
       </div>
     </BrowserRouter>
   );
@@ -140,19 +115,16 @@ export default function App() {
   // Auth checked — render app
   return (
     <BrowserRouter>
-      <ScrollToTop />
       {showLanguageModal && langUserId && (
         <LanguageModal
           userId={langUserId}
           onDone={() => setShowLanguageModal(false)}
         />
       )}
-      <AppShell user={user} isPlus={isPlus}>
+      <AppShell user={user} isPro={isPro}>
         <Routes>
           <Route path="/" element={!user ? <Landing /> : <Navigate to="/chart" />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
-          <Route path="/onboarding/transition" element={<OnboardingTransition />} />
-          <Route path="/onboarding/context" element={<OnboardingContextFocus />} />
           <Route path="/onboarding/signup" element={<OnboardingSignup />} />
           <Route path="/onboarding/mbti-summary" element={<OnboardingMbtiSummary user={user!} />} />
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
@@ -161,18 +133,13 @@ export default function App() {
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/chart" />} />
 
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
-          <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} isPlus={isPlus} />} />
-          <Route path="/compare" element={!user ? <Navigate to="/" /> : <Navigate to="/relationship-insights" replace />} />
-          <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} isPlus={isPlus} isPlusLoaded={isPlusLoaded} />} />
-          <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} isPlus={isPlus} />} />
+          <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} isPro={isPro} />} />
+          <Route path="/compare" element={!user ? <Navigate to="/" /> : <Compare user={user} />} />
+          <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} isPro={isPro} isProLoaded={isProLoaded} />} />
+          <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} isPro={isPro} />} />
           <Route path="/profile" element={!user ? <Navigate to="/" /> : <Profile user={user} />} />
-          <Route path="/settings" element={!user ? <Navigate to="/" /> : <Navigate to="/profile" replace />} />
+          <Route path="/settings" element={!user ? <Navigate to="/" /> : <Settings user={user} />} />
           <Route path="/mbti-quiz" element={!user ? <Navigate to="/" /> : <MbtiQuestionnaire user={user} />} />
-          <Route path="/relationship-insights" element={!user ? <Navigate to="/" /> : <RelationshipInsights />} />
-          <Route path="/relationship-insights/add" element={!user ? <Navigate to="/" /> : <AddPerson />} />
-          <Route path="/people" element={!user ? <Navigate to="/" /> : <Navigate to="/relationship-insights" replace />} />
-          <Route path="/people/add" element={!user ? <Navigate to="/" /> : <Navigate to="/relationship-insights/add" replace />} />
-          <Route path="/compare/:personId" element={!user ? <Navigate to="/" /> : <ComparisonResult />} />
 
           <Route path="/upgrade" element={!user ? <Navigate to="/" /> : <Upgrade />} />
           <Route path="/auth/callback" element={<AuthCallback />} />

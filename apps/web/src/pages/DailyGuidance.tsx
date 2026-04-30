@@ -78,7 +78,7 @@ function isReadableOnDark(hex: string): boolean {
   return luminance > 0.32;
 }
 
-export default function DailyGuidance({ user, isPro = false, isProLoaded = false }: { user: User; isPro?: boolean; isProLoaded?: boolean }) {
+export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = false }: { user: User; isPlus?: boolean; isPlusLoaded?: boolean }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [summary, setSummary] = useState<DailySummary | null>(null);
@@ -272,14 +272,14 @@ export default function DailyGuidance({ user, isPro = false, isProLoaded = false
           className="oria-card"
           style={{
             padding: '20px 22px',
-            background: isPro
+            background: isPlus
               ? 'linear-gradient(135deg, rgba(255,255,255,0.045), rgba(201,168,76,0.055))'
               : 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(201,168,76,0.08))',
-            border: isPro ? '1px solid rgba(201,168,76,0.18)' : '1px solid rgba(243,200,139,0.24)',
+            border: isPlus ? '1px solid rgba(201,168,76,0.18)' : '1px solid rgba(243,200,139,0.24)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            {isPro ? (
+            {isPlus ? (
               <div
                 aria-hidden="true"
                 style={{
@@ -321,39 +321,39 @@ export default function DailyGuidance({ user, isPro = false, isProLoaded = false
                 gap: 8,
                 marginBottom: 6,
               }}>
-                {!isPro && <Lock size={14} strokeWidth={2.2} color="rgba(243,200,139,0.78)" />}
+                {!isPlus && <Lock size={14} strokeWidth={2.2} color="rgba(243,200,139,0.78)" />}
                 <div style={{
                 fontSize: 24,
                 fontWeight: 850,
                 lineHeight: 1.15,
-                  color: isPro && elementColor && isReadableOnDark(elementColor) ? elementColor : '#F8F3FF',
-                  textShadow: isPro && elementColor && !isReadableOnDark(elementColor)
+                  color: isPlus && elementColor && isReadableOnDark(elementColor) ? elementColor : '#F8F3FF',
+                  textShadow: isPlus && elementColor && !isReadableOnDark(elementColor)
                     ? `0 0 10px ${elementColor}, 0 1px 2px rgba(255,255,255,0.32)`
-                    : isPro && elementColor
+                    : isPlus && elementColor
                       ? `0 0 12px ${elementColor}66`
                       : undefined,
-                  filter: isPro ? undefined : 'blur(1px)',
-                  opacity: isPro ? 1 : 0.78,
+                  filter: isPlus ? undefined : 'blur(1px)',
+                  opacity: isPlus ? 1 : 0.78,
                 }}>
-                  {isPro ? luckyColor : t('daily.color_locked')}
+                  {isPlus ? luckyColor : t('daily.color_locked')}
                 </div>
               </div>
 
               <p style={{ ...bodyTextStyle, fontSize: 15, color: 'rgba(255,255,255,0.72)', marginBottom: 8 }}>
-                {isPro ? colorReason : t('daily.color_locked_teaser')}
+                {isPlus ? colorReason : t('daily.color_locked_teaser')}
               </p>
 
               <p style={{
                 margin: 0,
                 fontSize: 13,
-                color: isPro ? '#F3C88B' : 'rgba(255,255,255,0.45)',
-                fontWeight: isPro ? 800 : 400,
+                color: isPlus ? '#F3C88B' : 'rgba(255,255,255,0.45)',
+                fontWeight: isPlus ? 800 : 400,
                 lineHeight: 1.5,
               }}>
-                {isPro ? t('daily.color_micro_action') : t('daily.color_locked_microcopy')}
+                {isPlus ? t('daily.color_micro_action') : t('daily.color_locked_microcopy')}
               </p>
 
-              {!isPro && (
+              {!isPlus && (
                 <button
                   type="button"
                   onClick={() => navigate('/upgrade')}
@@ -380,14 +380,14 @@ export default function DailyGuidance({ user, isPro = false, isProLoaded = false
 
       <div className="oria-card" style={{
         textAlign: 'center',
-        background: isPro
+        background: isPlus
           ? 'rgba(255,255,255,0.035)'
           : 'linear-gradient(135deg, rgba(201,168,76,0.12), rgba(243,200,139,0.08))',
-        border: isPro ? undefined : '1px solid rgba(243,200,139,0.28)',
+        border: isPlus ? undefined : '1px solid rgba(243,200,139,0.28)',
         display: 'grid',
         gap: 12,
       }}>
-        {!isPro && (
+        {!isPlus && (
           <>
             <div style={{ ...sectionLabelStyle, marginBottom: 0 }}>
               {t('daily.locked_cta_title')}
@@ -398,7 +398,7 @@ export default function DailyGuidance({ user, isPro = false, isProLoaded = false
           </>
         )}
 
-        {isPro ? (
+        {isPlus ? (
           <button
             type="button"
             className="oria-btn-primary"
@@ -460,8 +460,8 @@ export default function DailyGuidance({ user, isPro = false, isProLoaded = false
             ))}
           </div>
 
-          {isProLoaded && (
-            isPro ? (
+          {isPlusLoaded && (
+            isPlus ? (
               summary.deeper_insight && (
                 <div className="oria-card" style={{
                   background: 'rgba(201,168,76,0.08)',

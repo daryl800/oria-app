@@ -64,10 +64,10 @@ router.get('/today', async (req: Request, res: Response) => {
       .eq('id', userId)
       .single();
 
-    const isPro = userData?.plan === 'plus';
+    const isPlus = userData?.plan === 'plus';
     const createdAt = new Date(userData?.created_at ?? Date.now());
     const daysSinceSignup = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
-    const isFullGuidance = isPro || daysSinceSignup <= 5;
+    const isFullGuidance = isPlus || daysSinceSignup <= 5;
 
     if (cached) {
       const summary = cached.summary;
