@@ -1068,7 +1068,6 @@ html[lang^="zh"] .oria-nav-label {
   min-height: 100vh;
   min-height: 100dvh;
   margin-top: calc(-1 * var(--oria-shell-top-offset));
-  padding-top: calc(var(--oria-topbar-height) + 16px);
 }
 
 .oria-landing-page::before {
