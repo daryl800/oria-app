@@ -28,9 +28,9 @@ export default function Landing() {
 
       <div className="oria-landing-overlay animate-fade-in">
         <section className="oria-landing-focus">
-          <div className="mb-6 text-center">
-            <div className="oria-brand-text text-[26px] text-[#C9A84C] md:text-[34px]">
-              oria
+          <div className="mb-6 text-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div className="oria-brand-text" style={{ fontSize: 13, letterSpacing: '0.32em', color: '#C9A84C', fontWeight: 800, textTransform: 'uppercase' }}>
+              ORIA
             </div>
           </div>
           <h1 className="oria-landing-title">

@@ -148,7 +148,7 @@ export default function LocationAutocomplete({
         style={{ ...inputStyle, appearance: 'none' }}
         placeholder={placeholder}
         value={value}
-        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        onFocus={() => value.length >= 2 && suggestions.length > 0 && setOpen(true)}
         onChange={e => {
           onInputChange(e.target.value);
           if (selectedLocation) onSelect(null as any); // clear selection on edit

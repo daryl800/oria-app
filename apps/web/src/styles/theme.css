@@ -27,7 +27,7 @@
   --oria-radius-pill: 999px;
   --oria-nav-height: 84px;
   --oria-topbar-height: 82px;
-  --oria-font: 'Instrument Sans', 'Noto Sans TC', 'Segoe UI', sans-serif;
+  --oria-font: 'Instrument Sans', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR', 'Segoe UI', sans-serif;
   --oria-serif: 'Fraunces', 'Noto Serif TC', Georgia, serif;
 }
 
@@ -94,6 +94,21 @@ body::after {
   height: 28rem;
   border-radius: 999px;
   background: radial-gradient(circle, rgba(124, 58, 237, 0.14), transparent 68%);
+}
+
+
+/* ── Language-specific font overrides ── */
+html[lang^="zh"] body {
+  font-family: 'Noto Sans TC', 'Instrument Sans', sans-serif;
+}
+html[lang="zh-CN"] body {
+  font-family: 'Noto Sans SC', 'Noto Sans TC', 'Instrument Sans', sans-serif;
+}
+html[lang="ja"] body {
+  font-family: 'Noto Sans JP', 'Instrument Sans', sans-serif;
+}
+html[lang="ko"] body {
+  font-family: 'Noto Sans KR', 'Instrument Sans', sans-serif;
 }
 
 a {
@@ -763,6 +778,11 @@ html[lang^="zh"] .oria-nav-label {
   align-items: center;
   justify-content: space-between;
   z-index: 1100;
+  background: rgba(13, 13, 20, 0.92);
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.48);
 }
 
 .oria-nav-item {
@@ -1152,7 +1172,7 @@ html[lang^="zh"] .oria-nav-label {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120px 24px 48px;
+  padding: 80px 24px 48px;
 }
 
 .oria-landing-focus {
@@ -1192,10 +1212,10 @@ html[lang^="zh"] .oria-nav-label {
 .oria-landing-title {
   max-width: 360px;
   margin-bottom: 0;
-  font-size: 30px;
-  line-height: 1.25;
-  font-weight: 650;
-  letter-spacing: 0;
+  font-size: 28px;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: #F4EFE7;
   white-space: pre-line;
 }
@@ -1205,12 +1225,12 @@ html[lang^="zh"] .oria-landing-title {
 }
 
 .oria-landing-lead {
-  margin-top: 32px;
+  margin-top: 24px;
   margin-bottom: 0;
   color: #E8DECA;
-  font-size: 20px;
-  line-height: 1.55;
-  font-weight: 650;
+  font-size: 17px;
+  line-height: 1.6;
+  font-weight: 500;
   white-space: pre-line;
 }
 
@@ -1221,12 +1241,12 @@ html[lang^="zh"] .oria-landing-title {
 }
 
 .oria-landing-method {
-  margin-top: 32px;
+  margin-top: 20px;
   margin-bottom: 0;
-  color: rgba(201, 168, 76, 0.8);
-  font-size: 13px;
+  color: rgba(201, 168, 76, 0.7);
+  font-size: 11px;
   line-height: 1.55;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   white-space: pre-line;
 }
@@ -1256,6 +1276,9 @@ html[lang^="zh"] .oria-landing-title {
 
 .oria-landing-primary {
   min-height: 60px;
+  font-size: 18px;
+  padding: 18px 32px;
+  letter-spacing: 0.03em;
 }
 
 .oria-tip-banner {
