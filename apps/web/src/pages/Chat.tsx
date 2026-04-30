@@ -208,7 +208,7 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
       <div
         className="oria-glass"
         style={{
-          padding: '20px 22px 16px',
+          padding: '28px 22px 16px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -536,8 +536,8 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
         <div className="oria-container" style={{ padding: 0, maxWidth: 1040 }}>
           <div
             style={{
-              padding: '14px',
-              borderRadius: 28,
+              padding: '8px',
+              borderRadius: 24,
               background: 'linear-gradient(135deg, rgba(255,255,255,0.92), rgba(248,241,255,0.96))',
               border: '1.5px solid rgba(216,180,254,0.34)',
               boxShadow: '0 18px 48px rgba(18, 0, 40, 0.18)',
@@ -554,10 +554,10 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
                 className="oria-input chat-input"
                 style={{
                   flex: 1,
-                  minHeight: 54,
+                  minHeight: 42,
                   maxHeight: 160,
                   resize: 'none',
-                  padding: '14px 16px',
+                  padding: '10px 12px',
                   fontSize: 16,
                   background: 'transparent',
                   border: 'none',
