@@ -189,7 +189,7 @@ export default function OnboardingMbti() {
       {/* Main content */}
       <div style={{
         flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        paddingTop: currentIndex === 0 ? 48 : 80, paddingBottom: 120,
+        paddingTop: currentIndex === 0 ? 32 : 60, paddingBottom: 100,
         position: 'relative', zIndex: 1,
       }}>
         <div style={{
@@ -215,7 +215,7 @@ export default function OnboardingMbti() {
               </div>
 
               <p style={{
-                fontSize: 18,
+                fontSize: 16,
                 lineHeight: 1.7,
                 color: 'rgba(255, 255, 255, 0.78)',
                 margin: 0,
@@ -225,7 +225,7 @@ export default function OnboardingMbti() {
             </div>
           )}
 
-          <div className="oria-card" style={{ padding: '32px 32px 24px' }}>
+          <div className="oria-card" style={{ padding: '20px 20px 16px' }}>
             <div style={{
               color: 'rgba(216, 180, 254, 0.55)',
               fontSize: 14,
@@ -237,7 +237,7 @@ export default function OnboardingMbti() {
             </div>
 
             <div style={{
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: 650,
               color: '#FFFFFF',
               lineHeight: 1.35,
@@ -268,10 +268,10 @@ export default function OnboardingMbti() {
       {/* Bottom — dots centered, back below */}
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,
-        zIndex: 10, paddingBottom: 28,
+        zIndex: 10, paddingBottom: 16,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', gap: 12,
-        minHeight: 180, justifyContent: 'flex-end',
+        minHeight: 120, justifyContent: 'flex-end',
       }}>
         {/* Ready button — fades in after last answer */}
         <div style={{ width: '100%', maxWidth: 480, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
