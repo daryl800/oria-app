@@ -1173,7 +1173,7 @@ html[lang^="zh"] .oria-nav-label {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--oria-topbar-height) + 24px) 24px 48px;
+  padding: 24px 24px 48px;
 }
 
 .oria-landing-focus {
@@ -1213,9 +1213,9 @@ html[lang^="zh"] .oria-nav-label {
 .oria-landing-title {
   max-width: 360px;
   margin-bottom: 0;
-  font-size: 28px;
-  line-height: 1.3;
-  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.4;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: #F4EFE7;
   white-space: pre-line;
@@ -1226,12 +1226,12 @@ html[lang^="zh"] .oria-landing-title {
 }
 
 .oria-landing-lead {
-  margin-top: 24px;
+  margin-top: 28px;
   margin-bottom: 0;
-  color: #E8DECA;
-  font-size: 17px;
-  line-height: 1.6;
-  font-weight: 500;
+  color: rgba(232, 222, 202, 0.85);
+  font-size: 16px;
+  line-height: 1.7;
+  font-weight: 400;
   white-space: pre-line;
 }
 
@@ -1242,12 +1242,12 @@ html[lang^="zh"] .oria-landing-title {
 }
 
 .oria-landing-method {
-  margin-top: 20px;
+  margin-top: 24px;
   margin-bottom: 0;
-  color: rgba(201, 168, 76, 0.7);
+  color: rgba(201, 168, 76, 0.65);
   font-size: 11px;
   line-height: 1.55;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   white-space: pre-line;
 }
@@ -1739,7 +1739,7 @@ html[lang^="zh"] .oria-home-primary-card h2 {
   }
 
   .oria-landing-overlay {
-    padding-top: 72px;
+    padding-top: 16px;
   }
 
   .oria-landing-title {
