@@ -165,7 +165,7 @@ html[lang^="zh"] .oria-nav-label {
 }
 
 .oria-shell-frame {
-  --oria-shell-top-offset: calc(var(--oria-topbar-height) + 42px);
+  --oria-shell-top-offset: calc(var(--oria-topbar-height) + 16px);
 }
 
 .oria-shell-frame > .oria-page {
@@ -1710,7 +1710,7 @@ html[lang^="zh"] .oria-home-primary-card h2 {
   }
 
   .oria-shell-frame {
-    --oria-shell-top-offset: calc(var(--oria-topbar-height) + 24px);
+    --oria-shell-top-offset: calc(var(--oria-topbar-height) + 12px);
   }
 
   .oria-topbar {
