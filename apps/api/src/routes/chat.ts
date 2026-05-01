@@ -203,6 +203,7 @@ router.post('/send', async (req: Request, res: Response) => {
     }
 
     // build prompt and call LLM
+    const zodiac = bazi.birth_date ? calculateZodiac(bazi.birth_date) : null;
     const messages = chatPrompt(
       { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength, year_pillar: bazi.year_pillar, month_pillar: bazi.month_pillar, day_pillar: bazi.day_pillar, hour_pillar: bazi.hour_pillar, birth_date: bazi.birth_date, dayun: bazi.dayun },
       mbtiProfile,
@@ -212,6 +213,7 @@ router.post('/send', async (req: Request, res: Response) => {
       lang,
       userName,
       mbti.context_focus ?? [],
+      zodiac,
     );
 
     const response = await complete(messages);

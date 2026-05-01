@@ -199,11 +199,13 @@ router.post('/summary', async (req: Request, res: Response) => {
     });
     const mbtiProfile = await mbtiRes.json();
 
+    const zodiac = bazi.birth_date ? calculateZodiac(bazi.birth_date) : null;
     const messages = profileSummaryPrompt(
       { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength, year_pillar: bazi.year_pillar, month_pillar: bazi.month_pillar, day_pillar: bazi.day_pillar, hour_pillar: bazi.hour_pillar, birth_date: bazi.birth_date, dayun: bazi.dayun },
       mbtiProfile,
       lang,
       mbti.context_focus ?? [],
+      zodiac,
     );
     const raw = await complete(messages);
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();

@@ -4,6 +4,7 @@ import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { supabase } from '../lib/supabase';
 import { complete } from '../lib/llm';
+import { calculateZodiac } from '../lib/zodiac';
 import { comparisonPrompt } from '../lib/prompts';
 
 const router = Router();
@@ -158,6 +159,8 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
   let comparison: any;
 
   try {
+    const userZodiac = baziVersion.birth_date ? calculateZodiac(baziVersion.birth_date) : null;
+    const personZodiac = person.birth_date ? calculateZodiac(person.birth_date) : null;
     const messages = comparisonPrompt(
       { ...baziVersion, five_elements_strength: userPillars.bazi.five_elements_strength, day_master: userPillars.bazi.day_master },
       userMbtiObj,
@@ -167,6 +170,8 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
       person.mbti_type ?? null,
       lang,
       (req as any).userName ?? 'You',
+      userZodiac,
+      personZodiac,
     );
     const raw = await complete(messages);
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
