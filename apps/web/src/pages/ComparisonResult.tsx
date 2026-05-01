@@ -117,7 +117,7 @@ export default function ComparisonResult() {
       {!loading && error && (
         <div className="comparison-error">
           <p>{error}</p>
-          <button className="oria-btn-outline" onClick={fetchComparison}>{t('people.try_again')}</button>
+          <button className="oria-btn-outline" onClick={() => fetchComparison(true)}>{t('people.try_again')}</button>
         </div>
       )}
 

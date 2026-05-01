@@ -46,7 +46,11 @@ export default function RelationshipInsights() {
     setDeletingId(id);
     try {
       await deletePerson(id);
-      setPersons((prev) => prev.filter((p) => p.id !== id));
+      setPersons((prev) => {
+        const updated = prev.filter((p) => p.id !== id);
+        sessionStorage.setItem('oria_persons', JSON.stringify(updated));
+        return updated;
+      });
     } catch {
       alert(t('people.remove_error'));
     } finally {
@@ -85,7 +89,7 @@ export default function RelationshipInsights() {
       {error && (
         <div className="oria-card people-error">
           <p>{error}</p>
-          <button className="oria-btn-outline" onClick={fetchPersons}>{t('people.try_again')}</button>
+          <button className="oria-btn-outline" onClick={() => fetchPersons(true)}>{t('people.try_again')}</button>
         </div>
       )}
 
