@@ -58,11 +58,12 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
   }, [lang]);
 
   const cardStyle: React.CSSProperties = {
-    background: 'linear-gradient(135deg, rgba(201,168,76,0.08), rgba(124,58,237,0.06))',
-    border: '1px solid rgba(201,168,76,0.28)',
+    background: 'linear-gradient(135deg, rgba(201,168,76,0.10), rgba(124,58,237,0.07))',
+    border: '1.5px solid rgba(201,168,76,0.45)',
     borderRadius: 20,
-    padding: '24px 22px',
-    marginBottom: 20,
+    padding: '28px 24px',
+    marginBottom: 24,
+    boxShadow: '0 0 32px rgba(201,168,76,0.10), 0 8px 32px rgba(0,0,0,0.24)',
   };
 
   const labelStyle: React.CSSProperties = {
@@ -89,17 +90,28 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
   // Locked / free user state
   if (locked) return (
     <div style={cardStyle}>
-      <div style={labelStyle}>✦ {t('monthly_focus.label')}</div>
-      <p style={{ fontSize: 16, fontWeight: 600, color: '#F0EDE8', margin: '0 0 8px' }}>
+      <div style={{ ...labelStyle, fontSize: 12, letterSpacing: '1.5px', marginBottom: 14 }}>✦ {t('monthly_focus.label')}</div>
+      <h2 style={{
+        fontSize: 22, fontWeight: 700, color: '#F4EFE7',
+        margin: '0 0 8px', lineHeight: 1.3,
+        fontFamily: 'var(--oria-serif)',
+      }}>
         {t('monthly_focus.locked_title')}
+      </h2>
+      <p style={{
+        fontSize: 13, color: 'rgba(201,168,76,0.7)',
+        margin: '0 0 6px', fontStyle: 'italic',
+      }}>
+        你的命盤不會改變，但每個月值得留意的重點會不同。
       </p>
-      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, margin: '0 0 16px' }}>
+      <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(201,168,76,0.3), transparent)', margin: '14px 0' }} />
+      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, margin: '0 0 18px' }}>
         {t('monthly_focus.locked_desc')}
       </p>
       <button
         className="oria-btn-premium"
         onClick={() => navigate('/upgrade')}
-        style={{ fontSize: 14, minHeight: 44 }}
+        style={{ fontSize: 14, minHeight: 48 }}
       >
         {t('monthly_focus.locked_cta')}
       </button>
@@ -111,26 +123,44 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
   return (
     <div style={cardStyle}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <div style={labelStyle}>✦ {t('monthly_focus.label')}</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+        <div style={{ ...labelStyle, fontSize: 12, letterSpacing: '1.5px' }}>✦ {t('monthly_focus.label')}</div>
         <div style={{
-          fontSize: 11, color: 'rgba(201,168,76,0.7)',
-          background: 'rgba(201,168,76,0.08)',
-          border: '1px solid rgba(201,168,76,0.18)',
-          borderRadius: 99, padding: '3px 10px',
+          fontSize: 11, color: '#C9A84C',
+          background: 'rgba(201,168,76,0.12)',
+          border: '1px solid rgba(201,168,76,0.3)',
+          borderRadius: 99, padding: '4px 12px',
+          fontWeight: 700, letterSpacing: '0.08em',
         }}>
-          {focus.month_label}
+          {focus.month_label} · 每月更新
         </div>
       </div>
 
-      {/* Title */}
-      <h3 style={{
-        fontSize: 20, fontWeight: 700, color: '#F4EFE7',
-        margin: '0 0 12px', lineHeight: 1.3,
+      {/* Main title — large and prominent */}
+      <h2 style={{
+        fontSize: 26, fontWeight: 700, color: '#F4EFE7',
+        margin: '0 0 8px', lineHeight: 1.25,
         fontFamily: 'var(--oria-serif)',
+        letterSpacing: '-0.01em',
       }}>
         {focus.title}
-      </h3>
+      </h2>
+
+      {/* Support line */}
+      <p style={{
+        fontSize: 13, color: 'rgba(201,168,76,0.7)',
+        margin: '0 0 18px', lineHeight: 1.6,
+        fontStyle: 'italic',
+      }}>
+        你的命盤不會改變，但每個月值得留意的重點會不同。
+      </p>
+
+      {/* Divider */}
+      <div style={{
+        height: 1,
+        background: 'linear-gradient(90deg, rgba(201,168,76,0.3), transparent)',
+        marginBottom: 18,
+      }} />
 
       {/* Summary */}
       <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.78)', lineHeight: 1.7, margin: '0 0 18px' }}>
