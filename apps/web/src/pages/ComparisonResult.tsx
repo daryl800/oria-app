@@ -49,7 +49,7 @@ export default function ComparisonResult() {
   const { personId } = useParams<{ personId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const personFromState = (location.state as any)?.person;
 
