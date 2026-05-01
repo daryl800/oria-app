@@ -28,12 +28,22 @@ export default function RelationshipInsights() {
     fetchPersons();
   }, []);
 
-  const fetchPersons = async () => {
+  const fetchPersons = async (forceRefresh = false) => {
+    const cacheKey = 'oria_persons';
+    if (!forceRefresh) {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        setPersons(JSON.parse(cached));
+        setLoading(false);
+        return;
+      }
+    }
     setLoading(true);
     setError(null);
     try {
       const res = await getPersons();
       setPersons(res.persons);
+      sessionStorage.setItem(cacheKey, JSON.stringify(res.persons));
     } catch (err: any) {
       setError(t('people.load_error'));
     } finally {

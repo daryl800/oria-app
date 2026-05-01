@@ -62,12 +62,22 @@ export default function ComparisonResult() {
     fetchComparison();
   }, [personId]);
 
-  const fetchComparison = async () => {
+  const fetchComparison = async (forceRefresh = false) => {
+    const cacheKey = `oria_comparison_${personId}`;
+    if (!forceRefresh) {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        setResult(JSON.parse(cached));
+        setLoading(false);
+        return;
+      }
+    }
     setLoading(true);
     setError(null);
     try {
-      const res = await comparePerson(personId!);
+      const res = await comparePerson(personId!, i18n.language);
       setResult(res);
+      sessionStorage.setItem(cacheKey, JSON.stringify(res));
     } catch (err: any) {
       if (err.response?.status === 404) {
         setError(t('compare_result.person_not_found'));
