@@ -66,9 +66,9 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 700,
-    letterSpacing: '0.18em',
+    letterSpacing: '1.5px',
     textTransform: 'uppercase' as const,
     color: '#C9A84C',
     marginBottom: 6,
