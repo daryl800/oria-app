@@ -382,7 +382,7 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
         <button
           type="button"
           className="oria-btn-primary"
-          style={{ width: '100%', maxWidth: 480, margin: '0 auto', display: 'flex' }}
+          style={{ marginBottom: 14 }}
           onClick={() => navigate('/chat', { state: { prefill: t('chatEntry.daily.prompt') } })}
         >
           💬 {t('chatEntry.daily.button')}
