@@ -11,6 +11,7 @@ import BaseRouter from '@src/routes/apiRouter';
 import EnvVars, { NodeEnvs } from './common/constants/env';
 import personsRouter from '@src/routes/persons';
 import compareRouter from '@src/routes/compare';
+import monthlyChartFocusRouter from '@src/routes/monthlyChartFocus';
 
 const app = express();
 
@@ -73,5 +74,6 @@ app.get('/users', (_: Request, res: Response) => {
 
 app.use('/api/persons', personsRouter);
 app.use('/api/compare', compareRouter);
+app.use('/api/monthly-focus', monthlyChartFocusRouter);
 
 export default app;
