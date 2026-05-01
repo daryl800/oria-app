@@ -3,6 +3,7 @@ import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { supabase } from '../lib/supabase';
 import { complete } from '../lib/llm';
+import { calculateZodiac } from '../lib/zodiac';
 import { monthlyChartFocusPrompt } from '../lib/prompts';
 
 const router = Router();
@@ -88,7 +89,8 @@ router.get('/current', authMiddleware, async (req: Request, res: Response) => {
 
     const [yearNum, monthNum] = monthKey.split('-').map(Number);
     const { stem: monthStem, branch: monthBranch } = await getMonthStemBranch(yearNum, monthNum);
-    const messages = monthlyChartFocusPrompt(baziVersion, mbtiProfile, monthKey, lang, null, monthStem, monthBranch);
+    const zodiac = baziVersion.birth_date ? calculateZodiac(baziVersion.birth_date) : null;
+    const messages = monthlyChartFocusPrompt(baziVersion, mbtiProfile, monthKey, lang, zodiac, monthStem, monthBranch);
     const raw = await complete(messages);
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
     const focus = JSON.parse(clean);

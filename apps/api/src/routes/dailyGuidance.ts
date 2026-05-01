@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
 import { complete } from '../lib/llm';
+import { calculateZodiac } from '../lib/zodiac';
 import { dailyGuidancePrompt } from '../lib/prompts';
 
 const router = Router();
@@ -120,6 +121,7 @@ router.get('/today', async (req: Request, res: Response) => {
     }
 
     // 4. call LLM directly from Node.js
+    const zodiac = baziVersion.birth_date ? calculateZodiac(baziVersion.birth_date) : null;
     const messages = dailyGuidancePrompt(
       {
         day_master: baziVersion.day_master,
@@ -135,6 +137,7 @@ router.get('/today', async (req: Request, res: Response) => {
       stem,
       branch,
       lang,
+      zodiac,
     );
     const raw = await complete(messages);
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
 import { complete } from '../lib/llm';
+import { calculateZodiac } from '../lib/zodiac';
 import { profileSummaryPrompt } from '../lib/prompts';
 
 const router = Router();
