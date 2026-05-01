@@ -378,35 +378,29 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
         </div>
       )}
 
-      <div className="oria-card" style={{
-        textAlign: 'center',
-        background: isPlus
-          ? 'rgba(255,255,255,0.035)'
-          : 'linear-gradient(135deg, rgba(201,168,76,0.12), rgba(243,200,139,0.08))',
-        border: isPlus ? undefined : '1px solid rgba(243,200,139,0.28)',
-        display: 'grid',
-        gap: 12,
-      }}>
-        {!isPlus && (
-          <>
-            <div style={{ ...sectionLabelStyle, marginBottom: 0 }}>
-              {t('daily.locked_cta_title')}
-            </div>
-            <p style={{ color: 'rgba(255,255,255,0.68)', fontSize: 15, lineHeight: 1.6, margin: 0 }}>
-              {t('daily.locked_cta_subtext')}
-            </p>
-          </>
-        )}
-
-        {isPlus ? (
-          <button
-            type="button"
-            className="oria-btn-primary"
-            onClick={() => navigate('/chat', { state: { prefill: t('chatEntry.daily.prompt') } })}
-          >
-            💬 {t('chatEntry.daily.button')}
-          </button>
-        ) : (
+      {isPlus ? (
+        <button
+          type="button"
+          className="oria-btn-primary"
+          style={{ width: '100%', maxWidth: 480, margin: '0 auto', display: 'flex' }}
+          onClick={() => navigate('/chat', { state: { prefill: t('chatEntry.daily.prompt') } })}
+        >
+          💬 {t('chatEntry.daily.button')}
+        </button>
+      ) : (
+        <div className="oria-card" style={{
+          textAlign: 'center',
+          background: 'linear-gradient(135deg, rgba(201,168,76,0.12), rgba(243,200,139,0.08))',
+          border: '1px solid rgba(243,200,139,0.28)',
+          display: 'grid',
+          gap: 12,
+        }}>
+          <div style={{ ...sectionLabelStyle, marginBottom: 0 }}>
+            {t('daily.locked_cta_title')}
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.68)', fontSize: 15, lineHeight: 1.6, margin: 0 }}>
+            {t('daily.locked_cta_subtext')}
+          </p>
           <button
             type="button"
             className="oria-btn-premium"
@@ -416,8 +410,8 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
             <Lock size={16} strokeWidth={2.2} />
             {t('daily.locked_cta_button')}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <button
         type="button"
