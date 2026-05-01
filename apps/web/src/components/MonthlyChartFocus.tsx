@@ -122,34 +122,34 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
 
   return (
     <div style={cardStyle}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-        <div style={{ ...labelStyle, fontSize: 12, letterSpacing: '1.5px' }}>✦ {t('monthly_focus.label')}</div>
+      {/* Badge row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <div style={{ ...labelStyle, fontSize: 11, letterSpacing: '1.5px', marginBottom: 0 }}>✦ THIS MONTH</div>
         <div style={{
           fontSize: 11, color: '#C9A84C',
           background: 'rgba(201,168,76,0.12)',
           border: '1px solid rgba(201,168,76,0.3)',
           borderRadius: 99, padding: '4px 12px',
-          fontWeight: 700, letterSpacing: '0.08em',
+          fontWeight: 700, letterSpacing: '0.06em',
         }}>
           {focus.month_label} · 每月更新
         </div>
       </div>
 
-      {/* Main title — large and prominent */}
+      {/* 本月焦點 — large prominent heading */}
       <h2 style={{
-        fontSize: 26, fontWeight: 700, color: '#F4EFE7',
-        margin: '0 0 8px', lineHeight: 1.25,
+        fontSize: 28, fontWeight: 800, color: '#C9A84C',
+        margin: '0 0 4px', lineHeight: 1.2,
         fontFamily: 'var(--oria-serif)',
         letterSpacing: '-0.01em',
       }}>
-        {focus.title}
+        {t('monthly_focus.label')}
       </h2>
 
       {/* Support line */}
       <p style={{
-        fontSize: 13, color: 'rgba(201,168,76,0.7)',
-        margin: '0 0 18px', lineHeight: 1.6,
+        fontSize: 13, color: 'rgba(255,255,255,0.45)',
+        margin: '0 0 16px', lineHeight: 1.6,
         fontStyle: 'italic',
       }}>
         你的命盤不會改變，但每個月值得留意的重點會不同。
@@ -158,9 +158,18 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
       {/* Divider */}
       <div style={{
         height: 1,
-        background: 'linear-gradient(90deg, rgba(201,168,76,0.3), transparent)',
-        marginBottom: 18,
+        background: 'linear-gradient(90deg, rgba(201,168,76,0.35), transparent)',
+        marginBottom: 16,
       }} />
+
+      {/* Monthly title */}
+      <h3 style={{
+        fontSize: 20, fontWeight: 700, color: '#F4EFE7',
+        margin: '0 0 12px', lineHeight: 1.3,
+        fontFamily: 'var(--oria-serif)',
+      }}>
+        {focus.title}
+      </h3>
 
       {/* Summary */}
       <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.78)', lineHeight: 1.7, margin: '0 0 18px' }}>
