@@ -13,7 +13,8 @@ async function getHeaders(): Promise<HeadersInit> {
 
 export async function fetchDailyGuidance(lang: string = 'en') {
   const headers = await getHeaders();
-  const res = await fetch(`${API_URL}/api/daily-guidance/today?lang=${lang}`, { headers });
+  const localDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local timezone
+  const res = await fetch(`${API_URL}/api/daily-guidance/today?lang=${lang}&date=${localDate}`, { headers });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }

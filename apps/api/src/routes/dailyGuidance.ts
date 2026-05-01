@@ -46,7 +46,8 @@ router.get('/today', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
     const lang = (req.query.lang as string) ?? 'en';
-    const today = new Date().toISOString().split('T')[0];
+    // Use client's local date if provided, fallback to server UTC date
+    const today = (req.query.date as string) || new Date().toISOString().split('T')[0];
 
     // 1. check cache — now keyed on (user_id, date, lang)
     const { data: cached } = await supabase
