@@ -736,6 +736,8 @@ export function monthlyChartFocusPrompt(
   monthKey: string,
   lang: string = 'en',
   zodiac: any = null,
+  monthStem: string = '',
+  monthBranch: string = '',
 ): Messages {
   const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
@@ -744,10 +746,11 @@ export function monthlyChartFocusPrompt(
   const respondIn = getRespondIn(lang);
 
   const [year, month] = monthKey.split('-').map(Number);
-  const monthPillar = ANNUAL_PILLARS[year];
-  const monthContext = monthPillar
-    ? `本月流年：${monthPillar.zh}（${monthPillar.element}）`
-    : `月份：${monthKey}`;
+  const yearPillar = ANNUAL_PILLARS[year];
+  const yearContext = yearPillar ? `流年：${yearPillar.zh}（${yearPillar.element}）` : '';
+  const monthContext = monthStem && monthBranch
+    ? `流月：${monthStem}${monthBranch}\n${yearContext}`
+    : yearContext || `月份：${monthKey}`;
 
   return [
     {

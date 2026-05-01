@@ -6,6 +6,28 @@ import { complete } from '../lib/llm';
 import { monthlyChartFocusPrompt } from '../lib/prompts';
 
 const router = Router();
+const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
+
+async function getMonthStemBranch(year: number, month: number): Promise<{ stem: string; branch: string }> {
+  // Use the 15th of the month at noon as a stable reference point
+  const res = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      year,
+      month,
+      day: 15,
+      hour: 12,
+      time_known: true,
+      lang: 'en',
+    }),
+  });
+  const data = await res.json();
+  return {
+    stem: data.bazi.pillars.month.gan,
+    branch: data.bazi.pillars.month.zhi,
+  };
+}
 
 router.get('/current', authMiddleware, async (req: Request, res: Response) => {
   try {
@@ -64,7 +86,9 @@ router.get('/current', authMiddleware, async (req: Request, res: Response) => {
       if (mbtiVersion) mbtiProfile = { mbti_type: mbtiVersion.mbti_type };
     }
 
-    const messages = monthlyChartFocusPrompt(baziVersion, mbtiProfile, monthKey, lang);
+    const [yearNum, monthNum] = monthKey.split('-').map(Number);
+    const { stem: monthStem, branch: monthBranch } = await getMonthStemBranch(yearNum, monthNum);
+    const messages = monthlyChartFocusPrompt(baziVersion, mbtiProfile, monthKey, lang, null, monthStem, monthBranch);
     const raw = await complete(messages);
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
     const focus = JSON.parse(clean);
