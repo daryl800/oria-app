@@ -712,5 +712,18 @@
       "button": "Explore your direction through your chart",
       "prompt": "Based on my chart, where should I focus in life right now? What direction suits me best?"
     }
+  },
+  "monthly_focus": {
+    "label": "This Month's Focus",
+    "loading": "Generating monthly focus…",
+    "next_update": "Next update",
+    "suitable": "Suitable this month",
+    "avoid": "Avoid this month",
+    "reflection": "Reflection",
+    "prompts_label": "Explore further",
+    "locked_title": "This Month's Focus is ready",
+    "locked_desc": "Your chart does not change, but what matters most this month does.",
+    "locked_cta": "Unlock full monthly analysis",
+    "error": "Could not load monthly focus. Please try again later."
   }
 }

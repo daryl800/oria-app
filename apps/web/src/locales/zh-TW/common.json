@@ -712,5 +712,18 @@
       "button": "從你的命盤，聊聊你的方向",
       "prompt": "從我的命盤來看，我目前的人生重點應該放在哪裡？接下來比較適合怎樣走？"
     }
+  },
+  "monthly_focus": {
+    "label": "本月焦點",
+    "loading": "正在生成本月焦點…",
+    "next_update": "下次更新",
+    "suitable": "本月適合",
+    "avoid": "本月避免",
+    "reflection": "本月反思",
+    "prompts_label": "深入探索",
+    "locked_title": "本月焦點已更新",
+    "locked_desc": "你的命盤不會改變，但這個月值得留意的重點會不同。",
+    "locked_cta": "解鎖完整本月分析",
+    "error": "無法載入本月焦點，請稍後再試。"
   }
 }

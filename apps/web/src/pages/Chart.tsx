@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MonthlyChartFocus from '../components/MonthlyChartFocus';
 import { useTranslation } from 'react-i18next';
 import type { User } from '@supabase/supabase-js';
 import { getProfile, getProfileSummary } from '../services/api';
@@ -1139,6 +1140,9 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
           </div>
 
           {/* Loading */}
+          {/* Monthly Chart Focus */}
+          <MonthlyChartFocus isPlus={isPlus} lang={normalizeLanguage(i18n.language)} />
+
           {summaryLoading && (
             <div style={{ padding: '20px 0' }}>
               <div style={{ color: '#C9A84C' }}>
