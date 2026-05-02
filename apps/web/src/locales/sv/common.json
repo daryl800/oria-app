@@ -733,6 +733,7 @@
   "verified": {
     "title": "E-post verifierad！",
     "desc": "Ditt Oria-konto har skapats och verifierats.",
-    "instruction": "Du kan nu stänga den här sidan och gå tillbaka dit du påbörjade registreringen för att fortsätta."
+    "instruction": "Du kan nu stänga den här sidan och gå tillbaka dit du påbörjade registreringen för att fortsätta.",
+    "login_now": "Logga in nu"
   }
 }

@@ -733,6 +733,7 @@
   "verified": {
     "title": "Email Verified!",
     "desc": "Your Oria account has been successfully created and verified.",
-    "instruction": "You can now close this page and go back to where you started signing up to continue."
+    "instruction": "You can now close this page and go back to where you started signing up to continue.",
+    "login_now": "Login Now"
   }
 }

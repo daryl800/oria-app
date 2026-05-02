@@ -8,5 +8,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: window.location.pathname !== '/verified',
     persistSession: true,
     autoRefreshToken: true,
+    flowType: 'pkce',
   },
 });
