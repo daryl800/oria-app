@@ -1,3 +1,5 @@
+// In App.tsx - replace the entire file with this updated version:
+
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -34,11 +36,17 @@ import ComparisonResult from './pages/ComparisonResult';
 function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
   const location = useLocation();
   const isLoggedIn = !!user;
-  const onboardingPaths = ['/onboarding/bazi', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/transition', '/onboarding/context', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup'];
-  const showBottomNav = isLoggedIn && !onboardingPaths.includes(location.pathname);
+
+  // Don't show navigation on these pages
+  const noNavPages = ['/onboarding/bazi', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/transition', '/onboarding/context', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup', '/verified', '/email-confirmed'];
+  const showBottomNav = isLoggedIn && !noNavPages.includes(location.pathname);
+
+  // Don't show TopBar on verification pages
+  const showTopBar = !['/verified', '/email-confirmed'].includes(location.pathname);
+
   return (
     <div className="oria-shell">
-      <TopBar user={user} isPlus={isPlus} />
+      {showTopBar && <TopBar user={user} isPlus={isPlus} />}
       <div className="oria-shell-frame" style={{ paddingBottom: showBottomNav ? 110 : 24 }}>
         {children}
       </div>
@@ -111,6 +119,13 @@ export default function App() {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       const u = session?.user ?? null;
+      const currentPath = window.location.pathname;
+
+      // If this is a verification page, don't auto-login or redirect
+      if (currentPath === '/verified' || currentPath === '/email-confirmed') {
+        // Don't set user state on verification pages
+        return;
+      }
 
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
         setUser(u);
@@ -128,19 +143,11 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (window.location.pathname === '/verified' || window.location.pathname === '/email-confirmed') {
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/verified" element={<Verified />} />
-          <Route path="/email-confirmed" element={<EmailConfirmed />} />
-        </Routes>
-      </BrowserRouter>
-    );
-  }
+  // Still checking auth or onboarding — show spinner (but not on verification pages)
+  const currentPath = window.location.pathname;
+  const isVerificationPage = currentPath === '/verified' || currentPath === '/email-confirmed';
 
-  // Still checking auth or onboarding — show spinner
-  if (user === undefined || (user && onboardingComplete === null)) return (
+  if (!isVerificationPage && (user === undefined || (user && onboardingComplete === null))) return (
     <BrowserRouter>
       <div className="oria-page oria-loading">
         <div className="oria-card" style={{ width: 160, textAlign: 'center', marginBottom: 0 }}>

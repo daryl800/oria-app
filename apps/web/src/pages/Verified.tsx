@@ -11,29 +11,27 @@ export default function Verified() {
   useEffect(() => {
     async function handleVerification() {
       try {
-        // Get the session to check if email was confirmed
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // First, check if there's a session and sign out if there is
+        const { data: { session } } = await supabase.auth.getSession();
 
-        if (error) {
-          console.error('Session error:', error);
-          setStatus('error');
-          return;
+        if (session) {
+          // Sign out to prevent auto-login
+          await supabase.auth.signOut();
         }
 
-        // Check if email is confirmed
-        if (session?.user?.email_confirmed_at) {
-          setStatus('success');
-          // Sign out to keep the flow clean (don't auto-login on this device)
-          await supabase.auth.signOut();
-        } else {
-          // Can also check URL for hash fragment that Supabase adds
-          const hashParams = new URLSearchParams(window.location.hash.substring(1));
-          const accessToken = hashParams.get('access_token');
+        // Check if the email was confirmed by looking at URL params
+        // Supabase adds a hash fragment with access_token on email confirmation
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
 
-          if (accessToken) {
-            // This is a direct confirmation, success
+        if (accessToken) {
+          // This is a fresh email confirmation
+          setStatus('success');
+        } else {
+          // Check if user already has confirmed email
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user?.email_confirmed_at) {
             setStatus('success');
-            await supabase.auth.signOut();
           } else {
             setStatus('error');
           }
