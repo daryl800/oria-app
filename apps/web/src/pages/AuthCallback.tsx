@@ -7,14 +7,13 @@ import OriaLogo from '../components/OriaLogo';
 export default function AuthCallback() {
   const navigate = useNavigate();
   const [status, setStatus] = useState('Completing sign in...');
-
   const handled = useRef(false);
 
   useEffect(() => {
     async function handleCallback() {
       if (handled.current) return;
       handled.current = true;
-      // Wait for Supabase to establish session from URL hash
+
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error || !session) {
         console.error('[Callback] No session:', error?.message);
@@ -23,8 +22,6 @@ export default function AuthCallback() {
         return;
       }
 
-
-      // Get token from URL
       const params = new URLSearchParams(window.location.search);
       const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
 
@@ -38,17 +35,9 @@ export default function AuthCallback() {
         }
       }
 
-      // Clear chart cache so it fetches fresh data
-      const cacheKeys = Object.keys(sessionStorage).filter(k => k.startsWith('oria_chart'));
-      cacheKeys.forEach(k => sessionStorage.removeItem(k));
-
-      // Check if this is an email confirmation — redirect to /verified instead of /chart
-      const next = params.get('next');
-      const type = params.get('type');
-      if (next === '/verified' || type === 'signup') {
-        navigate('/verified', { replace: true });
-        return;
-      }
+      Object.keys(sessionStorage)
+        .filter(k => k.startsWith('oria_chart'))
+        .forEach(k => sessionStorage.removeItem(k));
 
       navigate('/chart', { replace: true });
     }
