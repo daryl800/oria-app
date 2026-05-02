@@ -175,7 +175,7 @@ export default function App() {
       )}
       <AppShell user={user} isPlus={isPlus}>
         <Routes>
-          <Route path="/" element={<EmailHashHandler />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
           <Route path="/onboarding/transition" element={<OnboardingTransition />} />
           <Route path="/onboarding/context" element={<OnboardingContextFocus />} />

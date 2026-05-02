@@ -7,6 +7,15 @@ export default function Landing() {
   const { t } = useTranslation();
   const [leaving, setLeaving] = useState(false);
 
+  // In Landing.tsx, add this useEffect at the beginning of the component
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token') && hash.includes('type=signup')) {
+      // Redirect to verified page
+      window.location.href = '/verified';
+    }
+  }, []);
+
   useEffect(() => {
     document.body.classList.add('no-overlay');
     return () => document.body.classList.remove('no-overlay');
