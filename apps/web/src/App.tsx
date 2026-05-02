@@ -31,11 +31,6 @@ import RelationshipInsights from './pages/People';
 import AddPerson from './pages/AddPerson';
 import ComparisonResult from './pages/ComparisonResult';
 
-// Render /verified completely outside auth shell
-if (window.location.pathname === '/verified') {
-  const { default: Verified } = await import('./pages/Verified');
-}
-
 function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
   const location = useLocation();
   const isLoggedIn = !!user;
@@ -132,6 +127,17 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  if (window.location.pathname === '/verified' || window.location.pathname === '/email-confirmed') {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/verified" element={<Verified />} />
+          <Route path="/email-confirmed" element={<EmailConfirmed />} />
+        </Routes>
+      </BrowserRouter>
+    );
+  }
 
   // Still checking auth or onboarding — show spinner
   if (user === undefined || (user && onboardingComplete === null)) return (
