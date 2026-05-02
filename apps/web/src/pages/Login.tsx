@@ -70,7 +70,7 @@ export default function Login({
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin + '/auth/callback?type=signup&next=/verified',
+          emailRedirectTo: 'https://app.oriacompass.com/verified',
         },
       });
       if (error) {
