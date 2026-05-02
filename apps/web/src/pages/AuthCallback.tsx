@@ -42,6 +42,14 @@ export default function AuthCallback() {
       const cacheKeys = Object.keys(sessionStorage).filter(k => k.startsWith('oria_chart'));
       cacheKeys.forEach(k => sessionStorage.removeItem(k));
 
+      // Check if this is an email confirmation — redirect to /verified instead of /chart
+      const next = params.get('next');
+      const type = params.get('type');
+      if (next === '/verified' || type === 'signup') {
+        navigate('/verified', { replace: true });
+        return;
+      }
+
       navigate('/chart', { replace: true });
     }
 
