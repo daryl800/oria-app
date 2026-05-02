@@ -22,12 +22,19 @@ import Compare from './pages/Compare';
 import LanguageModal from './components/LanguageModal';
 import Upgrade from './pages/Upgrade';
 import AuthCallback from './pages/AuthCallback';
+import Verified from './pages/Verified';
+import EmailConfirmed from './pages/EmailConfirmed';
 import BottomNav from './components/BottomNav';
 import TopBar from './components/TopBar';
 import OriaLogo from './components/OriaLogo';
 import RelationshipInsights from './pages/People';
 import AddPerson from './pages/AddPerson';
 import ComparisonResult from './pages/ComparisonResult';
+
+// Render /verified completely outside auth shell
+if (window.location.pathname === '/verified') {
+  const { default: Verified } = await import('./pages/Verified');
+}
 
 function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
   const location = useLocation();
@@ -176,6 +183,8 @@ export default function App() {
 
           <Route path="/upgrade" element={!user ? <Navigate to="/" /> : <Upgrade />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/verified" element={<Verified />} />
+          <Route path="/email-confirmed" element={<EmailConfirmed />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AppShell>
