@@ -731,9 +731,10 @@
     "error": "Could not load monthly focus. Please try again later."
   },
   "verified": {
-    "title": "Email Verified!",
-    "desc": "Your Oria account has been successfully created and verified.",
-    "instruction": "You can now close this page and go back to where you started signing up to continue.",
-    "login_now": "Login Now"
+    "title": "Registration completed",
+    "desc": "Your oria account has been successfully created and verified.",
+    "instruction": "Return to your application and continue the login process.",
+    "login_now": "Login Now",
+    "return_hint": "You can close this page and go back to the browser or device where you started."
   }
 }

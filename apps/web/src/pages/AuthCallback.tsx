@@ -1,3 +1,4 @@
+// src/pages/AuthCallback.tsx
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -15,6 +16,7 @@ export default function AuthCallback() {
       handled.current = true;
 
       const { data: { session }, error } = await supabase.auth.getSession();
+
       if (error || !session) {
         console.error('[Callback] No session:', error?.message);
         setStatus('Something went wrong. Redirecting...');
@@ -22,7 +24,12 @@ export default function AuthCallback() {
         return;
       }
 
+      // Check if this is a fresh email confirmation
       const params = new URLSearchParams(window.location.search);
+      const isEmailConfirmation = params.get('confirmation_token') ||
+        (session.user?.email_confirmed_at &&
+          session.user?.created_at === session.user?.email_confirmed_at);
+
       const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
 
       if (token) {
@@ -39,11 +46,19 @@ export default function AuthCallback() {
         .filter(k => k.startsWith('oria_chart'))
         .forEach(k => sessionStorage.removeItem(k));
 
-      navigate('/chart', { replace: true });
+      // If this is an email confirmation from a different device, show confirmation page
+      if (isEmailConfirmation && !token) {
+        // Sign out from this device to keep the flow clean
+        await supabase.auth.signOut();
+        navigate('/verified', { replace: true });
+      } else {
+        // Normal login flow - continue to chart
+        navigate('/chart', { replace: true });
+      }
     }
 
     handleCallback();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="oria-page oria-page-center" style={{ gap: 16 }}>

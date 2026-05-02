@@ -731,9 +731,10 @@
     "error": "Kunde inte ladda månadens fokus. Försök igen senare."
   },
   "verified": {
-    "title": "E-post verifierad！",
-    "desc": "Ditt Oria-konto har skapats och verifierats.",
-    "instruction": "Du kan nu stänga den här sidan och gå tillbaka dit du påbörjade registreringen för att fortsätta.",
-    "login_now": "Logga in nu"
+    "title": "Registreringen är klar",
+    "desc": "Ditt oria-konto har skapats och verifierats.",
+    "instruction": "Gå tillbaka till appen och fortsätt inloggningen.",
+    "login_now": "Logga in nu",
+    "return_hint": "Du kan stänga den här sidan och återgå till webbläsaren eller enheten där du började."
   }
 }
