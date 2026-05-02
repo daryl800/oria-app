@@ -252,7 +252,11 @@
     "unlock_title": "你的完整解读已准备好",
     "unlock_subtitle": "登录即可查看完整 oria 解读，并为你保存结果。",
     "google_unlock": "使用 Google 继续",
-    "submit_unlock": "登录查看我的结果"
+    "submit_unlock": "登录查看我的结果",
+    "confirm_password_placeholder": "确认密码",
+    "error_password_mismatch": "两次密码输入不一致。",
+    "email_sent_title": "请查收你的电子邮件",
+    "email_sent_desc": "我们已发送确认链接至你的邮箱。点击链接即可激活账号并查看你的命盘解析。"
   },
   "chart": {
     "header": "我的命盘",

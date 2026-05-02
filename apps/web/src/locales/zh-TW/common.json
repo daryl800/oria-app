@@ -252,7 +252,11 @@
     "error_google": "登入失敗，請再試一次",
     "error_required": "請輸入電郵和密碼",
     "error_password": "密碼至少需要6個字符",
-    "error_invalid": "電郵或密碼錯誤"
+    "error_invalid": "電郵或密碼錯誤",
+    "confirm_password_placeholder": "確認密碼",
+    "error_password_mismatch": "兩次密碼輸入不一致。",
+    "email_sent_title": "請查收你的電子郵件",
+    "email_sent_desc": "我們已發送確認連結至你的信箱。點擊連結即可啟用帳號並查看你的命盤解析。"
   },
   "chart": {
     "header": "我的命盤",

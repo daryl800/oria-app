@@ -252,7 +252,11 @@
     "unlock_title": "Din fulla läsning är klar",
     "unlock_subtitle": "Logga in för att se din kompletta oria-läsning och spara den.",
     "google_unlock": "Fortsätt med Google",
-    "submit_unlock": "Logga in för att se mitt resultat"
+    "submit_unlock": "Logga in för att se mitt resultat",
+    "confirm_password_placeholder": "Bekräfta lösenord",
+    "error_password_mismatch": "Lösenorden matchar inte.",
+    "email_sent_title": "Kolla din e-post",
+    "email_sent_desc": "Vi skickade en bekräftelselänk till din e-post. Klicka på länken för att aktivera ditt konto."
   },
   "chart": {
     "header": "Mitt diagram",
