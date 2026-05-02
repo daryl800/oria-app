@@ -30,9 +30,10 @@ import OriaLogo from './components/OriaLogo';
 import RelationshipInsights from './pages/People';
 import AddPerson from './pages/AddPerson';
 import ComparisonResult from './pages/ComparisonResult';
-import EmailHashHandler from './pages/EmaiHashHandler';
+import EmailHashHandler from './pages/EmailHashHandler';
 
-function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
+// Update AppShell to accept User | null | undefined
+function AppShell({ user, isPlus, children }: { user: User | null | undefined; isPlus: boolean; children: React.ReactNode }) {
   const location = useLocation();
   const isLoggedIn = !!user;
 
@@ -45,7 +46,7 @@ function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boole
 
   return (
     <div className="oria-shell">
-      {showTopBar && <TopBar user={user} isPlus={isPlus} />}
+      {showTopBar && <TopBar user={user || null} isPlus={isPlus} />}
       <div className="oria-shell-frame" style={{ paddingBottom: showBottomNav ? 110 : 24 }}>
         {children}
       </div>
