@@ -7,30 +7,33 @@ import OriaLogo from '../components/OriaLogo';
 export default function Verified() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     async function handleVerification() {
       try {
-        // First, check if there's a session and sign out if there is
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (session) {
-          // Sign out to prevent auto-login
-          await supabase.auth.signOut();
-        }
-
-        // Check if the email was confirmed by looking at URL params
-        // Supabase adds a hash fragment with access_token on email confirmation
+        // Parse the hash fragment to get tokens
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        const type = hashParams.get('type');
 
-        if (accessToken) {
-          // This is a fresh email confirmation
+        console.log('Hash params:', { accessToken: !!accessToken, refreshToken: !!refreshToken, type });
+
+        if (accessToken && type === 'signup') {
+          // This is an email confirmation - we have the tokens but we don't want to use them
+          // Just show success message
           setStatus('success');
+
+          // Clear the hash from URL to make it clean
+          window.history.replaceState({}, document.title, window.location.pathname);
         } else {
-          // Check if user already has confirmed email
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user?.email_confirmed_at) {
+          // Check if user is already verified
+          const { data: { session } } = await supabase.auth.getSession();
+
+          if (session?.user?.email_confirmed_at) {
+            // User has a session - sign them out to keep flow clean
+            await supabase.auth.signOut();
             setStatus('success');
           } else {
             setStatus('error');
@@ -44,6 +47,24 @@ export default function Verified() {
 
     handleVerification();
   }, []);
+
+  // Countdown timer for redirect
+  useEffect(() => {
+    if (status === 'success') {
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            navigate('/login');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [status, navigate]);
 
   if (status === 'verifying') {
     return (
@@ -84,6 +105,7 @@ export default function Verified() {
     );
   }
 
+  // Success state
   return (
     <div className="oria-page oria-page-center" style={{ gap: 16 }}>
       <div style={{ textAlign: 'center', maxWidth: 320 }}>
@@ -93,7 +115,7 @@ export default function Verified() {
           Your account has been successfully verified.
         </p>
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 24 }}>
-          You can now log in from your mobile device.
+          Redirecting to login in {countdown} seconds...
         </p>
         <button
           onClick={() => navigate('/login')}
@@ -107,7 +129,7 @@ export default function Verified() {
             fontSize: 14
           }}
         >
-          Go to Login
+          Go to Login Now
         </button>
       </div>
     </div>
