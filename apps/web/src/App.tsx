@@ -30,7 +30,7 @@ import OriaLogo from './components/OriaLogo';
 import RelationshipInsights from './pages/People';
 import AddPerson from './pages/AddPerson';
 import ComparisonResult from './pages/ComparisonResult';
-import EmailHashHandler from './pages/EmailHashHandler';
+import EmailHashHandler from './pages/EmaiHashHandler';
 
 function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
   const location = useLocation();
