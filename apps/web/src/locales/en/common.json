@@ -729,5 +729,10 @@
     "locked_desc": "Your chart does not change, but what matters most this month does.",
     "locked_cta": "Unlock full monthly analysis",
     "error": "Could not load monthly focus. Please try again later."
+  },
+  "verified": {
+    "title": "Email Verified!",
+    "desc": "Your Oria account has been successfully created and verified.",
+    "instruction": "You can now close this page and go back to where you started signing up to continue."
   }
 }

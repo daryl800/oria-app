@@ -729,5 +729,10 @@
     "locked_desc": "Ditt diagram förändras inte, men vad som är viktigast denna månad gör det.",
     "locked_cta": "Lås upp fullständig månadsanalys",
     "error": "Kunde inte ladda månadens fokus. Försök igen senare."
+  },
+  "verified": {
+    "title": "E-post verifierad！",
+    "desc": "Ditt Oria-konto har skapats och verifierats.",
+    "instruction": "Du kan nu stänga den här sidan och gå tillbaka dit du påbörjade registreringen för att fortsätta."
   }
 }
