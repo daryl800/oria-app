@@ -14,18 +14,10 @@ export default function AuthCallback() {
       if (handled.current) return;
       handled.current = true;
 
-      // Retry up to 5 times waiting for Supabase to process the session
-      let session = null;
-      for (let i = 0; i < 5; i++) {
-        await new Promise(r => setTimeout(r, 500));
-        const { data } = await supabase.auth.getSession();
-        if (data.session) {
-          session = data.session;
-          break;
-        }
-      }
-
-      if (!session) {
+      // Wait for Supabase to establish session from URL hash
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
+        console.error('[Callback] No session:', error?.message);
         setStatus('Something went wrong. Redirecting...');
         setTimeout(() => navigate('/'), 2000);
         return;

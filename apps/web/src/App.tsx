@@ -130,6 +130,12 @@ export default function App() {
         return;
       }
 
+      // For /auth/callback, let AuthCallback.tsx handle navigation
+      if (currentPath === '/auth/callback') {
+        setUser(u);
+        return;
+      }
+
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
         setUser(u);
         if (u) checkOnboarding(u.id);
@@ -148,7 +154,7 @@ export default function App() {
 
   // Still checking auth or onboarding — show spinner (but not on verification pages)
   const currentPath = window.location.pathname;
-  const isVerificationPage = currentPath === '/verified' || currentPath === '/email-confirmed' || currentPath === '/auth/callback';
+  const isVerificationPage = currentPath === '/verified' || currentPath === '/email-confirmed';
 
   if (!isVerificationPage && (user === undefined || (user && onboardingComplete === null))) return (
     <BrowserRouter>
