@@ -76,6 +76,22 @@ function isPlusUser(userRecord: any): boolean {
 }
 
 export default function App() {
+  // ── Email confirmation redirect ──────────────────────────────────────────
+  // Supabase redirects to /#access_token=...&type=signup after email confirm.
+  // We must catch this BEFORE any hooks or auth listeners run.
+  const _hash = new URLSearchParams(window.location.hash.slice(1));
+  if (_hash.get('type') === 'signup' && _hash.get('access_token')) {
+    window.history.replaceState(null, '', '/email-confirmed');
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="*" element={<EmailConfirmed />} />
+        </Routes>
+      </BrowserRouter>
+    );
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   // undefined = not yet checked, null = checked and no user, User = logged in
   const { i18n } = useTranslation();
   const [user, setUser] = useState<User | null | undefined>(undefined);
