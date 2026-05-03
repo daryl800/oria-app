@@ -76,22 +76,6 @@ function isPlusUser(userRecord: any): boolean {
 }
 
 export default function App() {
-  // ── Email confirmation redirect ──────────────────────────────────────────
-  // Supabase redirects to /#access_token=...&type=signup after email confirm.
-  // We must catch this BEFORE any hooks or auth listeners run.
-  const _hash = new URLSearchParams(window.location.hash.slice(1));
-  if (_hash.get('type') === 'signup' && _hash.get('access_token')) {
-    window.history.replaceState(null, '', '/email-confirmed');
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="*" element={<EmailConfirmed />} />
-        </Routes>
-      </BrowserRouter>
-    );
-  }
-  // ─────────────────────────────────────────────────────────────────────────
-
   // undefined = not yet checked, null = checked and no user, User = logged in
   const { i18n } = useTranslation();
   const [user, setUser] = useState<User | null | undefined>(undefined);
@@ -138,14 +122,13 @@ export default function App() {
       const currentPath = window.location.pathname;
       const hash = window.location.hash;
 
-      // If this is a verification page OR has verification hash, don't auto-login
+      // Only block auth on verification pages — NOT based on hash
+      // Google OAuth also uses access_token in hash but must NOT be blocked
       const isVerificationFlow = currentPath === '/verified' ||
-        currentPath === '/email-confirmed' ||
-        (hash && hash.includes('access_token') && hash.includes('type=signup'));
+        currentPath === '/email-confirmed';
 
       if (isVerificationFlow) {
-        // Don't set user state or redirect on verification flows
-        console.log('Verification flow detected, ignoring auth change');
+        console.log('Verification page detected, ignoring auth change');
         return;
       }
 
