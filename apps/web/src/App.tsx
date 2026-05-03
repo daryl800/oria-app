@@ -122,13 +122,12 @@ export default function App() {
       const currentPath = window.location.pathname;
       const hash = window.location.hash;
 
-      // Only block auth on verification pages — NOT based on hash
-      // Google OAuth also uses access_token in hash but must NOT be blocked
-      const isVerificationFlow = currentPath === '/verified' ||
-        currentPath === '/email-confirmed';
+      // Skip auth processing on pages that handle their own auth
+      const isSelfHandledAuth = currentPath === '/verified' ||
+        currentPath === '/email-confirmed' ||
+        currentPath === '/auth/callback';
 
-      if (isVerificationFlow) {
-        console.log('Verification page detected, ignoring auth change');
+      if (isSelfHandledAuth) {
         return;
       }
 
