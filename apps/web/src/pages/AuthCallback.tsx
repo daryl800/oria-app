@@ -10,43 +10,44 @@ export default function AuthCallback() {
   const handled = useRef(false);
 
   useEffect(() => {
-    async function handleCallback() {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (handled.current) return;
-      handled.current = true;
+      if (event === 'SIGNED_IN' && session) {
+        handled.current = true;
 
-      // Wait briefly for Supabase to process the session from URL hash
-      await new Promise(r => setTimeout(r, 500));
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
 
-      const { data: { session }, error } = await supabase.auth.getSession();
-
-      if (error || !session) {
-        console.error('[Callback] No session:', error?.message);
-        setStatus('Something went wrong. Redirecting...');
-        setTimeout(() => navigate('/'), 2000);
-        return;
-      }
-
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
-
-      if (token) {
-        setStatus('Saving your profile...');
-        try {
-          await transferTempOnboarding(token);
-          sessionStorage.removeItem('oria_onboarding_token');
-        } catch (e: any) {
-          console.error('[Callback] transfer failed:', e.message);
+        if (token) {
+          setStatus('Saving your profile...');
+          try {
+            await transferTempOnboarding(token);
+            sessionStorage.removeItem('oria_onboarding_token');
+          } catch (e: any) {
+            console.error('[Callback] transfer failed:', e.message);
+          }
         }
+
+        Object.keys(sessionStorage)
+          .filter(k => k.startsWith('oria_chart'))
+          .forEach(k => sessionStorage.removeItem(k));
+
+        navigate('/chart', { replace: true });
       }
+    });
 
-      Object.keys(sessionStorage)
-        .filter(k => k.startsWith('oria_chart'))
-        .forEach(k => sessionStorage.removeItem(k));
+    // Timeout fallback — if no session after 5s, redirect to home
+    const timeout = setTimeout(() => {
+      if (!handled.current) {
+        console.error('[Callback] Timeout — no session');
+        navigate('/', { replace: true });
+      }
+    }, 5000);
 
-      navigate('/chart', { replace: true });
-    }
-
-    handleCallback();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   return (
