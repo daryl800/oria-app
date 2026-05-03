@@ -252,7 +252,11 @@
     "error_google": "Sign in failed. Please try again.",
     "error_required": "Please enter your email and password.",
     "error_password": "Password must be at least 6 characters.",
-    "error_invalid": "Invalid email or password."
+    "error_invalid": "Invalid email or password.",
+    "confirm_password_placeholder": "Confirm password",
+    "error_password_mismatch": "Passwords do not match.",
+    "email_sent_title": "Check your email",
+    "email_sent_desc": "We sent a confirmation link to your email. Click it to activate your account."
   },
   "chart": {
     "header": "My Chart",

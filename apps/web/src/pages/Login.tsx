@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { transferTempOnboarding } from '../services/api';
 
@@ -13,12 +13,17 @@ export default function Login({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationMode = (location.state as any)?.mode;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
-  const [mode, setMode] = useState<'signin' | 'signup'>(isNewUser ? 'signup' : 'signin');
+  const [mode, setMode] = useState<'signin' | 'signup'>(locationMode ?? (isNewUser ? 'signup' : 'signin'));
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   async function transferOnboardingToken() {
     const token = sessionStorage.getItem('oria_onboarding_token');
@@ -59,17 +64,20 @@ export default function Login({
     setError('');
 
     if (mode === 'signup') {
+      if (password !== confirmPassword) {
+        setError(t('login.error_password_mismatch'));
+        setLoading(false);
+        return;
+      }
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) {
         setError(error.message);
         setLoading(false);
         return;
       }
-
-      await transferOnboardingToken();
-
-      Object.keys(sessionStorage).filter(k => k.startsWith('oria_chart')).forEach(k => sessionStorage.removeItem(k));
-      navigate('/chart');
+      setEmailSent(true);
+      setLoading(false);
+      return;
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
@@ -121,27 +129,49 @@ export default function Login({
 
         <div className="oria-auth-divider">{t('login.divider')}</div>
 
+        {emailSent ? (
+          <div style={{ textAlign: 'center', padding: '24px 16px', background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 16, margin: '8px 0 16px' }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>📬</div>
+            <p style={{ fontSize: 16, fontWeight: 600, color: '#F0EDE8', margin: '0 0 8px' }}>{t('login.email_sent_title')}</p>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, margin: '0 0 16px' }}>{t('login.email_sent_desc')}</p>
+            <button onClick={() => navigate('/login', { state: { mode: 'signin' } })} className="oria-btn-primary" style={{ fontSize: 15 }}>
+              {t('login.submit_signin')}
+            </button>
+          </div>
+        ) : (
         <div className="oria-form-stack">
-          <input
-            type="email"
-            placeholder={t('login.email_placeholder')}
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="oria-input"
-          />
-          <input
-            type="password"
-            placeholder={t('login.password_placeholder')}
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleEmailAuth()}
-            className="oria-input"
-          />
+          <input type="email" placeholder={t('login.email_placeholder')} value={email} onChange={e => setEmail(e.target.value)} className="oria-input" />
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder={t('login.password_placeholder')}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleEmailAuth()}
+              className="oria-input"
+              style={{ paddingRight: 48 }}
+            />
+            <button type="button" onClick={() => setShowPassword(v => !v)}
+              style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 13, padding: 0 }}>
+              {showPassword ? '🙈' : '👁'}
+            </button>
+          </div>
+          {mode === 'signup' && (
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder={t('login.confirm_password_placeholder')}
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleEmailAuth()}
+              className="oria-input"
+            />
+          )}
         </div>
+        )}
 
         {error && <div className="oria-error" style={{ marginTop: 16 }}>{error}</div>}
 
-        <div style={{ marginTop: 18 }}>
+        {!emailSent && <div style={{ marginTop: 18 }}>
           <button onClick={handleEmailAuth} disabled={loading} className="oria-btn-primary">
             {loading
               ? t('login.processing')
@@ -151,7 +181,7 @@ export default function Login({
                 ? t('login.submit_signup')
                 : t('login.submit_signin')}
           </button>
-        </div>
+        </div>}
 
         <p className="oria-auth-trust">{t('login.secure')}</p>
 

@@ -252,7 +252,11 @@
     "unlock_title": "完全なリーディングの準備ができました",
     "unlock_subtitle": "ログインすると、oriaの完全なリーディングを確認し、保存できます。",
     "google_unlock": "Googleで続ける",
-    "submit_unlock": "ログインして結果を見る"
+    "submit_unlock": "ログインして結果を見る",
+    "confirm_password_placeholder": "パスワードを確認",
+    "error_password_mismatch": "パスワードが一致しません。",
+    "email_sent_title": "メールをご確認ください",
+    "email_sent_desc": "確認リンクをメールに送信しました。リンクをクリックしてアカウントを有効化してください。"
   },
   "chart": {
     "header": "マイチャート",
