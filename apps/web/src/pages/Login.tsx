@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { transferTempOnboarding } from '../services/api';
 
@@ -13,12 +13,14 @@ export default function Login({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationMode = (location.state as any)?.mode;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
-  const [mode, setMode] = useState<'signin' | 'signup'>(isNewUser ? 'signup' : 'signin');
+  const [mode, setMode] = useState<'signin' | 'signup'>(locationMode ?? (isNewUser ? 'signup' : 'signin'));
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
@@ -148,7 +150,7 @@ export default function Login({
               {t('login.email_sent_desc')}
             </p>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/login', { state: { mode: 'signin' } })}
               className="oria-btn-primary"
               style={{ fontSize: 15 }}
             >
