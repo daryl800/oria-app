@@ -1,151 +1,49 @@
-// src/pages/EmailConfirmed.tsx
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import OriaLogo from '../components/OriaLogo';
 
 export default function EmailConfirmed() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState('verifying');
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function handleEmailConfirmation() {
-      try {
-        // Get the token from URL (Supabase adds it)
-        const token = searchParams.get('confirmation_token');
-
-        if (!token) {
-          // Check if already verified
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session?.user?.email_confirmed_at) {
-            setStatus('already_verified');
-            return;
-          }
-          setError('Invalid confirmation link');
-          setStatus('error');
-          return;
-        }
-
-        // Verify the email without logging in
-        const { error: verifyError } = await supabase.auth.verifyOtp({
-          token_hash: token,
-          type: 'email',
-        });
-
-        if (verifyError) {
-          console.error('Verification error:', verifyError);
-          setError(verifyError.message);
-          setStatus('error');
-        } else {
-          setStatus('success');
-        }
-      } catch (err) {
-        console.error('Confirmation error:', err);
-        setError('Failed to verify email');
-        setStatus('error');
-      }
-    }
-
-    handleEmailConfirmation();
-  }, [searchParams]);
-
-  // Different UI states
-  if (status === 'verifying') {
-    return (
-      <div className="oria-page oria-page-center" style={{ gap: 16 }}>
-        <OriaLogo className="oria-loading-logo animate-breathe" size={72} />
-        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15 }}>
-          Verifying your email...
-        </p>
-      </div>
-    );
-  }
-
-  if (status === 'error') {
-    return (
-      <div className="oria-page oria-page-center" style={{ gap: 16 }}>
-        <div style={{ textAlign: 'center', maxWidth: 320 }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
-          <h2 style={{ color: 'white', marginBottom: 8 }}>Verification Failed</h2>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
-            {error || 'This link may have expired or already been used.'}
-          </p>
-          <button
-            onClick={() => navigate('/login')}
-            style={{
-              marginTop: 24,
-              padding: '10px 24px',
-              background: '#4F46E5',
-              border: 'none',
-              borderRadius: 8,
-              color: 'white',
-              cursor: 'pointer'
-            }}
-          >
-            Back to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (status === 'already_verified') {
-    return (
-      <div className="oria-page oria-page-center" style={{ gap: 16 }}>
-        <div style={{ textAlign: 'center', maxWidth: 320 }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
-          <h2 style={{ color: 'white', marginBottom: 8 }}>Email Already Verified</h2>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
-            Your email has already been confirmed. Please log in on your mobile device.
-          </p>
-          <button
-            onClick={() => navigate('/login')}
-            style={{
-              marginTop: 24,
-              padding: '10px 24px',
-              background: '#4F46E5',
-              border: 'none',
-              borderRadius: 8,
-              color: 'white',
-              cursor: 'pointer'
-            }}
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Success state
   return (
-    <div className="oria-page oria-page-center" style={{ gap: 16 }}>
-      <div style={{ textAlign: 'center', maxWidth: 320 }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
-        <h2 style={{ color: 'white', marginBottom: 8 }}>Email Confirmed!</h2>
-        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 8 }}>
-          Your account has been successfully verified.
-        </p>
-        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 24 }}>
-          You can now log in from any device.
-        </p>
-        <button
-          onClick={() => navigate('/login')}
-          style={{
-            padding: '10px 24px',
-            background: '#4F46E5',
-            border: 'none',
-            borderRadius: 8,
-            color: 'white',
-            cursor: 'pointer',
-            fontSize: 14
-          }}
-        >
-          Return to Login
-        </button>
+    <div className="oria-page oria-page-center" style={{ gap: 16, textAlign: 'center', padding: 24 }}>
+      <OriaLogo className="oria-loading-logo" size={64} />
+      <div style={{ fontSize: 48, marginTop: 8 }}>✅</div>
+      <h2 style={{
+        fontSize: 26, fontWeight: 700,
+        color: '#F4EFE7', margin: '8px 0',
+        fontFamily: 'var(--oria-serif)',
+      }}>
+        {t('verified.title')}
+      </h2>
+      <p style={{
+        fontSize: 15, color: 'rgba(255,255,255,0.65)',
+        lineHeight: 1.7, maxWidth: 320, margin: '0 auto 8px',
+      }}>
+        {t('verified.desc')}
+      </p>
+      <div style={{
+        background: 'rgba(201,168,76,0.08)',
+        border: '1px solid rgba(201,168,76,0.25)',
+        borderRadius: 16, padding: '14px 20px',
+        fontSize: 14, color: 'rgba(201,168,76,0.8)',
+        lineHeight: 1.6, maxWidth: 320, margin: '0 auto 24px',
+      }}>
+        {t('verified.instruction')}
       </div>
+      <button
+        onClick={() => navigate('/login')}
+        style={{
+          marginTop: 8, padding: '10px 28px',
+          background: 'rgba(201,168,76,0.12)',
+          border: '1px solid rgba(201,168,76,0.3)',
+          borderRadius: 99, color: '#C9A84C',
+          cursor: 'pointer', fontSize: 14, fontWeight: 600,
+        }}
+      >
+        {t('verified.login_now')}
+      </button>
     </div>
   );
 }
