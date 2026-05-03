@@ -14,14 +14,13 @@ export default function AuthCallback() {
       if (handled.current) return;
       handled.current = true;
 
-      // Manually exchange the code or hash for a session
-      // since detectSessionInUrl is disabled globally
-      const { data, error } = await supabase.auth.exchangeCodeForSession(
-        window.location.href
-      );
+      // Wait briefly for Supabase to process the session from URL hash
+      await new Promise(r => setTimeout(r, 500));
 
-      if (error || !data.session) {
-        console.error('[Callback] Session exchange failed:', error?.message);
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (error || !session) {
+        console.error('[Callback] No session:', error?.message);
         setStatus('Something went wrong. Redirecting...');
         setTimeout(() => navigate('/'), 2000);
         return;
