@@ -7,45 +7,46 @@ import OriaLogo from '../components/OriaLogo';
 export default function AuthCallback() {
   const navigate = useNavigate();
   const [status, setStatus] = useState('Completing sign in...');
-
   const handled = useRef(false);
 
   useEffect(() => {
-    async function handleCallback() {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (handled.current) return;
-      handled.current = true;
-      // Wait for Supabase to establish session from URL hash
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error || !session) {
-        console.error('[Callback] No session:', error?.message);
-        setStatus('Something went wrong. Redirecting...');
-        setTimeout(() => navigate('/'), 2000);
-        return;
-      }
+      if (event === 'SIGNED_IN' && session) {
+        handled.current = true;
 
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
 
-      // Get token from URL
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
-
-      if (token) {
-        setStatus('Saving your profile...');
-        try {
-          await transferTempOnboarding(token);
-          sessionStorage.removeItem('oria_onboarding_token');
-        } catch (e: any) {
-          console.error('[Callback] transfer failed:', e.message);
+        if (token) {
+          setStatus('Saving your profile...');
+          try {
+            await transferTempOnboarding(token);
+            sessionStorage.removeItem('oria_onboarding_token');
+          } catch (e: any) {
+            console.error('[Callback] transfer failed:', e.message);
+          }
         }
+
+        Object.keys(sessionStorage)
+          .filter(k => k.startsWith('oria_chart'))
+          .forEach(k => sessionStorage.removeItem(k));
+
+        navigate('/chart', { replace: true });
       }
+    });
 
-      // Clear chart cache so it fetches fresh data
-      const cacheKeys = Object.keys(sessionStorage).filter(k => k.startsWith('oria_chart'));
-      cacheKeys.forEach(k => sessionStorage.removeItem(k));
+    const timeout = setTimeout(() => {
+      if (!handled.current) {
+        console.error('[Callback] Timeout — no session received');
+        navigate('/', { replace: true });
+      }
+    }, 10000);
 
-      navigate('/chart', { replace: true });
-    }
-
-    handleCallback();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   return (
