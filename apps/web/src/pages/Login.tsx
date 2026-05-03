@@ -70,7 +70,7 @@ export default function Login({
         email,
         password,
         options: {
-          emailRedirectTo: 'https://app.oriacompass.com/verified',
+          emailRedirectTo: 'https://app.oriacompass.com/email-confirmed',
         },
       });
       if (error) {
@@ -144,9 +144,16 @@ export default function Login({
             <p style={{ fontSize: 16, fontWeight: 600, color: '#F0EDE8', margin: '0 0 8px' }}>
               {t('login.email_sent_title')}
             </p>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, margin: 0 }}>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, margin: '0 0 16px' }}>
               {t('login.email_sent_desc')}
             </p>
+            <button
+              onClick={() => navigate('/login')}
+              className="oria-btn-primary"
+              style={{ fontSize: 15 }}
+            >
+              {t('login.submit_signin')}
+            </button>
           </div>
         ) : (
           <div className="oria-form-stack">
