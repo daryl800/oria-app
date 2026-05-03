@@ -14,7 +14,14 @@ export default function AuthCallback() {
       if (handled.current) return;
       handled.current = true;
 
-      // Transfer onboarding token if present
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
+        console.error('[Callback] No session:', error?.message);
+        setStatus('Something went wrong. Redirecting...');
+        setTimeout(() => navigate('/'), 2000);
+        return;
+      }
+
       const params = new URLSearchParams(window.location.search);
       const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
 
@@ -32,13 +39,10 @@ export default function AuthCallback() {
         .filter(k => k.startsWith('oria_chart'))
         .forEach(k => sessionStorage.removeItem(k));
 
-      // Let App.tsx handle auth state — just navigate to chart
-      // App.tsx onAuthStateChange will handle setting user state
       navigate('/chart', { replace: true });
     }
 
-    // Small delay to let Supabase process the session first
-    setTimeout(handleCallback, 1000);
+    handleCallback();
   }, []);
 
   return (
