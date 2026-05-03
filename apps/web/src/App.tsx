@@ -148,7 +148,7 @@ export default function App() {
 
   // Still checking auth or onboarding — show spinner (but not on verification pages)
   const currentPath = window.location.pathname;
-  const isVerificationPage = currentPath === '/verified' || currentPath === '/email-confirmed';
+  const isVerificationPage = currentPath === '/verified' || currentPath === '/email-confirmed' || currentPath === '/auth/callback';
 
   if (!isVerificationPage && (user === undefined || (user && onboardingComplete === null))) return (
     <BrowserRouter>
