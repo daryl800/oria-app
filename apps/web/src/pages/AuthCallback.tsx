@@ -10,44 +10,48 @@ export default function AuthCallback() {
   const handled = useRef(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    async function handleCallback() {
       if (handled.current) return;
-      if (event === 'SIGNED_IN' && session) {
-        handled.current = true;
+      handled.current = true;
 
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
-
-        if (token) {
-          setStatus('Saving your profile...');
-          try {
-            await transferTempOnboarding(token);
-            sessionStorage.removeItem('oria_onboarding_token');
-          } catch (e: any) {
-            console.error('[Callback] transfer failed:', e.message);
-          }
+      // Retry up to 5 times waiting for Supabase to process the session
+      let session = null;
+      for (let i = 0; i < 5; i++) {
+        await new Promise(r => setTimeout(r, 500));
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          session = data.session;
+          break;
         }
-
-        Object.keys(sessionStorage)
-          .filter(k => k.startsWith('oria_chart'))
-          .forEach(k => sessionStorage.removeItem(k));
-
-        navigate('/chart', { replace: true });
       }
-    });
 
-    // Timeout fallback — if no session after 5s, redirect to home
-    const timeout = setTimeout(() => {
-      if (!handled.current) {
-        console.error('[Callback] Timeout — no session');
-        navigate('/', { replace: true });
+      if (!session) {
+        setStatus('Something went wrong. Redirecting...');
+        setTimeout(() => navigate('/'), 2000);
+        return;
       }
-    }, 5000);
 
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
-    };
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
+
+      if (token) {
+        setStatus('Saving your profile...');
+        try {
+          await transferTempOnboarding(token);
+          sessionStorage.removeItem('oria_onboarding_token');
+        } catch (e: any) {
+          console.error('[Callback] transfer failed:', e.message);
+        }
+      }
+
+      Object.keys(sessionStorage)
+        .filter(k => k.startsWith('oria_chart'))
+        .forEach(k => sessionStorage.removeItem(k));
+
+      navigate('/chart', { replace: true });
+    }
+
+    handleCallback();
   }, []);
 
   return (

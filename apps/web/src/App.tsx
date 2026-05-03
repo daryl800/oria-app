@@ -122,12 +122,11 @@ export default function App() {
       const currentPath = window.location.pathname;
       const hash = window.location.hash;
 
-      // Skip auth processing on pages that handle their own auth
-      const isSelfHandledAuth = currentPath === '/verified' ||
-        currentPath === '/email-confirmed' ||
-        currentPath === '/auth/callback';
+      // Only skip auth on verification pages
+      const isVerificationFlow = currentPath === '/verified' ||
+        currentPath === '/email-confirmed';
 
-      if (isSelfHandledAuth) {
+      if (isVerificationFlow) {
         return;
       }
 
