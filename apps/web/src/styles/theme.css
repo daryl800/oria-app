@@ -1771,7 +1771,7 @@ html[lang^="zh"] .oria-home-primary-card h2 {
   }
 
   .oria-landing-overlay {
-    padding-top: 16px;
+    padding-top: calc(var(--oria-topbar-height) + 16px);
   }
 
   .oria-landing-title {

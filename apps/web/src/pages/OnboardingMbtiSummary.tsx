@@ -78,22 +78,22 @@ export default function OnboardingMbtiSummary({ user }: { user?: User }) {
           {t('onboarding.summary.headline')}
         </h1>
 
-        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.62)', lineHeight: 1.7, margin: '0 0 28px' }}>
+        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.62)', lineHeight: 1.7, margin: '0 0 16px' }}>
           {t('onboarding.summary.subheadline')}
         </p>
 
         {/* Card */}
-        <div className="oria-card" style={{ padding: '36px 32px', marginBottom: 28 }}>
+        <div className="oria-card" style={{ padding: '22px 20px', marginBottom: 20 }}>
           {/* MBTI type */}
           <div style={{
-            fontSize: 72, fontWeight: 800, color: '#C9A84C',
+            fontSize: 52, fontWeight: 800, color: '#C9A84C',
             marginBottom: 8, letterSpacing: 4,
           }}>
             {mbtiType}
           </div>
 
           {/* Nickname */}
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 12 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>
             {nickname}
           </div>
 

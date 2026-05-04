@@ -112,10 +112,10 @@ export default function OnboardingBazi() {
         </div>
 
         {/* Form */}
-        <div className="oria-card" style={{ padding: '36px 32px' }}>
+        <div className="oria-card" style={{ padding: '22px 20px' }}>
 
           {/* Year / Month / Day dropdowns */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1.8fr 1fr', gap: 12, marginBottom: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 12, marginBottom: 16 }}>
             <div>
               <label style={labelStyle}>{t('onboarding.bazi.year')}</label>
               <select style={selectStyle} value={year} onChange={e => setYear(e.target.value)}>
@@ -238,7 +238,7 @@ export default function OnboardingBazi() {
           </button>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 16 }}>
+        <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 16 }}>
           {t('disclaimer')}
         </p>
       </div>
