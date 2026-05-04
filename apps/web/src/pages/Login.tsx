@@ -7,9 +7,11 @@ import { transferTempOnboarding } from '../services/api';
 export default function Login({
   isNewUser = false,
   backFallback = '/',
+  signupOnly = false,
 }: {
   isNewUser?: boolean;
   backFallback?: string;
+  signupOnly?: boolean;
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -186,7 +188,7 @@ export default function Login({
 
         <p className="oria-auth-trust">{t('login.secure')}</p>
 
-        {!hideSignup && (
+        {!hideSignup && !signupOnly && (
         <div className="oria-auth-switch">
           <span>
             {mode === 'signup'
