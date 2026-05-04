@@ -546,7 +546,7 @@
       "submitting": "Reading your personality...",
       "step_label": "{{current}} of {{total}}",
       "intro": "Answer instinctively — your first reaction is usually the most accurate.",
-      "reveal": "Curious about your personality? Tap to reveal ✦",
+      "reveal": "Curious about your personality?\nTap to reveal ✦",
       "back": "back",
       "question_step": "{{current}} of {{total}}",
       "context_hook": "✦ This helps oria understand how you naturally respond in real situations",

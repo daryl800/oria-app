@@ -256,8 +256,8 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
 
         {/* Submit */}
         {answeredCount === questions.length && (
-          <button onClick={handleSubmit} disabled={submitting} className="oria-btn-primary">
-            {submitting ? t('mbti.calculating') : t('onboarding.mbti.reveal').includes('?') ? <>{t('onboarding.mbti.reveal').split('?')[0] + '?'}<br />{t('onboarding.mbti.reveal').split('?')[1]}</> : t('onboarding.mbti.reveal')}
+          <button onClick={handleSubmit} disabled={submitting} className="oria-btn-primary" style={{ whiteSpace: 'pre-line', textAlign: 'center' }}>
+            {submitting ? t('mbti.calculating') : t('onboarding.mbti.reveal')}
           </button>
         )}
 
