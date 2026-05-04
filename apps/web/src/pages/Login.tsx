@@ -154,7 +154,7 @@ export default function Login({
               type={showPassword ? 'text' : 'password'}
               placeholder={t('login.password_placeholder')}
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={e => { setPassword(e.target.value); setError(''); }}
               onKeyDown={e => e.key === 'Enter' && handleEmailAuth()}
               className="oria-input"
               style={{ paddingRight: 48 }}
@@ -169,7 +169,7 @@ export default function Login({
               type={showPassword ? 'text' : 'password'}
               placeholder={t('login.confirm_password_placeholder')}
               value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
+              onChange={e => { setConfirmPassword(e.target.value); setError(''); }}
               onKeyDown={e => e.key === 'Enter' && handleEmailAuth()}
               className="oria-input"
             />
