@@ -28,6 +28,10 @@ export default function OnboardingMbti() {
   const isLastQuestion = currentIndex === questions.length - 1;
   const allAnswered = answeredCount === questions.length;
   const questionText = currentQuestion?.text;
+  const revealCopy = t('onboarding.mbti.reveal');
+  const revealLines = normalizeLanguage(i18n.language) === 'en'
+    ? revealCopy.split('\n')
+    : [revealCopy];
 
   useEffect(() => {
     // Entrance delay — gives transition page time to feel complete
@@ -290,7 +294,11 @@ export default function OnboardingMbti() {
               transform: readyVisible ? 'translateY(0)' : 'translateY(10px)',
               transition: 'opacity 0.5s ease, transform 0.5s ease',
             }}>
-              {t('onboarding.mbti.reveal')}
+              {revealLines.map((line, index) => (
+                <span key={index} style={{ display: 'block' }}>
+                  {line}
+                </span>
+              ))}
             </button>
           )}
         </div>

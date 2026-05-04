@@ -61,7 +61,46 @@ export default function OnboardingMbtiSummary({ user }: { user?: User }) {
       textAlign: 'center',
       opacity: visible && !leaving ? 1 : 0, transition: 'opacity 1s ease',
     }}>
-      <div style={{ maxWidth: 480, width: '100%' }}>
+      <style>{`
+        .mbti-summary-shell {
+          width: min(480px, calc(100% - 40px));
+          max-width: 480px;
+          margin: 0 auto;
+        }
+
+        .mbti-summary-card,
+        .mbti-summary-preview {
+          width: 100%;
+        }
+
+        .mbti-summary-cta {
+          width: min(360px, 100%);
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        @media (max-width: 480px) {
+          .mbti-summary-shell {
+            width: min(360px, calc(100% - 36px));
+          }
+
+          .mbti-summary-card {
+            padding: 20px 18px !important;
+          }
+
+          .mbti-summary-preview {
+            padding: 16px 18px !important;
+          }
+
+          .mbti-summary-cta {
+            width: min(320px, 100%);
+            min-height: 48px;
+            font-size: 15px;
+          }
+        }
+      `}</style>
+
+      <div className="mbti-summary-shell">
         {/* Step indicator */}
         <div style={{ fontSize: 16, letterSpacing: 3, color: '#C9A84C', textTransform: 'uppercase', marginBottom: 24, fontWeight: 700 }}>
           {t('onboarding.summary.label')}
@@ -83,7 +122,7 @@ export default function OnboardingMbtiSummary({ user }: { user?: User }) {
         </p>
 
         {/* Card */}
-        <div className="oria-card" style={{ padding: '22px 20px', marginBottom: 20 }}>
+        <div className="oria-card mbti-summary-card" style={{ padding: '22px 20px', marginBottom: 20 }}>
           {/* MBTI type */}
           <div style={{
             fontSize: 52, fontWeight: 800, color: '#C9A84C',
@@ -121,6 +160,7 @@ export default function OnboardingMbtiSummary({ user }: { user?: User }) {
         </p>
 
         <div
+          className="mbti-summary-preview"
           style={{
             position: 'relative',
             overflow: 'hidden',
@@ -171,7 +211,7 @@ export default function OnboardingMbtiSummary({ user }: { user?: User }) {
         <button onClick={() => {
           setLeaving(true);
           setTimeout(() => navigate('/onboarding/bazi'), 600);
-        }} className="oria-btn-primary" style={{ marginBottom: 0 }}>
+        }} className="oria-btn-primary mbti-summary-cta" style={{ marginBottom: 0 }}>
           {t('onboarding.summary.continue')}
         </button>
 

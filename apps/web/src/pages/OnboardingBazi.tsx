@@ -97,7 +97,46 @@ export default function OnboardingBazi() {
 
   return (
     <div className="oria-page oria-page-center">
-      <div className="oria-page-form">
+      <style>{`
+        .bazi-onboarding-shell {
+          width: min(520px, calc(100% - 40px));
+          max-width: 520px;
+          margin: 0 auto;
+        }
+
+        .bazi-onboarding-card {
+          width: 100%;
+        }
+
+        .bazi-onboarding-submit {
+          width: min(360px, 100%);
+          margin-left: auto;
+          margin-right: auto;
+          display: block;
+        }
+
+        @media (max-width: 480px) {
+          .bazi-onboarding-shell {
+            width: min(360px, calc(100% - 36px));
+          }
+
+          .bazi-onboarding-card {
+            padding: 20px 18px !important;
+          }
+
+          .bazi-date-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .bazi-onboarding-submit {
+            width: min(320px, 100%);
+            min-height: 48px;
+            font-size: 15px;
+          }
+        }
+      `}</style>
+
+      <div className="oria-page-form bazi-onboarding-shell">
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
@@ -112,10 +151,10 @@ export default function OnboardingBazi() {
         </div>
 
         {/* Form */}
-        <div className="oria-card" style={{ padding: '22px 20px' }}>
+        <div className="oria-card bazi-onboarding-card" style={{ padding: '22px 20px' }}>
 
           {/* Year / Month / Day dropdowns */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 12, marginBottom: 16 }}>
+          <div className="bazi-date-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 12, marginBottom: 16 }}>
             <div>
               <label style={labelStyle}>{t('onboarding.bazi.year')}</label>
               <select style={selectStyle} value={year} onChange={e => setYear(e.target.value)}>
@@ -226,8 +265,8 @@ export default function OnboardingBazi() {
             <div style={{ color: '#f87171', fontSize: 13, marginBottom: 12 }}>{error}</div>
           )}
 
-          <button onClick={handleSave} disabled={saving} style={{
-            width: '100%', background: saving ? 'rgba(201,168,76,0.5)' : '#C9A84C',
+          <button onClick={handleSave} disabled={saving} className="bazi-onboarding-submit" style={{
+            background: saving ? 'rgba(201,168,76,0.5)' : '#C9A84C',
             border: 'none', borderRadius: 9999, padding: '16px',
             fontSize: 16, fontWeight: 700, color: '#fff',
             cursor: saving ? 'not-allowed' : 'pointer',
