@@ -106,6 +106,71 @@ export default function Settings({ user }: { user: User }) {
         {t('settings.sign_out')}
       </button>
 
+      {/* Links section */}
+      <div className="oria-card" style={{ padding: '20px 24px' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#C9A84C', textTransform: 'uppercase', marginBottom: 16 }}>
+          Account
+        </div>
+        {[
+          { label: 'Manage Subscription', path: '/upgrade' },
+          { label: 'Pricing & Plans', path: '/pricing' },
+          { label: 'Account & Data', path: '/account-and-data' },
+        ].map(link => (
+          <button key={link.path} onClick={() => navigate(link.path)} style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            width: '100%', background: 'none', border: 'none',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            padding: '12px 0', color: '#F0EDE8', fontSize: 15,
+            cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
+          }}>
+            {link.label} <span style={{ color: 'rgba(255,255,255,0.3)' }}>›</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="oria-card" style={{ padding: '20px 24px' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#C9A84C', textTransform: 'uppercase', marginBottom: 16 }}>
+          Support
+        </div>
+        {[
+          { label: 'Contact & Feedback', path: '/contact' },
+          { label: 'How Oria Works', path: '/how-it-works' },
+          { label: 'About Oria', path: '/about' },
+        ].map(link => (
+          <button key={link.path} onClick={() => navigate(link.path)} style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            width: '100%', background: 'none', border: 'none',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            padding: '12px 0', color: '#F0EDE8', fontSize: 15,
+            cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
+          }}>
+            {link.label} <span style={{ color: 'rgba(255,255,255,0.3)' }}>›</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="oria-card" style={{ padding: '20px 24px' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#C9A84C', textTransform: 'uppercase', marginBottom: 16 }}>
+          Legal
+        </div>
+        {[
+          { label: 'Terms of Service', path: '/legal/terms' },
+          { label: 'Privacy Policy', path: '/legal/privacy' },
+          { label: 'Billing & Refund Policy', path: '/legal/billing' },
+          { label: 'Disclaimer', path: '/legal/disclaimer' },
+        ].map(link => (
+          <button key={link.path} onClick={() => navigate(link.path)} style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            width: '100%', background: 'none', border: 'none',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            padding: '12px 0', color: '#F0EDE8', fontSize: 15,
+            cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
+          }}>
+            {link.label} <span style={{ color: 'rgba(255,255,255,0.3)' }}>›</span>
+          </button>
+        ))}
+      </div>
+
       {/* Language change confirmation modal */}
       {pendingLang && (
         <div style={{

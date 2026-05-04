@@ -23,6 +23,7 @@
     "@src": "dist"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^5.0.4",
     "@supabase/supabase-js": "^2.103.0",
     "axios": "^1.15.2",
     "cookie-parser": "^1.4.7",

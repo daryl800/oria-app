@@ -28,6 +28,16 @@ import OriaLogo from './components/OriaLogo';
 import RelationshipInsights from './pages/People';
 import AddPerson from './pages/AddPerson';
 import ComparisonResult from './pages/ComparisonResult';
+import AboutOria from './pages/AboutOria';
+import HowItWorks from './pages/HowItWorks';
+import PricingPage from './pages/PricingPage';
+import ContactPage from './pages/ContactPage';
+import AccountAndData from './pages/AccountAndData';
+import LegalTerms from './pages/LegalTerms';
+import LegalPrivacy from './pages/LegalPrivacy';
+import LegalBilling from './pages/LegalBilling';
+import LegalDisclaimer from './pages/LegalDisclaimer';
+
 
 function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
   const location = useLocation();
@@ -176,6 +186,20 @@ export default function App() {
 
           <Route path="/upgrade" element={!user ? <Navigate to="/" /> : <Upgrade />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+
+          {/* Public info & legal pages */}
+          <Route path="/about" element={<AboutOria />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/legal/terms" element={<LegalTerms />} />
+          <Route path="/legal/privacy" element={<LegalPrivacy />} />
+          <Route path="/legal/billing" element={<LegalBilling />} />
+          <Route path="/legal/disclaimer" element={<LegalDisclaimer />} />
+
+          {/* Protected info pages */}
+          <Route path="/account-and-data" element={!user ? <Navigate to="/" /> : <AccountAndData />} />
+
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AppShell>
