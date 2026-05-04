@@ -263,7 +263,7 @@ export default function Profile({ user }: { user: User }) {
           {existingBazi && <div style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#4ADE80', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>{savedLabel(existingBazi)}</div>}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, marginBottom: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr 2fr', gap: 12, marginBottom: 16 }}>
           <div>
             <label className="oria-card-label">{t('profile.year')}</label>
             <select className="oria-input" value={year} onChange={e => setYear(e.target.value)} style={{ appearance: 'auto', cursor: 'pointer' }}>
