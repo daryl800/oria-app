@@ -67,7 +67,12 @@ export default function Login({
     setError('');
 
     if (mode === 'signup') {
-      if (password !== confirmPassword) {
+      if (confirmPassword.length > 0 && password !== confirmPassword) {
+        setError(t('login.error_password_mismatch'));
+        setLoading(false);
+        return;
+      }
+      if (confirmPassword.length === 0) {
         setError(t('login.error_password_mismatch'));
         setLoading(false);
         return;
