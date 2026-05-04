@@ -50,7 +50,7 @@ export default function OnboardingResult() {
 
   return (
     <div className="oria-page" style={{ opacity: leaving ? 0 : 1, transition: 'opacity 0.6s ease' }}>
-      <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 20px' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 24px' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '28px 0 20px' }}>
@@ -61,7 +61,7 @@ export default function OnboardingResult() {
         {/* Type reveal */}
         <div style={{
           background: 'rgba(19,19,30,0.94)',
-          borderRadius: 20, padding: '32px 28px',
+          borderRadius: 20, padding: '22px 20px',
           marginBottom: 14, textAlign: 'center',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
           position: 'relative', overflow: 'hidden',
@@ -82,7 +82,7 @@ export default function OnboardingResult() {
             }}>
               {t('onboarding.result.type_label')}
             </div>
-            <div style={{ fontSize: 72, fontWeight: 800, color: '#F0EDE8', lineHeight: 1, marginBottom: 8 }}>
+            <div style={{ fontSize: 52, fontWeight: 800, color: '#F0EDE8', lineHeight: 1, marginBottom: 8 }}>
               {mbti_type}
             </div>
             <div style={{ fontSize: 20, fontWeight: 600, color: '#C9A84C', marginBottom: 8 }}>
@@ -157,13 +157,13 @@ export default function OnboardingResult() {
         <button
           onClick={handleSignup}
           style={{
-            display: 'block', width: '100%',
+            display: 'block', width: '100%', maxWidth: 360,
+            margin: '0 auto 12px',
             background: '#C9A84C', border: 'none',
-            borderRadius: 16, padding: '18px',
-            fontSize: 17, fontWeight: 700,
+            borderRadius: 16, padding: '16px',
+            fontSize: 16, fontWeight: 700,
             color: '#fff', cursor: 'pointer',
             boxShadow: '0 4px 24px rgba(201,168,76,0.5)',
-            marginBottom: 12,
           }}
         >
           {t('onboarding.result.signup')}
@@ -172,10 +172,11 @@ export default function OnboardingResult() {
         <button
           onClick={() => navigate('/onboarding/mbti')}
           style={{
-            display: 'block', width: '100%',
+            display: 'block', width: '100%', maxWidth: 360,
+            margin: '0 auto',
             background: 'transparent',
             border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: 16, padding: '14px',
+            borderRadius: 16, padding: '13px',
             fontSize: 14, color: 'rgba(255,255,255,0.5)',
             cursor: 'pointer', fontFamily: 'inherit',
           }}
@@ -183,7 +184,7 @@ export default function OnboardingResult() {
           {t('onboarding.result.retake')}
         </button>
 
-        <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 20 }}>
+        <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 20 }}>
           {t('onboarding.result.free_note')}
         </div>
       </div>
