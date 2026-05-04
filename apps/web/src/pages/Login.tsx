@@ -15,6 +15,7 @@ export default function Login({
   const navigate = useNavigate();
   const location = useLocation();
   const locationMode = (location.state as any)?.mode;
+  const hideSignup = (location.state as any)?.hideSignup ?? false;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -185,6 +186,7 @@ export default function Login({
 
         <p className="oria-auth-trust">{t('login.secure')}</p>
 
+        {!hideSignup && (
         <div className="oria-auth-switch">
           <span>
             {mode === 'signup'
@@ -198,6 +200,7 @@ export default function Login({
             {mode === 'signup' ? t('login.signin_link') : t('login.signup_link')}
           </button>
         </div>
+        )}
 
         <button onClick={handleBack} className="oria-auth-back">
           <span>{t('login.back')}</span>

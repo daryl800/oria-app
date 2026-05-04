@@ -46,7 +46,7 @@ export default function Landing() {
             <button className="oria-btn-premium oria-landing-primary" onClick={startOnboarding}>
               {t('landing.primary_cta')}
             </button>
-            <button className="oria-secondary-link oria-landing-signin" onClick={() => navigate('/login')}>
+            <button className="oria-secondary-link oria-landing-signin" onClick={() => navigate('/login', { state: { mode: 'signin', hideSignup: true } })}>
               {t('landing.signin')}
             </button>
           </div>
