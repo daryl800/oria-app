@@ -29,9 +29,29 @@ export default function Landing() {
       <div className="oria-landing-overlay animate-fade-in">
         <section className="oria-landing-focus">
           <div className="mb-6 text-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-            <div className="oria-brand-text" style={{ fontSize: 20, letterSpacing: '0.36em', color: '#C9A84C', fontWeight: 800, textTransform: 'uppercase' }}>
-              ORIA
-            </div>
+            <div style={{
+              fontFamily: "'Cormorant Garamond', 'Playfair Display', serif",
+              fontWeight: 600,
+              fontSize: 'clamp(28px, 8vw, 64px)',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              background: 'linear-gradient(90deg, #c8ad52 0%, #f1ecdf 50%, #c9b8ee 100%)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+              lineHeight: 1.1,
+              paddingRight: '0.22em',
+            }}>ORIA</div>
+            <div style={{
+              fontSize: 'clamp(10px, 1.5vw, 14px)',
+              letterSpacing: '0.2em',
+              color: 'rgba(200,173,82,0.45)',
+              textTransform: 'uppercase',
+              fontFamily: "'Nunito', 'Inter', sans-serif",
+              fontWeight: 600,
+              marginTop: 2,
+            }}>Eastern Metaphysics × Western Psychology</div>
           </div>
           <h1 className="oria-landing-title">
             {t('landing.headline')}
@@ -39,7 +59,6 @@ export default function Landing() {
           <p className="oria-landing-lead">
             {t('landing.lead')}
             {' '}{t('landing.emphasis')}
-            <span className="oria-landing-method-inline">{t('landing.method')}</span>
           </p>
 
           <div className="oria-landing-actions">
@@ -63,7 +82,20 @@ export default function Landing() {
         }}>
           {/* Logo + tagline */}
           <div style={{ marginBottom: 32, textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#C9A84C', letterSpacing: '0.2em', marginBottom: 6 }}>ORIA</div>
+            <div style={{
+              fontFamily: "'Cormorant Garamond', 'Playfair Display', serif",
+              fontWeight: 600,
+              fontSize: 28,
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              background: 'linear-gradient(90deg, #c8ad52 0%, #f1ecdf 50%, #c9b8ee 100%)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+              paddingRight: '0.22em',
+              marginBottom: 6,
+            }}>ORIA</div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>EASTERN METAPHYSICS × WESTERN PSYCHOLOGY</div>
           </div>
 

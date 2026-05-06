@@ -14,6 +14,16 @@
   --oria-highlight: #C9A84C;
   --oria-highlight-soft: rgba(201, 168, 76, 0.14);
   --oria-violet: #7C3AED;
+  --oria-bg-dark: #0b0718;
+  --oria-bg-panel: #150b2b;
+  --oria-text-main: #f1ecdf;
+  --oria-gold: #c8ad52;
+  --oria-gold-soft: #d8c06a;
+  --oria-lavender: #c9b8ee;
+  --oria-wordmark-gradient: linear-gradient(90deg, #c8ad52 0%, #f1ecdf 50%, #c9b8ee 100%);
+  --oria-icon-gradient: linear-gradient(135deg, #d8c06a 0%, #e78ab7 48%, #8b5cf6 100%);
+  --oria-font-display: 'Cormorant Garamond', 'Playfair Display', serif;
+  --oria-font-product: 'Nunito', 'Avenir Next', 'Inter', sans-serif;
   --oria-violet-soft: rgba(124, 58, 237, 0.14);
   --oria-text: #F0EDE8;
   --oria-text-dim: #8A879A;
@@ -1241,7 +1251,7 @@ html[lang^="zh"] .oria-landing-title {
   margin-top: 28px;
   margin-bottom: 0;
   color: #C9A84C;
-  font-size: 17px;
+  font-size: clamp(15px, 2vw, 18px);
   line-height: 1.7;
   font-weight: 500;
   white-space: pre-line;
@@ -1785,7 +1795,7 @@ html[lang^="zh"] .oria-home-primary-card h2 {
   }
 
   .oria-landing-lead {
-    font-size: 20px;
+    font-size: 16px;
   }
 }
 

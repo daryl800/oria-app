@@ -11,11 +11,11 @@ import OriaLogo from './OriaLogo';
 const LANGUAGES = SUPPORTED_LANGUAGES;
 
 const NAV_ITEMS = [
-  { path: '/home',    labelKey: 'nav.home' },
-  { path: '/daily',   labelKey: 'nav.daily' },
-  { path: '/chat',    labelKey: 'nav.chat' },
-  { path: '/relationship-insights',  labelKey: 'nav.people' },
-  { path: '/chart',   labelKey: 'nav.chart' },
+  { path: '/home', labelKey: 'nav.home' },
+  { path: '/daily', labelKey: 'nav.daily' },
+  { path: '/chat', labelKey: 'nav.chat' },
+  { path: '/relationship-insights', labelKey: 'nav.people' },
+  { path: '/chart', labelKey: 'nav.chart' },
 ];
 
 interface TopBarProps {
@@ -61,10 +61,17 @@ export default function TopBar({ user, isPlus = false }: TopBarProps) {
             className="oria-topbar-brand"
           >
             <span className="oria-topbar-mark">
-              <OriaLogo size={42} />
+              <OriaLogo size={42} variant={isLoggedIn ? "light" : "dark"} />
             </span>
             <span className="oria-topbar-wordmark">
-              <span className="oria-card-label oria-brand-text" style={{ margin: 0, fontSize: 18, lineHeight: 1 }}>oria</span>
+              <span style={{
+                fontFamily: "'Nunito', 'Avenir Next', 'Inter', sans-serif",
+                fontWeight: 700,
+                fontSize: 22,
+                letterSpacing: '0.02em',
+                color: '#EDE7FF',
+                lineHeight: 1,
+              }}>oria</span>
             </span>
           </button>
 
