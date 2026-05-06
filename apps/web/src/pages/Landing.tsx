@@ -77,46 +77,31 @@ export default function Landing() {
         {/* Footer */}
         <footer style={{
           borderTop: '1px solid rgba(255,255,255,0.08)',
-          marginTop: 8, padding: '40px 24px 32px',
-          width: '100%', maxWidth: 640, margin: '0 auto',
+          marginTop: 48, padding: '40px 24px 32px',
+          width: '100%', maxWidth: 640, margin: '48px auto 0',
         }}>
-          {/* Logo + tagline */}
-          <div style={{ marginBottom: 32, textAlign: 'center' }}>
-            <div style={{
-              fontFamily: "'Cormorant Garamond', 'Playfair Display', serif",
-              fontWeight: 600,
-              fontSize: 28,
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
-              background: 'linear-gradient(90deg, #c8ad52 0%, #f1ecdf 50%, #c9b8ee 100%)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              color: 'transparent',
-              paddingRight: '0.22em',
-              marginBottom: 6,
-            }}>ORIA</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>EASTERN METAPHYSICS × WESTERN PSYCHOLOGY</div>
-          </div>
-
           {/* Link columns */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px 16px', marginBottom: 32 }}>
+          <div style={{
+            display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
+            gap: '8px 16px', marginBottom: 32,
+            textAlign: 'center',
+          }}>
             {/* Col 1 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
               {[{ label: 'Pricing', path: '/pricing' }, { label: 'About Oria', path: '/about' }, { label: 'How Oria Works', path: '/how-it-works' }].map(link => (
-                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0 }}>{link.label}</button>
+                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', padding: 0 }}>{link.label}</button>
               ))}
             </div>
             {/* Col 2 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
               {[{ label: 'Contact', path: '/contact' }, { label: 'Terms of Service', path: '/legal/terms' }, { label: 'Privacy Policy', path: '/legal/privacy' }].map(link => (
-                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0 }}>{link.label}</button>
+                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', padding: 0 }}>{link.label}</button>
               ))}
             </div>
             {/* Col 3 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
               {[{ label: 'Billing Policy', path: '/legal/billing' }, { label: 'Disclaimer', path: '/legal/disclaimer' }, { label: 'Account & Data', path: '/account-and-data' }].map(link => (
-                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0 }}>{link.label}</button>
+                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', padding: 0 }}>{link.label}</button>
               ))}
             </div>
           </div>
