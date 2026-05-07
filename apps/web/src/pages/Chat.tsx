@@ -113,6 +113,8 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
           content_language: getGeneratedLanguage(data, normalizeLanguage(i18n.language)),
         },
       ]);
+      // Increment daily chat count after successful response
+      incrementDailyCount();
     } catch (err: any) {
       setError(err.message);
       setMessages(prev => prev.slice(0, -1));
@@ -138,56 +140,50 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
 
   const quickStarts = t('chat.quick_starts', { returnObjects: true }) as Array<{ label: string; value: string }>;
 
-  if (!isPlus) {
+  // ── Daily chat limit logic ──────────────────────────────────────────────────
+  // Free users: 1 short answer/day
+  // Plus users (monthly or yearly): 3 full answers/day
+  // Monthly and Yearly share the same Plus entitlement
+  const DAILY_LIMIT = isPlus ? 3 : 1;
+  const today = new Date().toISOString().slice(0, 10);
+  const storageKey = `oria_chat_count_${today}_${user.id}`;
+
+  function getDailyCount(): number {
+    try { return parseInt(localStorage.getItem(storageKey) || '0', 10); } catch { return 0; }
+  }
+  function incrementDailyCount() {
+    try { localStorage.setItem(storageKey, String(getDailyCount() + 1)); } catch {}
+  }
+
+  const dailyCount = getDailyCount();
+  const hasReachedLimit = dailyCount >= DAILY_LIMIT;
+
+  if (hasReachedLimit) {
     return (
-      <div
-        className="oria-page oria-container"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '40px 24px',
-        }}
-      >
+      <div className="oria-page oria-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
         <div style={{ maxWidth: 420, width: '100%', textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>💬</div>
-          <h2
-            style={{
-              fontSize: 26,
-              fontWeight: 800,
-              color: '#F0EDE8',
-              marginBottom: 12,
-            }}
-          >
-            {t('chat.paywall_title')}
+          <div style={{ fontSize: 48, marginBottom: 16 }}>{isPlus ? '🌙' : '💬'}</div>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 12 }}>
+            {isPlus ? t('upgrade.chat_limit_plus_title') : t('upgrade.chat_limit_free_title')}
           </h2>
-          <p
-            style={{
-              fontSize: 15,
-              color: 'rgba(255,255,255,0.62)',
-              marginBottom: 32,
-              lineHeight: 1.7,
-            }}
-          >
-            {t('chat.paywall_body')}
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.62)', marginBottom: 32, lineHeight: 1.7 }}>
+            {isPlus ? t('upgrade.chat_limit_plus_body') : t('upgrade.chat_limit_free_body')}
           </p>
-          <button className="oria-btn-premium" onClick={() => navigate('/upgrade')} style={{ marginBottom: 16 }}>
-            {t('chat.paywall_cta')}
-          </button>
-          <br />
-          <button
-            onClick={() => navigate(-1)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'rgba(255,255,255,0.45)',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              fontSize: 13,
-            }}
-          >
-            ← {t('common.back')}
-          </button>
+          {isPlus ? (
+            <button className="oria-btn-primary" onClick={() => navigate('/home')} style={{ marginBottom: 16 }}>
+              {t('upgrade.chat_limit_plus_cta')}
+            </button>
+          ) : (
+            <>
+              <button className="oria-btn-premium" onClick={() => navigate('/upgrade')} style={{ marginBottom: 16 }}>
+                {t('upgrade.chat_limit_free_cta')}
+              </button>
+              <br />
+              <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13 }}>
+                ← {t('common.back')}
+              </button>
+            </>
+          )}
         </div>
       </div>
     );
