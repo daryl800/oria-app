@@ -77,8 +77,8 @@ export default function Landing() {
         {/* Footer */}
         <footer style={{
           borderTop: '1px solid rgba(255,255,255,0.08)',
-          marginTop: 48, padding: '40px 24px 32px',
-          width: '100%', maxWidth: 640, margin: '48px auto 0',
+          marginTop: 24, padding: '24px 24px 32px',
+          width: '100%', maxWidth: 640, margin: '24px auto 0',
         }}>
           {/* Link columns */}
           <div style={{
