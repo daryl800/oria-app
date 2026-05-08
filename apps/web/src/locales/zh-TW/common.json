@@ -201,7 +201,7 @@
       "title": "理解彼此，讓相處更自在。",
       "subtitle": ""
     },
-    "footer": "oria 指引 · 專注解讀"
+    "footer": "看清局勢，做出更明智的選擇。"
   },
   "page_taglines": {
     "chat": "這是一種反思，而非預測。決定權在你。",
@@ -209,7 +209,8 @@
     "relationship": "這不是配對，而是理解彼此的方式。"
   },
   "common": {
-    "back": "← 返回"
+    "back": "← 返回",
+    "oria_compass": "ORIA COMPASS"
   },
   "landing": {
     "kicker": "oria Compass",
@@ -918,5 +919,6 @@
     "billing": "帳單政策",
     "disclaimer": "免責聲明",
     "accountData": "帳戶與資料"
-  }
+  },
+  "englishOnlyNotice": "此頁目前僅提供英文版本。英文版本為正式版本。"
 }

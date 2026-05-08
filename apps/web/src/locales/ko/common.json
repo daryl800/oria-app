@@ -201,7 +201,7 @@
       "title": "서로를 이해하고, 더 편안하게 관계를 이어가기.",
       "subtitle": ""
     },
-    "footer": "oria 나침반 · 집중된 해석"
+    "footer": "상황을 더 선명하게 보고, 더 현명한 선택을."
   },
   "page_taglines": {
     "chat": "이것은 예측이 아니라 성찰입니다. 선택은 당신의 몫입니다.",
@@ -209,7 +209,8 @@
     "relationship": "이것은 궁합이 아니라, 관계를 이해하는 방식입니다."
   },
   "common": {
-    "back": "← 뒤로"
+    "back": "← 뒤로",
+    "oria_compass": "ORIA COMPASS"
   },
   "landing": {
     "kicker": "oria Compass",
@@ -918,5 +919,6 @@
     "billing": "결제 정책",
     "disclaimer": "면책 조항",
     "accountData": "계정 및 데이터"
-  }
+  },
+  "englishOnlyNotice": "이 페이지는 현재 영어로만 제공됩니다. 영어 버전이 공식 버전입니다。"
 }

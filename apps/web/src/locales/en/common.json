@@ -201,7 +201,7 @@
       "title": "Understand each other and make interactions more at ease.",
       "subtitle": ""
     },
-    "footer": "oria Compass · Focused Reading"
+    "footer": "A clearer way to choose."
   },
   "page_taglines": {
     "chat": "This is reflection, not prediction. The choice is yours.",
@@ -209,7 +209,8 @@
     "relationship": "This is not matching, but understanding how you relate."
   },
   "common": {
-    "back": "← Back"
+    "back": "← Back",
+    "oria_compass": "ORIA COMPASS"
   },
   "landing": {
     "kicker": "oria Compass",
@@ -967,5 +968,6 @@
     "billing": "Billing Policy",
     "disclaimer": "Disclaimer",
     "accountData": "Account & Data"
-  }
+  },
+  "englishOnlyNotice": "This page is currently available in English only. The English version is the official version."
 }

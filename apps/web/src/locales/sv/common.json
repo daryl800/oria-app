@@ -201,7 +201,7 @@
       "title": "Förstå varandra och gör samspelet mer naturligt.",
       "subtitle": ""
     },
-    "footer": "oria Compass · Fokuserad vägledning"
+    "footer": "Se tydligare. Välj klokare."
   },
   "page_taglines": {
     "chat": "Detta är reflektion, inte förutsägelse. Valet är ditt.",
@@ -209,7 +209,8 @@
     "relationship": "Detta är inte matchning, utan att förstå hur ni relaterar."
   },
   "common": {
-    "back": "← Tillbaka"
+    "back": "← Tillbaka",
+    "oria_compass": "ORIA COMPASS"
   },
   "landing": {
     "kicker": "oria Compass",
@@ -918,5 +919,6 @@
     "billing": "Betalningspolicy",
     "disclaimer": "Friskrivning",
     "accountData": "Konto och data"
-  }
+  },
+  "englishOnlyNotice": "Den här sidan är för närvarande endast tillgänglig på engelska. Den engelska versionen är den officiella versionen."
 }

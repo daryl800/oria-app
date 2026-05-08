@@ -201,7 +201,7 @@
       "title": "お互いを理解し、より自然に関われるようにする。",
       "subtitle": ""
     },
-    "footer": "oriaコンパス・フォーカスドリーディング"
+    "footer": "状況をより明確に見つめ、より賢い選択を。"
   },
   "page_taglines": {
     "chat": "これは予測ではなく、内省です。選ぶのはあなたです。",
@@ -209,7 +209,8 @@
     "relationship": "これは相性ではなく、関係の理解です。"
   },
   "common": {
-    "back": "← 戻る"
+    "back": "← 戻る",
+    "oria_compass": "ORIA COMPASS"
   },
   "landing": {
     "kicker": "oria Compass",
@@ -918,5 +919,6 @@
     "billing": "請求ポリシー",
     "disclaimer": "免責事項",
     "accountData": "アカウントとデータ"
-  }
+  },
+  "englishOnlyNotice": "このページは現在、英語版のみ提供されています。英語版が正式版です。"
 }
