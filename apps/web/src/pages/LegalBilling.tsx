@@ -1,4 +1,22 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+
+
+function EnglishOnlyNotice() {
+  const { t, i18n } = useTranslation();
+  if (i18n.language === 'en') return null;
+  return (
+    <div style={{
+      background: 'rgba(201,168,76,0.08)',
+      border: '1px solid rgba(201,168,76,0.2)',
+      borderRadius: 10, padding: '10px 16px',
+      fontSize: 13, color: 'rgba(255,255,255,0.6)',
+      lineHeight: 1.6, marginBottom: 20,
+    }}>
+      {t('englishOnlyNotice')}
+    </div>
+  );
+}
 
 export default function LegalBilling() {
   const navigate = useNavigate();
@@ -13,6 +31,9 @@ export default function LegalBilling() {
       <h1 style={{ fontSize: 28, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>Billing & Refund Policy</h1>
       <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Last updated: May 2025</p>
       <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 24 }} />
+      {/* English-only notice */}
+      <EnglishOnlyNotice />
+
 
       {[
         { title: '1. Paid features', body: 'Oria may offer free and paid features. Paid features may include Full Daily Guidance, Full Chat responses, Full Profile Insight, Relationship Insights, Monthly Focus, and other Plus features. The exact features included in each plan may change over time.' },

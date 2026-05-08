@@ -1,4 +1,22 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+
+
+function EnglishOnlyNotice() {
+  const { t, i18n } = useTranslation();
+  if (i18n.language === 'en') return null;
+  return (
+    <div style={{
+      background: 'rgba(201,168,76,0.08)',
+      border: '1px solid rgba(201,168,76,0.2)',
+      borderRadius: 10, padding: '10px 16px',
+      fontSize: 13, color: 'rgba(255,255,255,0.6)',
+      lineHeight: 1.6, marginBottom: 20,
+    }}>
+      {t('englishOnlyNotice')}
+    </div>
+  );
+}
 
 export default function AccountAndData() {
   const navigate = useNavigate();
@@ -14,6 +32,9 @@ export default function AccountAndData() {
       <h1 style={{ fontSize: 28, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>Account & Data</h1>
       <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Manage your Oria account, subscription access, and personal data.</p>
       <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 24 }} />
+      {/* English-only notice */}
+      <EnglishOnlyNotice />
+
       <p style={p}>This page explains how you can manage your Oria account, saved profile information, subscription access, and data requests.</p>
 
       <h2 style={h2}>1. Your Oria account</h2>

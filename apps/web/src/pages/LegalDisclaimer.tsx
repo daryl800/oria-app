@@ -1,4 +1,22 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+
+
+function EnglishOnlyNotice() {
+  const { t, i18n } = useTranslation();
+  if (i18n.language === 'en') return null;
+  return (
+    <div style={{
+      background: 'rgba(201,168,76,0.08)',
+      border: '1px solid rgba(201,168,76,0.2)',
+      borderRadius: 10, padding: '10px 16px',
+      fontSize: 13, color: 'rgba(255,255,255,0.6)',
+      lineHeight: 1.6, marginBottom: 20,
+    }}>
+      {t('englishOnlyNotice')}
+    </div>
+  );
+}
 
 export default function LegalDisclaimer() {
   const navigate = useNavigate();
@@ -13,6 +31,9 @@ export default function LegalDisclaimer() {
       <h1 style={{ fontSize: 28, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>Disclaimer</h1>
       <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Last updated: May 2025</p>
       <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 24 }} />
+      {/* English-only notice */}
+      <EnglishOnlyNotice />
+
 
       <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, marginBottom: 24 }}>
         Oria is designed for self-reflection, personal insight, and entertainment. It is not professional advice.
