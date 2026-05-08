@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 const STRIPE_MONTHLY_LINK = import.meta.env.VITE_STRIPE_MONTHLY_LINK || 'https://buy.stripe.com/test_cNi7sLegE6kBcCo4Fn8N202';
 const STRIPE_YEARLY_LINK = import.meta.env.VITE_STRIPE_YEARLY_LINK || '#';
 
-export default function PricingPage() {
+const STRIPE_PORTAL_LINK = import.meta.env.VITE_STRIPE_PORTAL_LINK || '';
+
+export default function PricingPage({ isPlus = false }: { isPlus?: boolean }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -70,14 +72,25 @@ export default function PricingPage() {
           <div style={{ flex: 1, marginBottom: 24 }}>
             {freeFeatures.map((f, i) => featureItem(f, i))}
           </div>
-          <button onClick={() => navigate('/')} style={{
-            width: '100%', background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.1)', borderRadius: 999,
-            padding: '14px', fontSize: 15, fontWeight: 600,
-            color: 'rgba(255,255,255,0.55)', cursor: 'pointer', fontFamily: 'inherit',
-          }}>
-            {t('billing.free.button')}
-          </button>
+          {!isPlus ? (
+            <button disabled style={{
+              width: '100%', background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.15)', borderRadius: 999,
+              padding: '14px', fontSize: 15, fontWeight: 600,
+              color: 'rgba(255,255,255,0.35)', fontFamily: 'inherit', cursor: 'default',
+            }}>
+              ✓ {t('billing.currentPlan')}
+            </button>
+          ) : (
+            <button onClick={() => navigate('/')} style={{
+              width: '100%', background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.1)', borderRadius: 999,
+              padding: '14px', fontSize: 15, fontWeight: 600,
+              color: 'rgba(255,255,255,0.55)', cursor: 'pointer', fontFamily: 'inherit',
+            }}>
+              {t('billing.free.button')}
+            </button>
+          )}
         </div>
 
         {/* Monthly */}
@@ -102,11 +115,22 @@ export default function PricingPage() {
           <div style={{ flex: 1, marginBottom: 24 }}>
             {monthlyFeatures.map((f, i) => featureItem(f, i))}
           </div>
-          <a href={STRIPE_MONTHLY_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-            <button className="oria-btn-primary" style={{ width: '100%' }}>
-              {t('billing.monthly.button')}
+          {isPlus ? (
+            <button disabled style={{
+              width: '100%', background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.15)', borderRadius: 999,
+              padding: '14px', fontSize: 15, fontWeight: 600,
+              color: 'rgba(255,255,255,0.35)', fontFamily: 'inherit', cursor: 'default',
+            }}>
+              ✓ {t('billing.currentPlan')}
             </button>
-          </a>
+          ) : (
+            <a href={STRIPE_MONTHLY_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              <button className="oria-btn-primary" style={{ width: '100%' }}>
+                {t('billing.monthly.button')}
+              </button>
+            </a>
+          )}
         </div>
 
         {/* Yearly */}
@@ -147,11 +171,22 @@ export default function PricingPage() {
           <div style={{ flex: 1, marginBottom: 24 }}>
             {yearlyFeatures.map((f, i) => featureItem(f, i))}
           </div>
-          <a href={STRIPE_YEARLY_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-            <button className="oria-btn-premium" style={{ width: '100%' }}>
-              {t('billing.yearly.button')}
+          {isPlus ? (
+            <button disabled style={{
+              width: '100%', background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.15)', borderRadius: 999,
+              padding: '14px', fontSize: 15, fontWeight: 600,
+              color: 'rgba(255,255,255,0.35)', fontFamily: 'inherit', cursor: 'default',
+            }}>
+              ✓ {t('billing.currentPlan')}
             </button>
-          </a>
+          ) : (
+            <a href={STRIPE_YEARLY_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              <button className="oria-btn-premium" style={{ width: '100%' }}>
+                {t('billing.yearly.button')}
+              </button>
+            </a>
+          )}
         </div>
       </div>
 
@@ -159,6 +194,19 @@ export default function PricingPage() {
       <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 32 }}>
         {t('billing.trust')}
       </p>
+      {isPlus && (
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <a href={STRIPE_PORTAL_LINK || '#'} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+            <button style={{
+              background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)',
+              borderRadius: 999, padding: '8px 20px', fontSize: 13, fontWeight: 600,
+              color: '#C9A84C', cursor: 'pointer', fontFamily: 'inherit',
+            }}>
+              ✦ {t('billing.manageSubscription')}
+            </button>
+          </a>
+        </div>
+      )}
     </div>
   );
 }

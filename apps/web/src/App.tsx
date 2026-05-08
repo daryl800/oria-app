@@ -20,7 +20,7 @@ import Chat from './pages/Chat';
 import MbtiQuestionnaire from './pages/MbtiQuestionnaire';
 import Compare from './pages/Compare';
 import LanguageModal from './components/LanguageModal';
-import Upgrade from './pages/Upgrade';
+// Upgrade page removed — redirects to /pricing
 import AuthCallback from './pages/AuthCallback';
 import BottomNav from './components/BottomNav';
 import TopBar from './components/TopBar';
@@ -190,7 +190,7 @@ export default function App() {
           {/* Public info & legal pages */}
           <Route path="/about" element={<AboutOria />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/pricing" element={<PricingPage isPlus={isPlus} />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/legal/terms" element={<LegalTerms />} />
           <Route path="/legal/privacy" element={<LegalPrivacy />} />
