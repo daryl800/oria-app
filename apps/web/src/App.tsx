@@ -184,7 +184,7 @@ export default function App() {
           <Route path="/people/add" element={!user ? <Navigate to="/" /> : <Navigate to="/relationship-insights/add" replace />} />
           <Route path="/compare/:personId" element={!user ? <Navigate to="/" /> : <ComparisonResult />} />
 
-          <Route path="/upgrade" element={!user ? <Navigate to="/" /> : <Upgrade />} />
+          <Route path="/upgrade" element={<Navigate to="/pricing" replace />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
 
           {/* Public info & legal pages */}
