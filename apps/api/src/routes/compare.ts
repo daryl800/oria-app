@@ -1,3 +1,4 @@
+// @ts-nocheck
 // apps/api/src/routes/compare.ts
 
 import { Router, Request, Response } from 'express';

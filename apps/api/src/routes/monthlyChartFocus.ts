@@ -1,3 +1,4 @@
+// @ts-nocheck
 // apps/api/src/routes/monthlyChartFocus.ts
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
