@@ -920,5 +920,21 @@
     "disclaimer": "면책 조항",
     "accountData": "계정 및 데이터"
   },
-  "englishOnlyNotice": "이 페이지는 현재 영어로만 제공됩니다. 영어 버전이 공식 버전입니다。"
+  "englishOnlyNotice": "이 페이지는 현재 영어로만 제공됩니다. 영어 버전이 공식 버전입니다。",
+  "profileLinks": {
+    "account": "계정",
+    "support": "지원",
+    "legal": "법적 정보",
+    "upgradeToPlus": "Plus로 업그레이드",
+    "manageSubscription": "구독 관리",
+    "pricingPlans": "요금제",
+    "accountData": "계정 및 데이터",
+    "contactFeedback": "문의 및 피드백",
+    "howOriaWorks": "Oria 작동 방식",
+    "aboutOria": "Oria 소개",
+    "termsOfService": "이용약관",
+    "privacyPolicy": "개인정보 처리방침",
+    "billingPolicy": "결제 및 환불 정책",
+    "disclaimer": "면책 조항"
+  }
 }

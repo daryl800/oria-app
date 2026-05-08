@@ -920,5 +920,21 @@
     "disclaimer": "Friskrivning",
     "accountData": "Konto och data"
   },
-  "englishOnlyNotice": "Den här sidan är för närvarande endast tillgänglig på engelska. Den engelska versionen är den officiella versionen."
+  "englishOnlyNotice": "Den här sidan är för närvarande endast tillgänglig på engelska. Den engelska versionen är den officiella versionen.",
+  "profileLinks": {
+    "account": "Konto",
+    "support": "Support",
+    "legal": "Juridiskt",
+    "upgradeToPlus": "Uppgradera till Plus",
+    "manageSubscription": "Hantera prenumeration",
+    "pricingPlans": "Priser",
+    "accountData": "Konto och data",
+    "contactFeedback": "Kontakt och feedback",
+    "howOriaWorks": "Hur Oria fungerar",
+    "aboutOria": "Om Oria",
+    "termsOfService": "Användarvillkor",
+    "privacyPolicy": "Integritetspolicy",
+    "billingPolicy": "Betalnings- och återbetalningspolicy",
+    "disclaimer": "Friskrivning"
+  }
 }

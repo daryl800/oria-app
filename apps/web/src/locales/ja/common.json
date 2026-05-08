@@ -920,5 +920,21 @@
     "disclaimer": "免責事項",
     "accountData": "アカウントとデータ"
   },
-  "englishOnlyNotice": "このページは現在、英語版のみ提供されています。英語版が正式版です。"
+  "englishOnlyNotice": "このページは現在、英語版のみ提供されています。英語版が正式版です。",
+  "profileLinks": {
+    "account": "アカウント",
+    "support": "サポート",
+    "legal": "法的情報",
+    "upgradeToPlus": "Plus にアップグレード",
+    "manageSubscription": "サブスクリプション管理",
+    "pricingPlans": "料金プラン",
+    "accountData": "アカウントとデータ",
+    "contactFeedback": "お問い合わせ・フィードバック",
+    "howOriaWorks": "Oria の仕組み",
+    "aboutOria": "Oria について",
+    "termsOfService": "利用規約",
+    "privacyPolicy": "プライバシーポリシー",
+    "billingPolicy": "請求・返金ポリシー",
+    "disclaimer": "免責事項"
+  }
 }

@@ -969,5 +969,21 @@
     "disclaimer": "Disclaimer",
     "accountData": "Account & Data"
   },
-  "englishOnlyNotice": "This page is currently available in English only. The English version is the official version."
+  "englishOnlyNotice": "This page is currently available in English only. The English version is the official version.",
+  "profileLinks": {
+    "account": "Account",
+    "support": "Support",
+    "legal": "Legal",
+    "upgradeToPlus": "Upgrade to Plus",
+    "manageSubscription": "Manage Subscription",
+    "pricingPlans": "Pricing & Plans",
+    "accountData": "Account & Data",
+    "contactFeedback": "Contact & Feedback",
+    "howOriaWorks": "How Oria Works",
+    "aboutOria": "About Oria",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "billingPolicy": "Billing & Refund Policy",
+    "disclaimer": "Disclaimer"
+  }
 }

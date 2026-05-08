@@ -920,5 +920,21 @@
     "disclaimer": "免責聲明",
     "accountData": "帳戶與資料"
   },
-  "englishOnlyNotice": "此頁目前僅提供英文版本。英文版本為正式版本。"
+  "englishOnlyNotice": "此頁目前僅提供英文版本。英文版本為正式版本。",
+  "profileLinks": {
+    "account": "帳戶",
+    "support": "支援",
+    "legal": "法律",
+    "upgradeToPlus": "升級至 Plus",
+    "manageSubscription": "管理訂閱",
+    "pricingPlans": "方案定價",
+    "accountData": "帳戶與資料",
+    "contactFeedback": "聯絡與回饋",
+    "howOriaWorks": "Oria 如何運作",
+    "aboutOria": "關於 Oria",
+    "termsOfService": "服務條款",
+    "privacyPolicy": "私隱政策",
+    "billingPolicy": "帳單與退款政策",
+    "disclaimer": "免責聲明"
+  }
 }

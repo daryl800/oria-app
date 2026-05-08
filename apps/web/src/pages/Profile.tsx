@@ -443,12 +443,12 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
       {/* Account links */}
       <div className="oria-card" style={{ padding: '20px 24px' }}>
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#C9A84C', textTransform: 'uppercase', marginBottom: 16 }}>
-          Account
+          {t('profileLinks.account')}
         </div>
         {[
-          { label: isPlus ? 'Manage Subscription' : 'Upgrade to Plus', path: isPlus ? (import.meta.env.VITE_STRIPE_PORTAL_LINK || '/upgrade') : '/upgrade' },
-          { label: 'Pricing & Plans', path: '/pricing' },
-          { label: 'Account & Data', path: '/account-and-data' },
+          { label: isPlus ? t('profileLinks.manageSubscription') : t('profileLinks.upgradeToPlus'), path: isPlus ? (import.meta.env.VITE_STRIPE_PORTAL_LINK || '/upgrade') : '/upgrade' },
+          { label: t('profileLinks.pricingPlans'), path: '/pricing' },
+          { label: t('profileLinks.accountData'), path: '/account-and-data' },
         ].map(link => (
           <button key={link.path} onClick={() => navigate(link.path)} style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -465,12 +465,12 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
       {/* Support links */}
       <div className="oria-card" style={{ padding: '20px 24px' }}>
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#C9A84C', textTransform: 'uppercase', marginBottom: 16 }}>
-          Support
+          {t('profileLinks.support')}
         </div>
         {[
-          { label: 'Contact & Feedback', path: '/contact' },
-          { label: 'How Oria Works', path: '/how-it-works' },
-          { label: 'About Oria', path: '/about' },
+          { label: t('profileLinks.contactFeedback'), path: '/contact' },
+          { label: t('profileLinks.howOriaWorks'), path: '/how-it-works' },
+          { label: t('profileLinks.aboutOria'), path: '/about' },
         ].map(link => (
           <button key={link.path} onClick={() => navigate(link.path)} style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -487,13 +487,13 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
       {/* Legal links */}
       <div className="oria-card" style={{ padding: '20px 24px' }}>
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#C9A84C', textTransform: 'uppercase', marginBottom: 16 }}>
-          Legal
+          {t('profileLinks.legal')}
         </div>
         {[
-          { label: 'Terms of Service', path: '/legal/terms' },
-          { label: 'Privacy Policy', path: '/legal/privacy' },
-          { label: 'Billing & Refund Policy', path: '/legal/billing' },
-          { label: 'Disclaimer', path: '/legal/disclaimer' },
+          { label: t('profileLinks.termsOfService'), path: '/legal/terms' },
+          { label: t('profileLinks.privacyPolicy'), path: '/legal/privacy' },
+          { label: t('profileLinks.billingPolicy'), path: '/legal/billing' },
+          { label: t('profileLinks.disclaimer'), path: '/legal/disclaimer' },
         ].map(link => (
           <button key={link.path} onClick={() => navigate(link.path)} style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
