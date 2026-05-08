@@ -24,6 +24,10 @@ export default function Landing() {
         {Array.from({ length: 8 }).map((_, index) => (
           <span key={index} className="oria-landing-star" />
         ))}
+        {/* Shooting stars — 4 occasional fly-bys from different angles */}
+        {Array.from({ length: 4 }).map((_, index) => (
+          <span key={`shoot-${index}`} className="oria-landing-shoot" />
+        ))}
       </div>
 
       <div className="oria-landing-overlay animate-fade-in">
@@ -77,38 +81,39 @@ export default function Landing() {
         {/* Footer */}
         <footer style={{
           borderTop: '1px solid rgba(255,255,255,0.08)',
-          marginTop: 24, padding: '24px 24px 32px',
-          width: '100%', maxWidth: 640, margin: '24px auto 0',
+          marginTop: 16, padding: '20px 20px 24px',
+          width: '100%', maxWidth: 640, margin: '16px auto 0',
         }}>
-          {/* Link columns */}
+          {/* Link columns — 3 col, left-aligned within each col */}
           <div style={{
-            display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
-            gap: '8px 16px', marginBottom: 32,
-            textAlign: 'center',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr',
+            gap: '6px 12px',
+            marginBottom: 16,
           }}>
             {/* Col 1 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
               {[{ label: 'Pricing', path: '/pricing' }, { label: 'About Oria', path: '/about' }, { label: 'How Oria Works', path: '/how-it-works' }].map(link => (
-                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', padding: 0 }}>{link.label}</button>
+                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0, lineHeight: 1.5 }}>{link.label}</button>
               ))}
             </div>
             {/* Col 2 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
               {[{ label: 'Contact', path: '/contact' }, { label: 'Terms of Service', path: '/legal/terms' }, { label: 'Privacy Policy', path: '/legal/privacy' }].map(link => (
-                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', padding: 0 }}>{link.label}</button>
+                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0, lineHeight: 1.5 }}>{link.label}</button>
               ))}
             </div>
             {/* Col 3 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
               {[{ label: 'Billing Policy', path: '/legal/billing' }, { label: 'Disclaimer', path: '/legal/disclaimer' }, { label: 'Account & Data', path: '/account-and-data' }].map(link => (
-                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', padding: 0 }}>{link.label}</button>
+                <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0, lineHeight: 1.5 }}>{link.label}</button>
               ))}
             </div>
           </div>
 
           {/* Copyright */}
-          <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.25)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20 }}>
-            © {new Date().getFullYear()} Oria. For self-reflection and entertainment only.
+          <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.25)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14 }}>
+            © {new Date().getFullYear()} Oria. For self-understanding and decision reflection only.
           </div>
         </footer>
       </div>
