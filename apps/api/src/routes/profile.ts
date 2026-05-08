@@ -301,7 +301,6 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
 });
 });
 
-export default router;
 
 // GET /api/profile/mbti/questions
 router.get('/mbti/questions', async (req: Request, res: Response) => {
