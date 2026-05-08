@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { getMbtiQuestions, submitMbtiAnswers } from '../services/api';
 import '../styles/theme.css';
+import PlanetLoader from '../components/PlanetLoader';
 import { normalizeLanguage } from '../lib/languages';
 
 interface Question {
@@ -85,7 +86,7 @@ export default function MbtiQuestionnaire({ user }: { user: User }) {
 
   if (loading) return (
     <div className="oria-page oria-loading">
-      <div style={{ fontSize: 48, animation: 'breathe 2s infinite', color: '#C9A84C' }}>🧠</div>
+      <PlanetLoader />
       <div style={{ fontSize: 16, color: '#FFFFFF' }}>{t('mbti.loading')}</div>
     </div>
   );

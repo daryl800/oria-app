@@ -7,6 +7,7 @@ import { fetchDailyGuidance } from '@/services/api';
 import { normalizeLanguage, SUPPORTED_LANGUAGES } from '@/lib/languages';
 import { getGeneratedLanguage, languageDisplayName } from '@/lib/contentLanguage';
 import OriaLogo from '@/components/OriaLogo';
+import PlanetLoader from '@/components/PlanetLoader';
 
 interface DailySummary {
   tone: string;
@@ -127,7 +128,7 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
 
   if (loading) return (
     <div className="oria-page oria-loading">
-      <OriaLogo className="oria-loading-logo animate-breathe" size={72} />
+      <PlanetLoader />
       <div style={{ fontSize: 18, color: '#FFFFFF', marginTop: 16 }}>{t('daily.loading')}</div>
     </div>
   );

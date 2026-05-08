@@ -7,6 +7,7 @@ import { getProfile, getProfileSummary } from '../services/api';
 import { normalizeLanguage, SUPPORTED_LANGUAGES } from '../lib/languages';
 import { getGeneratedLanguage, languageDisplayName } from '../lib/contentLanguage';
 import OriaLogo from '../components/OriaLogo';
+import PlanetLoader from '../components/PlanetLoader';
 
 // Romanized to Chinese character mappings
 const GAN_CN: Record<string, string> = {
@@ -158,7 +159,7 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
 
   if (loading) return (
     <div className="oria-page oria-loading">
-      <OriaLogo className="oria-loading-logo animate-breathe" size={72} />
+      <PlanetLoader text={t('chart.loading')} />
       <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: 16 }}>
         {t('chart.loading')}
       </p>

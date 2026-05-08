@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { transferTempOnboarding } from '../services/api';
-import OriaLogo from '../components/OriaLogo';
+import PlanetLoader from '../components/PlanetLoader';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ export default function AuthCallback() {
 
   return (
     <div className="oria-page oria-page-center" style={{ gap: 16 }}>
-      <OriaLogo className="oria-loading-logo animate-breathe" size={72} />
+      <PlanetLoader />
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15 }}>{status}</p>
     </div>
   );

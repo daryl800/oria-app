@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import PlanetLoader from '../components/PlanetLoader';
 import { comparePerson } from '../services/api';
 
 interface ComparisonData {
@@ -118,8 +119,7 @@ export default function ComparisonResult() {
       {/* Loading */}
       {loading && (
         <div className="comparison-loading">
-          <div className="loading-orb" />
-          <p>{t('compare_result.loading')}</p>
+          <PlanetLoader text={t('compare_result.loading')} />
         </div>
       )}
 
