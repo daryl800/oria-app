@@ -8,6 +8,7 @@ import { SUPPORTED_LANGUAGES } from '../lib/languages';
 import LocationAutocomplete from '../components/LocationAutocomplete';
 import type { StructuredLocation } from '../lib/locations';
 import OriaLogo from '../components/OriaLogo';
+import PlanetLoader from '../components/PlanetLoader';
 
 const MBTI_TYPES = [
   'INTJ', 'INTP', 'ENTJ', 'ENTP',
@@ -192,8 +193,7 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
 
   if (loading) return (
     <div className="oria-page oria-loading">
-      <OriaLogo className="oria-loading-logo animate-breathe" size={72} />
-      <p>{t('profile.loading')}</p>
+      <PlanetLoader text={t('profile.loading')} />
     </div>
   );
 
