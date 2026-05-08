@@ -25,6 +25,7 @@ import AuthCallback from './pages/AuthCallback';
 import BottomNav from './components/BottomNav';
 import TopBar from './components/TopBar';
 import OriaLogo from './components/OriaLogo';
+import PlanetLoader from './components/PlanetLoader';
 import RelationshipInsights from './pages/People';
 import AddPerson from './pages/AddPerson';
 import ComparisonResult from './pages/ComparisonResult';
@@ -140,9 +141,7 @@ export default function App() {
   if (user === undefined || (user && onboardingComplete === null)) return (
     <BrowserRouter>
       <div className="oria-page oria-loading">
-        <div className="oria-card" style={{ width: 160, textAlign: 'center', marginBottom: 0 }}>
-          <OriaLogo className="oria-loading-logo animate-breathe" size={72} />
-        </div>
+        <PlanetLoader />
       </div>
     </BrowserRouter>
   );
