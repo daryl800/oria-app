@@ -209,11 +209,7 @@
     "relationship": "This is not matching, but understanding how you relate."
   },
   "common": {
-    "oria": "oria",
-    "oria_compass": "oria Compass",
-    "back": "Back",
-    "loading": "Loading...",
-    "unknown": "—"
+    "back": "← Back"
   },
   "landing": {
     "kicker": "oria Compass",
@@ -839,5 +835,137 @@
       "plusMessage": "Oria works best when you pause, reflect, and return with a clearer question. Your chat limit resets tomorrow.",
       "plusButton": "Back to Home"
     }
+  },
+  "footerPages": {
+    "about": {
+      "title": "About Oria",
+      "subtitle": "Eastern Metaphysics × Western Psychology",
+      "p1": "Oria is a self-reflection app that combines BaZi, MBTI-style personality insight, and AI-assisted conversation to help you understand your current situation more clearly.",
+      "p2": "Many people do not need someone to tell them exactly what to do. They need a clearer way to see what is happening.",
+      "p3": "Oria was created for moments when life feels uncertain — when you are thinking about work, relationships, direction, timing, or personal change.",
+      "exploreTitle": "What Oria helps you explore",
+      "exploreItems": [
+        "What kind of energy you naturally carry",
+        "What situations may support or drain you",
+        "How you tend to make decisions",
+        "What patterns appear in your relationships",
+        "What today's or this month's guidance may suggest",
+        "What question may be worth asking next"
+      ],
+      "beliefTitle": "Our belief",
+      "beliefHighlight": "See the current situation more clearly, and make wiser choices.",
+      "beliefBody": "Oria helps you look at yourself and your situation from another angle, so you can make decisions with more awareness.",
+      "notTitle": "What Oria is not",
+      "notP1": "Oria is not a professional advisory service. The content in Oria is for self-reflection, personal insight, and entertainment.",
+      "notP2": "It should not be treated as medical, psychological, legal, financial, or emergency advice. For important decisions involving health, safety, money, legal matters, or mental health, please consult a qualified professional."
+    },
+    "howItWorks": {
+      "title": "How Oria Works",
+      "p1": "Oria combines BaZi, MBTI-style personality insight, and AI-assisted conversation to help you reflect on your current situation.",
+      "p2": "Oria does not decide your life for you. It gives you another lens to understand patterns, timing, personality, and possible directions.",
+      "usesTitle": "What Oria uses",
+      "usesIntro": "To generate your personal insights, Oria may use:",
+      "usesItems": [
+        "Your birth date",
+        "Your birth time",
+        "Your birth location",
+        "Your MBTI result or personality answers",
+        "Your selected focus area",
+        "Your questions and conversation history inside Oria"
+      ],
+      "helpsTitle": "What Oria can help with",
+      "helpsItems": [
+        "Understand your personal patterns",
+        "Reflect on your strengths and friction points",
+        "See timing or energy around a situation",
+        "Explore relationship dynamics",
+        "Prepare for decisions with more calm and clarity",
+        "Ask follow-up questions through chat"
+      ],
+      "cannotTitle": "What Oria cannot do",
+      "cannotIntro": "Oria does not predict the future with certainty. Oria does not replace:",
+      "cannotItems": [
+        "Medical advice",
+        "Mental health support",
+        "Legal advice",
+        "Financial advice",
+        "Emergency support",
+        "Professional diagnosis or treatment"
+      ],
+      "useWellTitle": "How to use Oria well",
+      "useWellItems": [
+        "Enter your birth information as accurately as possible",
+        "Choose the focus area that matches your real concern",
+        "Ask specific questions when chatting with Oria",
+        "Treat the result as reflection, not instruction",
+        "Use your own judgment before making important decisions"
+      ],
+      "reminderTitle": "A gentle reminder",
+      "reminderBody": "Oria offers insight, not fate. Your choices still belong to you."
+    },
+    "contact": {
+      "title": "Contact & Feedback",
+      "intro1": "We would love to hear from you.",
+      "intro2": "Use the form below to send us feedback, report a bug, ask a billing question, or contact us about your account.",
+      "intro3": "You can also email us directly at:",
+      "formTitle": "Send us a message",
+      "labels": {
+        "name": "Name",
+        "email": "Email",
+        "subject": "Subject",
+        "optional": "optional",
+        "message": "Message"
+      },
+      "placeholders": {
+        "name": "Your name",
+        "email": "your@email.com",
+        "subject": "e.g. Bug report, Feedback, Billing question",
+        "message": "Tell us what is on your mind..."
+      },
+      "validationError": "Please fill in your name, email, and message.",
+      "failedToSend": "Failed to send",
+      "sending": "Sending...",
+      "send": "Send message",
+      "successTitle": "Message sent",
+      "successBody": "Thank you for reaching out. We will get back to you as soon as possible.",
+      "contactAboutTitle": "What can you contact us about?",
+      "contactAboutIntro": "You can contact us for:",
+      "contactAboutItems": [
+        "Bug reports",
+        "Feedback or suggestions",
+        "Billing or subscription questions",
+        "Account support",
+        "Privacy or data requests",
+        "General questions about Oria"
+      ],
+      "fasterTitle": "For faster support",
+      "fasterIntro": "Please include:",
+      "fasterItems": [
+        "The email address linked to your Oria account",
+        "Which page or feature you were using",
+        "What happened",
+        "What you expected to happen",
+        "Screenshots, if relevant"
+      ],
+      "billingTitle": "Billing or subscription questions",
+      "billingP1": "For billing, cancellation, or refund questions, please include the email address connected to your Oria account.",
+      "billingP2": "Do not send full credit card details through this form.",
+      "privacyTitle": "Privacy or account deletion requests",
+      "privacyP1": "For account deletion or data requests, please use the email address connected to your Oria account so we can verify the request.",
+      "responseTitle": "Response time",
+      "responseP1": "We aim to respond as soon as possible.",
+      "responseP2": "During busy periods, replies may take longer."
+    }
+  },
+  "footerLinks": {
+    "pricing": "Pricing",
+    "about": "About Oria",
+    "howItWorks": "How Oria Works",
+    "contact": "Contact",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "billing": "Billing Policy",
+    "disclaimer": "Disclaimer",
+    "accountData": "Account & Data"
   }
 }

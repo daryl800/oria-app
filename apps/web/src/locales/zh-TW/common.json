@@ -209,11 +209,7 @@
     "relationship": "這不是配對，而是理解彼此的方式。"
   },
   "common": {
-    "oria": "oria",
-    "oria_compass": "oria Compass",
-    "back": "返回",
-    "loading": "載入中...",
-    "unknown": "未知"
+    "back": "← 返回"
   },
   "landing": {
     "kicker": "oria Compass",
@@ -790,5 +786,137 @@
       "plusMessage": "Oria 最適合在你暫停、反思後，帶著更清晰的問題回來使用。你的對話額度明天重置。",
       "plusButton": "返回首頁"
     }
+  },
+  "footerPages": {
+    "about": {
+      "title": "關於 Oria",
+      "subtitle": "東方命理 × 西方心理",
+      "p1": "Oria 是一個自我反思工具，結合八字、MBTI 式性格洞察與 AI 對話，幫助你更清楚地看懂當下的處境。",
+      "p2": "很多時候，人不一定需要別人直接告訴自己該怎樣做，而是需要一個更清楚的角度，看見事情正在發生什麼。",
+      "p3": "Oria 是為那些感到不確定的時刻而設計的——當你正在思考工作、關係、方向、時機，或人生轉變時。",
+      "exploreTitle": "Oria 可以幫你探索什麼",
+      "exploreItems": [
+        "你天生帶著怎樣的能量",
+        "哪些情境可能支持你，哪些情境可能消耗你",
+        "你通常如何做決定",
+        "你在人際關係中容易出現的模式",
+        "今天或本月的指引可能提醒你什麼",
+        "下一個值得問自己的問題是什麼"
+      ],
+      "beliefTitle": "我們相信",
+      "beliefHighlight": "看清現在的局勢，做出更明智的選擇。",
+      "beliefBody": "Oria 幫助你從另一個角度看待自己和當下處境，讓你在做選擇時更有覺察。",
+      "notTitle": "Oria 不是什麼",
+      "notP1": "Oria 不是專業顧問服務。Oria 的內容僅供自我反思、個人洞察與參考用途。",
+      "notP2": "Oria 不應被視為醫療、心理、法律、財務或緊急建議。涉及健康、安全、金錢、法律或心理健康的重要決定，請諮詢合資格專業人士。"
+    },
+    "howItWorks": {
+      "title": "Oria 如何運作",
+      "p1": "Oria 結合八字、MBTI 式性格洞察與 AI 對話，幫助你反思當下的處境。",
+      "p2": "Oria 不會替你決定人生。它提供另一個視角，幫助你理解模式、時機、性格與可能的方向。",
+      "usesTitle": "Oria 會使用什麼資料",
+      "usesIntro": "為了生成個人化洞察，Oria 可能會使用：",
+      "usesItems": [
+        "你的出生日期",
+        "你的出生時間",
+        "你的出生地點",
+        "你的 MBTI 結果或性格答案",
+        "你選擇的關注範圍",
+        "你在 Oria 內提出的問題與對話紀錄"
+      ],
+      "helpsTitle": "Oria 可以幫助你什麼",
+      "helpsItems": [
+        "理解你的個人模式",
+        "反思你的優勢與容易卡住的地方",
+        "看見某個處境中的時機或能量",
+        "探索關係中的互動模式",
+        "用更冷靜清晰的狀態準備做決定",
+        "透過對話提出後續問題"
+      ],
+      "cannotTitle": "Oria 不能做什麼",
+      "cannotIntro": "Oria 不會確定地預測未來，也不能取代：",
+      "cannotItems": [
+        "醫療建議",
+        "心理健康支援",
+        "法律建議",
+        "財務建議",
+        "緊急支援",
+        "專業診斷或治療"
+      ],
+      "useWellTitle": "如何更好地使用 Oria",
+      "useWellItems": [
+        "盡可能準確輸入出生資料",
+        "選擇最貼近你真實關注的範圍",
+        "和 Oria 對話時，盡量提出具體問題",
+        "把結果視為反思，而不是指令",
+        "在做重要決定前，仍然使用自己的判斷"
+      ],
+      "reminderTitle": "溫和提醒",
+      "reminderBody": "Oria 提供的是洞察，不是命定。選擇權始終在你手上。"
+    },
+    "contact": {
+      "title": "聯絡與回饋",
+      "intro1": "我們很樂意聽到你的想法。",
+      "intro2": "你可以使用以下表格向我們提供回饋、回報問題、提出帳單疑問，或就你的帳戶聯絡我們。",
+      "intro3": "你也可以直接電郵我們：",
+      "formTitle": "傳送訊息給我們",
+      "labels": {
+        "name": "姓名",
+        "email": "電郵",
+        "subject": "主題",
+        "optional": "選填",
+        "message": "訊息"
+      },
+      "placeholders": {
+        "name": "你的姓名",
+        "email": "your@email.com",
+        "subject": "例如：問題回報、意見回饋、帳單問題",
+        "message": "告訴我們你的想法..."
+      },
+      "validationError": "請填寫你的姓名、電郵和訊息。",
+      "failedToSend": "傳送失敗",
+      "sending": "傳送中...",
+      "send": "傳送訊息",
+      "successTitle": "訊息已送出",
+      "successBody": "感謝你的聯絡。我們會盡快回覆你。",
+      "contactAboutTitle": "你可以因為什麼事情聯絡我們？",
+      "contactAboutIntro": "你可以就以下事項聯絡我們：",
+      "contactAboutItems": [
+        "問題回報",
+        "意見或建議",
+        "帳單或訂閱問題",
+        "帳戶支援",
+        "私隱或資料請求",
+        "關於 Oria 的一般問題"
+      ],
+      "fasterTitle": "為了更快協助你",
+      "fasterIntro": "請盡量提供：",
+      "fasterItems": [
+        "與你的 Oria 帳戶相連的電郵地址",
+        "你正在使用的頁面或功能",
+        "發生了什麼事",
+        "你原本預期會發生什麼",
+        "相關截圖，如適用"
+      ],
+      "billingTitle": "帳單或訂閱問題",
+      "billingP1": "如有帳單、取消訂閱或退款相關問題，請提供與你的 Oria 帳戶相連的電郵地址。",
+      "billingP2": "請不要透過此表格傳送完整信用卡資料。",
+      "privacyTitle": "私隱或帳戶刪除請求",
+      "privacyP1": "如需申請刪除帳戶或提出資料請求，請使用與你的 Oria 帳戶相連的電郵地址，以便我們核實請求。",
+      "responseTitle": "回覆時間",
+      "responseP1": "我們會盡快回覆。",
+      "responseP2": "在較忙碌的時段，回覆可能需要更長時間。"
+    }
+  },
+  "footerLinks": {
+    "pricing": "方案定價",
+    "about": "關於 Oria",
+    "howItWorks": "Oria 如何運作",
+    "contact": "聯絡我們",
+    "terms": "服務條款",
+    "privacy": "私隱政策",
+    "billing": "帳單政策",
+    "disclaimer": "免責聲明",
+    "accountData": "帳戶與資料"
   }
 }

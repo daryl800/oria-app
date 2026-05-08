@@ -209,11 +209,7 @@
     "relationship": "Detta är inte matchning, utan att förstå hur ni relaterar."
   },
   "common": {
-    "oria": "oria",
-    "oria_compass": "oria Compass",
-    "back": "Tillbaka",
-    "loading": "Laddar...",
-    "unknown": "Okänt"
+    "back": "← Tillbaka"
   },
   "landing": {
     "kicker": "oria Compass",
@@ -790,5 +786,137 @@
       "plusMessage": "Oria fungerar bäst när du pausar, reflekterar och återvänder med en tydligare fråga. Din chatgräns återställs imorgon.",
       "plusButton": "Tillbaka till hem"
     }
+  },
+  "footerPages": {
+    "about": {
+      "title": "Om Oria",
+      "subtitle": "Österländsk metafysik × västerländsk psykologi",
+      "p1": "Oria är en app för självreflektion som kombinerar BaZi, MBTI-liknande personlighetsinsikter och AI-assisterade samtal för att hjälpa dig förstå din nuvarande situation tydligare.",
+      "p2": "Många människor behöver inte någon som säger exakt vad de ska göra. De behöver ett tydligare sätt att se vad som händer.",
+      "p3": "Oria skapades för stunder då livet känns osäkert — när du funderar på arbete, relationer, riktning, timing eller personlig förändring.",
+      "exploreTitle": "Vad Oria hjälper dig att utforska",
+      "exploreItems": [
+        "Vilken typ av energi du naturligt bär",
+        "Vilka situationer som kan stödja eller dränera dig",
+        "Hur du tenderar att fatta beslut",
+        "Vilka mönster som syns i dina relationer",
+        "Vad dagens eller månadens vägledning kan föreslå",
+        "Vilken fråga som kan vara värd att ställa härnäst"
+      ],
+      "beliefTitle": "Vår övertygelse",
+      "beliefHighlight": "Se den nuvarande situationen tydligare och gör klokare val.",
+      "beliefBody": "Oria hjälper dig att se dig själv och din situation från en annan vinkel, så att du kan fatta beslut med större medvetenhet.",
+      "notTitle": "Vad Oria inte är",
+      "notP1": "Oria är inte en professionell rådgivningstjänst. Innehållet i Oria är avsett för självreflektion, personlig insikt och referens.",
+      "notP2": "Det ska inte behandlas som medicinsk, psykologisk, juridisk, ekonomisk eller akut rådgivning. För viktiga beslut som rör hälsa, säkerhet, pengar, juridik eller mental hälsa bör du kontakta en kvalificerad professionell."
+    },
+    "howItWorks": {
+      "title": "Hur Oria fungerar",
+      "p1": "Oria kombinerar BaZi, MBTI-liknande personlighetsinsikter och AI-assisterade samtal för att hjälpa dig reflektera över din nuvarande situation.",
+      "p2": "Oria bestämmer inte ditt liv åt dig. Den ger dig ett annat perspektiv för att förstå mönster, timing, personlighet och möjliga riktningar.",
+      "usesTitle": "Vad Oria använder",
+      "usesIntro": "För att skapa personliga insikter kan Oria använda:",
+      "usesItems": [
+        "Ditt födelsedatum",
+        "Din födelsetid",
+        "Din födelseplats",
+        "Ditt MBTI-resultat eller dina personlighetsfrågor",
+        "Ditt valda fokusområde",
+        "Dina frågor och din samtalshistorik i Oria"
+      ],
+      "helpsTitle": "Vad Oria kan hjälpa med",
+      "helpsItems": [
+        "Förstå dina personliga mönster",
+        "Reflektera över dina styrkor och friktionspunkter",
+        "Se timing eller energi kring en situation",
+        "Utforska relationsdynamik",
+        "Förbereda beslut med mer lugn och klarhet",
+        "Ställa följdfrågor via chatten"
+      ],
+      "cannotTitle": "Vad Oria inte kan göra",
+      "cannotIntro": "Oria förutsäger inte framtiden med säkerhet. Oria ersätter inte:",
+      "cannotItems": [
+        "Medicinsk rådgivning",
+        "Stöd för mental hälsa",
+        "Juridisk rådgivning",
+        "Ekonomisk rådgivning",
+        "Akut hjälp",
+        "Professionell diagnos eller behandling"
+      ],
+      "useWellTitle": "Hur du använder Oria väl",
+      "useWellItems": [
+        "Ange din födelseinformation så exakt som möjligt",
+        "Välj det fokusområde som matchar din verkliga fråga",
+        "Ställ specifika frågor när du chattar med Oria",
+        "Se resultatet som reflektion, inte instruktion",
+        "Använd ditt eget omdöme innan du fattar viktiga beslut"
+      ],
+      "reminderTitle": "En vänlig påminnelse",
+      "reminderBody": "Oria erbjuder insikt, inte öde. Dina val tillhör fortfarande dig."
+    },
+    "contact": {
+      "title": "Kontakt och feedback",
+      "intro1": "Vi vill gärna höra från dig.",
+      "intro2": "Använd formuläret nedan för att skicka feedback, rapportera ett fel, ställa en betalningsfråga eller kontakta oss om ditt konto.",
+      "intro3": "Du kan också mejla oss direkt på:",
+      "formTitle": "Skicka ett meddelande",
+      "labels": {
+        "name": "Namn",
+        "email": "E-post",
+        "subject": "Ämne",
+        "optional": "valfritt",
+        "message": "Meddelande"
+      },
+      "placeholders": {
+        "name": "Ditt namn",
+        "email": "your@email.com",
+        "subject": "t.ex. felrapport, feedback, betalningsfråga",
+        "message": "Berätta vad du tänker på..."
+      },
+      "validationError": "Fyll i namn, e-post och meddelande.",
+      "failedToSend": "Det gick inte att skicka",
+      "sending": "Skickar...",
+      "send": "Skicka meddelande",
+      "successTitle": "Meddelandet har skickats",
+      "successBody": "Tack för att du hörde av dig. Vi återkommer så snart som möjligt.",
+      "contactAboutTitle": "Vad kan du kontakta oss om?",
+      "contactAboutIntro": "Du kan kontakta oss för:",
+      "contactAboutItems": [
+        "Felrapporter",
+        "Feedback eller förslag",
+        "Betalnings- eller abonnemangsfrågor",
+        "Kontosupport",
+        "Integritets- eller dataförfrågningar",
+        "Allmänna frågor om Oria"
+      ],
+      "fasterTitle": "För snabbare support",
+      "fasterIntro": "Inkludera gärna:",
+      "fasterItems": [
+        "E-postadressen kopplad till ditt Oria-konto",
+        "Vilken sida eller funktion du använde",
+        "Vad som hände",
+        "Vad du förväntade dig skulle hända",
+        "Skärmbilder, om relevant"
+      ],
+      "billingTitle": "Betalnings- eller abonnemangsfrågor",
+      "billingP1": "För frågor om betalning, uppsägning eller återbetalning, inkludera e-postadressen kopplad till ditt Oria-konto.",
+      "billingP2": "Skicka inte fullständiga kreditkortsuppgifter via detta formulär.",
+      "privacyTitle": "Integritet eller begäran om kontoradering",
+      "privacyP1": "För kontoradering eller dataförfrågningar, använd e-postadressen kopplad till ditt Oria-konto så att vi kan verifiera begäran.",
+      "responseTitle": "Svarstid",
+      "responseP1": "Vi strävar efter att svara så snart som möjligt.",
+      "responseP2": "Under perioder med hög belastning kan svar ta längre tid."
+    }
+  },
+  "footerLinks": {
+    "pricing": "Priser",
+    "about": "Om Oria",
+    "howItWorks": "Hur Oria fungerar",
+    "contact": "Kontakt",
+    "terms": "Användarvillkor",
+    "privacy": "Integritetspolicy",
+    "billing": "Betalningspolicy",
+    "disclaimer": "Friskrivning",
+    "accountData": "Konto och data"
   }
 }

@@ -209,11 +209,7 @@
     "relationship": "这不是配对，而是理解彼此的方式。"
   },
   "common": {
-    "oria": "oria",
-    "oria_compass": "oria Compass",
-    "back": "返回",
-    "loading": "载入中...",
-    "unknown": "未知"
+    "back": "← 返回"
   },
   "landing": {
     "kicker": "oria Compass",
@@ -790,5 +786,137 @@
       "plusMessage": "Oria 最适合在你暂停、反思后，带着更清晰的问题回来使用。你的对话额度明天重置。",
       "plusButton": "返回首页"
     }
+  },
+  "footerPages": {
+    "about": {
+      "title": "关于 Oria",
+      "subtitle": "东方命理 × 西方心理",
+      "p1": "Oria 是一个自我反思工具，结合八字、MBTI 式性格洞察与 AI 对话，帮助你更清楚地看懂当下的处境。",
+      "p2": "很多时候，人不一定需要别人直接告诉自己该怎么做，而是需要一个更清楚的角度，看见事情正在发生什么。",
+      "p3": "Oria 是为那些感到不确定的时刻而设计的——当你正在思考工作、关系、方向、时机，或人生转变时。",
+      "exploreTitle": "Oria 可以帮你探索什么",
+      "exploreItems": [
+        "你天生带着怎样的能量",
+        "哪些情境可能支持你，哪些情境可能消耗你",
+        "你通常如何做决定",
+        "你在人际关系中容易出现的模式",
+        "今天或本月的指引可能提醒你什么",
+        "下一个值得问自己的问题是什么"
+      ],
+      "beliefTitle": "我们相信",
+      "beliefHighlight": "看清现在的局势，做出更明智的选择。",
+      "beliefBody": "Oria 帮助你从另一个角度看待自己和当下处境，让你在做选择时更有觉察。",
+      "notTitle": "Oria 不是什么",
+      "notP1": "Oria 不是专业顾问服务。Oria 的内容仅供自我反思、个人洞察与参考用途。",
+      "notP2": "Oria 不应被视为医疗、心理、法律、财务或紧急建议。涉及健康、安全、金钱、法律或心理健康的重要决定，请咨询合资格专业人士。"
+    },
+    "howItWorks": {
+      "title": "Oria 如何运作",
+      "p1": "Oria 结合八字、MBTI 式性格洞察与 AI 对话，帮助你反思当下的处境。",
+      "p2": "Oria 不会替你决定人生。它提供另一个视角，帮助你理解模式、时机、性格与可能的方向。",
+      "usesTitle": "Oria 会使用什么数据",
+      "usesIntro": "为了生成个性化洞察，Oria 可能会使用：",
+      "usesItems": [
+        "你的出生日期",
+        "你的出生时间",
+        "你的出生地点",
+        "你的 MBTI 结果或性格答案",
+        "你选择的关注范围",
+        "你在 Oria 内提出的问题与对话记录"
+      ],
+      "helpsTitle": "Oria 可以帮助你什么",
+      "helpsItems": [
+        "理解你的个人模式",
+        "反思你的优势与容易卡住的地方",
+        "看见某个处境中的时机或能量",
+        "探索关系中的互动模式",
+        "用更冷静清晰的状态准备做决定",
+        "通过对话提出后续问题"
+      ],
+      "cannotTitle": "Oria 不能做什么",
+      "cannotIntro": "Oria 不会确定地预测未来，也不能取代：",
+      "cannotItems": [
+        "医疗建议",
+        "心理健康支持",
+        "法律建议",
+        "财务建议",
+        "紧急支持",
+        "专业诊断或治疗"
+      ],
+      "useWellTitle": "如何更好地使用 Oria",
+      "useWellItems": [
+        "尽可能准确输入出生资料",
+        "选择最贴近你真实关注的范围",
+        "和 Oria 对话时，尽量提出具体问题",
+        "把结果视为反思，而不是指令",
+        "在做重要决定前，仍然使用自己的判断"
+      ],
+      "reminderTitle": "温和提醒",
+      "reminderBody": "Oria 提供的是洞察，不是命定。选择权始终在你手上。"
+    },
+    "contact": {
+      "title": "联系与反馈",
+      "intro1": "我们很乐意听到你的想法。",
+      "intro2": "你可以使用以下表格向我们提供反馈、报告问题、提出账单疑问，或就你的账户联系我们。",
+      "intro3": "你也可以直接发送邮件给我们：",
+      "formTitle": "发送消息给我们",
+      "labels": {
+        "name": "姓名",
+        "email": "电子邮箱",
+        "subject": "主题",
+        "optional": "选填",
+        "message": "消息"
+      },
+      "placeholders": {
+        "name": "你的姓名",
+        "email": "your@email.com",
+        "subject": "例如：问题报告、意见反馈、账单问题",
+        "message": "告诉我们你的想法..."
+      },
+      "validationError": "请填写你的姓名、电子邮箱和消息。",
+      "failedToSend": "发送失败",
+      "sending": "发送中...",
+      "send": "发送消息",
+      "successTitle": "消息已发送",
+      "successBody": "感谢你的联系。我们会尽快回复你。",
+      "contactAboutTitle": "你可以因为什么事情联系我们？",
+      "contactAboutIntro": "你可以就以下事项联系我们：",
+      "contactAboutItems": [
+        "问题报告",
+        "意见或建议",
+        "账单或订阅问题",
+        "账户支持",
+        "隐私或数据请求",
+        "关于 Oria 的一般问题"
+      ],
+      "fasterTitle": "为了更快协助你",
+      "fasterIntro": "请尽量提供：",
+      "fasterItems": [
+        "与你的 Oria 账户相连的电子邮箱地址",
+        "你正在使用的页面或功能",
+        "发生了什么事",
+        "你原本预期会发生什么",
+        "相关截图，如适用"
+      ],
+      "billingTitle": "账单或订阅问题",
+      "billingP1": "如有账单、取消订阅或退款相关问题，请提供与你的 Oria 账户相连的电子邮箱地址。",
+      "billingP2": "请不要通过此表格发送完整信用卡信息。",
+      "privacyTitle": "隐私或账户删除请求",
+      "privacyP1": "如需申请删除账户或提出数据请求，请使用与你的 Oria 账户相连的电子邮箱地址，以便我们核实请求。",
+      "responseTitle": "回复时间",
+      "responseP1": "我们会尽快回复。",
+      "responseP2": "在较忙碌的时段，回复可能需要更长时间。"
+    }
+  },
+  "footerLinks": {
+    "pricing": "方案定价",
+    "about": "关于 Oria",
+    "howItWorks": "Oria 如何运作",
+    "contact": "联系我们",
+    "terms": "服务条款",
+    "privacy": "隐私政策",
+    "billing": "账单政策",
+    "disclaimer": "免责声明",
+    "accountData": "账户与数据"
   }
 }

@@ -93,19 +93,19 @@ export default function Landing() {
           }}>
             {/* Col 1 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
-              {[{ label: 'Pricing', path: '/pricing' }, { label: 'About Oria', path: '/about' }, { label: 'How Oria Works', path: '/how-it-works' }].map(link => (
+              {[{ label: t('footerLinks.pricing'), path: '/pricing' }, { label: t('footerLinks.about'), path: '/about' }, { label: t('footerLinks.howItWorks'), path: '/how-it-works' }].map(link => (
                 <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0, lineHeight: 1.5 }}>{link.label}</button>
               ))}
             </div>
             {/* Col 2 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
-              {[{ label: 'Contact', path: '/contact' }, { label: 'Terms of Service', path: '/legal/terms' }, { label: 'Privacy Policy', path: '/legal/privacy' }].map(link => (
+              {[{ label: t('footerLinks.contact'), path: '/contact' }, { label: t('footerLinks.terms'), path: '/legal/terms' }, { label: t('footerLinks.privacy'), path: '/legal/privacy' }].map(link => (
                 <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0, lineHeight: 1.5 }}>{link.label}</button>
               ))}
             </div>
             {/* Col 3 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
-              {[{ label: 'Billing Policy', path: '/legal/billing' }, { label: 'Disclaimer', path: '/legal/disclaimer' }, { label: 'Account & Data', path: '/account-and-data' }].map(link => (
+              {[{ label: t('footerLinks.billing'), path: '/legal/billing' }, { label: t('footerLinks.disclaimer'), path: '/legal/disclaimer' }, { label: t('footerLinks.accountData'), path: '/account-and-data' }].map(link => (
                 <button key={link.path} onClick={() => navigate(link.path)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0, lineHeight: 1.5 }}>{link.label}</button>
               ))}
             </div>
