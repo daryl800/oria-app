@@ -44,7 +44,7 @@ function isUpdatedToday(record: any) {
   return new Date(record.updated_at).toDateString() === new Date().toDateString();
 }
 
-export default function Profile({ user }: { user: User }) {
+export default function Profile({ user, isPlus = false }: { user: User; isPlus?: boolean }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
@@ -446,7 +446,7 @@ export default function Profile({ user }: { user: User }) {
           Account
         </div>
         {[
-          { label: 'Manage Subscription', path: '/upgrade' },
+          { label: isPlus ? 'Manage Subscription' : 'Upgrade to Plus', path: isPlus ? (import.meta.env.VITE_STRIPE_PORTAL_LINK || '/upgrade') : '/upgrade' },
           { label: 'Pricing & Plans', path: '/pricing' },
           { label: 'Account & Data', path: '/account-and-data' },
         ].map(link => (
