@@ -729,5 +729,66 @@
     "locked_desc": "Ditt diagram förändras inte, men vad som är viktigast denna månad gör det.",
     "locked_cta": "Lås upp fullständig månadsanalys",
     "error": "Kunde inte ladda månadens fokus. Försök igen senare."
+  },
+  "billing": {
+    "title": "Välj din Oria-plan",
+    "subtitle": "Förstå dina naturliga mönster och personlighetsstil, så att Oria kan stödja dig i att fatta tydligare beslut.",
+    "free": {
+      "title": "Oria Free",
+      "description": "Börja med enkla förhandsvisningar av din dagliga rytm och personliga mönster.",
+      "price": "US$0",
+      "features": {
+        "dailyPreview": "Förhandsgranskning av daglig vägledning",
+        "chartPreview": "Förhandsgranskning av personligt diagram",
+        "relationshipPreview": "Förhandsgranskning av relationsinsikter",
+        "chatLimit": "1 kort Oria Chat-svar per dag",
+        "lockedPrompts": "Uppgraderingsuppmaningar när djupare insikt är låst"
+      },
+      "button": "Börja gratis"
+    },
+    "monthly": {
+      "title": "Oria Plus Månadsvis",
+      "description": "Full Oria-vägledning, betald månadsvis.",
+      "price": "US$9.99",
+      "priceNote": "per månad · avbryt när som helst",
+      "features": {
+        "dailyFull": "Full daglig vägledning",
+        "chartFull": "Full personlig diagraminsikt",
+        "relationshipFull": "Fullständiga relationsinsikter",
+        "monthlyFocus": "Månatliga fokusuppdateringar",
+        "history": "Sparad vägledningshistorik",
+        "chatLimit": "3 fullständiga Oria Chat-svar per dag"
+      },
+      "button": "Lås upp Oria Plus"
+    },
+    "yearly": {
+      "title": "Oria Plus Årsvis",
+      "badge": "Bäst värde",
+      "description": "Samma fullständiga Oria Plus-åtkomst, bättre värde för året.",
+      "price": "US$79.99",
+      "priceNote": "per år",
+      "priceMonthlyEquiv": "Endast US$6.67/månad motsvarande",
+      "savingsNote": "Spara cirka 33% jämfört med månadsbetalning.",
+      "features": {
+        "dailyFull": "Full daglig vägledning",
+        "chartFull": "Full personlig diagraminsikt",
+        "relationshipFull": "Fullständiga relationsinsikter",
+        "monthlyFocus": "Månatliga fokusuppdateringar",
+        "history": "Sparad vägledningshistorik",
+        "chatLimit": "3 fullständiga Oria Chat-svar per dag"
+      },
+      "button": "Lås upp årsplan"
+    },
+    "currentPlan": "Nuvarande plan",
+    "manageSubscription": "Hantera prenumeration",
+    "trust": "Säker betalning · Avbryt när som helst",
+    "limit": {
+      "freeTitle": "Du har använt dagens gratis Oria Chat-svar.",
+      "freeMessage": "Lås upp Oria Plus för att fortsätta med djupare vägledning.",
+      "freeButton": "Lås upp Oria Plus",
+      "plusTitle": "Du har använt dagens 3 fullständiga Oria Chat-svar.",
+      "plusMessage": "Oria fungerar bäst när du pausar, reflekterar och återvänder med en tydligare fråga. Din chatgräns återställs imorgon.",
+      "plusButton": "Tillbaka till hem"
+    }
   }
 }

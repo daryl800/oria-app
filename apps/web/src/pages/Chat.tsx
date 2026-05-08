@@ -164,19 +164,19 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
         <div style={{ maxWidth: 420, width: '100%', textAlign: 'center' }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>{isPlus ? '🌙' : '💬'}</div>
           <h2 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 12 }}>
-            {isPlus ? t('upgrade.chat_limit_plus_title') : t('upgrade.chat_limit_free_title')}
+            {isPlus ? t('billing.limit.plusTitle') : t('billing.limit.freeTitle')}
           </h2>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.62)', marginBottom: 32, lineHeight: 1.7 }}>
-            {isPlus ? t('upgrade.chat_limit_plus_body') : t('upgrade.chat_limit_free_body')}
+            {isPlus ? t('billing.limit.plusMessage') : t('billing.limit.freeMessage')}
           </p>
           {isPlus ? (
             <button className="oria-btn-primary" onClick={() => navigate('/home')} style={{ marginBottom: 16 }}>
-              {t('upgrade.chat_limit_plus_cta')}
+              {t('billing.limit.plusButton')}
             </button>
           ) : (
             <>
               <button className="oria-btn-premium" onClick={() => navigate('/upgrade')} style={{ marginBottom: 16 }}>
-                {t('upgrade.chat_limit_free_cta')}
+                {t('billing.limit.freeButton')}
               </button>
               <br />
               <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13 }}>

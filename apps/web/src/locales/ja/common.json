@@ -729,5 +729,66 @@
     "locked_desc": "命盤は変わりませんが、今月注目すべきことは変わります。",
     "locked_cta": "完全な月次分析を解除",
     "error": "今月のフォーカスを読み込めませんでした。後でもう一度お試しください。"
+  },
+  "billing": {
+    "title": "Oriaのプランを選択",
+    "subtitle": "あなたの天賦のパターンと性格傾向を理解し、より明確な判断をサポートします。",
+    "free": {
+      "title": "Oria Free",
+      "description": "日々のリズムと個人パターンのプレビューから始めましょう。",
+      "price": "US$0",
+      "features": {
+        "dailyPreview": "毎日のガイダンスプレビュー",
+        "chartPreview": "個人チャートプレビュー",
+        "relationshipPreview": "関係性インサイトプレビュー",
+        "chatLimit": "1日1回の短いOriaチャット回答",
+        "lockedPrompts": "深いインサイトがロックされた際のアップグレード案内"
+      },
+      "button": "無料で始める"
+    },
+    "monthly": {
+      "title": "Oria Plus 月額",
+      "description": "完全なOriaガイダンス、月払い。",
+      "price": "US$9.99",
+      "priceNote": "月額・いつでもキャンセル可",
+      "features": {
+        "dailyFull": "完全な毎日のガイダンス",
+        "chartFull": "完全な個人チャートインサイト",
+        "relationshipFull": "完全な関係性インサイト",
+        "monthlyFocus": "月間フォーカス更新",
+        "history": "ガイダンス履歴の保存",
+        "chatLimit": "1日3回の完全なOriaチャット回答"
+      },
+      "button": "Oria Plusを解除"
+    },
+    "yearly": {
+      "title": "Oria Plus 年額",
+      "badge": "最もお得",
+      "description": "同じ完全なOria Plusアクセス、年間でさらにお得。",
+      "price": "US$79.99",
+      "priceNote": "年額",
+      "priceMonthlyEquiv": "月換算わずかUS$6.67相当",
+      "savingsNote": "月額プランと比較して約33%節約。",
+      "features": {
+        "dailyFull": "完全な毎日のガイダンス",
+        "chartFull": "完全な個人チャートインサイト",
+        "relationshipFull": "完全な関係性インサイト",
+        "monthlyFocus": "月間フォーカス更新",
+        "history": "ガイダンス履歴の保存",
+        "chatLimit": "1日3回の完全なOriaチャット回答"
+      },
+      "button": "年額プランを解除"
+    },
+    "currentPlan": "現在のプラン",
+    "manageSubscription": "サブスクリプション管理",
+    "trust": "安全な決済・いつでもキャンセル可",
+    "limit": {
+      "freeTitle": "今日の無料Oriaチャット回答を使い切りました。",
+      "freeMessage": "Oria Plusをアンロックして、より深いガイダンスを続けましょう。",
+      "freeButton": "Oria Plusをアンロック",
+      "plusTitle": "今日の3回分の完全なOriaチャット回答を使い切りました。",
+      "plusMessage": "Oriaは、立ち止まって振り返り、より明確な質問を持って戻ってきたときに最も効果的です。チャット制限は明日リセットされます。",
+      "plusButton": "ホームに戻る"
+    }
   }
 }

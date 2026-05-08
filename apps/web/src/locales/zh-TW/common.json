@@ -729,5 +729,66 @@
     "locked_desc": "你的命盤不會改變，但這個月值得留意的重點會不同。",
     "locked_cta": "解鎖完整本月分析",
     "error": "無法載入本月焦點，請稍後再試。"
+  },
+  "billing": {
+    "title": "選擇你的 Oria 方案",
+    "subtitle": "透過你的天賦模式與性格傾向，輔助你做出更清楚的選擇。",
+    "free": {
+      "title": "Oria 免費版",
+      "description": "開始預覽你的日常節律與個人模式。",
+      "price": "US$0",
+      "features": {
+        "dailyPreview": "每日指引預覽",
+        "chartPreview": "個人命盤預覽",
+        "relationshipPreview": "關係洞察預覽",
+        "chatLimit": "每日 1 則簡短 Oria Chat 回覆",
+        "lockedPrompts": "深度洞察鎖定時提示升級"
+      },
+      "button": "免費開始"
+    },
+    "monthly": {
+      "title": "Oria Plus 月費版",
+      "description": "完整 Oria 指引，按月訂閱。",
+      "price": "US$9.99",
+      "priceNote": "每月 · 隨時取消",
+      "features": {
+        "dailyFull": "完整每日指引",
+        "chartFull": "完整個人命盤洞察",
+        "relationshipFull": "完整關係洞察",
+        "monthlyFocus": "每月焦點更新",
+        "history": "已儲存的指引紀錄",
+        "chatLimit": "每日 3 則完整 Oria Chat 回覆"
+      },
+      "button": "解鎖 Oria Plus"
+    },
+    "yearly": {
+      "title": "Oria Plus 年費版",
+      "badge": "最超值",
+      "description": "相同的完整 Oria Plus 功能，全年更划算。",
+      "price": "US$79.99",
+      "priceNote": "每年",
+      "priceMonthlyEquiv": "相當於每月僅 US$6.67",
+      "savingsNote": "比月費方案節省約 33%。",
+      "features": {
+        "dailyFull": "完整每日指引",
+        "chartFull": "完整個人命盤洞察",
+        "relationshipFull": "完整關係洞察",
+        "monthlyFocus": "每月焦點更新",
+        "history": "已儲存的指引紀錄",
+        "chatLimit": "每日 3 則完整 Oria Chat 回覆"
+      },
+      "button": "解鎖年費方案"
+    },
+    "currentPlan": "目前方案",
+    "manageSubscription": "管理訂閱",
+    "trust": "安全付款 · 隨時取消",
+    "limit": {
+      "freeTitle": "你已使用今日的免費 Oria Chat 回覆。",
+      "freeMessage": "解鎖 Oria Plus 以繼續獲得更深入的指引。",
+      "freeButton": "解鎖 Oria Plus",
+      "plusTitle": "你已使用今日的 3 則完整 Oria Chat 回覆。",
+      "plusMessage": "Oria 最適合在你暫停、反思後，帶著更清晰的問題回來使用。你的對話額度明天重置。",
+      "plusButton": "返回首頁"
+    }
   }
 }

@@ -729,5 +729,66 @@
     "locked_desc": "차트는 변하지 않지만, 이번 달에 중요한 것은 달라집니다.",
     "locked_cta": "전체 월간 분석 잠금 해제",
     "error": "이번 달 포커스를 불러올 수 없습니다. 나중에 다시 시도해 주세요."
+  },
+  "billing": {
+    "title": "Oria 플랜 선택",
+    "subtitle": "타고난 패턴과 성격 스타일을 이해하여 더 명확한 결정을 내릴 수 있도록 Oria가 지원합니다.",
+    "free": {
+      "title": "Oria 무료",
+      "description": "일상 리듬과 개인 패턴의 미리보기로 시작하세요.",
+      "price": "US$0",
+      "features": {
+        "dailyPreview": "일일 가이던스 미리보기",
+        "chartPreview": "개인 차트 미리보기",
+        "relationshipPreview": "관계 인사이트 미리보기",
+        "chatLimit": "하루 1회 짧은 Oria Chat 답변",
+        "lockedPrompts": "깊은 인사이트 잠금 시 업그레이드 안내"
+      },
+      "button": "무료로 시작"
+    },
+    "monthly": {
+      "title": "Oria Plus 월간",
+      "description": "완전한 Oria 가이던스, 월간 결제.",
+      "price": "US$9.99",
+      "priceNote": "월간 · 언제든지 취소 가능",
+      "features": {
+        "dailyFull": "완전한 일일 가이던스",
+        "chartFull": "완전한 개인 차트 인사이트",
+        "relationshipFull": "완전한 관계 인사이트",
+        "monthlyFocus": "월간 포커스 업데이트",
+        "history": "저장된 가이던스 기록",
+        "chatLimit": "하루 3회 완전한 Oria Chat 답변"
+      },
+      "button": "Oria Plus 잠금 해제"
+    },
+    "yearly": {
+      "title": "Oria Plus 연간",
+      "badge": "최고 가성비",
+      "description": "동일한 완전한 Oria Plus 이용, 연간 더 나은 가치.",
+      "price": "US$79.99",
+      "priceNote": "연간",
+      "priceMonthlyEquiv": "월 환산 US$6.67 상당",
+      "savingsNote": "월간 결제 대비 약 33% 절약.",
+      "features": {
+        "dailyFull": "완전한 일일 가이던스",
+        "chartFull": "완전한 개인 차트 인사이트",
+        "relationshipFull": "완전한 관계 인사이트",
+        "monthlyFocus": "월간 포커스 업데이트",
+        "history": "저장된 가이던스 기록",
+        "chatLimit": "하루 3회 완전한 Oria Chat 답변"
+      },
+      "button": "연간 플랜 잠금 해제"
+    },
+    "currentPlan": "현재 플랜",
+    "manageSubscription": "구독 관리",
+    "trust": "안전한 결제 · 언제든지 취소 가능",
+    "limit": {
+      "freeTitle": "오늘의 무료 Oria Chat 답변을 사용했습니다.",
+      "freeMessage": "더 깊은 가이던스를 계속하려면 Oria Plus를 잠금 해제하세요.",
+      "freeButton": "Oria Plus 잠금 해제",
+      "plusTitle": "오늘의 3회 완전한 Oria Chat 답변을 사용했습니다.",
+      "plusMessage": "Oria는 잠시 멈추고 성찰한 후 더 명확한 질문을 가지고 돌아올 때 가장 효과적입니다. 채팅 한도는 내일 초기화됩니다.",
+      "plusButton": "홈으로 돌아가기"
+    }
   }
 }

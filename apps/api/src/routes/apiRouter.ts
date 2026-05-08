@@ -5,6 +5,7 @@ import dailyGuidanceRouter from './dailyGuidance';
 import profileRouter from './profile';
 import chatRouter from './chat';
 import { authMiddleware } from '../middleware/auth';
+import contactRouter from './contact';
 
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
 
@@ -88,6 +89,9 @@ apiRouter.post('/public/timezone/lookup', async (req: Request, res: Response) =>
     return res.status(500).json({ error: err.message });
   }
 });
+
+// public contact form
+apiRouter.use('/public/contact', contactRouter);
 
 // oria routes (auth protected)
 apiRouter.use(Paths.DailyGuidance._, authMiddleware, dailyGuidanceRouter);
