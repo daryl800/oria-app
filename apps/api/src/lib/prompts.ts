@@ -219,6 +219,14 @@ const STEM_TONE: Record<string, { en: string; zh: string }> = {
   '癸': { en: 'Gentle Water', zh: '沉穩癸水' }, 'Gui': { en: 'Gentle Water', zh: '沉穩癸水' },
 };
 
+// Five element relationship → dailyMode mapping
+// 生我 (nourishing day master) → ACTION or OPPORTUNITY
+// 比肩 (same element) → FOCUS or COMMUNICATION
+// 我生 (day master outputs) → COMMUNICATION or REFLECTION
+// 剋我 (day master under pressure) → BOUNDARY
+// 我剋 (day master drains) → RECOVERY
+// Neutral / mixed → REFLECTION
+
 export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = [], zodiac: any = null): Messages {
   const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
@@ -371,12 +379,15 @@ ${mbtiCtx}
 ${zodiacCtx}
 
 【核心分析邏輯（必須執行）】
-1. 判斷今日${todayElement}與日主${bazi.day_master}的關係（生 / 剋 / 洩 / 耗 / 比）
-2. 根據關係判斷今日能量方向：
-   - 生或比：今日能量支持日主 → 指引方向應偏「主動、推進、把握時機」
-   - 剋：今日能量對日主有壓力 → 指引方向應偏「謹慎、調整策略、內觀」
-   - 洩或耗：今日能量消耗日主 → 指引方向應偏「保留能量、選擇性投入、避免分散」
-3. 所有輸出欄位的語氣與方向，必須與步驟2的判斷一致
+1. 判斷今日${todayElement}與日主${bazi.day_master}的關係（生我 / 我生 / 剋我 / 我剋 / 比肩）
+2. 根據關係選擇今日模式（dailyMode）：
+   - 生我（印星）→ OPPORTUNITY（外部機會湧現，適合接收與把握）
+   - 我生（食傷）→ COMMUNICATION（表達力強，適合對話、輸出創意）
+   - 比肩（同類）→ FOCUS（能量平穩，適合深度專注、獨立作業）
+   - 剋我（官殺）→ BOUNDARY（外部壓力，適合設立界限、謹慎行事）
+   - 我剋（財星）→ ACTION（主動出擊，適合推進計劃、掌控資源）
+   - 中性/混合 → REFLECTION（適合內省、整理思路）
+3. 所有輸出欄位的語氣與方向，必須與步驟2選出的dailyMode完全一致
 4. 結合MBTI，強化行為層面的具體差異
 
 【輸出要求（極重要）】
@@ -388,6 +399,7 @@ ${zodiacCtx}
 以JSON回應：
 {
   "tone": "${toneStr}",
+  "dailyMode": "今日模式，必須是以下之一：ACTION / FOCUS / RECOVERY / COMMUNICATION / BOUNDARY / REFLECTION / OPPORTUNITY",
   "moment": "一句具體的今日情境預測（例如：你可能會在某個對話或決策時感到壓力）",
   "pace": "一句節奏建議，必須具體",
   "focus": {

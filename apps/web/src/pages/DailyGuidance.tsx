@@ -11,6 +11,7 @@ import PlanetLoader from '@/components/PlanetLoader';
 
 interface DailySummary {
   tone: string;
+  dailyMode?: string;
   moment?: string;
   pace: string;
   focus?: { do: string; avoid: string };
@@ -25,6 +26,16 @@ interface DailySummary {
   generated_language?: string;
   source_language?: string;
 }
+
+const DAILY_MODE_CONFIG: Record<string, { icon: string; color: string; label: Record<string, string> }> = {
+  'ACTION':       { icon: '⚡', color: '#f59e0b', label: { en: 'Action',       'zh-TW': '行動', 'zh-CN': '行动', ja: 'アクション', ko: '행동', sv: 'Action' } },
+  'OPPORTUNITY':  { icon: '🌟', color: '#a78bfa', label: { en: 'Opportunity',  'zh-TW': '機遇', 'zh-CN': '机遇', ja: '好機', ko: '기회', sv: 'Möjlighet' } },
+  'FOCUS':        { icon: '🎯', color: '#60a5fa', label: { en: 'Focus',        'zh-TW': '專注', 'zh-CN': '专注', ja: '集中', ko: '집중', sv: 'Fokus' } },
+  'COMMUNICATION':{ icon: '💬', color: '#34d399', label: { en: 'Communication','zh-TW': '溝通', 'zh-CN': '沟通', ja: 'コミュニケーション', ko: '소통', sv: 'Kommunikation' } },
+  'BOUNDARY':     { icon: '🛡️', color: '#f87171', label: { en: 'Boundary',    'zh-TW': '界限', 'zh-CN': '界限', ja: '境界', ko: '경계', sv: 'Gräns' } },
+  'REFLECTION':   { icon: '🌙', color: '#c4b5fd', label: { en: 'Reflection',   'zh-TW': '內觀', 'zh-CN': '内省', ja: '内省', ko: '성찰', sv: 'Reflektion' } },
+  'RECOVERY':     { icon: '🌿', color: '#6ee7b7', label: { en: 'Recovery',     'zh-TW': '修復', 'zh-CN': '修复', ja: '回復', ko: '회복', sv: 'Återhämtning' } },
+};
 
 const TONE_SYMBOLS: Record<string, string> = {
   'balanced': '⚖️', 'active': '⚡', 'reflective': '🌙',
@@ -228,8 +239,24 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
           <div style={sectionLabelStyle}>
             {t('daily.rhythm')}
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: '#F8F3FF', lineHeight: 1.15, marginBottom: 4 }}>
-            {summary.tone}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+            <div style={{ fontSize: 26, fontWeight: 800, color: '#F8F3FF', lineHeight: 1.15 }}>
+              {summary.tone}
+            </div>
+            {summary.dailyMode && DAILY_MODE_CONFIG[summary.dailyMode] && (
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                background: `${DAILY_MODE_CONFIG[summary.dailyMode].color}18`,
+                border: `1px solid ${DAILY_MODE_CONFIG[summary.dailyMode].color}55`,
+                borderRadius: 999, padding: '3px 10px',
+                fontSize: 12, fontWeight: 700,
+                color: DAILY_MODE_CONFIG[summary.dailyMode].color,
+                letterSpacing: 0.5,
+              }}>
+                <span>{DAILY_MODE_CONFIG[summary.dailyMode].icon}</span>
+                <span>{DAILY_MODE_CONFIG[summary.dailyMode].label[i18n.language] || DAILY_MODE_CONFIG[summary.dailyMode].label['en']}</span>
+              </div>
+            )}
           </div>
           <div style={bodyTextStyle}>
             {shortText(summary.pace)}
