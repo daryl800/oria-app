@@ -1,5 +1,5 @@
 // llm.ts - OpenAI-compatible client with DeepSeek → Qwen fallback
-import OpenAI, { APIConnectionError, APIConnectionTimeoutError, APIStatusError } from 'openai';
+import OpenAI from 'openai';
 
 // ── Provider configs ─────────────────────────────────────────────
 const PROVIDERS = [
@@ -23,11 +23,11 @@ const PROVIDERS = [
 
 // Errors that warrant a fallback — rate limits, server errors, network issues
 function isFallbackable(err: unknown): boolean {
-  if (err instanceof APIConnectionError) return true;
-  if (err instanceof APIConnectionTimeoutError) return true;
-  if (err instanceof APIStatusError) {
-    return err.status === 429 || (err.status >= 500 && err.status < 600);
-  }
+  if (!(err instanceof Error)) return false;
+  const name = err.constructor.name;
+  if (name === 'APIConnectionError' || name === 'APIConnectionTimeoutError') return true;
+  const status = (err as any).status as number | undefined;
+  if (status === 429 || (status !== undefined && status >= 500 && status < 600)) return true;
   return false;
 }
 
