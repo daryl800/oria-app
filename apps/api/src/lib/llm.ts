@@ -14,10 +14,10 @@ const PROVIDERS = [
   {
     name: 'qwen',
     client: new OpenAI({
-      apiKey: process.env.QWEN_API_KEY!,
-      baseURL: process.env.QWEN_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+      apiKey: process.env.QIANWEN_API_KEY!,
+      baseURL: process.env.QIANWEN_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1',
     }),
-    model: process.env.QWEN_LLM_MODEL || 'qwen-plus',
+    model: process.env.QIANWEN_LLM_MODEL || 'qwen-plus',
   },
 ] as const;
 
