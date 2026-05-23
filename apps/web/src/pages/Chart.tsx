@@ -74,6 +74,11 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
     const generationLanguage = normalizeLanguage(i18n.language);
     const cacheKey = `oria_chart_${user.id}`;
 
+    async function fetchSummaryWithTimeout(lang: string) {
+      const timeout = new Promise<null>(resolve => setTimeout(() => resolve(null), 45_000));
+      return Promise.race([getProfileSummary(lang), timeout]);
+    }
+
     async function load() {
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {
@@ -89,11 +94,13 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
         if (data.bazi && data.mbti) {
           setSummaryLoading(true);
           try {
-            const s = await getProfileSummary(generationLanguage);
-            const generatedLanguage = getGeneratedLanguage(s.summary, s.content_language || generationLanguage);
-            const summaryWithLanguage = { ...s.summary, content_language: generatedLanguage };
-            setSummary(summaryWithLanguage);
-            sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: summaryWithLanguage }));
+            const s = await fetchSummaryWithTimeout(generationLanguage);
+            if (s) {
+              const generatedLanguage = getGeneratedLanguage(s.summary, s.content_language || generationLanguage);
+              const summaryWithLanguage = { ...s.summary, content_language: generatedLanguage };
+              setSummary(summaryWithLanguage);
+              sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: summaryWithLanguage }));
+            }
           } catch (e) {
           } finally {
             setSummaryLoading(false);
@@ -137,11 +144,13 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
         if (data.bazi && data.mbti) {
           setSummaryLoading(true);
           try {
-            const s = await getProfileSummary(generationLanguage);
-            const generatedLanguage = getGeneratedLanguage(s.summary, s.content_language || generationLanguage);
-            const summaryWithLanguage = { ...s.summary, content_language: generatedLanguage };
-            setSummary(summaryWithLanguage);
-            sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: summaryWithLanguage }));
+            const s = await fetchSummaryWithTimeout(generationLanguage);
+            if (s) {
+              const generatedLanguage = getGeneratedLanguage(s.summary, s.content_language || generationLanguage);
+              const summaryWithLanguage = { ...s.summary, content_language: generatedLanguage };
+              setSummary(summaryWithLanguage);
+              sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: summaryWithLanguage }));
+            }
           } catch (e) {
           } finally {
             setSummaryLoading(false);

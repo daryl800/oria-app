@@ -7,6 +7,33 @@ import { profileSummaryPrompt } from '../lib/prompts';
 
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
+const PYTHON_TIMEOUT_MS = 30_000;
+
+// MBTI profile output is identical for a given (type, lang) pair — cache indefinitely.
+const mbtiProfileCache = new Map<string, any>();
+
+async function getMbtiProfile(mbtiType: string, lang: string): Promise<any | null> {
+  const key = `${mbtiType}:${lang}`;
+  if (mbtiProfileCache.has(key)) return mbtiProfileCache.get(key);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), PYTHON_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/profile`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mbti_type: mbtiType, lang }),
+      signal: controller.signal,
+    });
+    if (!res.ok) return null;
+    const profile = await res.json();
+    mbtiProfileCache.set(key, profile);
+    return profile;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 function isPlusUser(userRecord: any): boolean {
   const plan = String(userRecord?.plan ?? '').toLowerCase();
@@ -193,12 +220,7 @@ router.post('/summary', async (req: Request, res: Response) => {
       .eq('id', profile.current_mbti_version_id)
       .single();
 
-    const mbtiRes = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/profile`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mbti_type: mbti.mbti_type, lang }),
-    });
-    const mbtiProfile = await mbtiRes.json();
+    const mbtiProfile = await getMbtiProfile(mbti.mbti_type, lang);
 
     const zodiac = bazi.birth_date ? calculateZodiac(bazi.birth_date) : null;
     const messages = profileSummaryPrompt(
