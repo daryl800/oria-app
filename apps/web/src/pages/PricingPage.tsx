@@ -8,9 +8,13 @@ const STRIPE_PORTAL_LINK = import.meta.env.VITE_STRIPE_PORTAL_LINK || '';
 
 function buildPaymentLink(base: string, userId?: string): string {
   if (!base || base === '#') return '#';
-  const url = new URL(base);
-  if (userId) url.searchParams.set('client_reference_id', userId);
-  return url.toString();
+  try {
+    const url = new URL(base);
+    if (userId) url.searchParams.set('client_reference_id', userId);
+    return url.toString();
+  } catch {
+    return '#';
+  }
 }
 
 export default function PricingPage({ isPlus = false, user }: { isPlus?: boolean; user?: User | null }) {
