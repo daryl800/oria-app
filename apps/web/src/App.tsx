@@ -32,6 +32,7 @@ import ComparisonResult from './pages/ComparisonResult';
 import AboutOria from './pages/AboutOria';
 import HowItWorks from './pages/HowItWorks';
 import PricingPage from './pages/PricingPage';
+import BillingSuccess from './pages/BillingSuccess';
 import ContactPage from './pages/ContactPage';
 import AccountAndData from './pages/AccountAndData';
 import LegalTerms from './pages/LegalTerms';
@@ -184,12 +185,13 @@ export default function App() {
           <Route path="/compare/:personId" element={!user ? <Navigate to="/" /> : <ComparisonResult />} />
 
           <Route path="/upgrade" element={<Navigate to="/pricing" replace />} />
+          <Route path="/billing/success" element={<BillingSuccess />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
 
           {/* Public info & legal pages */}
           <Route path="/about" element={<AboutOria />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/pricing" element={<PricingPage isPlus={isPlus} />} />
+          <Route path="/pricing" element={<PricingPage isPlus={isPlus} user={user} />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/legal/terms" element={<LegalTerms />} />
           <Route path="/legal/privacy" element={<LegalPrivacy />} />

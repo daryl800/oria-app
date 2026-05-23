@@ -97,6 +97,7 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showDeepDive, setShowDeepDive] = useState(false);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     const generationLanguage = normalizeLanguage(i18n.language);
@@ -121,15 +122,27 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
       }
     }
 
-    fetchDailyGuidance(generationLanguage)
-      .then(data => {
-        const generatedLanguage = getGeneratedLanguage(data.summary, data.content_language || generationLanguage);
-        const summaryWithLanguage = { ...data.summary, content_language: generatedLanguage };
-        setSummary(summaryWithLanguage);
-        sessionStorage.setItem(cacheKey, JSON.stringify(summaryWithLanguage));
-      })
-      .catch((err: Error) => setError(err.message))
-      .finally(() => setLoading(false));
+    const isNetworkError = (msg: string) =>
+      msg === 'Failed to fetch' || msg === 'fetch failed' || msg === 'Network request failed' || msg === 'Load failed';
+
+    const tryFetch = (attemptsLeft: number): Promise<void> =>
+      fetchDailyGuidance(generationLanguage)
+        .then(data => {
+          const generatedLanguage = getGeneratedLanguage(data.summary, data.content_language || generationLanguage);
+          const summaryWithLanguage = { ...data.summary, content_language: generatedLanguage };
+          setSummary(summaryWithLanguage);
+          sessionStorage.setItem(cacheKey, JSON.stringify(summaryWithLanguage));
+        })
+        .catch((err: Error) => {
+          if (isNetworkError(err.message) && attemptsLeft > 0) {
+            return new Promise<void>(resolve =>
+              setTimeout(() => resolve(tryFetch(attemptsLeft - 1)), 2500)
+            );
+          }
+          setError(err.message);
+        });
+
+    tryFetch(3).finally(() => setLoading(false));
   }, []);
 
   const dateLocale = normalizeLanguage(i18n.language) === 'en' ? 'en-GB' : normalizeLanguage(i18n.language);
@@ -144,18 +157,61 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
     </div>
   );
 
-  if (error) return (
-    <div className="oria-page oria-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="oria-card" style={{ textAlign: 'center', padding: '48px 24px', maxWidth: 420 }}>
-        <div style={{ fontSize: 48, marginBottom: 20 }}>⚠️</div>
-        <h2 className="text-xl" style={{ marginBottom: 16 }}>{t('daily.profile_incomplete')}</h2>
-        <p style={{ color: '#FFFFFF', marginBottom: 28, fontSize: 16 }}>{error}</p>
-        <button className="oria-btn-primary" onClick={() => navigate('/profile')}>
-          {t('daily.complete_profile')}
-        </button>
+  const isNetworkErr = (msg: string) =>
+    msg === 'Failed to fetch' || msg === 'fetch failed' || msg === 'Network request failed' || msg === 'Load failed';
+
+  const handleRetry = () => {
+    setRetrying(true);
+    setError('');
+    setLoading(true);
+    const generationLanguage = normalizeLanguage(i18n.language);
+    const isNetworkError = (msg: string) =>
+      msg === 'Failed to fetch' || msg === 'fetch failed' || msg === 'Network request failed' || msg === 'Load failed';
+    const tryFetch = (attemptsLeft: number): Promise<void> =>
+      fetchDailyGuidance(generationLanguage)
+        .then(data => {
+          const generatedLanguage = getGeneratedLanguage(data.summary, data.content_language || generationLanguage);
+          const summaryWithLanguage = { ...data.summary, content_language: generatedLanguage };
+          setSummary(summaryWithLanguage);
+          const todayKey = new Date().toDateString();
+          sessionStorage.setItem(`oria_daily_${todayKey}`, JSON.stringify(summaryWithLanguage));
+        })
+        .catch((err: Error) => {
+          if (isNetworkError(err.message) && attemptsLeft > 0) {
+            return new Promise<void>(resolve =>
+              setTimeout(() => resolve(tryFetch(attemptsLeft - 1)), 2500)
+            );
+          }
+          setError(err.message);
+        });
+    tryFetch(3).finally(() => { setLoading(false); setRetrying(false); });
+  };
+
+  if (error) {
+    const networkErr = isNetworkErr(error);
+    return (
+      <div className="oria-page oria-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="oria-card" style={{ textAlign: 'center', padding: '48px 24px', maxWidth: 420 }}>
+          <div style={{ fontSize: 48, marginBottom: 20 }}>⚠️</div>
+          <h2 className="text-xl" style={{ marginBottom: 16 }}>
+            {networkErr ? t('daily.connection_error', 'Connection issue') : t('daily.profile_incomplete')}
+          </h2>
+          <p style={{ color: '#FFFFFF', marginBottom: 28, fontSize: 16 }}>
+            {networkErr ? t('daily.connection_error_detail', 'The service is warming up. Please try again in a moment.') : error}
+          </p>
+          {networkErr ? (
+            <button type="button" className="oria-btn-primary" onClick={handleRetry} disabled={retrying}>
+              {retrying ? t('daily.retrying', 'Retrying…') : t('daily.retry', 'Try Again')}
+            </button>
+          ) : (
+            <button type="button" className="oria-btn-primary" onClick={() => navigate('/profile')}>
+              {t('daily.complete_profile')}
+            </button>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   if (!summary) return null;
 

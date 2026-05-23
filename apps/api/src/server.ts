@@ -12,8 +12,16 @@ import EnvVars, { NodeEnvs } from './common/constants/env';
 import personsRouter from '@src/routes/persons';
 import compareRouter from '@src/routes/compare';
 import monthlyChartFocusRouter from '@src/routes/monthlyChartFocus';
+import { stripeWebhookHandler } from '@src/routes/billing';
 
 const app = express();
+
+// Stripe webhook needs the raw body for signature verification — must be before express.json()
+app.post(
+  '/api/billing/webhook',
+  express.raw({ type: 'application/json' }),
+  stripeWebhookHandler,
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

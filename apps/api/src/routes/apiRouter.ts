@@ -6,6 +6,7 @@ import profileRouter from './profile';
 import chatRouter from './chat';
 import { authMiddleware } from '../middleware/auth';
 import contactRouter from './contact';
+import billingRouter from './billing';
 
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
 
@@ -97,5 +98,6 @@ apiRouter.use('/public/contact', contactRouter);
 apiRouter.use(Paths.DailyGuidance._, authMiddleware, dailyGuidanceRouter);
 apiRouter.use(Paths.Profile._, authMiddleware, profileRouter);
 apiRouter.use(Paths.Chat._, authMiddleware, chatRouter);
+apiRouter.use('/billing', authMiddleware, billingRouter);
 
 export default apiRouter;

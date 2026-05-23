@@ -15,7 +15,13 @@ export async function fetchDailyGuidance(lang: string = 'en') {
   const headers = await getHeaders();
   const localDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local timezone
   const res = await fetch(`${API_URL}/api/daily-guidance/today?lang=${lang}&date=${localDate}`, { headers });
-  if (!res.ok) throw new Error(await res.text());
+  if (!res.ok) {
+    // Treat gateway errors as retryable network errors
+    if (res.status === 502 || res.status === 503 || res.status === 504) {
+      throw new Error('Failed to fetch');
+    }
+    throw new Error(await res.text());
+  }
   return res.json();
 }
 
@@ -251,6 +257,13 @@ export async function fetchMonthlyChartFocus(lang: string = 'en') {
   const headers = await getHeaders();
   const localDate = new Date().toLocaleDateString('en-CA');
   const res = await fetch(`${API_URL}/api/monthly-focus/current?lang=${lang}&date=${localDate}`, { headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function checkBillingSession(sessionId: string) {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/billing/session-status?session_id=${encodeURIComponent(sessionId)}`, { headers });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }

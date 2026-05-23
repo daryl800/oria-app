@@ -8,7 +8,12 @@ import { dailyGuidancePrompt } from '../lib/prompts';
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
 
+// Today's stem/branch is identical for all users — cache it for the server lifetime.
+// Key: YYYY-MM-DD date string
+const stemBranchCache = new Map<string, { stem: string; branch: string }>();
+
 async function getTodayStemBranch(dateStr: string): Promise<{ stem: string; branch: string }> {
+  if (stemBranchCache.has(dateStr)) return stemBranchCache.get(dateStr)!;
   const res = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -22,10 +27,31 @@ async function getTodayStemBranch(dateStr: string): Promise<{ stem: string; bran
     }),
   });
   const data = await res.json();
-  return {
-    stem: data.bazi.pillars.day.gan,
-    branch: data.bazi.pillars.day.zhi,
-  };
+  const result = { stem: data.bazi.pillars.day.gan, branch: data.bazi.pillars.day.zhi };
+  stemBranchCache.set(dateStr, result);
+  // Evict yesterday's entry to avoid unbounded growth
+  for (const key of stemBranchCache.keys()) {
+    if (key !== dateStr) stemBranchCache.delete(key);
+  }
+  return result;
+}
+
+// MBTI profile output is the same for a given (type, lang) pair — cache indefinitely.
+// Key: `${mbti_type}:${lang}`
+const mbtiProfileCache = new Map<string, any>();
+
+async function getMbtiProfile(mbtiType: string, lang: string): Promise<any | null> {
+  const key = `${mbtiType}:${lang}`;
+  if (mbtiProfileCache.has(key)) return mbtiProfileCache.get(key);
+  const res = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/profile`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mbti_type: mbtiType, lang }),
+  });
+  if (!res.ok) return null;
+  const profile = await res.json();
+  mbtiProfileCache.set(key, profile);
+  return profile;
 }
 
 function trimGuidanceForFree(summary: any, lang: string): any {
@@ -112,12 +138,7 @@ router.get('/today', async (req: Request, res: Response) => {
         .single();
 
       if (mbtiVersion) {
-        const mbtiRes = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/profile`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mbti_type: mbtiVersion.mbti_type, lang }),
-        });
-        if (mbtiRes.ok) mbtiProfile = await mbtiRes.json();
+        mbtiProfile = await getMbtiProfile(mbtiVersion.mbti_type, lang);
       }
     }
 

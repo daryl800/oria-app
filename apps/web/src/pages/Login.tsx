@@ -8,10 +8,12 @@ export default function Login({
   isNewUser = false,
   backFallback = '/',
   signupOnly = false,
+  defaultMode,
 }: {
   isNewUser?: boolean;
   backFallback?: string;
   signupOnly?: boolean;
+  defaultMode?: 'signin' | 'signup';
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ export default function Login({
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
-  const [mode, setMode] = useState<'signin' | 'signup'>(locationMode ?? (isNewUser ? 'signup' : 'signin'));
+  const [mode, setMode] = useState<'signin' | 'signup'>(locationMode ?? defaultMode ?? (isNewUser ? 'signup' : 'signin'));
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);

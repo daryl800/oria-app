@@ -1,14 +1,24 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import type { User } from '@supabase/supabase-js';
 
 const STRIPE_MONTHLY_LINK = import.meta.env.VITE_STRIPE_MONTHLY_LINK || 'https://buy.stripe.com/test_cNi7sLegE6kBcCo4Fn8N202';
 const STRIPE_YEARLY_LINK = import.meta.env.VITE_STRIPE_YEARLY_LINK || '#';
-
 const STRIPE_PORTAL_LINK = import.meta.env.VITE_STRIPE_PORTAL_LINK || '';
 
-export default function PricingPage({ isPlus = false }: { isPlus?: boolean }) {
+function buildPaymentLink(base: string, userId?: string): string {
+  if (!base || base === '#') return '#';
+  const url = new URL(base);
+  if (userId) url.searchParams.set('client_reference_id', userId);
+  return url.toString();
+}
+
+export default function PricingPage({ isPlus = false, user }: { isPlus?: boolean; user?: User | null }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const monthlyLink = buildPaymentLink(STRIPE_MONTHLY_LINK, user?.id);
+  const yearlyLink = buildPaymentLink(STRIPE_YEARLY_LINK, user?.id);
 
   const freeFeatures = Object.values(t('billing.free.features', { returnObjects: true }) as Record<string, string>);
   const monthlyFeatures = Object.values(t('billing.monthly.features', { returnObjects: true }) as Record<string, string>);
@@ -125,11 +135,14 @@ export default function PricingPage({ isPlus = false }: { isPlus?: boolean }) {
               ✓ {t('billing.currentPlan')}
             </button>
           ) : (
-            <a href={STRIPE_MONTHLY_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-              <button className="oria-btn-primary" style={{ width: '100%' }}>
-                {t('billing.monthly.button')}
-              </button>
-            </a>
+            <button
+              type="button"
+              className="oria-btn-primary"
+              style={{ width: '100%' }}
+              onClick={() => { window.location.href = monthlyLink; }}
+            >
+              {t('billing.monthly.button')}
+            </button>
           )}
         </div>
 
@@ -181,11 +194,14 @@ export default function PricingPage({ isPlus = false }: { isPlus?: boolean }) {
               ✓ {t('billing.currentPlan')}
             </button>
           ) : (
-            <a href={STRIPE_YEARLY_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-              <button className="oria-btn-premium" style={{ width: '100%' }}>
-                {t('billing.yearly.button')}
-              </button>
-            </a>
+            <button
+              type="button"
+              className="oria-btn-premium"
+              style={{ width: '100%' }}
+              onClick={() => { window.location.href = yearlyLink; }}
+            >
+              {t('billing.yearly.button')}
+            </button>
           )}
         </div>
       </div>

@@ -82,12 +82,15 @@ export default function RelationshipInsights() {
           <div className="oria-card-label">{t('nav.people')}</div>
           <h1 className="oria-page-title">{t('people.page_title')}</h1>
         </div>
-        <button
-          className="oria-btn-primary btn-add-person"
-          onClick={() => navigate('/relationship-insights/add')}
-        >
-          + {t('people.add_person')}
-        </button>
+        {persons.length > 0 && (
+          <button
+            type="button"
+            className="oria-btn-primary btn-add-person"
+            onClick={() => navigate('/relationship-insights/add')}
+          >
+            + {t('people.add_person')}
+          </button>
+        )}
       </div>
 
       {loading && (
