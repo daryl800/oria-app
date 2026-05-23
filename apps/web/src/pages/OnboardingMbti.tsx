@@ -41,10 +41,18 @@ export default function OnboardingMbti() {
 
   useEffect(() => {
     setLoading(true);
-    getPublicMbtiQuestions(normalizeLanguage(i18n.language))
-      .then(data => setQuestions(data.questions))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
+    setError('');
+    const lang = normalizeLanguage(i18n.language);
+    const tryFetch = (attemptsLeft: number): Promise<void> =>
+      getPublicMbtiQuestions(lang)
+        .then(data => setQuestions(data.questions))
+        .catch((err: Error) => {
+          if (attemptsLeft > 0) {
+            return new Promise<void>(resolve => setTimeout(() => resolve(tryFetch(attemptsLeft - 1)), 3000));
+          }
+          setError(err.message);
+        });
+    tryFetch(3).finally(() => setLoading(false));
   }, [i18n.language]);
 
   function handleAnswer(questionId: number, answer: string) {

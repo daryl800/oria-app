@@ -9,6 +9,13 @@ import contactRouter from './contact';
 import billingRouter from './billing';
 
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
+const PYTHON_TIMEOUT_MS = 30_000;
+
+function pythonFetch(url: string, init?: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), PYTHON_TIMEOUT_MS);
+  return fetch(url, { ...init, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
 
 const apiRouter = Router();
 
@@ -24,7 +31,7 @@ apiRouter.use(Paths.Users._, userRouter);
 apiRouter.get('/public/mbti/questions', async (req: Request, res: Response) => {
   try {
     const lang = (req.query.lang as string) ?? 'en';
-    const r = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/questions?lang=${lang}`);
+    const r = await pythonFetch(`${ANALYSIS_SERVICE_URL}/mbti/questions?lang=${lang}`);
     const data = await r.json();
     return res.json(data);
   } catch (err: any) {
@@ -35,7 +42,7 @@ apiRouter.get('/public/mbti/questions', async (req: Request, res: Response) => {
 apiRouter.post('/public/mbti/calculate', async (req: Request, res: Response) => {
   try {
     const { answers, lang = 'en' } = req.body;
-    const r = await fetch(`${ANALYSIS_SERVICE_URL}/mbti/calculate`, {
+    const r = await pythonFetch(`${ANALYSIS_SERVICE_URL}/mbti/calculate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ answers, lang }),
@@ -78,7 +85,7 @@ apiRouter.post('/public/timezone/lookup', async (req: Request, res: Response) =>
     if (lat === undefined || lng === undefined) {
       return res.status(400).json({ error: 'lat and lng are required' });
     }
-    const r = await fetch(`${ANALYSIS_SERVICE_URL}/timezone/lookup`, {
+    const r = await pythonFetch(`${ANALYSIS_SERVICE_URL}/timezone/lookup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ lat, lng }),
