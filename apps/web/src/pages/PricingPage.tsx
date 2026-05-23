@@ -143,7 +143,11 @@ export default function PricingPage({ isPlus = false, user }: { isPlus?: boolean
               type="button"
               className="oria-btn-primary"
               style={{ width: '100%' }}
-              onClick={() => { window.location.href = monthlyLink; }}
+              onClick={() => {
+                console.log('[pricing] monthly link:', monthlyLink);
+                if (monthlyLink === '#') { alert('Payment link not configured. Please contact support.'); return; }
+                window.location.href = monthlyLink;
+              }}
             >
               {t('billing.monthly.button')}
             </button>
