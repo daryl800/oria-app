@@ -21,12 +21,9 @@ if (_h.get('type') === 'signup' && _h.get('access_token')) {
       <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.7;max-width:320px;margin:0 0 16px;">
         Your Oria account has been successfully created and verified.
       </p>
-      <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:16px;padding:14px 20px;font-size:14px;color:rgba(201,168,76,0.8);line-height:1.6;max-width:320px;margin:0 auto 24px;">
-        You can now close this page and go back to where you started signing up to continue.
+      <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:16px;padding:14px 20px;font-size:14px;color:rgba(201,168,76,0.8);line-height:1.6;max-width:320px;margin:0 auto;">
+        You can now close this tab and return to where you were signing up to continue.
       </div>
-      <a href="/login" style="padding:10px 28px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);border-radius:999px;color:#C9A84C;text-decoration:none;font-size:14px;font-weight:600;">
-        Go to Login
-      </a>
     </div>
   `;
 } else {
