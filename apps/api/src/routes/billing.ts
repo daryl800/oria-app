@@ -30,36 +30,39 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
         const session = event.data.object as Stripe.Checkout.Session;
         const isPaid =
           session.payment_status === 'paid' || session.mode === 'subscription';
-        if (!isPaid) break;
+        console.log(`[billing] checkout.session.completed payment_status=${session.payment_status} mode=${session.mode} client_reference_id=${session.client_reference_id}`);
+        if (!isPaid) { console.log('[billing] not paid, skipping'); break; }
 
         const userId = session.client_reference_id;
         const customerId = session.customer as string | null;
 
-        if (userId) {
-          await supabaseAdmin
+        const upgradeUser = async (uid: string) => {
+          const { error } = await supabaseAdmin
             .from('users')
-            .update({
-              plan: 'plus',
-              ...(customerId ? { stripe_customer_id: customerId } : {}),
-            })
-            .eq('id', userId);
-        } else if (session.customer_details?.email) {
-          // Fallback: match by email via Supabase Auth
-          const {
-            data: { users },
-          } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
-          const authUser = users.find(
-            (u) => u.email === session.customer_details?.email,
-          );
-          if (authUser) {
-            await supabaseAdmin
+            .update({ plan: 'plus' })
+            .eq('id', uid);
+          if (error) console.error(`[billing] plan upgrade failed for ${uid}:`, error.message);
+          else console.log(`[billing] plan upgraded to plus for user ${uid}`);
+
+          if (customerId) {
+            const { error: cidErr } = await supabaseAdmin
               .from('users')
-              .update({
-                plan: 'plus',
-                ...(customerId ? { stripe_customer_id: customerId } : {}),
-              })
-              .eq('id', authUser.id);
+              .update({ stripe_customer_id: customerId })
+              .eq('id', uid);
+            if (cidErr) console.warn(`[billing] stripe_customer_id update failed (column may not exist yet):`, cidErr.message);
           }
+        };
+
+        if (userId) {
+          await upgradeUser(userId);
+        } else if (session.customer_details?.email) {
+          console.log(`[billing] no client_reference_id, falling back to email: ${session.customer_details.email}`);
+          const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
+          const authUser = users.find(u => u.email === session.customer_details?.email);
+          if (authUser) await upgradeUser(authUser.id);
+          else console.error(`[billing] no user found for email ${session.customer_details.email}`);
+        } else {
+          console.error('[billing] no client_reference_id and no email — cannot identify user');
         }
         break;
       }
