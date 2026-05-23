@@ -37,7 +37,8 @@ export async function complete(messages: OpenAI.ChatCompletionMessageParam[]): P
 
   for (const provider of PROVIDERS) {
     try {
-      console.log(`[LLM] Using provider: ${provider.name}`);
+      const t0 = Date.now();
+      console.log(`[LLM] Trying ${provider.name} model=${provider.model}`);
       const stream = await provider.client.chat.completions.create({
         model: provider.model,
         messages,
@@ -49,6 +50,7 @@ export async function complete(messages: OpenAI.ChatCompletionMessageParam[]): P
         const delta = chunk.choices[0]?.delta;
         if (delta?.content) answer += delta.content;
       }
+      console.log(`[LLM] ${provider.name} completed in ${Date.now() - t0}ms (${answer.length} chars)`);
       return answer;
 
     } catch (err) {

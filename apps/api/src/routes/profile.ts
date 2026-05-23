@@ -205,8 +205,12 @@ router.post('/summary', async (req: Request, res: Response) => {
       profile.summary_lang === lang;
 
     if (cacheValid) {
+      console.log(`[summary] cache hit for user ${userId} lang=${lang}`);
       return res.json({ summary: profile.profile_summary, cached: true });
     }
+
+    console.log(`[summary] generating for user ${userId} lang=${lang}`);
+    const t0 = Date.now();
 
     const { data: bazi } = await supabase
       .from('bazi_profile_versions')
@@ -220,7 +224,10 @@ router.post('/summary', async (req: Request, res: Response) => {
       .eq('id', profile.current_mbti_version_id)
       .single();
 
+    console.log(`[summary] fetching MBTI profile type=${mbti.mbti_type}`);
+    const t1 = Date.now();
     const mbtiProfile = await getMbtiProfile(mbti.mbti_type, lang);
+    console.log(`[summary] MBTI profile done in ${Date.now() - t1}ms (cached=${mbtiProfile !== null && mbtiProfileCache.has(`${mbti.mbti_type}:${lang}`)})`);
 
     const zodiac = bazi.birth_date ? calculateZodiac(bazi.birth_date) : null;
     const messages = profileSummaryPrompt(
@@ -230,7 +237,10 @@ router.post('/summary', async (req: Request, res: Response) => {
       mbti.context_focus ?? [],
       zodiac,
     );
+    console.log(`[summary] calling LLM`);
+    const t2 = Date.now();
     const raw = await complete(messages);
+    console.log(`[summary] LLM done in ${Date.now() - t2}ms, total=${Date.now() - t0}ms`);
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
     const summary = JSON.parse(clean);
 
