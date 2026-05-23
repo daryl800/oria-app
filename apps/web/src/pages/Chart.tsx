@@ -71,14 +71,14 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
   const [showMbtiDetails, setShowMbtiDetails] = useState(false);
   const [showBaziDetails, setShowBaziDetails] = useState(false);
 
+  async function fetchSummaryWithTimeout(lang: string) {
+    const timeout = new Promise<null>(resolve => setTimeout(() => resolve(null), 45_000));
+    return Promise.race([getProfileSummary(lang), timeout]);
+  }
+
   useEffect(() => {
     const generationLanguage = normalizeLanguage(i18n.language);
     const cacheKey = `oria_chart_${user.id}`;
-
-    async function fetchSummaryWithTimeout(lang: string) {
-      const timeout = new Promise<null>(resolve => setTimeout(() => resolve(null), 45_000));
-      return Promise.race([getProfileSummary(lang), timeout]);
-    }
 
     async function load() {
       const cached = sessionStorage.getItem(cacheKey);
