@@ -66,6 +66,7 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryFailed, setSummaryFailed] = useState(false);
   const [showDeepInsight, setShowDeepInsight] = useState(false);
   const [showMbtiDetails, setShowMbtiDetails] = useState(false);
   const [showBaziDetails, setShowBaziDetails] = useState(false);
@@ -93,6 +94,7 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
         // Cache exists but no summary yet (fresh redirect from onboarding)
         if (data.bazi && data.mbti) {
           setSummaryLoading(true);
+          setSummaryFailed(false);
           try {
             const s = await fetchSummaryWithTimeout(generationLanguage);
             if (s) {
@@ -100,8 +102,11 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
               const summaryWithLanguage = { ...s.summary, content_language: generatedLanguage };
               setSummary(summaryWithLanguage);
               sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: summaryWithLanguage }));
+            } else {
+              setSummaryFailed(true);
             }
           } catch (e) {
+            setSummaryFailed(true);
           } finally {
             setSummaryLoading(false);
           }
@@ -143,6 +148,7 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
         setLoading(false);
         if (data.bazi && data.mbti) {
           setSummaryLoading(true);
+          setSummaryFailed(false);
           try {
             const s = await fetchSummaryWithTimeout(generationLanguage);
             if (s) {
@@ -150,8 +156,11 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
               const summaryWithLanguage = { ...s.summary, content_language: generatedLanguage };
               setSummary(summaryWithLanguage);
               sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: summaryWithLanguage }));
+            } else {
+              setSummaryFailed(true);
             }
           } catch (e) {
+            setSummaryFailed(true);
           } finally {
             setSummaryLoading(false);
           }
@@ -1158,6 +1167,52 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
               <div style={{ color: '#C9A84C' }}>
                 {t('chart.insight.analyzing')}
               </div>
+            </div>
+          )}
+
+          {!summaryLoading && summaryFailed && !summary && (
+            <div style={{ padding: '20px 0', textAlign: 'center' }}>
+              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, marginBottom: 12 }}>
+                {t('chart.insight.analyzing')}… taking longer than usual.
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const cacheKey = `oria_chart_${user.id}`;
+                  const cached = sessionStorage.getItem(cacheKey);
+                  if (cached) {
+                    const data = JSON.parse(cached);
+                    delete data.summary;
+                    sessionStorage.setItem(cacheKey, JSON.stringify(data));
+                  }
+                  setSummaryFailed(false);
+                  setSummaryLoading(true);
+                  const lang = normalizeLanguage(i18n.language);
+                  fetchSummaryWithTimeout(lang)
+                    .then(s => {
+                      if (s) {
+                        const gl = getGeneratedLanguage(s.summary, s.content_language || lang);
+                        const sw = { ...s.summary, content_language: gl };
+                        setSummary(sw);
+                        if (cached) {
+                          const data = JSON.parse(cached);
+                          sessionStorage.setItem(cacheKey, JSON.stringify({ ...data, summary: sw }));
+                        }
+                      } else {
+                        setSummaryFailed(true);
+                      }
+                    })
+                    .catch(() => setSummaryFailed(true))
+                    .finally(() => setSummaryLoading(false));
+                }}
+                style={{
+                  background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)',
+                  borderRadius: 999, padding: '10px 24px', fontSize: 14, fontWeight: 600,
+                  color: '#C9A84C', cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
+                Try again
+              </button>
             </div>
           )}
 
