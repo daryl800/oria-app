@@ -34,13 +34,18 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
       const parsed = JSON.parse(cached);
-      if (parsed.locked) {
+      // Don't serve a locked cache if the user is now Plus — fetch fresh
+      if (parsed.locked && isPlus) {
+        sessionStorage.removeItem(cacheKey);
+      } else if (parsed.locked) {
         setLocked(true);
+        setLoading(false);
+        return;
       } else {
         setFocus(parsed.focus);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-      return;
     }
 
     fetchMonthlyChartFocus(lang)
@@ -55,7 +60,7 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
       })
       .catch(() => setError(t('monthly_focus.error')))
       .finally(() => setLoading(false));
-  }, [lang]);
+  }, [lang, isPlus]);
 
   const cardStyle: React.CSSProperties = {
     background: 'linear-gradient(135deg, rgba(201,168,76,0.10), rgba(124,58,237,0.07))',
