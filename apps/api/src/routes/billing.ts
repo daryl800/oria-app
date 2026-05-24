@@ -35,21 +35,41 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
 
         const userId = session.client_reference_id;
         const customerId = session.customer as string | null;
+        const subscriptionId = session.subscription as string | null;
+
+        // Fetch subscription period_end if this is a subscription
+        let planExpiresAt: string | null = null;
+        if (subscriptionId) {
+          try {
+            const sub = await stripe.subscriptions.retrieve(subscriptionId);
+            planExpiresAt = new Date(sub.current_period_end * 1000).toISOString();
+          } catch (e: any) {
+            console.warn('[billing] could not retrieve subscription:', e.message);
+          }
+        }
 
         const upgradeUser = async (uid: string) => {
           const { error } = await supabaseAdmin
             .from('users')
-            .update({ plan: 'plus' })
+            .update({ plan: 'plus', plan_cancel_scheduled: false, plan_expires_at: planExpiresAt })
             .eq('id', uid);
           if (error) console.error(`[billing] plan upgrade failed for ${uid}:`, error.message);
-          else console.log(`[billing] plan upgraded to plus for user ${uid}`);
+          else console.log(`[billing] plan upgraded to plus for user ${uid}, expires=${planExpiresAt}`);
 
           if (customerId) {
             const { error: cidErr } = await supabaseAdmin
               .from('users')
               .update({ stripe_customer_id: customerId })
               .eq('id', uid);
-            if (cidErr) console.warn(`[billing] stripe_customer_id update failed (column may not exist yet):`, cidErr.message);
+            if (cidErr) console.warn(`[billing] stripe_customer_id update failed:`, cidErr.message);
+          }
+
+          if (subscriptionId) {
+            const { error: sidErr } = await supabaseAdmin
+              .from('users')
+              .update({ stripe_subscription_id: subscriptionId })
+              .eq('id', uid);
+            if (sidErr) console.warn(`[billing] stripe_subscription_id update failed:`, sidErr.message);
           }
         };
 
@@ -67,13 +87,26 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
         break;
       }
 
+      case 'customer.subscription.updated': {
+        const sub = event.data.object as Stripe.Subscription;
+        const customerId = sub.customer as string;
+        const planExpiresAt = new Date(sub.current_period_end * 1000).toISOString();
+        const cancelScheduled = sub.cancel_at_period_end;
+        console.log(`[billing] subscription.updated customer=${customerId} cancel_at_period_end=${cancelScheduled} expires=${planExpiresAt}`);
+        await supabaseAdmin
+          .from('users')
+          .update({ plan_expires_at: planExpiresAt, plan_cancel_scheduled: cancelScheduled })
+          .eq('stripe_customer_id', customerId);
+        break;
+      }
+
       case 'customer.subscription.deleted': {
         const sub = event.data.object as Stripe.Subscription;
         const customerId = sub.customer as string;
-        // Downgrade — relies on stripe_customer_id column existing
+        console.log(`[billing] subscription.deleted customer=${customerId} — downgrading to free`);
         await supabaseAdmin
           .from('users')
-          .update({ plan: 'free' })
+          .update({ plan: 'free', plan_cancel_scheduled: false, plan_expires_at: null, stripe_subscription_id: null })
           .eq('stripe_customer_id', customerId);
         break;
       }
@@ -88,10 +121,11 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
   }
 }
 
-// ─── Session-status endpoint (auth-protected, registered in apiRouter) ────────
+// ─── Auth-protected billing endpoints ────────────────────────────────────────
 
 const billingRouter = Router();
 
+// GET /billing/session-status?session_id=xxx
 billingRouter.get('/session-status', async (req: Request, res: Response) => {
   try {
     const sessionId = req.query.session_id as string;
@@ -108,6 +142,109 @@ billingRouter.get('/session-status', async (req: Request, res: Response) => {
       status: session.payment_status,
       plan: userData?.plan ?? 'free',
     });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /billing/status — current subscription status for the logged-in user
+billingRouter.get('/status', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select('plan, plan_expires_at, plan_cancel_scheduled, stripe_subscription_id')
+      .eq('id', userId)
+      .single();
+
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // If we have a live subscription, sync current_period_end from Stripe
+    if (user.stripe_subscription_id) {
+      try {
+        const sub = await stripe.subscriptions.retrieve(user.stripe_subscription_id);
+        const planExpiresAt = new Date(sub.current_period_end * 1000).toISOString();
+        const cancelScheduled = sub.cancel_at_period_end;
+        if (planExpiresAt !== user.plan_expires_at || cancelScheduled !== user.plan_cancel_scheduled) {
+          await supabaseAdmin
+            .from('users')
+            .update({ plan_expires_at: planExpiresAt, plan_cancel_scheduled: cancelScheduled })
+            .eq('id', userId);
+          user.plan_expires_at = planExpiresAt;
+          user.plan_cancel_scheduled = cancelScheduled;
+        }
+      } catch {
+        // non-fatal — return cached DB values
+      }
+    }
+
+    return res.json({
+      plan: user.plan ?? 'free',
+      plan_expires_at: user.plan_expires_at ?? null,
+      plan_cancel_scheduled: user.plan_cancel_scheduled ?? false,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /billing/cancel — schedule cancellation at end of current period
+billingRouter.post('/cancel', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select('stripe_subscription_id')
+      .eq('id', userId)
+      .single();
+
+    if (!user?.stripe_subscription_id) {
+      return res.status(400).json({ error: 'No active subscription found' });
+    }
+
+    const sub = await stripe.subscriptions.update(user.stripe_subscription_id, {
+      cancel_at_period_end: true,
+    });
+
+    const planExpiresAt = new Date(sub.current_period_end * 1000).toISOString();
+    await supabaseAdmin
+      .from('users')
+      .update({ plan_expires_at: planExpiresAt, plan_cancel_scheduled: true })
+      .eq('id', userId);
+
+    console.log(`[billing] cancellation scheduled for user ${userId}, expires=${planExpiresAt}`);
+    return res.json({ plan_expires_at: planExpiresAt, plan_cancel_scheduled: true });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /billing/reactivate — undo cancel_at_period_end
+billingRouter.post('/reactivate', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select('stripe_subscription_id')
+      .eq('id', userId)
+      .single();
+
+    if (!user?.stripe_subscription_id) {
+      return res.status(400).json({ error: 'No active subscription found' });
+    }
+
+    const sub = await stripe.subscriptions.update(user.stripe_subscription_id, {
+      cancel_at_period_end: false,
+    });
+
+    const planExpiresAt = new Date(sub.current_period_end * 1000).toISOString();
+    await supabaseAdmin
+      .from('users')
+      .update({ plan_expires_at: planExpiresAt, plan_cancel_scheduled: false })
+      .eq('id', userId);
+
+    console.log(`[billing] reactivated subscription for user ${userId}, next renewal=${planExpiresAt}`);
+    return res.json({ plan_expires_at: planExpiresAt, plan_cancel_scheduled: false });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }

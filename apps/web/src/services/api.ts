@@ -267,3 +267,34 @@ export async function checkBillingSession(sessionId: string) {
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
+export async function getBillingStatus(): Promise<{
+  plan: string;
+  plan_expires_at: string | null;
+  plan_cancel_scheduled: boolean;
+}> {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/billing/status`, { headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function cancelSubscription(): Promise<{
+  plan_expires_at: string;
+  plan_cancel_scheduled: boolean;
+}> {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/billing/cancel`, { method: 'POST', headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function reactivateSubscription(): Promise<{
+  plan_expires_at: string;
+  plan_cancel_scheduled: boolean;
+}> {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/billing/reactivate`, { method: 'POST', headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}

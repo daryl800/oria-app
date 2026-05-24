@@ -112,7 +112,7 @@ export default function Settings({ user }: { user: User }) {
           Account
         </div>
         {[
-          { label: 'Manage Subscription', path: '/upgrade' },
+          { label: 'Manage Subscription', path: '/manage-subscription' },
           { label: 'Pricing & Plans', path: '/pricing' },
           { label: 'Account & Data', path: '/account-and-data' },
         ].map(link => (

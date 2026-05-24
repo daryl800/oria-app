@@ -39,6 +39,7 @@ import LegalTerms from './pages/LegalTerms';
 import LegalPrivacy from './pages/LegalPrivacy';
 import LegalBilling from './pages/LegalBilling';
 import LegalDisclaimer from './pages/LegalDisclaimer';
+import ManageSubscription from './pages/ManageSubscription';
 
 
 function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
@@ -202,6 +203,7 @@ export default function App() {
 
           {/* Protected info pages */}
           <Route path="/account-and-data" element={!user ? <Navigate to="/" /> : <AccountAndData />} />
+          <Route path="/manage-subscription" element={!user ? <Navigate to="/" /> : <ManageSubscription isPlus={isPlus} />} />
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
