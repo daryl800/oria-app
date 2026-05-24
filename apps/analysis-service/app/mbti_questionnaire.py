@@ -159,8 +159,8 @@ QUESTIONS = [
             },
             "B": {
                 "text_en": "A few meaningful connections, with plenty of time to yourself",
-                "text_zh_tw": "少數深刻的關係，以及大量屬於自己的時間",
-                "text_zh_cn": "少数深刻的关系，以及大量属于自己的时间",
+                "text_zh_tw": "保持幾個深交知己，以及把大部份時間留給自己",
+                "text_zh_cn": "保持几个深交知己，以及把大部分时间留给自己",
                 "text_ja": "少数の深い繋がりと、自分だけの時間をたっぷり持つ",
                 "text_ko": "소수의 깊은 관계와 충분한 혼자만의 시간",
                 "text_sv": "Några meningsfulla relationer och gott om tid för dig själv",
