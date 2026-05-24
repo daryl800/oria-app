@@ -10,29 +10,39 @@ export default function AuthCallback() {
   const handled = useRef(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (handled.current) return;
-      if (event === 'SIGNED_IN' && session) {
-        handled.current = true;
+    async function handleSession(session: any) {
+      if (handled.current || !session) return;
+      handled.current = true;
 
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
 
-        if (token) {
-          setStatus('Saving your profile...');
-          try {
-            await transferTempOnboarding(token);
-            sessionStorage.removeItem('oria_onboarding_token');
-          } catch (e: any) {
-            console.error('[Callback] transfer failed:', e.message);
-          }
+      if (token) {
+        setStatus('Saving your profile...');
+        try {
+          await transferTempOnboarding(token);
+          sessionStorage.removeItem('oria_onboarding_token');
+        } catch (e: any) {
+          console.error('[Callback] transfer failed:', e.message);
         }
+      }
 
-        Object.keys(sessionStorage)
-          .filter(k => k.startsWith('oria_chart'))
-          .forEach(k => sessionStorage.removeItem(k));
+      Object.keys(sessionStorage)
+        .filter(k => k.startsWith('oria_chart'))
+        .forEach(k => sessionStorage.removeItem(k));
 
-        navigate('/chart', { replace: true });
+      navigate('/chart', { replace: true });
+    }
+
+    // Check immediately — OAuth redirect may have already established a session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) handleSession(session);
+    });
+
+    // Also listen for auth events in case session arrives slightly later
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        handleSession(session);
       }
     });
 
