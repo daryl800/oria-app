@@ -62,13 +62,13 @@ apiRouter.post('/profile/temp-save', async (req: Request, res: Response) => {
       process.env.SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
-    const { mbti_data, bazi_data } = req.body;
+    const { mbti_data, bazi_data, lang } = req.body;
     if (!mbti_data || !bazi_data) {
       return res.status(400).json({ error: 'Missing mbti_data or bazi_data' });
     }
     const { data, error } = await supabase
       .from('temp_onboarding_data')
-      .insert({ mbti_data, bazi_data })
+      .insert({ mbti_data, bazi_data, ...(lang ? { lang } : {}) })
       .select('token')
       .single();
     if (error) throw new Error(error.message);
