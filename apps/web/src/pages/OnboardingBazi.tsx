@@ -65,6 +65,7 @@ export default function OnboardingBazi() {
       localStorage.setItem('oria_bazi_input', JSON.stringify(baziData));
       const data = await saveTempOnboarding(mbtiData, baziData, {
         context_focus: contextFocus,
+        lang: i18n.language,
       });
       // Store token for callback
       sessionStorage.setItem('oria_onboarding_token', data.token);

@@ -181,7 +181,7 @@ export async function submitPublicMbtiAnswers(answers: Record<number, string>, l
 export async function saveTempOnboarding(
   mbtiData: any,
   baziData: any,
-  options: { context_focus?: string[] } = {},
+  options: { context_focus?: string[]; lang?: string } = {},
 ) {
   const res = await fetch(`${API_URL}/api/profile/temp-save`, {
     method: 'POST',
@@ -190,6 +190,7 @@ export async function saveTempOnboarding(
       mbti_data: mbtiData,
       bazi_data: baziData,
       context_focus: options.context_focus ?? [],
+      lang: options.lang,
     }),
   });
   if (!res.ok) throw new Error(await res.text());
