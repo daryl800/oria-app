@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
-import { getProfile, saveBazi, saveMbti, resetBazi } from '../services/api';
+import { getProfile, saveBazi, saveMbti, resetBazi, deleteAccount } from '../services/api';
 import { SUPPORTED_LANGUAGES } from '../lib/languages';
 import LocationAutocomplete from '../components/LocationAutocomplete';
 import type { StructuredLocation } from '../lib/locations';
@@ -56,6 +56,8 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
   const [existingMbti, setExistingMbti] = useState<any>(null);
   const [showResetWarning, setShowResetWarning] = useState(false);
   const [pendingLang, setPendingLang] = useState<string | null>(null);
+  const [deleteStep, setDeleteStep] = useState<'idle' | 'confirm' | 'deleting'>('idle');
+  const [deleteError, setDeleteError] = useState('');
 
   const [year, setYear] = useState('');
   const [month, setMonth] = useState('');
@@ -175,6 +177,20 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
   async function handleSignOut() {
     await supabase.auth.signOut();
     navigate('/login');
+  }
+
+  async function handleDeleteAccount() {
+    setDeleteStep('deleting');
+    setDeleteError('');
+    try {
+      await deleteAccount();
+      await supabase.auth.signOut();
+      sessionStorage.clear();
+      window.location.href = '/';
+    } catch (e: any) {
+      setDeleteError(e.message);
+      setDeleteStep('confirm');
+    }
   }
 
   function handleLanguageChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -520,6 +536,30 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
         {t('profile_extra.sign_out')}
       </button>
 
+      {/* Delete account */}
+      <div style={{ marginTop: 32, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 28 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.25)', marginBottom: 14 }}>
+          Danger zone
+        </div>
+        <button
+          type="button"
+          onClick={() => { setDeleteStep('confirm'); setDeleteError(''); }}
+          style={{
+            width: '100%', padding: '14px 18px',
+            background: 'transparent',
+            border: '1px solid rgba(239,68,68,0.18)',
+            borderRadius: 12, fontSize: 14, fontWeight: 600,
+            color: 'rgba(239,68,68,0.6)',
+            cursor: 'pointer', fontFamily: 'inherit',
+            textAlign: 'left' as const,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}
+        >
+          Delete my account
+          <span style={{ fontSize: 12, opacity: 0.6 }}>Permanent</span>
+        </button>
+      </div>
+
       {pendingLang && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1000,
@@ -559,6 +599,85 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
       )}
 
       <footer className="oria-disclaimer">{t('profile_extra.reflection_footer')}</footer>
+
+      {/* Delete account confirmation modal */}
+      {(deleteStep === 'confirm' || deleteStep === 'deleting') && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(0,0,0,0.8)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 24,
+        }}>
+          <div className="oria-card" style={{ maxWidth: 400, width: '100%', padding: '36px 28px' }}>
+            <div style={{ fontSize: 40, textAlign: 'center', marginBottom: 16 }}>⚠️</div>
+            <h3 style={{ fontSize: 20, fontWeight: 700, color: '#F0EDE8', marginBottom: 12, textAlign: 'center' }}>
+              Delete your account?
+            </h3>
+
+            {/* Subscription warning — only for active Plus users */}
+            {isPlus && (
+              <div style={{
+                background: 'rgba(239,68,68,0.08)',
+                border: '1px solid rgba(239,68,68,0.25)',
+                borderRadius: 12, padding: '14px 16px', marginBottom: 18,
+              }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(239,68,68,0.9)', marginBottom: 6 }}>
+                  Active subscription detected
+                </div>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.65, margin: 0 }}>
+                  You currently have an active Oria Plus subscription. Deleting your account will immediately cancel your subscription. <strong style={{ color: 'rgba(255,255,255,0.85)' }}>No refund will be issued</strong> for any unused portion of your billing period. If you wish to retain access until the end of your current period, please cancel your subscription first from Manage Subscription before deleting your account.
+                </p>
+              </div>
+            )}
+
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 24 }}>
+              This will permanently delete your account, profile, chart data, chat history, and all associated content. <strong style={{ color: '#F0EDE8' }}>This action cannot be undone.</strong>
+            </p>
+
+            {deleteError && (
+              <div style={{
+                background: 'rgba(239,68,68,0.08)',
+                border: '1px solid rgba(239,68,68,0.2)',
+                borderRadius: 10, padding: '12px 14px', marginBottom: 16,
+                fontSize: 13, color: 'rgba(239,68,68,0.85)',
+              }}>
+                {deleteError}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                type="button"
+                onClick={() => { setDeleteStep('idle'); setDeleteError(''); }}
+                disabled={deleteStep === 'deleting'}
+                style={{
+                  flex: 1, padding: '14px', borderRadius: 9999,
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'rgba(255,255,255,0.7)', cursor: 'pointer',
+                  fontFamily: 'inherit', fontSize: 15,
+                }}
+              >
+                Keep account
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={deleteStep === 'deleting'}
+                style={{
+                  flex: 1, padding: '14px', borderRadius: 9999,
+                  background: 'rgba(239,68,68,0.15)',
+                  border: '1px solid rgba(239,68,68,0.35)',
+                  color: 'rgba(239,68,68,0.95)', cursor: deleteStep === 'deleting' ? 'default' : 'pointer',
+                  fontFamily: 'inherit', fontSize: 15, fontWeight: 700,
+                }}
+              >
+                {deleteStep === 'deleting' ? 'Deleting…' : 'Delete permanently'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -250,4 +250,53 @@ billingRouter.post('/reactivate', async (req: Request, res: Response) => {
   }
 });
 
+// DELETE /billing/account — permanently delete account and all associated data
+billingRouter.delete('/account', async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+  console.log(`[billing] account deletion requested for user ${userId}`);
+
+  try {
+    // 1. Cancel any active Stripe subscription immediately (no refund)
+    const { data: userRow } = await supabaseAdmin
+      .from('users')
+      .select('stripe_subscription_id')
+      .eq('id', userId)
+      .single();
+
+    if (userRow?.stripe_subscription_id) {
+      try {
+        await stripe.subscriptions.cancel(userRow.stripe_subscription_id);
+        console.log(`[billing] Stripe subscription ${userRow.stripe_subscription_id} cancelled for deleted account`);
+      } catch (e: any) {
+        // Non-fatal — subscription may already be cancelled or expired
+        console.warn(`[billing] could not cancel Stripe subscription during deletion:`, e.message);
+      }
+    }
+
+    // 2. Delete user data in dependency order
+    await supabaseAdmin.from('messages').delete().eq('user_id', userId);
+    await supabaseAdmin.from('conversation_summaries').delete().eq('user_id', userId);
+    await supabaseAdmin.from('conversations').delete().eq('user_id', userId);
+    await supabaseAdmin.from('daily_guidance').delete().eq('user_id', userId);
+    await supabaseAdmin.from('bazi_profile_versions').delete().eq('user_id', userId);
+    await supabaseAdmin.from('mbti_profile_versions').delete().eq('user_id', userId);
+    await supabaseAdmin.from('persons').delete().eq('user_id', userId);
+    await supabaseAdmin.from('user_profiles').delete().eq('user_id', userId);
+    await supabaseAdmin.from('users').delete().eq('id', userId);
+
+    // 3. Delete the Supabase auth user (must be last)
+    const { error: authErr } = await supabaseAdmin.auth.admin.deleteUser(userId);
+    if (authErr) {
+      console.error(`[billing] auth user deletion failed for ${userId}:`, authErr.message);
+      return res.status(500).json({ error: 'Account data deleted but auth removal failed. Please contact support.' });
+    }
+
+    console.log(`[billing] account fully deleted for user ${userId}`);
+    return res.json({ deleted: true });
+  } catch (err: any) {
+    console.error(`[billing] account deletion error for ${userId}:`, err.message);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 export default billingRouter;

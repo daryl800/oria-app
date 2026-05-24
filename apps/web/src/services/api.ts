@@ -289,6 +289,12 @@ export async function cancelSubscription(): Promise<{
   return res.json();
 }
 
+export async function deleteAccount(): Promise<void> {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/billing/account`, { method: 'DELETE', headers });
+  if (!res.ok) throw new Error(await res.text());
+}
+
 export async function reactivateSubscription(): Promise<{
   plan_expires_at: string;
   plan_cancel_scheduled: boolean;
