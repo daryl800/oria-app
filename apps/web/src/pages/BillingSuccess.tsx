@@ -24,6 +24,9 @@ export default function BillingSuccess() {
         const data = await checkBillingSession(sessionId);
         if (data.plan === 'plus') {
           setStatus('success');
+          // Clear all session caches so Chart re-reads fresh plan from Supabase
+          sessionStorage.clear();
+          setTimeout(() => { window.location.href = '/chart'; }, 2000);
           return;
         }
       } catch {
