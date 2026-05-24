@@ -436,26 +436,7 @@ router.post('/migrate-anon', async (req: Request, res: Response) => {
 });
 
 
-// POST /api/onboarding/temp-save — save MBTI + BaZi to temp table, return token
-router.post('/temp-save', async (req: Request, res: Response) => {
-  try {
-    const { mbti_data, bazi_data, lang } = req.body;
-    if (!mbti_data || !bazi_data) {
-      return res.status(400).json({ error: 'Missing mbti_data or bazi_data' });
-    }
-    const { data, error } = await supabase
-      .from('temp_onboarding_data')
-      .insert({ mbti_data, bazi_data, ...(lang ? { lang } : {}) })
-      .select('token')
-      .single();
-    if (error) throw new Error(error.message);
-    return res.json({ token: data.token });
-  } catch (err: any) {
-    return res.status(500).json({ error: err.message });
-  }
-});
-
-// POST /api/onboarding/transfer — move temp data to real user profile
+// POST /api/profile/transfer — move temp data to real user profile
 router.post('/transfer', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
