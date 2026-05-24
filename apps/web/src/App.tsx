@@ -110,15 +110,15 @@ export default function App() {
     setIsPro(pro);
     setIsProLoaded(true);
 
-    // Apply saved language — DB wins, then localStorage (set during onboarding), then modal
+    // Apply language: DB first, then localStorage, then modal
     if (userRecord?.preferred_language) {
       await i18n.changeLanguage(userRecord.preferred_language);
     } else {
-      const localLang = localStorage.getItem('oria_language');
-      if (localLang) {
-        await i18n.changeLanguage(localLang);
-        // Persist it to DB so future logins don't hit the modal
-        supabase.from('users').update({ preferred_language: localLang }).eq('id', userId);
+      const lang = localStorage.getItem('oria_language');
+      if (lang) {
+        await i18n.changeLanguage(lang);
+        localStorage.setItem('oria_language', lang);
+        supabase.from('users').update({ preferred_language: lang }).eq('id', userId);
       } else {
         setLangUserId(userId);
         setShowLanguageModal(true);
