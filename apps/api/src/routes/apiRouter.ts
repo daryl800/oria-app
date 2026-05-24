@@ -11,7 +11,7 @@ import billingRouter from './billing';
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
 const PYTHON_TIMEOUT_MS = 30_000;
 
-function pythonFetch(url: string, init?: RequestInit): Promise<Response> {
+function pythonFetch(url: string, init?: RequestInit) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), PYTHON_TIMEOUT_MS);
   return fetch(url, { ...init, signal: controller.signal }).finally(() => clearTimeout(timer));
