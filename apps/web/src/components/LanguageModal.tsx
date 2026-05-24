@@ -14,6 +14,7 @@ export default function LanguageModal({ userId, onDone }: Props) {
   async function handleSelect(lang: string) {
     setSaving(true);
     await i18n.changeLanguage(lang);
+    localStorage.setItem('oria_language', lang);
     await supabase.from('users').update({ preferred_language: lang }).eq('id', userId);
     onDone(lang);
     setSaving(false);
