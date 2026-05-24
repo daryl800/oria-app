@@ -113,6 +113,7 @@ export default function App() {
     // Apply language: DB first, then localStorage, then modal
     if (userRecord?.preferred_language) {
       await i18n.changeLanguage(userRecord.preferred_language);
+      localStorage.setItem('oria_language', userRecord.preferred_language);
     } else {
       const lang = localStorage.getItem('oria_language');
       if (lang) {
