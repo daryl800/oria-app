@@ -129,6 +129,8 @@ export default function App() {
       } else if (event === 'SIGNED_OUT') {
         setOnboardingComplete(null);
         setUser(null);
+        setIsPro(false);
+        setIsProLoaded(false);
         sessionStorage.clear();
         localStorage.removeItem('oria_mbti_result');
         localStorage.removeItem('oria_mbti_answers');
