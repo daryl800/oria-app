@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { transferTempOnboarding } from '../services/api';
 import PlanetLoader from '../components/PlanetLoader';
+import i18n from '../lib/i18n';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -20,8 +21,12 @@ export default function AuthCallback() {
       if (token) {
         setStatus('Saving your profile...');
         try {
-          await transferTempOnboarding(token);
+          const result = await transferTempOnboarding(token);
           sessionStorage.removeItem('oria_onboarding_token');
+          if (result?.lang) {
+            await i18n.changeLanguage(result.lang);
+            localStorage.setItem('oria_language', result.lang);
+          }
         } catch (e: any) {
           console.error('[Callback] transfer failed:', e.message);
         }

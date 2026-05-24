@@ -519,7 +519,7 @@ router.post('/transfer', async (req: Request, res: Response) => {
       onboarding_complete: true,
     }, { onConflict: 'user_id' });
 
-    return res.json({ success: true });
+    return res.json({ success: true, ...(temp.lang ? { lang: temp.lang } : {}) });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
