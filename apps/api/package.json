@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "shx rm -rf dist && npm run lint && tsc --project tsconfig.prod.json && npm run build:copy-static && npm run build:make-db",
+    "build:deploy": "shx rm -rf dist && tsc --project tsconfig.prod.json && npm run build:copy-static && npm run build:make-db",
     "build:copy-static": "shx mkdir -p dist/public dist/views && shx cp -r src/public/* dist/public && shx cp -r src/views/* dist/views",
     "build:make-db": "shx mkdir -p dist/repos/common && shx touch dist/repos/common/database.json && echo \"{}\" > dist/repos/common/database.json",
     "clean-install": "rm -rf ./node_modules && rm -r package-lock.json && npm i",
