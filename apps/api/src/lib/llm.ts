@@ -1,23 +1,23 @@
-// llm.ts - OpenAI-compatible client with DeepSeek → Qwen fallback
+// llm.ts - OpenAI-compatible client with Hunyuan → ChatGPT fallback
 import OpenAI from 'openai';
 
 // ── Provider configs ─────────────────────────────────────────────
 const PROVIDERS = [
   {
-    name: 'deepseek',
+    name: 'hunyuan',
     client: new OpenAI({
-      apiKey: process.env.DEEPSEEK_API_KEY!,
-      baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
+      apiKey: process.env.HUNYUAN_API_KEY!,
+      baseURL: process.env.HUNYUAN_BASE_URL || 'https://api.hunyuan.cloud.tencent.com/v1',
     }),
-    model: process.env.DEEPSEEK_LLM_MODEL || 'deepseek-chat',
+    model: process.env.HUNYUAN_LLM_MODEL || 'hunyuan-turbos-latest',
   },
   {
-    name: 'qwen',
+    name: 'chatgpt',
     client: new OpenAI({
-      apiKey: process.env.QIANWEN_API_KEY!,
-      baseURL: process.env.QIANWEN_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+      apiKey: process.env.OPENAI_API_KEY!,
+      baseURL: 'https://api.openai.com/v1',
     }),
-    model: process.env.QIANWEN_LLM_MODEL || 'qwen-plus',
+    model: process.env.OPENAI_LLM_MODEL || 'gpt-4.1',
   },
 ] as const;
 
