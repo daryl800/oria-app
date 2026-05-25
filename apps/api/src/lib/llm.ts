@@ -21,14 +21,26 @@ const PROVIDERS = [
   },
 ] as const;
 
-// Errors that warrant a fallback — rate limits, server errors, network issues
+const PROVIDER_TIMEOUT_MS = 30_000;
+
+// Errors that warrant a fallback — rate limits, server errors, network issues, slow providers
 function isFallbackable(err: unknown): boolean {
   if (!(err instanceof Error)) return false;
+  if ((err as any).isProviderTimeout) return true;
   const name = err.constructor.name;
   if (name === 'APIConnectionError' || name === 'APIConnectionTimeoutError') return true;
   const status = (err as any).status as number | undefined;
   if (status === 429 || (status !== undefined && status >= 500 && status < 600)) return true;
   return false;
+}
+
+async function bufferStream(stream: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>): Promise<string> {
+  let answer = '';
+  for await (const chunk of stream) {
+    const delta = chunk.choices[0]?.delta;
+    if (delta?.content) answer += delta.content;
+  }
+  return answer;
 }
 
 // ── complete() — buffered, returns full string ───────────────────
@@ -45,11 +57,12 @@ export async function complete(messages: OpenAI.ChatCompletionMessageParam[]): P
         stream: true,
       });
 
-      let answer = '';
-      for await (const chunk of stream) {
-        const delta = chunk.choices[0]?.delta;
-        if (delta?.content) answer += delta.content;
-      }
+      const timeoutErr = Object.assign(new Error(`${provider.name} exceeded ${PROVIDER_TIMEOUT_MS}ms`), { isProviderTimeout: true });
+      const answer = await Promise.race([
+        bufferStream(stream),
+        new Promise<never>((_, reject) => setTimeout(() => reject(timeoutErr), PROVIDER_TIMEOUT_MS)),
+      ]);
+
       console.log(`[LLM] ${provider.name} completed in ${Date.now() - t0}ms (${answer.length} chars)`);
       return answer;
 

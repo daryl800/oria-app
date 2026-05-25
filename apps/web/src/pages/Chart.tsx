@@ -72,7 +72,7 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
   const [showBaziDetails, setShowBaziDetails] = useState(false);
 
   async function fetchSummaryWithTimeout(lang: string) {
-    const timeout = new Promise<null>(resolve => setTimeout(() => resolve(null), 45_000));
+    const timeout = new Promise<null>(resolve => setTimeout(() => resolve(null), 90_000));
     return Promise.race([getProfileSummary(lang), timeout]);
   }
 
