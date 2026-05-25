@@ -505,7 +505,9 @@
       "relationship": "☽ Relationship patterns",
       "final_guidance": "Final guidance",
       "locked_body": "Decision style, career direction, and relationship patterns are available in the full insight.",
-      "locked_cta": "Unlock full insight →"
+      "locked_cta": "Unlock full insight →",
+      "slow": "Taking longer than usual.",
+      "try_again": "Try again"
     }
   },
   "compare": {
@@ -774,7 +776,10 @@
     "locked_title": "This Month's Focus is ready",
     "locked_desc": "Your chart does not change, but what matters most this month does.",
     "locked_cta": "Unlock full monthly analysis",
-    "error": "Could not load monthly focus. Please try again later."
+    "error": "Could not load monthly focus. Please try again later.",
+    "subtitle": "Your chart does not change, but what matters most this month does.",
+    "this_month_badge": "THIS MONTH",
+    "monthly_update": "Monthly update"
   },
   "billing": {
     "title": "Choose your Oria plan",

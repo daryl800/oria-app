@@ -107,7 +107,7 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
         fontSize: 13, color: 'rgba(201,168,76,0.7)',
         margin: '0 0 6px', fontStyle: 'italic',
       }}>
-        你的命盤不會改變，但每個月值得留意的重點會不同。
+        {t('monthly_focus.subtitle')}
       </p>
       <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(201,168,76,0.3), transparent)', margin: '14px 0' }} />
       <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, margin: '0 0 18px' }}>
@@ -129,7 +129,7 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
     <div style={cardStyle}>
       {/* Badge row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <div style={{ ...labelStyle, fontSize: 11, letterSpacing: '1.5px', marginBottom: 0 }}>✦ THIS MONTH</div>
+        <div style={{ ...labelStyle, fontSize: 11, letterSpacing: '1.5px', marginBottom: 0 }}>✦ {t('monthly_focus.this_month_badge')}</div>
         <div style={{
           fontSize: 11, color: '#C9A84C',
           background: 'rgba(201,168,76,0.12)',
@@ -137,7 +137,7 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
           borderRadius: 99, padding: '4px 12px',
           fontWeight: 700, letterSpacing: '0.06em',
         }}>
-          {focus.month_label} · 每月更新
+          {focus.month_label} · {t('monthly_focus.monthly_update')}
         </div>
       </div>
 
@@ -157,7 +157,7 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
         margin: '0 0 16px', lineHeight: 1.6,
         fontStyle: 'italic',
       }}>
-        你的命盤不會改變，但每個月值得留意的重點會不同。
+        {t('monthly_focus.subtitle')}
       </p>
 
       {/* Divider */}

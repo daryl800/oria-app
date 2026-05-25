@@ -505,7 +505,9 @@
       "relationship": "☽ 关系模式",
       "final_guidance": "給你的建议",
       "locked_body": "更深层的决策模式、事業方向与关系模式可以在完整解析中查看。",
-      "locked_cta": "解鎖完整解析 →"
+      "locked_cta": "解鎖完整解析 →",
+      "slow": "分析时间比预期长。",
+      "try_again": "重试"
     }
   },
   "compare": {
@@ -725,7 +727,10 @@
     "locked_title": "本月焦点已更新",
     "locked_desc": "你的命盘不会改变，但这个月值得留意的重点会不同。",
     "locked_cta": "解锁完整本月分析",
-    "error": "无法加载本月焦点，请稍后再试。"
+    "error": "无法加载本月焦点，请稍后再试。",
+    "subtitle": "你的命盘不会改变，但每个月值得关注的重点会不同。",
+    "this_month_badge": "本月",
+    "monthly_update": "每月更新"
   },
   "billing": {
     "title": "选择你的 Oria 方案",

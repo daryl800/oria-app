@@ -505,7 +505,9 @@
       "relationship": "☽ Relationsmönster",
       "final_guidance": "Slutlig vägledning",
       "locked_body": "Beslutsstil, karriärriktning och relationsmönster finns i den fullständiga insikten.",
-      "locked_cta": "Lås upp full insikt →"
+      "locked_cta": "Lås upp full insikt →",
+      "slow": "Tar längre tid än vanligt.",
+      "try_again": "Försök igen"
     }
   },
   "compare": {
@@ -725,7 +727,10 @@
     "locked_title": "Månadens fokus är uppdaterat",
     "locked_desc": "Ditt diagram förändras inte, men vad som är viktigast denna månad gör det.",
     "locked_cta": "Lås upp fullständig månadsanalys",
-    "error": "Kunde inte ladda månadens fokus. Försök igen senare."
+    "error": "Kunde inte ladda månadens fokus. Försök igen senare.",
+    "subtitle": "Ditt diagram förändras inte, men vad som är viktigast denna månad gör det.",
+    "this_month_badge": "DENNA MÅNAD",
+    "monthly_update": "Månadsuppdatering"
   },
   "billing": {
     "title": "Välj din Oria-plan",

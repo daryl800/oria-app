@@ -505,7 +505,9 @@
       "relationship": "☽ Relationship patterns",
       "final_guidance": "Final guidance",
       "locked_body": "Decision style, career direction, and relationship patterns are available in the full insight.",
-      "locked_cta": "Unlock full insight →"
+      "locked_cta": "Unlock full insight →",
+      "slow": "通常より時間がかかっています。",
+      "try_again": "もう一度試す"
     }
   },
   "compare": {
@@ -725,7 +727,10 @@
     "locked_title": "今月のフォーカスが更新されました",
     "locked_desc": "命盤は変わりませんが、今月注目すべきことは変わります。",
     "locked_cta": "完全な月次分析を解除",
-    "error": "今月のフォーカスを読み込めませんでした。後でもう一度お試しください。"
+    "error": "今月のフォーカスを読み込めませんでした。後でもう一度お試しください。",
+    "subtitle": "命盤は変わりませんが、今月注目すべきことは変わります。",
+    "this_month_badge": "今月",
+    "monthly_update": "毎月更新"
   },
   "billing": {
     "title": "Oriaのプランを選択",

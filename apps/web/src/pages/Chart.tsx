@@ -1173,7 +1173,7 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
           {!summaryLoading && summaryFailed && !summary && (
             <div style={{ padding: '20px 0', textAlign: 'center' }}>
               <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, marginBottom: 12 }}>
-                {t('chart.insight.analyzing')}… taking longer than usual.
+                {t('chart.insight.analyzing')}… {t('chart.insight.slow')}
               </div>
               <button
                 type="button"
@@ -1211,7 +1211,7 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
                   color: '#C9A84C', cursor: 'pointer', fontFamily: 'inherit',
                 }}
               >
-                Try again
+                {t('chart.insight.try_again')}
               </button>
             </div>
           )}
