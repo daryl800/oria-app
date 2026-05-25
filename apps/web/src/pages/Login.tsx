@@ -44,6 +44,8 @@ export default function Login({
   async function handleGoogleLogin() {
     setGoogleLoading(true);
     setError('');
+    // Persist current language before redirect so /auth/callback loads in the correct locale
+    localStorage.setItem('oria_language', i18n.language);
     const token = sessionStorage.getItem('oria_onboarding_token');
     const redirectTo = window.location.origin + '/auth/callback' + (token ? `?token=${token}` : '');
     const { error } = await supabase.auth.signInWithOAuth({
