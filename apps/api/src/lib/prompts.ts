@@ -278,7 +278,7 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
 12. 必須明確指出當前人生階段的「轉變重心」，並說明如果不轉變會出現什麼問題
 13. 至少一段內容需讓用戶感到「輕微不舒服但認同」（提升真實感）
 
-字數限制：整個JSON回應必須在1800字元以內。每個欄位使用最簡潔的表達，陣列項目控制在一句話內，確保完整輸出完整的JSON結構。
+重要：必須輸出完整JSON，包含所有欄位（特別是 lucky_elements、amulet、life_pattern、friction_point、chat_teasers、final_advice）。每個欄位保持簡潔（1-2句），陣列每項一句話。目標總長度5000字元以內，但完整性優先於字數限制。
 
 以JSON回應：
 {
