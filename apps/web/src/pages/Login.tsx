@@ -15,7 +15,7 @@ export default function Login({
   signupOnly?: boolean;
   defaultMode?: 'signin' | 'signup';
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const locationMode = (location.state as any)?.mode;
