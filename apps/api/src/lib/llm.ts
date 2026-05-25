@@ -44,7 +44,7 @@ async function bufferStream(stream: AsyncIterable<OpenAI.Chat.Completions.ChatCo
 }
 
 // ── complete() — buffered, returns full string ───────────────────
-export async function complete(messages: OpenAI.ChatCompletionMessageParam[]): Promise<string> {
+export async function complete(messages: OpenAI.ChatCompletionMessageParam[], maxTokens?: number): Promise<string> {
   let lastError: unknown;
 
   for (const provider of PROVIDERS) {
@@ -55,6 +55,7 @@ export async function complete(messages: OpenAI.ChatCompletionMessageParam[]): P
         model: provider.model,
         messages,
         stream: true,
+        ...(maxTokens ? { max_tokens: maxTokens } : {}),
       });
 
       const timeoutErr = Object.assign(new Error(`${provider.name} exceeded ${PROVIDER_TIMEOUT_MS}ms`), { isProviderTimeout: true });
