@@ -1358,23 +1358,128 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
                         </Section>
                       )}
 
-                      {summary.final_advice?.overview && (
+                      {summary.ten_gods && Object.keys(summary.ten_gods).length > 0 && (
+                        <Section title={t('chart.insight.ten_gods')}>
+                          {Object.entries(summary.ten_gods).map(([god, desc]: [string, any]) => (
+                            <div key={god} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
+                              <span style={{ color: '#C9A84C', fontWeight: 700, whiteSpace: 'nowrap' }}>{god}</span>
+                              <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, lineHeight: 1.6 }}>{desc}</span>
+                            </div>
+                          ))}
+                        </Section>
+                      )}
+
+                      {summary.current_year && (
+                        <Section title={t('chart.insight.current_year')}>
+                          {lineBreakText(summary.current_year)}
+                        </Section>
+                      )}
+
+                      {summary.lucky_elements && (
+                        <Section title={t('chart.insight.lucky')}>
+                          {[
+                            { icon: '🎨', items: summary.lucky_elements.colors },
+                            { icon: '🧭', items: summary.lucky_elements.directions },
+                            { icon: '🔢', items: summary.lucky_elements.numbers },
+                            { icon: '✦', items: summary.lucky_elements.items },
+                          ].filter(({ items }) => items?.length > 0).map(({ icon, items }, idx) => (
+                            <div key={idx} style={{ marginBottom: 6, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                              <span style={{ fontSize: 13, minWidth: 20 }}>{icon}</span>
+                              <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, lineHeight: 1.6 }}>{items.join('　')}</span>
+                            </div>
+                          ))}
+                        </Section>
+                      )}
+
+                      {summary.amulet?.item && (
+                        <div style={{
+                          padding: '14px 16px',
+                          borderRadius: 14,
+                          background: 'rgba(201,168,76,0.07)',
+                          border: '1px solid rgba(201,168,76,0.22)',
+                          marginBottom: 12,
+                        }}>
+                          <div style={{ ...chartLabelStyle, marginBottom: 6 }}>☯ {t('chart.insight.amulet')}</div>
+                          <div style={{ fontSize: 15, fontWeight: 600, color: '#C9A84C', marginBottom: 4 }}>{summary.amulet.item}</div>
+                          {summary.amulet.reason && (
+                            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>{summary.amulet.reason}</div>
+                          )}
+                        </div>
+                      )}
+
+                      {summary.life_pattern && (
+                        <div style={{
+                          padding: '14px 16px',
+                          borderRadius: 14,
+                          background: 'rgba(124,58,237,0.07)',
+                          border: '1px solid rgba(124,58,237,0.2)',
+                          marginBottom: 12,
+                        }}>
+                          <div style={{ ...chartLabelStyle, marginBottom: 6, color: 'rgba(192,132,252,0.85)' }}>◉ {t('chart.insight.life_pattern')}</div>
+                          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.78)', lineHeight: 1.65, fontStyle: 'italic' }}>{summary.life_pattern}</div>
+                        </div>
+                      )}
+
+                      {summary.friction_point && (
+                        <Section title={t('chart.insight.friction_point')}>
+                          {lineBreakText(summary.friction_point)}
+                        </Section>
+                      )}
+
+                      {summary.mbti_bazi_resonance && (
+                        <Section title={t('chart.insight.mbti_resonance')}>
+                          {lineBreakText(summary.mbti_bazi_resonance)}
+                        </Section>
+                      )}
+
+                      {summary.final_advice && (
                         <div style={{
                           padding: '16px',
                           borderRadius: 14,
                           background: 'rgba(30, 40, 78, 0.72)',
                           border: '1px solid rgba(177,193,255,0.18)',
                           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
-                          position: 'relative',
-                          overflow: 'hidden',
                         }}>
-                          <div style={{ ...chartLabelStyle, position: 'relative', zIndex: 1 }}>
+                          <div style={{ ...chartLabelStyle, marginBottom: 10 }}>
                             ✦ {t('chart.insight.final_guidance')}
                           </div>
+                          {summary.final_advice.overview && (
+                            <div style={{ ...chartBodyStyle, marginBottom: 14 }}>
+                              {highlightedGuidance(summary.final_advice.overview)}
+                            </div>
+                          )}
+                          {([
+                            { key: 'focus',         label: t('chart.insight.final_focus') },
+                            { key: 'opportunity',   label: t('chart.insight.final_opportunity') },
+                            { key: 'career',        label: t('chart.insight.final_career') },
+                            { key: 'health',        label: t('chart.insight.final_health') },
+                            { key: 'relationships', label: t('chart.insight.final_relationships') },
+                            { key: 'caution',       label: t('chart.insight.final_caution') },
+                          ] as { key: string; label: string }[])
+                            .filter(({ key }) => summary.final_advice[key])
+                            .map(({ key, label }) => (
+                              <div key={key} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
+                                <span style={{ fontSize: 11, color: '#C9A84C', fontWeight: 700, whiteSpace: 'nowrap', paddingTop: 3 }}>{label}</span>
+                                <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.72)', lineHeight: 1.6 }}>{summary.final_advice[key]}</span>
+                              </div>
+                            ))
+                          }
+                        </div>
+                      )}
 
-                          <div style={{ ...chartBodyStyle, position: 'relative', zIndex: 1 }}>
-                            {highlightedGuidance(summary.final_advice.overview)}
-                          </div>
+                      {summary.gentle_nudge && (
+                        <div style={{
+                          padding: '12px 16px',
+                          borderRadius: 12,
+                          background: 'rgba(201,168,76,0.05)',
+                          border: '1px solid rgba(201,168,76,0.15)',
+                          fontSize: 14,
+                          color: 'rgba(255,255,255,0.65)',
+                          fontStyle: 'italic',
+                          lineHeight: 1.65,
+                          textAlign: 'center',
+                        }}>
+                          ✦ {summary.gentle_nudge}
                         </div>
                       )}
                     </>
