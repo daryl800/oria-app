@@ -242,6 +242,7 @@ router.post('/summary', async (req: Request, res: Response) => {
     const raw = await complete(messages);
     console.log(`[summary] LLM done in ${Date.now() - t2}ms, total=${Date.now() - t0}ms`);
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
+    console.log(`[summary] raw response (${clean.length} chars): ${clean.slice(0, 300)}…`);
     const summary = JSON.parse(clean);
 
     // cache the summary with lang
@@ -257,6 +258,7 @@ router.post('/summary', async (req: Request, res: Response) => {
 
     return res.json({ summary, cached: false });
   } catch (err: any) {
+    console.error(`[summary] error:`, err.message);
     return res.status(500).json({ error: err.message });
   }
 
