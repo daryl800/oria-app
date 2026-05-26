@@ -174,7 +174,7 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
       userZodiac,
       personZodiac,
     );
-    const raw = await complete(messages);
+    const raw = await complete(messages, 'profile');
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
     comparison = JSON.parse(clean);
   } catch (err) {

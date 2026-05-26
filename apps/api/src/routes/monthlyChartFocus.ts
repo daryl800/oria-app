@@ -103,7 +103,7 @@ router.get('/current', authMiddleware, async (req: Request, res: Response) => {
     const { stem: monthStem, branch: monthBranch } = await getMonthStemBranch(yearNum, monthNum);
     const zodiac = baziVersion.birth_date ? calculateZodiac(baziVersion.birth_date) : null;
     const messages = monthlyChartFocusPrompt(baziVersion, mbtiProfile, monthKey, lang, zodiac, monthStem, monthBranch);
-    const raw = await complete(messages);
+    const raw = await complete(messages, 'profile');
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
     const focus = JSON.parse(clean);
 

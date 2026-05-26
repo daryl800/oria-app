@@ -161,7 +161,7 @@ router.get('/today', async (req: Request, res: Response) => {
       lang,
       zodiac,
     );
-    const raw = await complete(messages);
+    const raw = await complete(messages, 'daily');
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
     const summary = JSON.parse(clean);
 

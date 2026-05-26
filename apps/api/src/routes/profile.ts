@@ -239,7 +239,7 @@ router.post('/summary', async (req: Request, res: Response) => {
     );
     console.log(`[summary] calling LLM`);
     const t2 = Date.now();
-    const raw = await complete(messages);
+    const raw = await complete(messages, 'profile');
     console.log(`[summary] LLM done in ${Date.now() - t2}ms, total=${Date.now() - t0}ms`);
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
     console.log(`[summary] raw response (${clean.length} chars): ${clean.slice(0, 300)}…`);

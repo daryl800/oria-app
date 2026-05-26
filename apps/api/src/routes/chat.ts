@@ -49,7 +49,7 @@ async function maybeSummarize(conversationId: string, userId: string, lang: stri
         },
       ];
 
-      const superSummary = await complete(superMessages);
+      const superSummary = await complete(superMessages, 'chat');
 
       const oldIds = existingSummaries.map(s => s.id);
       await supabase.from('conversation_summaries').delete().in('id', oldIds);
@@ -74,7 +74,7 @@ async function maybeSummarize(conversationId: string, userId: string, lang: stri
     if (!oldMessages || oldMessages.length < SUMMARIZE_OLDEST) return;
 
     const messages = summarizationPrompt(oldMessages, lang);
-    const summaryText = await complete(messages);
+    const summaryText = await complete(messages, 'chat');
 
     const messageIds = oldMessages.map(m => m.id);
     await supabase.from('conversation_summaries').insert({
@@ -217,7 +217,7 @@ router.post('/send', async (req: Request, res: Response) => {
       zodiac,
     );
 
-    const response = await complete(messages);
+    const response = await complete(messages, 'chat');
 
     // save messages + trigger summarization in parallel
     await Promise.all([
