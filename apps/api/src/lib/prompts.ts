@@ -279,6 +279,7 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
 13. 至少一段內容需讓用戶感到「輕微不舒服但認同」（提升真實感）
 
 重要：必須輸出完整JSON，包含所有欄位（特別是 lucky_elements、amulet、life_pattern、friction_point、chat_teasers、final_advice）。每個欄位保持簡潔（1-2句），陣列每項一句話。目標總長度5000字元以內，但完整性優先於字數限制。
+final_advice 必須直接呼應用戶的關注重點（User focus areas）：final_advice.overview 必須以用戶的關注領域作為收尾重點，相關子欄位（focus/opportunity/career/relationships 等）必須優先針對用戶所選的關注領域給出具體回應，而非泛泛而談。若用戶未提供關注重點，則根據命盤最突出的主題作為重心。
 
 以JSON回應：
 {
@@ -321,13 +322,13 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
     "留給對話探索的問題3（第一人稱）"
   ],
   "final_advice": {
-    "overview": "根據命盤、當前大運流年及用戶實際年齡，給出2-3句整體性總結（必須考慮年齡階段，例如壯年、中年、晚年的不同重點）",
-    "focus": "未來一年最值得關注的核心主題（1句，具體）",
-    "opportunity": "最值得把握的機會（1句，具體可行）",
-    "career": "事業發展建議（1句，基於十神與流年）",
+    "overview": "根據命盤、當前大運流年及用戶實際年齡，給出2-3句整體性總結（必須考慮年齡階段），並在最後明確點出用戶所選的關注領域在此命盤下的核心提示",
+    "focus": "未來一年最值得關注的核心主題（1句，優先呼應用戶關注領域，具體）",
+    "opportunity": "最值得把握的機會（1句，與用戶關注領域直接相關，具體可行）",
+    "career": "事業發展建議（1句，基於十神與流年，若用戶關注事業則加深具體度）",
     "health": "身體健康注意事項（1句，基於五行弱勢推導）",
-    "relationships": "感情或人際關係建議（1句，基於日支）",
-    "caution": "最需要謹慎或迴避的事項（1句，誠實但積極）"
+    "relationships": "感情或人際關係建議（1句，若用戶關注感情或人際則加深具體度）",
+    "caution": "最需要謹慎或迴避的事項（1句，誠實但積極，可呼應用戶關注領域的潛在風險）"
   }
 }
 只回傳JSON。${respondIn}`,
