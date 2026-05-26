@@ -12,6 +12,11 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
+function periodEndToIso(unixSeconds: number | null | undefined): string | null {
+  if (unixSeconds == null || !Number.isFinite(unixSeconds)) return null;
+  return new Date(unixSeconds * 1000).toISOString();
+}
+
 // ─── Webhook handler (raw body — registered in server.ts before express.json) ─
 
 export async function stripeWebhookHandler(req: Request, res: Response) {
@@ -43,7 +48,7 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
         if (subscriptionId) {
           try {
             const sub = await stripe.subscriptions.retrieve(subscriptionId);
-            planExpiresAt = new Date(sub.current_period_end * 1000).toISOString();
+            planExpiresAt = periodEndToIso(sub.current_period_end);
           } catch (e: any) {
             console.warn('[billing] could not retrieve subscription:', e.message);
           }
@@ -91,7 +96,7 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
       case 'customer.subscription.updated': {
         const sub = event.data.object as Stripe.Subscription;
         const customerId = sub.customer as string;
-        const planExpiresAt = new Date(sub.current_period_end * 1000).toISOString();
+        const planExpiresAt = periodEndToIso(sub.current_period_end);
         const cancelScheduled = sub.cancel_at_period_end;
         console.log(`[billing] subscription.updated customer=${customerId} cancel_at_period_end=${cancelScheduled} expires=${planExpiresAt}`);
         await supabaseAdmin
@@ -164,7 +169,7 @@ billingRouter.get('/status', async (req: Request, res: Response) => {
     if (user.stripe_subscription_id) {
       try {
         const sub = await stripe.subscriptions.retrieve(user.stripe_subscription_id);
-        const planExpiresAt = new Date(sub.current_period_end * 1000).toISOString();
+        const planExpiresAt = periodEndToIso(sub.current_period_end);
         const cancelScheduled = sub.cancel_at_period_end;
         if (planExpiresAt !== user.plan_expires_at || cancelScheduled !== user.plan_cancel_scheduled) {
           await supabaseAdmin
@@ -207,7 +212,7 @@ billingRouter.post('/cancel', async (req: Request, res: Response) => {
       cancel_at_period_end: true,
     });
 
-    const planExpiresAt = new Date(sub.current_period_end * 1000).toISOString();
+    const planExpiresAt = periodEndToIso(sub.current_period_end);
     await supabaseAdmin
       .from('users')
       .update({ plan_expires_at: planExpiresAt, plan_cancel_scheduled: true })
@@ -238,7 +243,7 @@ billingRouter.post('/reactivate', async (req: Request, res: Response) => {
       cancel_at_period_end: false,
     });
 
-    const planExpiresAt = new Date(sub.current_period_end * 1000).toISOString();
+    const planExpiresAt = periodEndToIso(sub.current_period_end);
     await supabaseAdmin
       .from('users')
       .update({ plan_expires_at: planExpiresAt, plan_cancel_scheduled: false })
