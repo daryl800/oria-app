@@ -48,18 +48,31 @@ const TONE_SYMBOLS: Record<string, string> = {
 };
 
 const COLOR_MAP: Record<string, string> = {
+  // English base colors
   'red': '#ef4444', 'blue': '#3b82f6', 'green': '#22c55e',
   'yellow': '#eab308', 'orange': '#f97316', 'purple': '#a855f7',
-  'gold': '#d97706', 'pink': '#ec4899', 'white': '#94a3b8',
+  'gold': '#d97706', 'pink': '#ec4899', 'white': '#f1f5f9',
+  'black': '#334155', 'brown': '#92400e', 'cream': '#fef9c3',
   'forest green': '#16a34a', 'navy': '#1d4ed8', 'teal': '#0d9488',
   'deep navy': '#1e3a8a', 'indigo': '#3730a3', 'dark blue': '#1e40af',
-  'gray': '#cbd5e1', 'grey': '#cbd5e1', 'light gray': '#d1d5db', 'light grey': '#d1d5db',
+  'olive': '#6b7c3e', 'olive green': '#6b7c3e', 'dark olive': '#4a5c2e',
+  'lavender': '#a78bfa', 'coral': '#fb7185', 'sage': '#84a98c',
+  'gray': '#94a3b8', 'grey': '#94a3b8', 'light gray': '#d1d5db', 'light grey': '#d1d5db',
+  'silver': '#cbd5e1', 'copper': '#b45309', 'burgundy': '#881337',
+  // Chinese color names
   '紅色': '#ef4444', '藍色': '#3b82f6', '綠色': '#22c55e',
   '黃色': '#eab308', '橙色': '#f97316', '紫色': '#a855f7',
-  '金色': '#d97706', '粉色': '#ec4899', '淺灰色': '#d1d5db', '灰色': '#cbd5e1',
-  '藏青色': '#1e3a8a', '深藍色': '#1e40af', '靛藍色': '#3730a3',
-  '墨綠色': '#166534', '森林綠': '#16a34a', '米白色': '#f5f5dc',
-  '象牙白': '#fffff0', '酒紅色': '#7f1d1d',
+  '金色': '#d97706', '粉色': '#ec4899', '白色': '#f1f5f9',
+  '黑色': '#334155', '棕色': '#92400e', '褐色': '#92400e', '咖啡色': '#78350f',
+  '灰色': '#94a3b8', '淺灰色': '#d1d5db', '銀色': '#cbd5e1',
+  '橄欖綠': '#6b7c3e', '深橄欖': '#4a5c2e', '苔綠': '#5f7a4a', '草綠': '#4ade80',
+  '薄荷綠': '#6ee7b7', '翠綠': '#10b981', '墨綠': '#166534', '森林綠': '#16a34a',
+  '天藍': '#38bdf8', '水藍': '#7dd3fc', '寶藍': '#2563eb',
+  '藏青': '#1e3a8a', '深藍': '#1e40af', '靛藍': '#3730a3',
+  '深紫': '#7c3aed', '薰衣草': '#a78bfa', '淡紫': '#c4b5fd',
+  '珊瑚': '#fb7185', '玫瑰': '#f43f5e', '酒紅': '#881337',
+  '米白': '#fef9c3', '奶油': '#fef9c3', '象牙': '#fefce8',
+  '土黃': '#ca8a04', '沙色': '#d4a574', '銅色': '#b45309',
 };
 
 
