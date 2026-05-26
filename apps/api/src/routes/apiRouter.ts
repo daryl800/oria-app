@@ -62,13 +62,15 @@ apiRouter.post('/profile/temp-save', async (req: Request, res: Response) => {
       process.env.SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
-    const { mbti_data, bazi_data, lang } = req.body;
+    const { mbti_data, bazi_data, lang, context_focus } = req.body;
     if (!mbti_data || !bazi_data) {
       return res.status(400).json({ error: 'Missing mbti_data or bazi_data' });
     }
+    // Merge context_focus into mbti_data so it travels with the MBTI record
+    const mbti_data_with_focus = { ...mbti_data, context_focus: context_focus ?? [] };
     const { data, error } = await supabase
       .from('temp_onboarding_data')
-      .insert({ mbti_data, bazi_data, ...(lang ? { lang } : {}) })
+      .insert({ mbti_data: mbti_data_with_focus, bazi_data, ...(lang ? { lang } : {}) })
       .select('token')
       .single();
     if (error) throw new Error(error.message);

@@ -342,12 +342,14 @@ export function dailyGuidancePrompt(
   todayBranch: string,
   lang: string = 'en',
   zodiac: any = null,
+  context_focus: string[] = [],
 ): Messages {
   const { gregorian, dayOfWeek } = getDateContext();
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
   const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
+  const contextFocusSection = getContextFocusSection(context_focus, lang);
   const todayElement = STEM_ELEMENT[todayStem] ?? '土';
   const todayTone = STEM_TONE[todayStem] ?? { en: 'Steady Earth', zh: '穩重土氣' };
   const toneStr = lang === 'en' ? todayTone.en : todayTone.zh;
@@ -379,7 +381,7 @@ ${SAFETY_CLAUSE}`,
 ${baziCtx}
 ${mbtiCtx}
 ${zodiacCtx}
-
+${contextFocusSection ? `\n${contextFocusSection}` : ''}
 【核心分析邏輯（必須執行）】
 1. 判斷今日${todayElement}與日主${bazi.day_master}的關係（生我 / 我生 / 剋我 / 我剋 / 比肩）
 2. 根據關係選擇今日模式（dailyMode）：

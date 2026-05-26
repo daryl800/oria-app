@@ -500,7 +500,7 @@ router.post('/transfer', async (req: Request, res: Response) => {
     if (baziError) throw new Error(`BaZi insert failed: ${baziError.message}`);
 
     // Save MBTI
-    const { mbti_type } = temp.mbti_data;
+    const { mbti_type, context_focus } = temp.mbti_data;
     const { data: mbtiVersion, error: mbtiError } = await supabase
       .from('mbti_profile_versions')
       .insert({
@@ -508,6 +508,7 @@ router.post('/transfer', async (req: Request, res: Response) => {
         mbti_type,
         source: 'questionnaire',
         questionnaire_responses: temp.mbti_data,
+        context_focus: context_focus ?? [],
       })
       .select()
       .single();

@@ -133,13 +133,15 @@ router.get('/today', async (req: Request, res: Response) => {
     if (userProfile.current_mbti_version_id) {
       const { data: mbtiVersion } = await supabase
         .from('mbti_profile_versions')
-        .select('mbti_type')
+        .select('mbti_type, context_focus')
         .eq('id', userProfile.current_mbti_version_id)
         .single();
 
       if (mbtiVersion) {
         mbtiProfile = await getMbtiProfile(mbtiVersion.mbti_type, lang);
       }
+
+      var contextFocus = (mbtiVersion as any)?.context_focus ?? [];
     }
 
     // 4. call LLM directly from Node.js
@@ -160,6 +162,7 @@ router.get('/today', async (req: Request, res: Response) => {
       branch,
       lang,
       zodiac,
+      contextFocus ?? [],
     );
     const raw = await complete(messages, 'daily');
     const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
