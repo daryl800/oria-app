@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { complete } from '../lib/llm';
 import { chatPrompt, summarizationPrompt } from '../lib/prompts';
 import { containsCrisisLanguage, getCrisisResponse } from '../lib/safety';
+import { calculateZodiac } from '../lib/zodiac';
 
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
