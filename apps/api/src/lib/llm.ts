@@ -9,6 +9,7 @@ const hunyuan = {
     baseURL: process.env.HUNYUAN_BASE_URL || 'https://api.hunyuan.cloud.tencent.com/v1',
   }),
   model: process.env.HUNYUAN_LLM_MODEL || 'hunyuan-turbos-latest',
+  timeoutMs: 35_000,
 };
 
 const chatgpt = {
@@ -18,6 +19,7 @@ const chatgpt = {
     baseURL: 'https://api.openai.com/v1',
   }),
   model: process.env.OPENAI_LLM_MODEL || 'gpt-4.1',
+  timeoutMs: 30_000,
 };
 
 const deepseek = {
@@ -27,6 +29,7 @@ const deepseek = {
     baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
   }),
   model: process.env.DEEPSEEK_LLM_MODEL || 'deepseek-v4-flash',
+  timeoutMs: 55_000,
 };
 
 // ── Named chains (primary → fallback) ────────────────────────────
@@ -40,8 +43,6 @@ const CHAINS = {
 } as const;
 
 export type LLMChain = keyof typeof CHAINS;
-
-const PROVIDER_TIMEOUT_MS = 30_000;
 
 // ── Helpers ───────────────────────────────────────────────────────
 function isFallbackable(err: unknown): boolean {
@@ -81,12 +82,12 @@ export async function complete(
       });
 
       const timeoutErr = Object.assign(
-        new Error(`${provider.name} exceeded ${PROVIDER_TIMEOUT_MS}ms`),
+        new Error(`${provider.name} exceeded ${provider.timeoutMs}ms`),
         { isProviderTimeout: true },
       );
       const answer = await Promise.race([
         bufferStream(stream),
-        new Promise<never>((_, reject) => setTimeout(() => reject(timeoutErr), PROVIDER_TIMEOUT_MS)),
+        new Promise<never>((_, reject) => setTimeout(() => reject(timeoutErr), provider.timeoutMs)),
       ]);
 
       console.log(`[LLM:${chain}] ${provider.name} completed in ${Date.now() - t0}ms (${answer.length} chars)`);
