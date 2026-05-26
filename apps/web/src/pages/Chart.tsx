@@ -1432,6 +1432,12 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
                         </Section>
                       )}
 
+                      {summary.zodiac_resonance && (
+                        <Section title={t('chart.insight.zodiac_resonance')}>
+                          {lineBreakText(summary.zodiac_resonance)}
+                        </Section>
+                      )}
+
                       {summary.final_advice && (
                         <div style={{
                           padding: '16px',
