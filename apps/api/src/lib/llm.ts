@@ -34,9 +34,9 @@ const deepseek = {
 // daily:    daily guidance
 // chat:     chat, conversation summary
 const CHAINS = {
-  profile: [hunyuan, chatgpt],
-  daily:   [hunyuan, deepseek],
-  chat:    [chatgpt, deepseek],
+  profile: [deepseek, chatgpt],
+  daily:   [hunyuan,  deepseek],
+  chat:    [chatgpt,  deepseek],
 } as const;
 
 export type LLMChain = keyof typeof CHAINS;
