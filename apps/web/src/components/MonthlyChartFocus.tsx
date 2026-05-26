@@ -13,6 +13,7 @@ interface MonthlyFocus {
   avoid: string;
   reflection_question?: string;
   suggested_prompts?: string[];
+  zodiac_tone?: string;
   next_update_label: string;
 }
 
@@ -236,6 +237,19 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Zodiac tone */}
+      {isPlus && focus.zodiac_tone && (
+        <div style={{
+          borderLeft: '2px solid rgba(124,58,237,0.35)',
+          paddingLeft: 14, marginBottom: 16,
+        }}>
+          <div style={{ ...labelStyle, marginBottom: 4, color: 'rgba(192,132,252,0.8)' }}>☽ {t('monthly_focus.zodiac_tone')}</div>
+          <p style={{ margin: 0, fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, fontStyle: 'italic' }}>
+            {focus.zodiac_tone}
+          </p>
         </div>
       )}
 

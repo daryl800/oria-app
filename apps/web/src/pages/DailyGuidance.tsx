@@ -22,6 +22,7 @@ interface DailySummary {
   nudge: string;
   suggested_prompts: string[];
   deeper_insight?: string;
+  zodiac_tone?: string;
   content_language?: string;
   generated_language?: string;
   source_language?: string;
@@ -551,9 +552,9 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
             ))}
           </div>
 
-          {isPlusLoaded && (
-            isPlus ? (
-              summary.deeper_insight && (
+          {isPlusLoaded && isPlus && (
+            <>
+              {summary.deeper_insight && (
                 <div className="oria-card" style={{
                   background: 'rgba(201,168,76,0.08)',
                   border: '1px solid rgba(201,168,76,0.3)'
@@ -561,13 +562,25 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
                   <div style={sectionLabelStyle}>
                     ✦ {t('daily.deeper_reason')}
                   </div>
-
                   <p style={bodyTextStyle}>
                     {shortText(summary.deeper_insight)}
                   </p>
                 </div>
-              )
-            ) : null
+              )}
+              {summary.zodiac_tone && (
+                <div className="oria-card" style={{
+                  background: 'rgba(124,58,237,0.06)',
+                  border: '1px solid rgba(124,58,237,0.18)'
+                }}>
+                  <div style={{ ...sectionLabelStyle, color: 'rgba(192,132,252,0.85)' }}>
+                    ☽ {t('daily.zodiac_tone')}
+                  </div>
+                  <p style={{ ...bodyTextStyle, fontStyle: 'italic' }}>
+                    {summary.zodiac_tone}
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
