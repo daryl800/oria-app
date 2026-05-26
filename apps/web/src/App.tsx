@@ -98,9 +98,7 @@ export default function App() {
       await new Promise(resolve => setTimeout(resolve, 800));
       return checkOnboarding(userId, retries - 1);
     }
-    setOnboardingComplete(!!data?.current_bazi_version_id);
-
-    // Fetch plan + language
+    // Fetch plan + language before revealing the app
     const { data: userRecord } = await supabase
       .from('users')
       .select('plan, pro_expires_at, preferred_language')
@@ -110,7 +108,8 @@ export default function App() {
     setIsPro(pro);
     setIsProLoaded(true);
 
-    // Apply language: DB first, then localStorage, then modal
+    // Apply language BEFORE setOnboardingComplete so the spinner never goes
+    // away while the language is still changing.
     if (userRecord?.preferred_language) {
       await i18n.changeLanguage(userRecord.preferred_language);
       localStorage.setItem('oria_language', userRecord.preferred_language);
@@ -125,6 +124,8 @@ export default function App() {
         setShowLanguageModal(true);
       }
     }
+
+    setOnboardingComplete(!!data?.current_bazi_version_id);
   }
 
   useEffect(() => {
@@ -132,6 +133,13 @@ export default function App() {
       const u = session?.user ?? null;
 
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+        // During PKCE OAuth, INITIAL_SESSION fires with null while the code
+        // exchange is still in progress. Treating null as "logged out" here
+        // would briefly remove the spinner and flash English text from
+        // AuthCallback before SIGNED_IN arrives with the real session.
+        if (event === 'INITIAL_SESSION' && !u && window.location.pathname === '/auth/callback') {
+          return;
+        }
         setUser(u);
         if (u) checkOnboarding(u.id);
         else setOnboardingComplete(null);
