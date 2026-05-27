@@ -23,6 +23,7 @@ export function languageDisplayName(language: string, uiLanguage?: string): stri
       ko: '韓文',
       es: '西班牙文',
       fr: '法文',
+      de: '德文',
     };
     return names[code];
   }
@@ -37,6 +38,7 @@ export function languageDisplayName(language: string, uiLanguage?: string): stri
       ko: '韩文',
       es: '西班牙文',
       fr: '法文',
+      de: '德文',
     };
     return names[code];
   }

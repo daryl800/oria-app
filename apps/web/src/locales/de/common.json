@@ -1,0 +1,898 @@
+{
+  "app_name": "oria",
+  "tagline": "Lenke deine Entscheidungen, lass nie das Schicksal über dich bestimmen.",
+  "disclaimer": "Dies ist eine Reflexion, keine Vorhersage. Die Entscheidungen liegen bei dir.",
+  "auth": {
+    "email_placeholder": "deine@email.com",
+    "send_magic_link": "Magic-Link senden",
+    "check_email": "Prüfe deine E-Mail auf einen Magic-Link.",
+    "logged_in_as": "Angemeldet als",
+    "user_id": "Benutzer-ID",
+    "sign_out": "Abmelden"
+  },
+  "nav": {
+    "daily": "Tageskompass",
+    "chat": "Mit oria sprechen",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "chart": "Mein Chart",
+    "compare": "Kompatibilität",
+    "home": "Startseite",
+    "people": "Beziehungen"
+  },
+  "daily": {
+    "title": "Tägliche Führung",
+    "subtitle": "每日明燈",
+    "tone_label": "Heutiger Ton · 今日氣場",
+    "pace_label": "Heutiges Tempo",
+    "nudge_label": "✦ Heutiges Licht · 明燈",
+    "helpful_label": "Hilfreich",
+    "cta": "Führungs-Chat öffnen →",
+    "loading": "Heutiges Licht lesen...",
+    "error_no_profile": "Zuerst Profil vervollständigen →",
+    "profile_incomplete": "Profil Unvollständig",
+    "complete_profile": "Profil Vervollständigen",
+    "refresh": "Deine Führung erneuert sich täglich",
+    "rhythm": "Heutiger Rhythmus",
+    "guidance": "Heutige Führung",
+    "lean_into": "Kultivieren",
+    "avoid": "Vorerst meiden",
+    "reminder": "Heutige Erinnerung",
+    "chat_prompt": "Möchtest du etwas tiefer gehen?",
+    "chat_cta": "Mit Oria über den heutigen Tag sprechen",
+    "deep_open": "Heutige Führung ausklappen ↓",
+    "deep_close": "Heutige Führung einklappen ↑",
+    "moment": "Heutiger Moment",
+    "color": "Heutige Farbe",
+    "zodiac_tone": "Tierkreis-Hinweis",
+    "deeper_reason": "Tieferer Grund",
+    "upgrade_body": "Es gibt einen tieferen Grund hinter diesem Muster.",
+    "upgrade_cta": "Vollständige Einsicht freischalten ✦",
+    "chat_prefill": "Die heutige Führung sagt {{text}}. Wie soll ich damit umgehen?",
+    "pro_cta_title": "Möchtest du tiefer gehen?",
+    "pro_cta_subtext": "Kläre die heutige Richtung und den nächsten Schritt",
+    "locked_cta_title": "Möchtest du tiefer gehen?",
+    "locked_cta_subtext": "Das vollständige Muster und was als nächstes zu tun ist sehen",
+    "locked_cta_button": "Vollständige Einsicht freischalten ✦",
+    "color_micro_action": "Gut für das, was du heute trägst oder bei dir hast",
+    "color_locked": "Gesperrt",
+    "color_locked_teaser": "Heutige Farbe und Rhythmus sehen",
+    "color_locked_microcopy": "Freischalten, um heutige Farbe und Rhythmus zu sehen"
+  },
+  "chat": {
+    "title": "Was beschäftigt dich?",
+    "empty_title": "Frag oria alles",
+    "empty_subtitle": "Dein BaZi und MBTI sind dein Leitfaden",
+    "try_asking": "✦ Versuche zu fragen",
+    "placeholder": "Schreibe, was dich beschäftigt…",
+    "thinking": "Nachdenken...",
+    "history": "Verlauf",
+    "new": "Neues Gespräch starten",
+    "previous_conversations": "Frühere Gespräche",
+    "no_conversations": "Noch keine früheren Gespräche.",
+    "safety_response": "— oria Sicherheitsantwort",
+    "subtitle": "Kein Überdenken nötig. Fang einfach an.",
+    "untitled": "Unbenanntes Gespräch",
+    "quick_label": "Hier anfangen, wenn es hilft",
+    "quick_hint": "Tippen zum Ausfüllen, dann bearbeiten",
+    "send": "Nachricht senden",
+    "paywall_title": "Mit oria chatten",
+    "paywall_body": "Upgrade auf oria Plus für tiefere, personalisierte Führungsgespräche.",
+    "paywall_cta": "Upgrade auf oria Plus ✦",
+    "quick_starts": [
+      {
+        "label": "Stecke fest",
+        "value": "Ich stecke fest und weiß nicht, was ich als nächstes tun soll"
+      },
+      {
+        "label": "Nächster Schritt",
+        "value": "Ich möchte schauen, welcher nächste Schritt in diesem Moment passt"
+      },
+      {
+        "label": "Eine Sache",
+        "value": "Es gibt eine Sache, die mich beschäftigt, und ich möchte sie klären"
+      },
+      {
+        "label": "Mich verstehen",
+        "value": "Ich möchte mich gerade etwas besser verstehen"
+      },
+      {
+        "label": "Etwas müde",
+        "value": "Ich fühle mich etwas müde und bin nicht sehr sicher über meine Richtung"
+      },
+      {
+        "label": "Etwas fragen",
+        "value": "Ich möchte etwas fragen, bin aber noch nicht sicher, wie ich es formulieren soll"
+      }
+    ]
+  },
+  "profile": {
+    "title": "Mein Profil",
+    "bazi_title": "BaZi · Geburtsdaten",
+    "bazi_subtitle": "Die Vier Säulen des Schicksals",
+    "mbti_title": "MBTI · Persönlichkeit",
+    "mbti_subtitle": "Myers-Briggs-Typ",
+    "summary_title": "Profilzusammenfassung",
+    "summary_subtitle": "KI-generiert aus deinem BaZi + MBTI",
+    "saved": "✓ Gespeichert",
+    "year": "Jahr",
+    "month": "Monat",
+    "day": "Tag",
+    "hour": "Stunde (0-23)",
+    "minute": "Minute",
+    "time_known": "Ich kenne meine genaue Geburtszeit",
+    "birth_location": "Geburtsort",
+    "timezone": "Zeitzone",
+    "save_bazi": "BaZi speichern",
+    "update_bazi": "Geburtsdaten aktualisieren",
+    "saving": "Speichern...",
+    "take_quiz": "✦ MBTI-Fragebogen ausfüllen →",
+    "select_type": "Oder wähle deinen Typ direkt aus",
+    "select_placeholder": "Wähle deinen MBTI-Typ",
+    "save_mbti": "MBTI speichern",
+    "update_mbti": "Persönlichkeitstyp aktualisieren",
+    "strengths": "✦ Stärken",
+    "growth": "↑ Wachstum",
+    "generate_summary": "✦ Meine Profilzusammenfassung generieren",
+    "generating": "Deine Zusammenfassung wird generiert...",
+    "loading": "Profil wird geladen...",
+    "error_date": "Bitte gib dein Geburtsdatum ein.",
+    "error_mbti": "Bitte wähle deinen MBTI-Typ aus.",
+    "reset_warning_title": "Geburtsdaten aktualisieren?",
+    "reset_warning_body": "Das Aktualisieren deiner Geburtsdaten löscht deinen gesamten Gesprächsverlauf und deine tägliche Führung. So wird sichergestellt, dass deine zukünftige Führung wirklich deinen Chart widerspiegelt.",
+    "reset_cancel": "Abbrechen",
+    "reset_confirm": "Ja, aktualisieren"
+  },
+  "mbti": {
+    "title": "MBTI-Fragebogen",
+    "your_result": "Dein Ergebnis",
+    "your_type": "Dein MBTI-Typ",
+    "based_on": "Basierend auf deinen Antworten auf 20 Fragen",
+    "dimension_breakdown": "Dimensionsaufschlüsselung",
+    "continue": "Weiter zum Profil →",
+    "question_of": "Frage {{current}} von {{total}}",
+    "answered": "{{count}} / {{total}} beantwortet",
+    "get_type": "Meinen MBTI-Typ ermitteln →",
+    "calculating": "Berechnung läuft...",
+    "loading": "Fragen werden geladen...",
+    "error_incomplete": "Bitte beantworte alle Fragen, bevor du einreichst.",
+    "previous": "← Zurück",
+    "next": "Weiter →",
+    "dimension": "Dimension"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "account": "Konto",
+    "language": "Sprache",
+    "language_label": "Oberflächensprache · 介面語言",
+    "about_title": "Über oria",
+    "about_body": "oria verbindet deinen BaZi-Geburts-Chart und deine MBTI-Persönlichkeit, um ruhige, reflektierende Führung anzubieten. Es schlägt vor, verschreibt nie.",
+    "about_quote": "Ein Licht auf dem Weg — keine Karte, keine Befehle. Nur Klarheit.",
+    "sign_out": "Abmelden",
+    "coming_soon": "Demnächst verfügbar"
+  },
+  "errors": {
+    "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+  },
+  "home": {
+    "daily_desc": "Erhalte personalisierte tägliche Führung basierend auf deinem BaZi und MBTI",
+    "chat_desc": "Chatte mit deinem KI-Leitfaden über Karriere, Beziehungen und Gesundheit",
+    "chart_desc": "Erkunde deinen BaZi-Geburts-Chart und dein MBTI-Persönlichkeitsprofil",
+    "compare_desc": "Verstehe die Beziehungsdynamik mit jemandem Wichtigem",
+    "headline": "Wo möchtest du beginnen?",
+    "subtext": "Lass deine Führung zeigen, was in diesem Moment richtig ist.",
+    "primary": {
+      "label": "Tägliche Führung",
+      "title": "Sieh die heutige Energie und das Tempo und bewege dich damit.",
+      "subtext": "",
+      "cta": "Heutige Führung starten"
+    },
+    "chat": {
+      "label": "Live-Chat",
+      "title": "Kläre deine Gedanken und vereinfache deine Entscheidungen.",
+      "subtitle": ""
+    },
+    "chart": {
+      "label": "Mein Chart",
+      "title": "Verstehe deine tieferen Muster und kläre dein Urteil.",
+      "subtitle": ""
+    },
+    "compare": {
+      "label": "Beziehungseinblicke",
+      "title": "Versteht euch gegenseitig und macht Interaktionen leichter.",
+      "subtitle": ""
+    },
+    "footer": "Ein klarerer Weg zu wählen."
+  },
+  "page_taglines": {
+    "chat": "Dies ist Reflexion, keine Vorhersage. Die Entscheidung liegt bei dir.",
+    "chart": "Das ist kein Etikett, sondern wie du funktionierst.",
+    "relationship": "Das ist kein Matching, sondern das Verstehen, wie ihr euch zueinander verhaltet."
+  },
+  "common": {
+    "back": "← Zurück",
+    "oria_compass": "ORIA KOMPASS"
+  },
+  "landing": {
+    "kicker": "oria Kompass",
+    "headline": "Deine Stärken sind in deinem BaZi geschrieben\nDeine Persönlichkeit spiegelt sich in deinem MBTI",
+    "subtitle": "",
+    "result": "Dauert etwa 60 Sekunden • Keine Verpflichtung",
+    "primary_cta": "Meine 1-Minuten-Einsicht erhalten →",
+    "signin": "Hast du bereits ein Konto? Anmelden",
+    "lead": "Was deinen nächsten Schritt bestimmt\nist nicht das eine oder das andere allein",
+    "emphasis": "sondern die Kombination aus beidem",
+    "method": "Östliche Metaphysik × Westliche Psychologie",
+    "disclaimer": "Diese App kombiniert BaZi und MBTI-basierte Persönlichkeitsanalyse als Referenzwerkzeug zur Selbsterkenntnis und Entscheidungsreflexion. Die Inhalte dienen nur zur Inspiration und Referenz und stellen keine psychologische, medizinische, rechtliche, finanzielle oder sonstige professionelle Beratung dar."
+  },
+  "login": {
+    "title_signin": "Willkommen zurück",
+    "title_signup": "Konto erstellen",
+    "unlock_title": "Dein vollständiges Leseergebnis ist bereit",
+    "unlock_subtitle": "Melde dich an, um dein vollständiges oria-Ergebnis zu sehen und zu speichern.",
+    "google_signin": "Mit Google anmelden",
+    "google_signup": "Mit Google registrieren",
+    "google_unlock": "Mit Google fortfahren",
+    "google_loading": "Anmeldung läuft...",
+    "divider": "oder",
+    "email_placeholder": "E-Mail",
+    "password_placeholder": "Passwort",
+    "submit_signin": "Anmelden",
+    "submit_signup": "Registrieren",
+    "submit_unlock": "Anmelden, um mein Ergebnis zu sehen",
+    "processing": "Wird verarbeitet...",
+    "secure": "Sicher und privat",
+    "switch_to_signin_prefix": "Hast du bereits ein Konto?",
+    "switch_to_signup_prefix": "Hast du noch kein Konto?",
+    "signin_link": "Anmelden",
+    "signup_link": "Registrieren",
+    "back": "Zurück",
+    "error_google": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+    "error_required": "Bitte gib deine E-Mail und dein Passwort ein.",
+    "error_password": "Das Passwort muss mindestens 6 Zeichen lang sein.",
+    "error_invalid": "Ungültige E-Mail oder Passwort.",
+    "confirm_password_placeholder": "Passwort bestätigen",
+    "error_password_mismatch": "Die Passwörter stimmen nicht überein.",
+    "email_sent_title": "Prüfe deine E-Mail",
+    "email_sent_desc": "Wir haben einen Bestätigungslink an deine E-Mail gesendet. Klicke darauf, um dein Konto zu aktivieren."
+  },
+  "chart": {
+    "header": "Mein Chart",
+    "tabs": {
+      "bazi": "🪬 BaZi-Chart",
+      "mbti": "🧠 MBTI-Typ",
+      "insight": "✦ Einsicht"
+    },
+    "loading": "Dein Chart wird geladen...",
+    "bazi": {
+      "section": "Die Vier Säulen",
+      "explanation": "Dein BaZi-Chart besteht aus vier Säulen: Jahr, Monat, Tag und Stunde. Der Tagesstamm, bekannt als dein Tagesmeister, ist der Kern des Charts.",
+      "pillars": {
+        "year": "Jahr",
+        "month": "Monat",
+        "day": "Tag",
+        "hour": "Stunde"
+      },
+      "day_master": "Tagesmeister",
+      "core_pattern": "Kernmuster",
+      "core_text": "Dein Tagesmeister ist {{dayMaster}}, was auf eine natürlich stärkere Ausrichtung auf Handlung, Urteil und deine Art, mit der Welt umzugehen, hindeutet.",
+      "chat_cta": "Fragen zu deinem BaZi?",
+      "chat_prefill": "Basierend auf meinem Vier-Säulen-Chart und Tagesmeister {{dayMaster}}, worauf sollte ich gerade achten?",
+      "deep_open": "Vier-Säulen-Details sehen ↓",
+      "deep_close": "Vier-Säulen-Details ausblenden ↑",
+      "five_elements": "Die Fünf Elemente",
+      "inner_tension": "Innere Spannung",
+      "levels": {
+        "dominant": "Dominierend",
+        "strong": "Stark",
+        "moderate": "Mäßig",
+        "weak": "Schwach"
+      },
+      "meanings": {
+        "Fire": "Schwung, Ausdruck und äußere Energie",
+        "Metal": "Unterscheidungsvermögen, Grenzen und Prinzipien",
+        "Wood": "Wachstum, Ausdehnung und innere Entwicklung",
+        "Earth": "Erdung, Stabilität und Unterstützung",
+        "Water": "Reflexion, innerer Fluss und Anpassungsfähigkeit"
+      },
+      "tension_terms": {
+        "Fire": "Antrieb und Schwung",
+        "Metal": "Urteil und Entschlossenheit",
+        "Wood": "Wachstum und Expansion",
+        "Earth": "Stabilität und Erdung",
+        "Water": "Reflexion und innere Regulierung"
+      },
+      "element_summary": "Deine Elementstruktur wird von {{topElement}} angeführt und zeigt natürliche Stärke in {{topTerm}}, während {{weakestElement}} vergleichsweise schwächer ist und möglicherweise mehr bewusste Balance erfordert.",
+      "tension_two": "Deine Struktur betont sowohl {{top1}} als auch {{top2}}. Das erzeugt oft eine Spannung zwischen Schwung und Kontrolle: Du willst schnell vorankommen, aber auch, dass die Dinge präzise und richtig sind.",
+      "tension_one": "Du neigst dazu, durch {{top1}} voranzukommen, aber die mit {{weakest}} verbundene Fähigkeit zur Reflexion, Aufnahme oder Regulierung ist möglicherweise nicht so stark. Du kannst schnell vorankommen, ohne alles vollständig zu verarbeiten.",
+      "tension_balanced": "Dein Elementprofil ist relativ ausgewogen, ohne eine überwältigend dominante Kraft. Der Vorteil ist Flexibilität, aber die Spannung besteht darin, dass du in wichtigen Momenten möglicherweise bewusst wählen musst, wie du handeln möchtest, anstatt dich auf ein natürliches Standardverhalten zu verlassen."
+    },
+    "mbti": {
+      "section": "MBTI-Persönlichkeit",
+      "identity": "{{type}}: {{nickname}}",
+      "key_insight": "Eine Schlüsseleinsicht",
+      "key_insight_text": "Du arbeitest am besten, wenn du die Fakten klären und dann eine stabile und praktische Entscheidung treffen kannst.",
+      "chat_cta": "Möchtest du deinen MBTI weiter erkunden?",
+      "chat_prefill": "Basierend auf meiner {{type}}-Persönlichkeit, worauf sollte ich bei Entscheidungen achten?",
+      "deep_open": "Persönlichkeitsdetails sehen ↓",
+      "deep_close": "Persönlichkeitsdetails ausblenden ↑",
+      "explanation": "MBTI beschreibt deine Präferenzen, nicht deine Grenzen. Es hilft aufzuzeigen, wie du Informationen aufnimmst, Entscheidungen triffst und unter Druck reagierst.",
+      "profile_text": "Dein Persönlichkeitsprofil zeigt eine starke {{profileCode}}-Struktur, die Stabilität, Pragmatismus, Rationalität und kontrollierte Entscheidungsfindung begünstigt.",
+      "inner_tension": "Innere Spannung",
+      "inner_tension_text": "Du neigst dazu, dich bei Entscheidungen auf Struktur, Standards und Gewissheit zu verlassen, aber die Realität ist nicht immer klar oder kontrollierbar. Das erzeugt eine innere Spannung zwischen deinem Wunsch nach Ordnung und der Notwendigkeit, Mehrdeutigkeit und Veränderung zu navigieren.",
+      "dimension_breakdown": "Dimensionsaufschlüsselung",
+      "impact": "Was das bedeutet",
+      "impact_text": "Im Alltag tendierst du dazu, am besten in Umgebungen mit klaren Erwartungen und definierten Verantwortlichkeiten zu performen, wo dein Urteil und deine Beständigkeit voll zum Ausdruck kommen können. In unsichereren Situationen musst du möglicherweise bewusst das Bedürfnis lockern, zu früh eine Antwort zu haben.",
+      "cross_link_text": "Möchtest du sehen, wie dein MBTI und BaZi sich kombinieren, um dein einzigartiges Muster zu enthüllen?",
+      "cross_link": "Profileinsicht sehen →",
+      "dimensions": {
+        "E": {
+          "label": "E (Extraversion)",
+          "meaning": "Neigt dazu, Energie durch Interaktion und externe Stimulation zu gewinnen, mit einem direkteren und offeneren Stil."
+        },
+        "I": {
+          "label": "I (Introversion)",
+          "meaning": "Neigt dazu, sich in ruhigeren Umgebungen zu erholen, schätzt inneren Rhythmus und Tiefe der Konzentration."
+        },
+        "S": {
+          "label": "S (Sensing)",
+          "meaning": "Geht von konkreten Fakten, Details und gelebter Erfahrung aus, nicht von abstrakten Annahmen."
+        },
+        "N": {
+          "label": "N (Intuition)",
+          "meaning": "Geht von Mustern, Kontext und zukünftigen Möglichkeiten aus, schätzt Richtung und Vorstellungskraft."
+        },
+        "T": {
+          "label": "T (Thinking)",
+          "meaning": "Trifft Entscheidungen durch Logik, Konsistenz und Analyse, nicht durch den emotionalen Ton selbst."
+        },
+        "F": {
+          "label": "F (Feeling)",
+          "meaning": "Trifft Entscheidungen durch Werte, relationale Wirkung und innere Ausrichtung."
+        },
+        "J": {
+          "label": "J (Judging)",
+          "meaning": "Bevorzugt es, früh Ordnung zu schaffen, Entscheidungen früher zu treffen und in einem handhabbaren Rhythmus zu arbeiten."
+        },
+        "P": {
+          "label": "P (Perceiving)",
+          "meaning": "Bevorzugt Offenheit und Flexibilität, passt sich an, wenn die Umstände sich ändern."
+        }
+      },
+      "types": {
+        "INTJ": { "nickname": "Der Architekt", "traits": ["Strategisch", "Unabhängig", "Visionär"] },
+        "INTP": { "nickname": "Der Denker", "traits": ["Analytisch", "Neugierig", "Erfinderisch"] },
+        "ENTJ": { "nickname": "Der Kommandeur", "traits": ["Kühn", "Entschlossen", "Führend"] },
+        "ENTP": { "nickname": "Der Debattierer", "traits": ["Schlagfertig", "Innovativ", "Charismatisch"] },
+        "INFJ": { "nickname": "Der Anwalt", "traits": ["Einfühlsam", "Prinzipientreu", "Visionär"] },
+        "INFP": { "nickname": "Der Vermittler", "traits": ["Kreativ", "Einfühlsam", "Idealistisch"] },
+        "ENFJ": { "nickname": "Der Protagonist", "traits": ["Inspirierend", "Einfühlsam", "Führend"] },
+        "ENFP": { "nickname": "Der Aktivist", "traits": ["Enthusiastisch", "Kreativ", "Optimistisch"] },
+        "ISTJ": { "nickname": "Der Logistiker", "traits": ["Zuverlässig", "Pragmatisch", "Detailorientiert"] },
+        "ISFJ": { "nickname": "Der Verteidiger", "traits": ["Warmherzig", "Engagiert", "Aufmerksam"] },
+        "ESTJ": { "nickname": "Der Direktor", "traits": ["Organisiert", "Entschlossen", "Loyal"] },
+        "ESFJ": { "nickname": "Der Konsul", "traits": ["Fürsorglich", "Gesellig", "Loyal"] },
+        "ISTP": { "nickname": "Der Virtuose", "traits": ["Pragmatisch", "Aufmerksam", "Unabhängig"] },
+        "ISFP": { "nickname": "Der Abenteurer", "traits": ["Künstlerisch", "Spontan", "Einfühlsam"] },
+        "ESTP": { "nickname": "Der Unternehmer", "traits": ["Kühn", "Aufmerksam", "Energetisch"] },
+        "ESFP": { "nickname": "Der Unterhalter", "traits": ["Spontan", "Energetisch", "Lebensfreudig"] }
+      }
+    },
+    "insight": {
+      "title": "Deine Profileinsicht",
+      "analyzing": "Dein Muster wird analysiert...",
+      "key_traits": "Schlüsseleigenschaften",
+      "key_insight": "Eine Schlüsseleinsicht",
+      "chat_cta": "Fragen zu deinem Chart?",
+      "chat_prefill": "Basierend auf meinen Chart-Eigenschaften {{traits}}, worauf sollte ich mich gerade konzentrieren?",
+      "deep_open": "✦ Tiefere Inhalte ↓",
+      "deep_close": "Tiefere Inhalte ausblenden ↑",
+      "day_master": "☉ Kernwesen",
+      "decision_style": "◇ Entscheidungsstil",
+      "career": "✧ Karriererichtung",
+      "avoid_prefix": "Vorerst meiden: ",
+      "relationship": "☽ Beziehungsmuster",
+      "ten_gods": "✦ Einflussreiche Kräfte",
+      "current_year": "☿ Der Einfluss dieses Jahres",
+      "lucky": "✧ Glückliche Elemente",
+      "amulet": "Amulett-Empfehlung",
+      "life_pattern": "Lebensmuster",
+      "friction_point": "Lebenshemmnis",
+      "zodiac_resonance": "Tierkreis-Einsicht",
+      "mbti_resonance": "BaZi × MBTI",
+      "final_guidance": "Abschließende Führung",
+      "final_focus": "Fokus",
+      "final_opportunity": "Gelegenheit",
+      "final_career": "Karriere",
+      "final_health": "Gesundheit",
+      "final_relationships": "Beziehungen",
+      "final_caution": "Vorsicht",
+      "locked_body": "Entscheidungsstil, Karriererichtung und Beziehungsmuster sind in der vollständigen Einsicht verfügbar.",
+      "locked_cta": "Vollständige Einsicht freischalten →",
+      "slow": "Dauert länger als gewöhnlich.",
+      "try_again": "Erneut versuchen"
+    }
+  },
+  "compare": {
+    "title": "Kompatibilitätsanalyse",
+    "body": "Demnächst verfügbar — vergleiche BaZi-Charts mit Freunden, um deine kosmische Kompatibilität zu entdecken.",
+    "cta": "Demnächst Verfügbar"
+  },
+  "upgrade": {
+    "page_title": "Wähle deinen Oria-Plan",
+    "page_subtitle": "Verstehe deine natürlichen Muster und deinen Persönlichkeitsstil, damit Oria dich bei klareren Entscheidungen unterstützen kann.",
+    "free_plan_title": "Oria Kostenlos",
+    "free_plan_desc": "Beginne mit einer einfachen Vorschau deines persönlichen Rhythmus.",
+    "free_price": "US$0",
+    "free_features": [
+      "Vorschau der Täglichen Führung",
+      "Vorschau des Persönlichen Charts",
+      "Vorschau der Beziehungseinblicke",
+      "1 kurze Oria-Chat-Antwort pro Tag",
+      "Upgrade-Hinweise, wenn tiefere Einsicht gesperrt ist"
+    ],
+    "free_cta": "Kostenlos starten",
+    "monthly_plan_title": "Oria Plus Monatlich",
+    "monthly_plan_desc": "Für Nutzer, die tiefere tägliche Führung und persönliche Einsicht wünschen.",
+    "monthly_price": "US$9,99",
+    "monthly_price_note": "pro Monat · jederzeit kündbar",
+    "monthly_features": [
+      "Vollständige Tägliche Führung",
+      "Vollständige Persönliche Chart-Einsicht",
+      "Vollständige Beziehungseinblicke",
+      "Monatliche Fokus-Updates",
+      "Gespeicherter Führungsverlauf",
+      "3 vollständige Oria-Chat-Antworten pro Tag"
+    ],
+    "monthly_cta": "Oria Plus freischalten",
+    "yearly_plan_title": "Oria Plus Jährlich",
+    "yearly_plan_desc": "Gleicher vollständiger Oria-Plus-Zugang, besserer Wert fürs Jahr.",
+    "yearly_price": "US$79,99",
+    "yearly_price_note": "pro Jahr",
+    "yearly_price_monthly_equiv": "Nur US$6,67/Monat äquivalent",
+    "yearly_badge": "Bestes Preis-Leistungs-Verhältnis",
+    "yearly_features": [
+      "Vollständige Tägliche Führung",
+      "Vollständige Persönliche Chart-Einsicht",
+      "Vollständige Beziehungseinblicke",
+      "Monatliche Fokus-Updates",
+      "Gespeicherter Führungsverlauf",
+      "3 vollständige Oria-Chat-Antworten pro Tag"
+    ],
+    "yearly_cta": "Jährlichen Zugang freischalten",
+    "trust": "Sichere Zahlung · Jederzeit kündbar",
+    "back": "Zurück",
+    "manage_subscription": "Abonnement verwalten",
+    "already_plus": "Du bist bei Oria Plus.",
+    "chat_limit_free_title": "Du hast deine kostenlose Oria-Chat-Antwort für heute verwendet.",
+    "chat_limit_free_body": "Schalte Oria Plus frei, um mit tieferer Führung fortzufahren.",
+    "chat_limit_free_cta": "Oria Plus freischalten",
+    "chat_limit_plus_title": "Du hast deine 3 vollständigen Oria-Chat-Antworten für heute verwendet.",
+    "chat_limit_plus_body": "Oria funktioniert am besten, wenn du pausierst, reflektierst und mit einer klareren Frage zurückkommst. Dein Chat-Limit setzt sich morgen zurück.",
+    "chat_limit_plus_cta": "Zurück zur Startseite",
+    "title": "Sieh dein wahres Muster",
+    "unlock_title": "Was du freischaltest",
+    "benefits": [
+      "Vollständige Profileinsicht (BaZi + MBTI kombiniert)",
+      "Deine Lebensmuster & wichtige Wendepunkte",
+      "3 vollständige Oria-Chat-Antworten pro Tag",
+      "Personalisierte Richtung & Ratschläge"
+    ],
+    "free_title": "Wenn du kostenlos bleibst",
+    "price_note": "pro Monat · jederzeit kündbar",
+    "cta": "Oria Plus freischalten →",
+    "hero_subtitle": "Dein Chart enthüllt bereits deine Richtung — du hast das vollständige Bild noch nicht gesehen.",
+    "free_body": "Du siehst nur Fragmente — das tiefere Muster bleibt verborgen."
+  },
+  "onboarding": {
+    "transition": {
+      "skip": "Überspringen",
+      "messages": [
+        "DEIN ERGEBNIS WIRD VORBEREITET",
+        "Dein aktueller Fokus wird mit deinem persönlichen Muster verbunden",
+        "Fast fertig"
+      ]
+    },
+    "mbti": {
+      "submitting": "Deine Persönlichkeit wird gelesen...",
+      "step_label": "{{current}} von {{total}}",
+      "intro": "Antworte instinktiv — deine erste Reaktion ist meist die genaueste.",
+      "reveal": "Neugierig auf deine Persönlichkeit?\nTippe zum Enthüllen ✦",
+      "back": "zurück",
+      "question_step": "{{current}} von {{total}}",
+      "context_hook": "✦ Das hilft oria zu verstehen, wie du natürlich auf reale Situationen reagierst",
+      "first_question": "Was tust du bei einer gesellschaftlichen Veranstaltung normalerweise?"
+    },
+    "summary": {
+      "label": "✦ Dein Persönlichkeitstyp",
+      "headline": "Dein erstes Muster ist sichtbar",
+      "subheadline": "Dein MBTI zeigt, wie du tendenziell entscheidest, reagierst und deine Energie schützt.",
+      "teaser": "Das ist nur die Oberfläche. Es gibt ein tieferes Muster hinter der Art, wie du Entscheidungen triffst und auf Druck reagierst.",
+      "continue": "Mein tieferes Muster enthüllen →",
+      "footer": "Als nächstes: Verbinde dein Persönlichkeitsmuster mit deinem tieferen Timing.",
+      "cta_microcopy": "Dauert weniger als 1 Minute",
+      "preview_label": "✦ Vorschau des tieferen Musters"
+    },
+    "bazi": {
+      "error_birth_date": "Bitte wähle dein Geburtsdatum aus.",
+      "title": "Füge die tiefere Ebene hinzu",
+      "year": "Jahr",
+      "year_placeholder": "Jahr",
+      "month": "Monat",
+      "month_placeholder": "M",
+      "day": "Tag",
+      "day_placeholder": "T",
+      "gender": "Geschlecht",
+      "male": "♂ Männlich",
+      "female": "♀ Weiblich",
+      "time_known": "Ich kenne meine genaue Geburtszeit",
+      "hour": "Stunde (0-23)",
+      "minute": "Minute",
+      "birth_location": "Geburtsort",
+      "location_placeholder": "Suche deine Geburtsstadt",
+      "timezone": "Zeitzone",
+      "body": "Dein MBTI zeigt, wie du tendenziell handelst. BaZi hilft, das Timing, den Druck und das natürliche Muster darunter zu enthüllen.",
+      "saving": "Deine Sterne werden gelesen...",
+      "submit": "Mein vollständiges Ergebnis enthüllen →",
+      "location_helper": "Suche deine Geburtsstadt (z.B. Berlin, Hamburg)",
+      "location_required": "Bitte wähle deine Geburtsstadt aus der Liste aus."
+    },
+    "result": {
+      "step": "Schritt 3 von 4",
+      "type_label": "Dein Persönlichkeitstyp",
+      "bazi_title": "Dein Geburts-Chart enthüllt noch mehr",
+      "bazi_body": "Kombiniere deinen MBTI mit deinem BaZi-Geburts-Chart für ein vollständiges kosmisches Profil — einzigartig für dich.",
+      "signup": "Registriere dich, um dich besser zu verstehen →",
+      "retake": "Quiz wiederholen",
+      "free_note": "Kostenloses Konto · Keine Kreditkarte erforderlich",
+      "fallback_nickname": "Einzigartig",
+      "fallback_tagline": "Einer von einer Art."
+    },
+    "context": {
+      "step": "SCHRITT 1 VON 4",
+      "title": "Was navigierst du gerade?",
+      "subtitle": "Das hilft oria zu verstehen, womit du gerade zu tun hast.",
+      "instruction": "Wähle alles Zutreffende aus",
+      "continue": "Weiter →",
+      "skip": "Vorerst überspringen",
+      "back": "← Zurück",
+      "options": {
+        "career_change": "Karrierewechsel",
+        "move_city_country": "Umzug in eine neue Stadt/ein neues Land",
+        "relationship_direction": "Beziehungsrichtung",
+        "work_life_balance": "Work-Life-Balance",
+        "retirement_next_chapter": "Ruhestand / nächstes Kapitel",
+        "personal_reinvention": "Persönliche Neuerfindung",
+        "better_daily_decisions": "Bessere tägliche Entscheidungen"
+      }
+    }
+  },
+  "language_modal": {
+    "title_en": "Choose your language",
+    "title_zh": "選擇你的語言",
+    "body": "Das legt die Sprache für alle deine Führungen und Einsichten fest. Du kannst es später im Profil ändern."
+  },
+  "profile_extra": {
+    "title": "Dein Persönliches Profil",
+    "reset_body": "Das Aktualisieren von BaZi erneuert deine Einsichten und setzt den zugehörigen Verlauf zurück.",
+    "saved": "Profil gespeichert",
+    "year_placeholder": "Jahr",
+    "month_placeholder": "Monat",
+    "day_placeholder": "Tag",
+    "bazi_update_warning": "Das Aktualisieren von BaZi erneuert deine Einsichten und setzt den zugehörigen Verlauf zurück.",
+    "mbti_type": "Dein MBTI-Typ",
+    "mbti_help": "Dieses Ergebnis stammt aus deinem MBTI-Quiz. Du kannst es manuell ändern oder das Quiz für ein genaueres Ergebnis wiederholen.",
+    "mbti_placeholder": "Wähle deinen Typ...",
+    "mbti_update_warning": "Das Aktualisieren von MBTI erneuert deine persönlichkeitsbasierte Einsicht.",
+    "view_chart": "Deinen vollständigen Chart erkunden →",
+    "personal_profile": "Dein Persönliches Profil",
+    "fallback_name": "Dein Profil",
+    "profile_saved": "Profil gespeichert",
+    "updated_today": "Heute zuletzt aktualisiert",
+    "bazi_helper": "Beeinflusst deine tägliche Führung und langfristige Muster.",
+    "update_birth_data": "Geburtsdaten Aktualisieren",
+    "mbti_helper": "Verfeinert, wie oria deine Entscheidungen interpretiert.",
+    "update_personality_type": "Persönlichkeitstyp Aktualisieren",
+    "preferences": "Einstellungen",
+    "interface_language": "Oberflächensprache",
+    "account": "Konto",
+    "signed_in_as": "Angemeldet als",
+    "about_oria": "Über oria",
+    "sign_out": "Abmelden",
+    "reflection_footer": "Dies ist eine Reflexion, keine Vorhersage. Die Entscheidungen liegen bei dir.",
+    "location_placeholder": "Suche deine Geburtsstadt",
+    "location_helper": "Suche deine Geburtsstadt (z.B. Berlin, Hamburg)",
+    "location_required": "Bitte wähle deine Geburtsstadt aus der Liste aus."
+  },
+  "settings_extra": {
+    "change_language": "Sprache ändern",
+    "language_warning": "Die Oberflächensprache wird sofort aktualisiert. Bereits generierte Ergebnisse bleiben in ihrer ursprünglichen Sprache; neue Ergebnisse verwenden die neue Sprache. Fortfahren?",
+    "cancel": "Abbrechen",
+    "confirm": "Änderung bestätigen"
+  },
+  "generated_content": {
+    "label": "Generiert auf {{language}}"
+  },
+  "people": {
+    "add_person": "Person hinzufügen",
+    "loading": "Wird geladen…",
+    "load_error": "Deine Beziehungseinblicke konnten nicht geladen werden.",
+    "remove_confirm": "Diese Person entfernen?",
+    "remove_error": "Diese Person konnte nicht entfernt werden. Bitte versuche es erneut.",
+    "try_again": "Erneut versuchen",
+    "empty_title": "Noch keine Beziehung hinzugefügt.",
+    "empty_hint": "Füge jemanden hinzu, um die Dynamik zwischen euch zu erkunden.",
+    "view_insight": "Einsicht ansehen →",
+    "remove_label": "{{name}} entfernen",
+    "relationships": {
+      "partner": "Partner/in",
+      "spouse": "Ehemann/Ehefrau",
+      "family": "Familie",
+      "friend": "Freund/in",
+      "colleague": "Kollege/Kollegin",
+      "other": "Andere/r"
+    },
+    "page_title": "Einander verstehen und wissen, wie man sich zueinander verhält"
+  },
+  "compare_result": {
+    "loading": "Die Dynamik wird gelesen…",
+    "person_not_found": "Person nicht gefunden.",
+    "generate_error": "Vergleich konnte nicht generiert werden. Bitte versuche es erneut.",
+    "this_person": "diese Person",
+    "locked_section": "Diese Einsicht ist mit oria Plus verfügbar.",
+    "unlock_cta": "Mit oria Plus freischalten →",
+    "energetic_pattern": "Energetisches Muster",
+    "sections": {
+      "overall_dynamic": "Gesamtdynamik",
+      "tension": "Wo Spannung entstehen kann",
+      "complement": "Wo ihr euch ergänzt",
+      "how_to_handle": "Wie man damit umgeht"
+    },
+    "upgrade_message": "Schalte den vollständigen Vergleich mit oria Plus frei."
+  },
+  "chatEntry": {
+    "daily": {
+      "button": "Mit Oria über die heutige Richtung sprechen",
+      "prompt": "Worauf sollte ich mich heute basierend auf meinem aktuellen Zustand konzentrieren? Gibt es etwas, worüber ich vorsichtig sein sollte?"
+    },
+    "bazi": {
+      "button": "Deine aktuelle Situation durch Bazi erkunden",
+      "prompt": "Basierend auf meinem Bazi, wie ist der aktuelle Trend meines Glücks? Was sollte ich verfolgen oder meiden?"
+    },
+    "mbti": {
+      "button": "Deine Gedanken mit MBTI reflektieren",
+      "prompt": "Basierend auf meinem MBTI-Typ, worauf sollte ich bei Entscheidungen achten? Habe ich blinde Flecken?"
+    },
+    "chart": {
+      "button": "Deine Richtung durch deinen Chart erkunden",
+      "prompt": "Basierend auf meinem Chart, worauf sollte ich mich im Leben gerade konzentrieren? Welche Richtung passt am besten zu mir?"
+    }
+  },
+  "monthly_focus": {
+    "label": "Fokus des Monats",
+    "loading": "Monatlicher Fokus wird generiert…",
+    "next_update": "Nächste Aktualisierung",
+    "suitable": "Geeignet diesen Monat",
+    "avoid": "Diesen Monat meiden",
+    "reflection": "Reflexion",
+    "zodiac_tone": "Tierkreis-Ton",
+    "prompts_label": "Weiter erkunden",
+    "locked_title": "Der Fokus des Monats ist bereit",
+    "locked_desc": "Dein Chart ändert sich nicht, aber was diesen Monat am wichtigsten ist, schon.",
+    "locked_cta": "Vollständige monatliche Analyse freischalten",
+    "error": "Monatlicher Fokus konnte nicht geladen werden. Bitte versuche es später erneut.",
+    "subtitle": "Dein Chart ändert sich nicht, aber was diesen Monat am wichtigsten ist, schon.",
+    "this_month_badge": "DIESEN MONAT",
+    "monthly_update": "Monatliche Aktualisierung"
+  },
+  "billing": {
+    "title": "Wähle deinen Oria-Plan",
+    "subtitle": "Verstehe deine natürlichen Muster und deinen Persönlichkeitsstil, damit Oria dich bei klareren Entscheidungen unterstützen kann.",
+    "free": {
+      "title": "Oria Kostenlos",
+      "description": "Beginne mit einfachen Vorschauen deines täglichen Rhythmus und persönlichen Musters.",
+      "price": "US$0",
+      "features": {
+        "dailyPreview": "Vorschau der Täglichen Führung",
+        "chartPreview": "Vorschau des Persönlichen Charts",
+        "relationshipPreview": "Vorschau der Beziehungseinblicke",
+        "chatLimit": "1 kurze Oria-Chat-Antwort pro Tag",
+        "lockedPrompts": "Upgrade-Hinweise, wenn tiefere Einsicht gesperrt ist"
+      },
+      "button": "Kostenlos starten"
+    },
+    "monthly": {
+      "title": "Oria Plus Monatlich",
+      "description": "Vollständige Oria-Führung, monatlich abgerechnet.",
+      "price": "US$9,99",
+      "priceNote": "pro Monat · jederzeit kündbar",
+      "features": {
+        "dailyFull": "Vollständige Tägliche Führung",
+        "chartFull": "Vollständige Persönliche Chart-Einsicht",
+        "relationshipFull": "Vollständige Beziehungseinblicke",
+        "monthlyFocus": "Monatliche Fokus-Updates",
+        "history": "Gespeicherter Führungsverlauf",
+        "chatLimit": "3 vollständige Oria-Chat-Antworten pro Tag"
+      },
+      "button": "Oria Plus freischalten"
+    },
+    "yearly": {
+      "title": "Oria Plus Jährlich",
+      "badge": "Bestes Preis-Leistungs-Verhältnis",
+      "description": "Gleicher vollständiger Oria-Plus-Zugang, besserer Wert fürs Jahr.",
+      "price": "US$79,99",
+      "priceNote": "pro Jahr",
+      "priceMonthlyEquiv": "Nur US$6,67/Monat äquivalent",
+      "savingsNote": "Spare etwa 33 % gegenüber der monatlichen Abrechnung.",
+      "features": {
+        "dailyFull": "Vollständige Tägliche Führung",
+        "chartFull": "Vollständige Persönliche Chart-Einsicht",
+        "relationshipFull": "Vollständige Beziehungseinblicke",
+        "monthlyFocus": "Monatliche Fokus-Updates",
+        "history": "Gespeicherter Führungsverlauf",
+        "chatLimit": "3 vollständige Oria-Chat-Antworten pro Tag"
+      },
+      "button": "Jährlichen Zugang freischalten"
+    },
+    "currentPlan": "Aktueller Plan",
+    "manageSubscription": "Abonnement Verwalten",
+    "trust": "Sichere Zahlung · Jederzeit kündbar",
+    "limit": {
+      "freeTitle": "Du hast deine kostenlose Oria-Chat-Antwort für heute verwendet.",
+      "freeMessage": "Schalte Oria Plus frei, um mit tieferer Führung fortzufahren.",
+      "freeButton": "Oria Plus freischalten",
+      "plusTitle": "Du hast deine 3 vollständigen Oria-Chat-Antworten für heute verwendet.",
+      "plusMessage": "Oria funktioniert am besten, wenn du pausierst, reflektierst und mit einer klareren Frage zurückkommst. Dein Chat-Limit setzt sich morgen zurück.",
+      "plusButton": "Zurück zur Startseite"
+    }
+  },
+  "footerPages": {
+    "about": {
+      "title": "Über Oria",
+      "subtitle": "Östliche Metaphysik × Westliche Psychologie",
+      "p1": "Oria ist eine Selbstreflexions-App, die BaZi, MBTI-basierte Persönlichkeitseinsicht und KI-gestützte Gespräche kombiniert, um dir zu helfen, deine aktuelle Situation klarer zu verstehen.",
+      "p2": "Die meisten Menschen brauchen niemanden, der ihnen genau sagt, was sie tun sollen. Sie brauchen einen klareren Weg, das zu sehen, was passiert.",
+      "p3": "Oria wurde für Momente geschaffen, in denen das Leben unsicher erscheint — wenn du über Arbeit, Beziehungen, Richtung, Timing oder persönliche Veränderung nachdenkst.",
+      "exploreTitle": "Was Oria dir hilft zu erkunden",
+      "exploreItems": [
+        "Welche Art von Energie du natürlich trägst",
+        "Welche Situationen dich unterstützen oder erschöpfen können",
+        "Wie du tendenziell Entscheidungen triffst",
+        "Welche Muster in deinen Beziehungen erscheinen",
+        "Was die Führung des heutigen Tages oder Monats vorschlagen könnte",
+        "Welche Frage es sich als nächstes lohnt zu stellen"
+      ],
+      "beliefTitle": "Unsere Überzeugung",
+      "beliefHighlight": "Die aktuelle Situation klarer sehen und weisere Entscheidungen treffen.",
+      "beliefBody": "Oria hilft dir, dich selbst und deine Situation aus einem anderen Blickwinkel zu betrachten, damit du Entscheidungen mit mehr Bewusstsein treffen kannst.",
+      "notTitle": "Was Oria nicht ist",
+      "notP1": "Oria ist kein professioneller Beratungsdienst. Die Inhalte in Oria dienen der Selbstreflexion, persönlichen Einsicht und Unterhaltung.",
+      "notP2": "Sie sollten nicht als medizinische, psychologische, rechtliche, finanzielle oder Notfallberatung behandelt werden. Für wichtige Entscheidungen, die Gesundheit, Sicherheit, Geld, rechtliche Fragen oder psychische Gesundheit betreffen, wende dich bitte an einen qualifizierten Fachmann."
+    },
+    "howItWorks": {
+      "title": "Wie Oria Funktioniert",
+      "p1": "Oria kombiniert BaZi, MBTI-basierte Persönlichkeitseinsicht und KI-gestützte Gespräche, um dir zu helfen, über deine aktuelle Situation nachzudenken.",
+      "p2": "Oria entscheidet dein Leben nicht für dich. Es bietet dir eine andere Linse, um Muster, Timing, Persönlichkeit und mögliche Richtungen zu verstehen.",
+      "usesTitle": "Was Oria verwendet",
+      "usesIntro": "Um deine persönlichen Einsichten zu generieren, kann Oria verwenden:",
+      "usesItems": [
+        "Dein Geburtsdatum",
+        "Deine Geburtszeit",
+        "Deinen Geburtsort",
+        "Dein MBTI-Ergebnis oder deine Persönlichkeitsantworten",
+        "Deinen ausgewählten Fokusbereich",
+        "Deine Fragen und den Gesprächsverlauf in Oria"
+      ],
+      "helpsTitle": "Wobei Oria helfen kann",
+      "helpsItems": [
+        "Deine persönlichen Muster verstehen",
+        "Über deine Stärken und Reibungspunkte nachdenken",
+        "Timing oder Energie rund um eine Situation sehen",
+        "Beziehungsdynamiken erkunden",
+        "Dich mit mehr Ruhe und Klarheit auf Entscheidungen vorbereiten",
+        "Folgefragen per Chat stellen"
+      ],
+      "cannotTitle": "Was Oria nicht kann",
+      "cannotIntro": "Oria sagt die Zukunft nicht mit Sicherheit voraus. Oria ersetzt nicht:",
+      "cannotItems": [
+        "Medizinischen Rat",
+        "Unterstützung bei psychischer Gesundheit",
+        "Rechtliche Beratung",
+        "Finanzberatung",
+        "Notfallunterstützung",
+        "Professionelle Diagnose oder Behandlung"
+      ],
+      "useWellTitle": "Wie man Oria gut nutzt",
+      "useWellItems": [
+        "Gib deine Geburtsdaten so genau wie möglich ein",
+        "Wähle den Fokusbereich, der deiner echten Sorge entspricht",
+        "Stelle spezifische Fragen beim Chatten mit Oria",
+        "Behandle das Ergebnis als Reflexion, nicht als Anweisung",
+        "Nutze dein eigenes Urteil, bevor du wichtige Entscheidungen triffst"
+      ],
+      "reminderTitle": "Eine sanfte Erinnerung",
+      "reminderBody": "Oria bietet Einsichten, kein Schicksal. Deine Entscheidungen gehören immer dir."
+    },
+    "contact": {
+      "title": "Kontakt & Feedback",
+      "intro1": "Wir würden gerne von dir hören.",
+      "intro2": "Nutze das Formular unten, um uns Feedback zu senden, einen Fehler zu melden, eine Abrechnungsfrage zu stellen oder uns bezüglich deines Kontos zu kontaktieren.",
+      "intro3": "Du kannst uns auch direkt per E-Mail erreichen:",
+      "formTitle": "Sende uns eine Nachricht",
+      "labels": {
+        "name": "Name",
+        "email": "E-Mail",
+        "subject": "Betreff",
+        "optional": "optional",
+        "message": "Nachricht"
+      },
+      "placeholders": {
+        "name": "Dein Name",
+        "email": "deine@email.com",
+        "subject": "z.B. Fehlerbericht, Feedback, Abrechnungsfrage",
+        "message": "Sag uns, was dich beschäftigt..."
+      },
+      "validationError": "Bitte fülle deinen Namen, deine E-Mail und deine Nachricht aus.",
+      "failedToSend": "Senden fehlgeschlagen",
+      "sending": "Wird gesendet...",
+      "send": "Nachricht senden",
+      "successTitle": "Nachricht gesendet",
+      "successBody": "Danke, dass du dich gemeldet hast. Wir werden uns so bald wie möglich bei dir melden.",
+      "contactAboutTitle": "Worüber kannst du uns kontaktieren?",
+      "contactAboutIntro": "Du kannst uns kontaktieren für:",
+      "contactAboutItems": [
+        "Fehlerberichte",
+        "Feedback oder Vorschläge",
+        "Abrechnungs- oder Abonnementfragen",
+        "Konto-Support",
+        "Datenschutz- oder Datenanfragen",
+        "Allgemeine Fragen über Oria"
+      ],
+      "fasterTitle": "Für schnelleren Support",
+      "fasterIntro": "Bitte gib an:",
+      "fasterItems": [
+        "Die mit deinem Oria-Konto verknüpfte E-Mail-Adresse",
+        "Welche Seite oder Funktion du verwendet hast",
+        "Was passiert ist",
+        "Was du erwartet hast zu passieren",
+        "Screenshots, falls relevant"
+      ],
+      "billingTitle": "Abrechnungs- oder Abonnementfragen",
+      "billingP1": "Für Fragen zu Abrechnung, Kündigung oder Erstattung gib bitte die mit deinem Oria-Konto verbundene E-Mail-Adresse an.",
+      "billingP2": "Sende keine vollständigen Kreditkartendaten über dieses Formular.",
+      "privacyTitle": "Datenschutz- oder Kontolöschungsanfragen",
+      "privacyP1": "Für Kontolöschungen oder Datenanfragen verwende bitte die mit deinem Oria-Konto verbundene E-Mail-Adresse, damit wir die Anfrage verifizieren können.",
+      "responseTitle": "Antwortzeit",
+      "responseP1": "Wir bemühen uns, so schnell wie möglich zu antworten.",
+      "responseP2": "In Stoßzeiten können Antworten länger dauern."
+    }
+  },
+  "footerLinks": {
+    "pricing": "Preise",
+    "about": "Über Oria",
+    "howItWorks": "Wie Oria Funktioniert",
+    "contact": "Kontakt",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutzrichtlinie",
+    "billing": "Abrechnungsrichtlinie",
+    "disclaimer": "Haftungsausschluss",
+    "accountData": "Konto & Daten"
+  },
+  "englishOnlyNotice": "Diese Seite ist derzeit nur auf Englisch verfügbar. Die englische Version ist die offizielle Version.",
+  "profileLinks": {
+    "account": "Konto",
+    "support": "Support",
+    "legal": "Rechtliches",
+    "upgradeToPlus": "Auf Plus upgraden",
+    "manageSubscription": "Abonnement Verwalten",
+    "pricingPlans": "Preise & Pläne",
+    "accountData": "Konto & Daten",
+    "contactFeedback": "Kontakt & Feedback",
+    "howOriaWorks": "Wie Oria Funktioniert",
+    "aboutOria": "Über Oria",
+    "termsOfService": "Nutzungsbedingungen",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "billingPolicy": "Abrechnungs- & Erstattungsrichtlinie",
+    "disclaimer": "Haftungsausschluss"
+  }
+}

@@ -8,6 +8,7 @@ import zhCNCommon from '../locales/zh-CN/common.json';
 import svCommon from '../locales/sv/common.json';
 import jaCommon from '../locales/ja/common.json';
 import koCommon from '../locales/ko/common.json';
+import deCommon from '../locales/de/common.json';
 import esCommon from '../locales/es/common.json';
 import frCommon from '../locales/fr/common.json';
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from './languages';
@@ -30,6 +31,7 @@ i18n
       sv: { common: svCommon },
       ja: { common: jaCommon },
       ko: { common: koCommon },
+      de: { common: deCommon },
       es: { common: esCommon },
       fr: { common: frCommon },
     },

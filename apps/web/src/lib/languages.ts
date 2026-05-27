@@ -1,5 +1,6 @@
 export const SUPPORTED_LANGUAGES = [
   { code: 'en', label: 'EN', flag: '🇬🇧', shortLabel: 'EN' },
+  { code: 'de', label: 'DE', flag: '🇩🇪', shortLabel: 'DE' },
   { code: 'es', label: 'ES', flag: '🇪🇸', shortLabel: 'ES' },
   { code: 'fr', label: 'FR', flag: '🇫🇷', shortLabel: 'FR' },
   { code: 'sv', label: 'sv', flag: '🇸🇪', shortLabel: 'sv' },
