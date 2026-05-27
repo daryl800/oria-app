@@ -87,11 +87,13 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
         setBazi(data.bazi);
         setMbti(data.mbti);
         setLoading(false);
-        if (data.summary) {
+        const cachedSummaryLang = data.summary?.content_language;
+        if (data.summary && cachedSummaryLang === generationLanguage) {
+          // Cache hit — language matches
           setSummary(data.summary);
           return;
         }
-        // Cache exists but no summary yet (fresh redirect from onboarding)
+        // No summary yet, or language changed — regenerate summary
         if (data.bazi && data.mbti) {
           setSummaryLoading(true);
           setSummaryFailed(false);
