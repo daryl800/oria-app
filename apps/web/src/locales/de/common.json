@@ -742,7 +742,7 @@
         "relationshipFull": "Vollständige Beziehungseinblicke",
         "monthlyFocus": "Monatliche Fokus-Updates",
         "history": "Gespeicherter Führungsverlauf",
-        "chatLimit": "3 vollständige Oria-Chat-Antworten pro Tag"
+        "chatLimit": "5 vollständige Oria-Chat-Antworten pro Tag"
       },
       "button": "Jährlichen Zugang freischalten"
     },
@@ -754,6 +754,7 @@
       "freeMessage": "Schalte Oria Plus frei, um mit tieferer Führung fortzufahren.",
       "freeButton": "Oria Plus freischalten",
       "plusTitle": "Du hast deine 3 vollständigen Oria-Chat-Antworten für heute verwendet.",
+      "yearlyTitle": "Du hast deine 5 vollständigen Oria-Chat-Antworten für heute verwendet.",
       "plusMessage": "Oria funktioniert am besten, wenn du pausierst, reflektierst und mit einer klareren Frage zurückkommst. Dein Chat-Limit setzt sich morgen zurück.",
       "plusButton": "Zurück zur Startseite"
     }

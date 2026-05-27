@@ -108,7 +108,7 @@ router.post('/send', async (req: Request, res: Response) => {
 
     // load user + profile in parallel
     const [{ data: userData }, { data: userProfile }] = await Promise.all([
-      supabase.from('users').select('display_name, plan, questions_today, last_question_date, created_at').eq('id', userId).single(),
+      supabase.from('users').select('display_name, plan, plan_interval, questions_today, last_question_date, created_at').eq('id', userId).single(),
       supabase.from('user_profiles').select('current_bazi_version_id, current_mbti_version_id').eq('user_id', userId).single(),
     ]);
 
@@ -122,12 +122,14 @@ router.post('/send', async (req: Request, res: Response) => {
     const daysSinceSignup = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
     const isEarlyUser = daysSinceSignup <= 3;
 
-    // Check question limits
-    const dailyLimit = isPlus ? 3 : 1;
+    // Check question limits — yearly Plus gets 5/day, monthly Plus gets 3/day, free gets 1/day
+    const isYearly = isPlus && userData?.plan_interval === 'year';
+    const dailyLimit = isYearly ? 5 : isPlus ? 3 : 1;
     if (questionsToday >= dailyLimit) {
+      const limitCount = isYearly ? 5 : 3;
       const msg = lang === 'zh-TW'
-        ? (isPlus ? `你已達到今天的提問上限（每日3次）。\n明天我們可以繼續探討。\n✨ 靜心思考今日的洞察，明天見。` : `你已達到今天的提問上限。\n明天我們可以繼續探討。\n\n✨ 或者立即升級至 Oria Plus，繼續你的深度探索。`)
-        : (isPlus ? `You've reached today's limit (3 questions/day). Reflect on today's insights — see you tomorrow.` : `You've reached today's guidance limit. Take some time to reflect — we'll continue tomorrow.\n\n✨ Or continue now with Oria Plus.`);
+        ? (isPlus ? `你已達到今天的提問上限（每日${limitCount}次）。\n明天我們可以繼續探討。\n✨ 靜心思考今日的洞察，明天見。` : `你已達到今天的提問上限。\n明天我們可以繼續探討。\n\n✨ 或者立即升級至 Oria Plus，繼續你的深度探索。`)
+        : (isPlus ? `You've reached today's limit (${limitCount} questions/day). Reflect on today's insights — see you tomorrow.` : `You've reached today's guidance limit. Take some time to reflect — we'll continue tomorrow.\n\n✨ Or continue now with Oria Plus.`);
       return res.json({
         response: msg,
         conversation_id: conversation_id,

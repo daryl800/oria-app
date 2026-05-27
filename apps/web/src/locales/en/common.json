@@ -854,7 +854,7 @@
         "relationshipFull": "Full Relationship Insights",
         "monthlyFocus": "Monthly Focus updates",
         "history": "Saved guidance history",
-        "chatLimit": "3 full Oria Chat answers per day"
+        "chatLimit": "5 full Oria Chat answers per day"
       },
       "button": "Unlock Yearly Access"
     },
@@ -866,6 +866,7 @@
       "freeMessage": "Unlock Oria Plus to continue with deeper guidance.",
       "freeButton": "Unlock Oria Plus",
       "plusTitle": "You've used today's 3 full Oria Chat answers.",
+      "yearlyTitle": "You've used today's 5 full Oria Chat answers.",
       "plusMessage": "Oria works best when you pause, reflect, and return with a clearer question. Your chat limit resets tomorrow.",
       "plusButton": "Back to Home"
     }

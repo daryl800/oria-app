@@ -805,7 +805,7 @@
         "relationshipFull": "完全な関係性インサイト",
         "monthlyFocus": "月間フォーカス更新",
         "history": "ガイダンス履歴の保存",
-        "chatLimit": "1日3回の完全なOriaチャット回答"
+        "chatLimit": "1日5回の完全なOriaチャット回答"
       },
       "button": "年額プランを解除"
     },
@@ -817,6 +817,7 @@
       "freeMessage": "Oria Plusをアンロックして、より深いガイダンスを続けましょう。",
       "freeButton": "Oria Plusをアンロック",
       "plusTitle": "今日の3回分の完全なOriaチャット回答を使い切りました。",
+      "yearlyTitle": "今日の5回分の完全なOriaチャット回答を使い切りました。",
       "plusMessage": "Oriaは、立ち止まって振り返り、より明確な質問を持って戻ってきたときに最も効果的です。チャット制限は明日リセットされます。",
       "plusButton": "ホームに戻る"
     }

@@ -790,7 +790,7 @@
         "relationshipFull": "Insights Relationnels Complets",
         "monthlyFocus": "Mises à jour du Focus Mensuel",
         "history": "Historique de guidance sauvegardé",
-        "chatLimit": "3 réponses complètes Oria Chat par jour"
+        "chatLimit": "5 réponses complètes Oria Chat par jour"
       },
       "button": "Débloquer l'Accès Annuel"
     },
@@ -802,6 +802,7 @@
       "freeMessage": "Débloquez Oria Plus pour continuer avec une guidance plus approfondie.",
       "freeButton": "Débloquer Oria Plus",
       "plusTitle": "Vous avez utilisé vos 3 réponses complètes Oria Chat du jour.",
+      "yearlyTitle": "Vous avez utilisé vos 5 réponses complètes Oria Chat du jour.",
       "plusMessage": "Oria fonctionne mieux quand vous faites une pause, réfléchissez et revenez avec une question plus claire. Votre limite de chat se réinitialise demain.",
       "plusButton": "Retour à l'Accueil"
     }

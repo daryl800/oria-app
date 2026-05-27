@@ -27,7 +27,7 @@ interface Conversation {
   updated_at: string;
 }
 
-export default function Chat({ user, isPlus = false }: { user: User; isPlus?: boolean }) {
+export default function Chat({ user, isPlus = false, planInterval = null }: { user: User; isPlus?: boolean; planInterval?: 'month' | 'year' | null }) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const location = useLocation();
@@ -141,10 +141,9 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
   const quickStarts = t('chat.quick_starts', { returnObjects: true }) as Array<{ label: string; value: string }>;
 
   // ── Daily chat limit logic ──────────────────────────────────────────────────
-  // Free users: 1 short answer/day
-  // Plus users (monthly or yearly): 3 full answers/day
-  // Monthly and Yearly share the same Plus entitlement
-  const DAILY_LIMIT = isPlus ? 3 : 1;
+  // Free: 1/day · Monthly Plus: 3/day · Yearly Plus: 5/day
+  const isYearly = isPlus && planInterval === 'year';
+  const DAILY_LIMIT = isYearly ? 5 : isPlus ? 3 : 1;
   const today = new Date().toISOString().slice(0, 10);
   const storageKey = `oria_chat_count_${today}_${user.id}`;
 
@@ -164,7 +163,7 @@ export default function Chat({ user, isPlus = false }: { user: User; isPlus?: bo
         <div style={{ maxWidth: 420, width: '100%', textAlign: 'center' }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>{isPlus ? '🌙' : '💬'}</div>
           <h2 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 12 }}>
-            {isPlus ? t('billing.limit.plusTitle') : t('billing.limit.freeTitle')}
+            {isPlus ? (isYearly ? t('billing.limit.yearlyTitle') : t('billing.limit.plusTitle')) : t('billing.limit.freeTitle')}
           </h2>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.62)', marginBottom: 32, lineHeight: 1.7 }}>
             {isPlus ? t('billing.limit.plusMessage') : t('billing.limit.freeMessage')}

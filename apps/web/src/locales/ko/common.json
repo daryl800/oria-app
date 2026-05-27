@@ -805,7 +805,7 @@
         "relationshipFull": "완전한 관계 인사이트",
         "monthlyFocus": "월간 포커스 업데이트",
         "history": "저장된 가이던스 기록",
-        "chatLimit": "하루 3회 완전한 Oria Chat 답변"
+        "chatLimit": "하루 5회 완전한 Oria Chat 답변"
       },
       "button": "연간 플랜 잠금 해제"
     },
@@ -817,6 +817,7 @@
       "freeMessage": "더 깊은 가이던스를 계속하려면 Oria Plus를 잠금 해제하세요.",
       "freeButton": "Oria Plus 잠금 해제",
       "plusTitle": "오늘의 3회 완전한 Oria Chat 답변을 사용했습니다.",
+      "yearlyTitle": "오늘의 5회 완전한 Oria Chat 답변을 사용했습니다.",
       "plusMessage": "Oria는 잠시 멈추고 성찰한 후 더 명확한 질문을 가지고 돌아올 때 가장 효과적입니다. 채팅 한도는 내일 초기화됩니다.",
       "plusButton": "홈으로 돌아가기"
     }

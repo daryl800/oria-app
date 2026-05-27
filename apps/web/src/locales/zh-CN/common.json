@@ -805,7 +805,7 @@
         "relationshipFull": "完整关系洞察",
         "monthlyFocus": "每月焦点更新",
         "history": "已保存的指引记录",
-        "chatLimit": "每日 3 则完整 Oria Chat 回复"
+        "chatLimit": "每日 5 则完整 Oria Chat 回复"
       },
       "button": "解锁年费方案"
     },
@@ -817,6 +817,7 @@
       "freeMessage": "解锁 Oria Plus 以继续获得更深入的指引。",
       "freeButton": "解锁 Oria Plus",
       "plusTitle": "你已使用今日的 3 则完整 Oria Chat 回复。",
+      "yearlyTitle": "你已使用今日的 5 则完整 Oria Chat 回复。",
       "plusMessage": "Oria 最适合在你暂停、反思后，带着更清晰的问题回来使用。你的对话额度明天重置。",
       "plusButton": "返回首页"
     }

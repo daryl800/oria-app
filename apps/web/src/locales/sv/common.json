@@ -805,7 +805,7 @@
         "relationshipFull": "Fullständiga relationsinsikter",
         "monthlyFocus": "Månatliga fokusuppdateringar",
         "history": "Sparad vägledningshistorik",
-        "chatLimit": "3 fullständiga Oria Chat-svar per dag"
+        "chatLimit": "5 fullständiga Oria Chat-svar per dag"
       },
       "button": "Lås upp årsplan"
     },
@@ -817,6 +817,7 @@
       "freeMessage": "Lås upp Oria Plus för att fortsätta med djupare vägledning.",
       "freeButton": "Lås upp Oria Plus",
       "plusTitle": "Du har använt dagens 3 fullständiga Oria Chat-svar.",
+      "yearlyTitle": "Du har använt dagens 5 fullständiga Oria Chat-svar.",
       "plusMessage": "Oria fungerar bäst när du pausar, reflekterar och återvänder med en tydligare fråga. Din chatgräns återställs imorgon.",
       "plusButton": "Tillbaka till hem"
     }
