@@ -665,7 +665,17 @@
     "reflection_footer": "これは予測ではなく、内省のためのものです。決めるのはあなた自身です。",
     "location_placeholder": "出生都市を検索",
     "location_helper": "出生都市を検索してください（例：香港、東京）",
-    "location_required": "リストから出生都市を選択してください。"
+    "location_required": "リストから出生都市を選択してください。",
+    "delete_account_title": "アカウントを削除しますか？",
+    "delete_account_body": "アカウント、プロフィール、チャートデータ、チャット履歴、および関連するすべてのコンテンツが完全に削除されます。",
+    "delete_account_undone": "この操作は元に戻せません。",
+    "delete_keep": "アカウントを保持",
+    "delete_permanently": "完全に削除",
+    "delete_deleting": "削除中…",
+    "delete_plus_title": "有効なサブスクリプションを検出",
+    "delete_plus_body_pre": "現在、有効な Oria Plus サブスクリプションがあります。アカウントを削除すると、サブスクリプションは直ちにキャンセルされます。",
+    "delete_plus_no_refund": "返金はされません",
+    "delete_plus_body_post": "現在の請求期間の未使用分については。現在の期間終了までアクセスを維持したい場合は、アカウントを削除する前に「サブスクリプション管理」からサブスクリプションをキャンセルしてください。"
   },
   "settings_extra": {
     "change_language": "言語を変更",

@@ -433,7 +433,17 @@
     "reflection_footer": "Esto es una reflexión, no una predicción. Tú tienes las decisiones.",
     "location_placeholder": "Busca tu ciudad natal",
     "location_helper": "Busca tu ciudad natal (ej. Madrid, Ciudad de México)",
-    "location_required": "Por favor selecciona tu ciudad natal de la lista."
+    "location_required": "Por favor selecciona tu ciudad natal de la lista.",
+    "delete_account_title": "¿Eliminar tu cuenta?",
+    "delete_account_body": "Esto eliminará permanentemente tu cuenta, perfil, datos del gráfico, historial de chat y todo el contenido asociado.",
+    "delete_account_undone": "Esta acción no se puede deshacer.",
+    "delete_keep": "Conservar cuenta",
+    "delete_permanently": "Eliminar permanentemente",
+    "delete_deleting": "Eliminando…",
+    "delete_plus_title": "Suscripción activa detectada",
+    "delete_plus_body_pre": "Actualmente tienes una suscripción activa de Oria Plus. Eliminar tu cuenta cancelará inmediatamente tu suscripción.",
+    "delete_plus_no_refund": "No se realizará ningún reembolso",
+    "delete_plus_body_post": "por la parte no utilizada de tu período de facturación. Si deseas conservar el acceso hasta el final de tu período actual, por favor cancela tu suscripción desde Administrar suscripción antes de eliminar tu cuenta."
   },
   "settings_extra": {
     "change_language": "Cambiar idioma",

@@ -665,7 +665,17 @@
     "reflection_footer": "이것은 예측이 아니라 성찰입니다. 결정은 당신의 몫입니다.",
     "location_placeholder": "출생 도시 검색",
     "location_helper": "출생 도시를 검색하세요 (예: 홍콩, 도쿄)",
-    "location_required": "목록에서 출생 도시를 선택해 주세요."
+    "location_required": "목록에서 출생 도시를 선택해 주세요.",
+    "delete_account_title": "계정을 삭제하시겠습니까?",
+    "delete_account_body": "계정, 프로필, 차트 데이터, 채팅 기록 및 모든 관련 콘텐츠가 영구적으로 삭제됩니다.",
+    "delete_account_undone": "이 작업은 취소할 수 없습니다.",
+    "delete_keep": "계정 유지",
+    "delete_permanently": "영구 삭제",
+    "delete_deleting": "삭제 중…",
+    "delete_plus_title": "활성 구독 감지됨",
+    "delete_plus_body_pre": "현재 활성 Oria Plus 구독이 있습니다. 계정을 삭제하면 구독이 즉시 취소됩니다.",
+    "delete_plus_no_refund": "환불이 제공되지 않습니다",
+    "delete_plus_body_post": "현재 청구 기간의 미사용 부분에 대해서는. 현재 기간이 끝날 때까지 접근을 유지하려면 계정을 삭제하기 전에 구독 관리에서 구독을 먼저 취소하세요."
   },
   "settings_extra": {
     "change_language": "언어 변경",

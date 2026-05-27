@@ -611,7 +611,7 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
           <div className="oria-card" style={{ maxWidth: 400, width: '100%', padding: '36px 28px' }}>
             <div style={{ fontSize: 40, textAlign: 'center', marginBottom: 16 }}>⚠️</div>
             <h3 style={{ fontSize: 20, fontWeight: 700, color: '#F0EDE8', marginBottom: 12, textAlign: 'center' }}>
-              Delete your account?
+              {t('profile_extra.delete_account_title')}
             </h3>
 
             {/* Subscription warning — only for active Plus users */}
@@ -622,16 +622,16 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
                 borderRadius: 12, padding: '14px 16px', marginBottom: 18,
               }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(239,68,68,0.9)', marginBottom: 6 }}>
-                  Active subscription detected
+                  {t('profile_extra.delete_plus_title')}
                 </div>
                 <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.65, margin: 0 }}>
-                  You currently have an active Oria Plus subscription. Deleting your account will immediately cancel your subscription. <strong style={{ color: 'rgba(255,255,255,0.85)' }}>No refund will be issued</strong> for any unused portion of your billing period. If you wish to retain access until the end of your current period, please cancel your subscription first from Manage Subscription before deleting your account.
+                  {t('profile_extra.delete_plus_body_pre')} <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{t('profile_extra.delete_plus_no_refund')}</strong> {t('profile_extra.delete_plus_body_post')}
                 </p>
               </div>
             )}
 
             <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 24 }}>
-              This will permanently delete your account, profile, chart data, chat history, and all associated content. <strong style={{ color: '#F0EDE8' }}>This action cannot be undone.</strong>
+              {t('profile_extra.delete_account_body')} <strong style={{ color: '#F0EDE8' }}>{t('profile_extra.delete_account_undone')}</strong>
             </p>
 
             {deleteError && (
@@ -658,7 +658,7 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
                   fontFamily: 'inherit', fontSize: 15,
                 }}
               >
-                Keep account
+                {t('profile_extra.delete_keep')}
               </button>
               <button
                 type="button"
@@ -672,7 +672,7 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
                   fontFamily: 'inherit', fontSize: 15, fontWeight: 700,
                 }}
               >
-                {deleteStep === 'deleting' ? 'Deleting…' : 'Delete permanently'}
+                {deleteStep === 'deleting' ? t('profile_extra.delete_deleting') : t('profile_extra.delete_permanently')}
               </button>
             </div>
           </div>

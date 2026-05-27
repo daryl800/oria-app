@@ -650,7 +650,17 @@
     "reflection_footer": "C'est une réflexion, pas une prédiction. Les décisions vous appartiennent.",
     "location_placeholder": "Recherchez votre ville de naissance",
     "location_helper": "Recherchez votre ville de naissance (ex. Paris, Lyon)",
-    "location_required": "Veuillez sélectionner votre ville de naissance dans la liste."
+    "location_required": "Veuillez sélectionner votre ville de naissance dans la liste.",
+    "delete_account_title": "Supprimer votre compte ?",
+    "delete_account_body": "Cela supprimera définitivement votre compte, profil, données du chart, historique de chat et tout le contenu associé.",
+    "delete_account_undone": "Cette action ne peut pas être annulée.",
+    "delete_keep": "Conserver le compte",
+    "delete_permanently": "Supprimer définitivement",
+    "delete_deleting": "Suppression…",
+    "delete_plus_title": "Abonnement actif détecté",
+    "delete_plus_body_pre": "Vous avez actuellement un abonnement Oria Plus actif. La suppression de votre compte annulera immédiatement votre abonnement.",
+    "delete_plus_no_refund": "Aucun remboursement ne sera effectué",
+    "delete_plus_body_post": "pour la partie inutilisée de votre période de facturation. Si vous souhaitez conserver l'accès jusqu'à la fin de votre période actuelle, veuillez d'abord annuler votre abonnement depuis Gérer l'abonnement avant de supprimer votre compte."
   },
   "settings_extra": {
     "change_language": "Changer de langue",

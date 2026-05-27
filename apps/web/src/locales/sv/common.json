@@ -665,7 +665,17 @@
     "reflection_footer": "Detta är en reflektion, inte en förutsägelse. Det är du som fattar besluten.",
     "location_placeholder": "Sök födelsestad",
     "location_helper": "Sök din födelsestad (t.ex. Hongkong, Tokyo)",
-    "location_required": "Välj din födelsestad från listan."
+    "location_required": "Välj din födelsestad från listan.",
+    "delete_account_title": "Ta bort ditt konto?",
+    "delete_account_body": "Detta kommer permanent att ta bort ditt konto, profil, kartdata, chatthistorik och allt associerat innehåll.",
+    "delete_account_undone": "Denna åtgärd kan inte ångras.",
+    "delete_keep": "Behåll konto",
+    "delete_permanently": "Ta bort permanent",
+    "delete_deleting": "Tar bort…",
+    "delete_plus_title": "Aktiv prenumeration hittad",
+    "delete_plus_body_pre": "Du har för närvarande en aktiv Oria Plus-prenumeration. Att ta bort ditt konto kommer omedelbart att avbryta din prenumeration.",
+    "delete_plus_no_refund": "Ingen återbetalning kommer att ges",
+    "delete_plus_body_post": "för oanvänd del av din faktureringsperiod. Om du vill behålla åtkomst till slutet av din nuvarande period, vänligen avbryt din prenumeration via Hantera prenumeration innan du tar bort ditt konto."
   },
   "settings_extra": {
     "change_language": "Byt språk",

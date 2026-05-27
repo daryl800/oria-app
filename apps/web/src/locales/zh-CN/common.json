@@ -665,7 +665,17 @@
     "reflection_footer": "这是一种映照，不是预言。决定权始终在你手上。",
     "location_placeholder": "搜索出生城市",
     "location_helper": "请搜索你的出生城市（例如：香港、东京）",
-    "location_required": "请从列表中选择你的出生城市。"
+    "location_required": "请从列表中选择你的出生城市。",
+    "delete_account_title": "删除您的账号？",
+    "delete_account_body": "这将永久删除您的账号、个人资料、八字资料、聊天记录及所有相关内容。",
+    "delete_account_undone": "此操作无法撤销。",
+    "delete_keep": "保留账号",
+    "delete_permanently": "永久删除",
+    "delete_deleting": "删除中…",
+    "delete_plus_title": "检测到有效订阅",
+    "delete_plus_body_pre": "您当前拥有有效的 Oria Plus 订阅。删除账号将立即取消您的订阅。",
+    "delete_plus_no_refund": "不予退款",
+    "delete_plus_body_post": "针对您当前计费周期的未使用部分。若您希望保留至当前周期结束，请先在「管理订阅」中取消订阅，再删除账号。"
   },
   "settings_extra": {
     "change_language": "更改语言",

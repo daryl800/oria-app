@@ -714,7 +714,17 @@
     "reflection_footer": "This is a reflection, not a prediction. You hold the decisions.",
     "location_placeholder": "Search your birth city",
     "location_helper": "Search your birth city (e.g. Hong Kong, Tokyo)",
-    "location_required": "Please select your birth city from the list."
+    "location_required": "Please select your birth city from the list.",
+    "delete_account_title": "Delete your account?",
+    "delete_account_body": "This will permanently delete your account, profile, chart data, chat history, and all associated content.",
+    "delete_account_undone": "This action cannot be undone.",
+    "delete_keep": "Keep account",
+    "delete_permanently": "Delete permanently",
+    "delete_deleting": "Deleting…",
+    "delete_plus_title": "Active subscription detected",
+    "delete_plus_body_pre": "You currently have an active Oria Plus subscription. Deleting your account will immediately cancel your subscription.",
+    "delete_plus_no_refund": "No refund will be issued",
+    "delete_plus_body_post": "for any unused portion of your billing period. If you wish to retain access until the end of your current period, please cancel your subscription first from Manage Subscription before deleting your account."
   },
   "settings_extra": {
     "change_language": "Change language",
