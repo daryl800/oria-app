@@ -177,10 +177,20 @@ function getZodiacContext(zodiac: any): string {
 function getRespondIn(lang: string): string {
   if (lang === 'zh-TW') return '請用繁體中文回應。';
   if (lang === 'zh-CN') return '请用简体中文回应。';
-  if (lang === 'ja') return '日本語で回答してください。';
-  if (lang === 'ko') return '한국어로 답변해 주세요.';
-  if (lang === 'sv') return 'Svara på svenska.';
-  return 'Please respond in English.';
+  if (lang === 'ja') return '⚠️ CRITICAL: Write ALL JSON text values in Japanese. Do NOT use Chinese. / すべてのJSONテキスト値を日本語で記述してください。';
+  if (lang === 'ko') return '⚠️ CRITICAL: Write ALL JSON text values in Korean. Do NOT use Chinese. / 모든 JSON 텍스트 값을 한국어로 작성하세요.';
+  if (lang === 'sv') return '⚠️ CRITICAL: Write ALL JSON text values in Swedish (svenska). Do NOT use Chinese or any other language.';
+  return '⚠️ CRITICAL: Write ALL JSON text values in English. Do NOT use Chinese.';
+}
+
+// Prepended to the system message for non-CJK languages so the instruction
+// isn't buried under pages of Chinese prompt text.
+function getLangGuard(lang: string): string {
+  if (['zh-TW', 'zh-CN'].includes(lang)) return '';
+  if (lang === 'sv') return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in Swedish (svenska). The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
+  if (lang === 'ja') return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in Japanese. The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
+  if (lang === 'ko') return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in Korean. The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
+  return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in English. The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
 }
 
 function getContextFocusSection(context_focus: string[] = [], lang: string = 'en'): string {
@@ -233,13 +243,14 @@ export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en', 
   const mbtiCtx = getMbtiContext(mbti);
   const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
+  const langGuard = getLangGuard(lang);
   const contextFocusSection = getContextFocusSection(context_focus, lang);
   const currentYear = new Date().getFullYear();
 
   return [
     {
       role: 'system',
-      content: `你是Oria的資深命盤解析師——精通子平八字、十神分析、格局判斷，並能精準結合MBTI提供深度洞察。
+      content: `${langGuard}你是Oria的資深命盤解析師——精通子平八字、十神分析、格局判斷，並能精準結合MBTI提供深度洞察。
 
 核心原則：
 1. 五行數值是計算引擎的最終結果，必須以此為推理基礎，不得憑感覺或象徵意義另行詮釋
@@ -359,6 +370,7 @@ export function dailyGuidancePrompt(
   const mbtiCtx = getMbtiContext(mbti);
   const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
+  const langGuard = getLangGuard(lang);
   const contextFocusSection = getContextFocusSection(context_focus, lang);
   const todayElement = STEM_ELEMENT[todayStem] ?? '土';
   const todayTone = STEM_TONE[todayStem] ?? { en: 'Steady Earth', zh: '穩重土氣' };
@@ -367,7 +379,7 @@ export function dailyGuidancePrompt(
   return [
     {
       role: 'system',
-      content: `你是Oria的每日命盤引導師，結合八字命理與MBTI，提供高度個人化且具有「預測感」的每日指引。
+      content: `${langGuard}你是Oria的每日命盤引導師，結合八字命理與MBTI，提供高度個人化且具有「預測感」的每日指引。
 你的目標不是給建議，而是讓用戶感覺：「今天真的會發生這些事情」
 風格要求：
 - 溫和但精準，有洞察力
@@ -459,9 +471,10 @@ export function chatPrompt(
   const mbtiCtx = getMbtiContext(mbti);
   const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
+  const langGuard = getLangGuard(lang);
   const contextFocusSection = getContextFocusSection(context_focus, lang);
 
-  const systemContent = `你是 Oria，一位結合八字命理與 MBTI 性格分析的個人引導助手。
+  const systemContent = `${langGuard}你是 Oria，一位結合八字命理與 MBTI 性格分析的個人引導助手。
 
 你的角色：
 不是算命師，也不是替用戶做決定。
@@ -833,6 +846,7 @@ export function monthlyChartFocusPrompt(
   const mbtiCtx = getMbtiContext(mbti);
   const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
+  const langGuard = getLangGuard(lang);
 
   const [year, month] = monthKey.split('-').map(Number);
   const yearPillar = ANNUAL_PILLARS[year];
@@ -844,7 +858,7 @@ export function monthlyChartFocusPrompt(
   return [
     {
       role: 'system',
-      content: `你是Oria的每月命盤焦點解析師，結合八字、MBTI與流年流月，為用戶提供當月最值得留意的方向。
+      content: `${langGuard}你是Oria的每月命盤焦點解析師，結合八字、MBTI與流年流月，為用戶提供當月最值得留意的方向。
 核心原則：
 1. 不預測命運，只提供反思與方向
 2. 語氣溫和、實用、決策導向
