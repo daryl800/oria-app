@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 import type { User } from '@supabase/supabase-js';
+import { getBillingStatus } from '../services/api';
 
 const STRIPE_MONTHLY_LINK = import.meta.env.VITE_STRIPE_MONTHLY_LINK || 'https://buy.stripe.com/test_cNi7sLegE6kBcCo4Fn8N202';
 const STRIPE_YEARLY_LINK = import.meta.env.VITE_STRIPE_YEARLY_LINK || '#';
-const STRIPE_PORTAL_LINK = import.meta.env.VITE_STRIPE_PORTAL_LINK || '';
 
 function buildPaymentLink(base: string, userId?: string): string {
   if (!base || base === '#') return '#';
@@ -20,6 +21,14 @@ function buildPaymentLink(base: string, userId?: string): string {
 export default function PricingPage({ isPlus = false, user }: { isPlus?: boolean; user?: User | null }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [planInterval, setPlanInterval] = useState<'month' | 'year' | null>(null);
+
+  useEffect(() => {
+    if (!isPlus || !user) return;
+    getBillingStatus()
+      .then((data) => { if (data?.plan_interval) setPlanInterval(data.plan_interval); })
+      .catch(() => {});
+  }, [isPlus, user]);
 
   const monthlyLink = buildPaymentLink(STRIPE_MONTHLY_LINK, user?.id);
   const yearlyLink = buildPaymentLink(STRIPE_YEARLY_LINK, user?.id);
@@ -129,7 +138,7 @@ export default function PricingPage({ isPlus = false, user }: { isPlus?: boolean
           <div style={{ flex: 1, marginBottom: 24 }}>
             {monthlyFeatures.map((f, i) => featureItem(f, i))}
           </div>
-          {isPlus ? (
+          {isPlus && planInterval === 'month' ? (
             <button disabled style={{
               width: '100%', background: 'rgba(255,255,255,0.06)',
               border: '1px solid rgba(255,255,255,0.15)', borderRadius: 999,
@@ -144,7 +153,6 @@ export default function PricingPage({ isPlus = false, user }: { isPlus?: boolean
               className="oria-btn-primary"
               style={{ width: '100%' }}
               onClick={() => {
-                console.log('[pricing] monthly link:', monthlyLink);
                 if (monthlyLink === '#') { alert('Payment link not configured. Please contact support.'); return; }
                 window.location.href = monthlyLink;
               }}
@@ -192,7 +200,7 @@ export default function PricingPage({ isPlus = false, user }: { isPlus?: boolean
           <div style={{ flex: 1, marginBottom: 24 }}>
             {yearlyFeatures.map((f, i) => featureItem(f, i))}
           </div>
-          {isPlus ? (
+          {isPlus && planInterval === 'year' ? (
             <button disabled style={{
               width: '100%', background: 'rgba(255,255,255,0.06)',
               border: '1px solid rgba(255,255,255,0.15)', borderRadius: 999,

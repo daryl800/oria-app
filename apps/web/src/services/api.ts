@@ -273,6 +273,7 @@ export async function getBillingStatus(): Promise<{
   plan: string;
   plan_expires_at: string | null;
   plan_cancel_scheduled: boolean;
+  plan_interval: 'month' | 'year' | null;
 }> {
   const headers = await getHeaders();
   const res = await fetch(`${API_URL}/api/billing/status`, { headers });

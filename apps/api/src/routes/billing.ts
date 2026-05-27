@@ -165,12 +165,14 @@ billingRouter.get('/status', async (req: Request, res: Response) => {
 
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // If we have a live subscription, sync current_period_end from Stripe
+    // Sync period_end, cancel status, and interval from Stripe in one call
+    let planInterval: string | null = null;
     if (user.stripe_subscription_id) {
       try {
-        const sub = await stripe.subscriptions.retrieve(user.stripe_subscription_id);
+        const sub = await stripe.subscriptions.retrieve(user.stripe_subscription_id, { expand: ['items.data.price'] });
         const planExpiresAt = periodEndToIso(sub.current_period_end);
         const cancelScheduled = sub.cancel_at_period_end;
+        planInterval = (sub.items.data[0]?.price as any)?.recurring?.interval ?? null;
         if (planExpiresAt !== user.plan_expires_at || cancelScheduled !== user.plan_cancel_scheduled) {
           await supabaseAdmin
             .from('users')
@@ -188,6 +190,7 @@ billingRouter.get('/status', async (req: Request, res: Response) => {
       plan: user.plan ?? 'free',
       plan_expires_at: user.plan_expires_at ?? null,
       plan_cancel_scheduled: user.plan_cancel_scheduled ?? false,
+      plan_interval: planInterval,
     });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
