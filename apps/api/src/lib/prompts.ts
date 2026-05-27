@@ -433,7 +433,8 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
     "avoid": "今天應避免的一件具體行為"
   },
   "lucky_color": {
-    "color": "具體顏色",
+    "color": "顏色名稱（用回應語言書寫）",
+    "hex": "#rrggbb（必填：對應該顏色的十六進制色碼，例如橄欖綠→#6b7c3e）",
     "reason": "一句說明 + 使用場景"
   },
   "tips": [

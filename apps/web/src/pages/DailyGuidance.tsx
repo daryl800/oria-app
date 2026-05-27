@@ -15,7 +15,7 @@ interface DailySummary {
   moment?: string;
   pace: string;
   focus?: { do: string; avoid: string };
-  lucky_color?: { color: string; reason: string };
+  lucky_color?: { color: string; hex?: string; reason: string };
   helpful_element?: { type: string; value: string; reason: string };
   tips: { area: string; text: string }[];
   identity?: string;
@@ -238,7 +238,7 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
     'Finance': '💰', 'finance': '💰', '財務': '💰',
   };
   const luckyColor = summary.lucky_color?.color || summary.helpful_element?.value || '';
-  const elementColor = getElementColor(luckyColor);
+  const elementColor = summary.lucky_color?.hex || getElementColor(luckyColor);
   const sectionLabelStyle = {
     fontSize: 14,
     fontWeight: 800,
