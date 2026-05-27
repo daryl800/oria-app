@@ -73,6 +73,15 @@ export default function Landing() {
               {t('landing.signin')}
             </button>
           </div>
+
+          <div style={{ marginTop: 20, textAlign: 'center' }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.04em', marginBottom: 4 }}>
+              🔒 {t('landing.privacy_tagline')}
+            </p>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
+              {t('landing.privacy_body')}
+            </p>
+          </div>
         </section>
         <p className="oria-landing-disclaimer">
           {t('landing.disclaimer')}

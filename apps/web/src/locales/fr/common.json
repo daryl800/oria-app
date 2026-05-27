@@ -223,7 +223,9 @@
     "lead": "Ce qui détermine votre prochain choix\nn'est ni l'un ni l'autre seul",
     "emphasis": "mais la combinaison des deux",
     "method": "Métaphysique orientale × Psychologie occidentale",
-    "disclaimer": "Cette application combine l'analyse BaZi et la personnalité MBTI comme outil de référence pour la compréhension de soi et la réflexion décisionnelle. Le contenu est à titre d'inspiration et de référence uniquement, et ne constitue pas un conseil psychologique, médical, juridique, financier ou autre conseil professionnel."
+    "disclaimer": "Cette application combine l'analyse BaZi et la personnalité MBTI comme outil de référence pour la compréhension de soi et la réflexion décisionnelle. Le contenu est à titre d'inspiration et de référence uniquement, et ne constitue pas un conseil psychologique, médical, juridique, financier ou autre conseil professionnel.",
+    "privacy_tagline": "Pas de pub. Pas de suivi. Pas de vente de données.",
+    "privacy_body": "Oria n'utilise vos informations que pour personnaliser votre expérience — rien de plus."
   },
   "login": {
     "title_signin": "Bon retour",

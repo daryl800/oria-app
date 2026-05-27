@@ -223,7 +223,9 @@
     "lead": "Det som formar ditt nästa steg\när inte bara det ena",
     "emphasis": "utan kombinationen av båda",
     "method": "Österländsk metafysik × Västerländsk psykologi",
-    "disclaimer": "Denna app kombinerar BaZi och MBTI-baserad personlighetsanalys som ett referensverktyg för självförståelse och reflektion kring beslut. Innehållet är endast avsett för inspiration och vägledning och utgör inte psykologisk, medicinsk, juridisk, finansiell eller annan professionell rådgivning."
+    "disclaimer": "Denna app kombinerar BaZi och MBTI-baserad personlighetsanalys som ett referensverktyg för självförståelse och reflektion kring beslut. Innehållet är endast avsett för inspiration och vägledning och utgör inte psykologisk, medicinsk, juridisk, finansiell eller annan professionell rådgivning.",
+    "privacy_tagline": "Inga annonser. Ingen spårning. Ingen dataförsäljning.",
+    "privacy_body": "Oria använder bara din information för att personalisera din upplevelse — inget annat."
   },
   "login": {
     "title_signin": "Välkommen tillbaka",

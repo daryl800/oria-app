@@ -223,7 +223,9 @@
     "lead": "Was deinen nächsten Schritt bestimmt\nist nicht das eine oder das andere allein",
     "emphasis": "sondern die Kombination aus beidem",
     "method": "Östliche Metaphysik × Westliche Psychologie",
-    "disclaimer": "Diese App kombiniert BaZi und MBTI-basierte Persönlichkeitsanalyse als Referenzwerkzeug zur Selbsterkenntnis und Entscheidungsreflexion. Die Inhalte dienen nur zur Inspiration und Referenz und stellen keine psychologische, medizinische, rechtliche, finanzielle oder sonstige professionelle Beratung dar."
+    "disclaimer": "Diese App kombiniert BaZi und MBTI-basierte Persönlichkeitsanalyse als Referenzwerkzeug zur Selbsterkenntnis und Entscheidungsreflexion. Die Inhalte dienen nur zur Inspiration und Referenz und stellen keine psychologische, medizinische, rechtliche, finanzielle oder sonstige professionelle Beratung dar.",
+    "privacy_tagline": "Keine Werbung. Kein Tracking. Kein Datenverkauf.",
+    "privacy_body": "Oria verwendet deine Daten nur zur Personalisierung deines Erlebnisses — mehr nicht."
   },
   "login": {
     "title_signin": "Willkommen zurück",
