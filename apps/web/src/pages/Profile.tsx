@@ -466,7 +466,7 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
           { label: t('profileLinks.pricingPlans'), path: '/pricing' },
           { label: t('profileLinks.accountData'), path: '/account-and-data' },
         ].map(link => (
-          <button key={link.path} onClick={() => navigate(link.path)} style={{
+          <button key={link.label} onClick={() => navigate(link.path)} style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             width: '100%', background: 'none', border: 'none',
             borderBottom: '1px solid rgba(255,255,255,0.06)',
