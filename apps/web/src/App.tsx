@@ -42,14 +42,14 @@ import LegalDisclaimer from './pages/LegalDisclaimer';
 import ManageSubscription from './pages/ManageSubscription';
 
 
-function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
+function AppShell({ user, isPlus, planInterval, children }: { user: User | null; isPlus: boolean; planInterval: 'month' | 'year' | null; children: React.ReactNode }) {
   const location = useLocation();
   const isLoggedIn = !!user;
   const onboardingPaths = ['/onboarding/bazi', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/transition', '/onboarding/context', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup'];
   const showBottomNav = isLoggedIn && !onboardingPaths.includes(location.pathname);
   return (
     <div className="oria-shell">
-      <TopBar user={user} isPlus={isPlus} />
+      <TopBar user={user} isPlus={isPlus} planInterval={planInterval} />
       <div className="oria-shell-frame" style={{ paddingBottom: showBottomNav ? 110 : 24 }}>
         {children}
       </div>
@@ -179,7 +179,7 @@ export default function App() {
           onDone={() => setShowLanguageModal(false)}
         />
       )}
-      <AppShell user={user} isPlus={isPlus}>
+      <AppShell user={user} isPlus={isPlus} planInterval={planInterval}>
         <Routes>
           <Route path="/" element={!user ? <Landing /> : <Navigate to="/chart" />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />

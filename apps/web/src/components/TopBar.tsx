@@ -21,9 +21,10 @@ const NAV_ITEMS = [
 interface TopBarProps {
   user?: User | null;
   isPlus?: boolean;
+  planInterval?: 'month' | 'year' | null;
 }
 
-export default function TopBar({ user, isPlus = false }: TopBarProps) {
+export default function TopBar({ user, isPlus = false, planInterval = null }: TopBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
@@ -123,7 +124,11 @@ export default function TopBar({ user, isPlus = false }: TopBarProps) {
               </div>
             )}
 
-            {isPlus && <div className="oria-plus-badge">PLUS</div>}
+            {isPlus && (
+              <div className="oria-plus-badge">
+                PLUS{planInterval === 'year' ? ' · Yearly' : planInterval === 'month' ? ' · Monthly' : ''}
+              </div>
+            )}
 
             {isLoggedIn && (
               <button

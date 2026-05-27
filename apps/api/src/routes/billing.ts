@@ -100,10 +100,11 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
         const customerId = sub.customer as string;
         const planExpiresAt = periodEndToIso(sub.current_period_end);
         const cancelScheduled = sub.cancel_at_period_end;
-        console.log(`[billing] subscription.updated customer=${customerId} cancel_at_period_end=${cancelScheduled} expires=${planExpiresAt}`);
+        const planInterval = (sub.items.data[0]?.price as any)?.recurring?.interval ?? null;
+        console.log(`[billing] subscription.updated customer=${customerId} cancel_at_period_end=${cancelScheduled} expires=${planExpiresAt} interval=${planInterval}`);
         await supabaseAdmin
           .from('users')
-          .update({ plan_expires_at: planExpiresAt, plan_cancel_scheduled: cancelScheduled })
+          .update({ plan_expires_at: planExpiresAt, plan_cancel_scheduled: cancelScheduled, plan_interval: planInterval })
           .eq('stripe_customer_id', customerId);
         break;
       }
