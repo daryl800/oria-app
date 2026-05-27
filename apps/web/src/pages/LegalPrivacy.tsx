@@ -29,7 +29,7 @@ export default function LegalPrivacy() {
       }}>← Back</button>
 
       <h1 style={{ fontSize: 28, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>Privacy Policy</h1>
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Last updated: May 2025</p>
+      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Last updated: May 2026</p>
       <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 24 }} />
       {/* English-only notice */}
       <EnglishOnlyNotice />
@@ -53,14 +53,24 @@ export default function LegalPrivacy() {
         ))}
       </ul>
 
-      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '0 0 10px' }}>Data storage</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '0 0 10px' }}>Legal basis for processing</h2>
       <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, marginBottom: 24 }}>
-        Your data is stored securely. We use trusted third-party providers including Supabase (database and authentication), Stripe (payments), and Brevo (email).
+        We process your personal data primarily on the basis of contract performance — to deliver the features you have signed up to use. Where applicable, we also rely on our legitimate interests in operating and improving Oria, and on your consent where explicitly given.
+      </p>
+
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '0 0 10px' }}>Data storage and international transfers</h2>
+      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, marginBottom: 24 }}>
+        Your data is stored and processed by trusted third-party providers including Supabase (database and authentication), Stripe (payments), Brevo (email), and AI providers (OpenAI, DeepSeek, Tencent Hunyuan). These providers may process data outside your country or the European Economic Area. Where this occurs, we rely on appropriate safeguards such as Standard Contractual Clauses or equivalent mechanisms recognised under applicable data protection law.
+      </p>
+
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '0 0 10px' }}>AI processing</h2>
+      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, marginBottom: 24 }}>
+        To generate personalised guidance and chat responses, Oria sends limited personal data — including your birth date, MBTI type, focus areas, and chat messages — to third-party AI providers (OpenAI, DeepSeek, Tencent Hunyuan). This data is used solely to generate your response and is not used by these providers to train their models under our agreements with them.
       </p>
 
       <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '0 0 10px' }}>Your rights</h2>
       <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, marginBottom: 8 }}>
-        You may request access to, correction of, or deletion of your personal data at any time by contacting:
+        Depending on your location, you may have the right to access, correct, or delete your personal data, restrict or object to its processing, receive a copy in a portable format, and lodge a complaint with your local data protection authority. You can exercise most of these rights directly through the app (Settings → Delete Account), or by contacting:
       </p>
       <a href="mailto:support@oriacompass.com" style={{ fontSize: 15, color: '#C9A84C', display: 'block', marginBottom: 24 }}>support@oriacompass.com</a>
 

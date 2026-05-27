@@ -29,7 +29,7 @@ export default function LegalBilling() {
       }}>← Back</button>
 
       <h1 style={{ fontSize: 28, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>Billing & Refund Policy</h1>
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Last updated: May 2025</p>
+      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Last updated: May 2026</p>
       <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 24 }} />
       {/* English-only notice */}
       <EnglishOnlyNotice />
@@ -52,7 +52,12 @@ export default function LegalBilling() {
         </div>
       ))}
 
-      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '28px 0 10px' }}>10. Contact</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '28px 0 10px' }}>10. EU consumer withdrawal rights</h2>
+      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, marginBottom: 8 }}>
+        If you are a consumer in the European Union, you may have a statutory right to withdraw from a purchase within 14 days. However, by subscribing to Oria Plus and requesting immediate access to Plus features, you acknowledge that the digital service begins immediately upon purchase. You expressly consent to immediate delivery and acknowledge that you lose your right of withdrawal once the service has commenced, to the extent permitted by applicable law. This does not affect your rights in the event of a billing error or defective service.
+      </p>
+
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '28px 0 10px' }}>11. Contact</h2>
       <a href="mailto:support@oriacompass.com" style={{ fontSize: 15, color: '#C9A84C' }}>support@oriacompass.com</a>
     </div>
   );

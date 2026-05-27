@@ -29,7 +29,7 @@ export default function LegalTerms() {
       }}>← Back</button>
 
       <h1 style={{ fontSize: 28, fontWeight: 700, color: '#F0EDE8', marginBottom: 8 }}>Terms of Service</h1>
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Last updated: May 2025</p>
+      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Last updated: May 2026</p>
       <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 24 }} />
       {/* English-only notice */}
       <EnglishOnlyNotice />
@@ -61,7 +61,12 @@ export default function LegalTerms() {
         </div>
       ))}
 
-      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '28px 0 10px' }}>17. Contact</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '28px 0 10px' }}>17. Governing law</h2>
+      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, marginBottom: 8 }}>
+        These Terms are governed by and construed in accordance with the laws of Hong Kong SAR. Any disputes arising from these Terms or your use of Oria shall be subject to the non-exclusive jurisdiction of the courts of Hong Kong SAR. If you are a consumer in a jurisdiction that provides mandatory consumer protection rights, those rights are not affected by this clause.
+      </p>
+
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#C9A84C', margin: '28px 0 10px' }}>18. Contact</h2>
       <a href="mailto:support@oriacompass.com" style={{ fontSize: 15, color: '#C9A84C' }}>support@oriacompass.com</a>
     </div>
   );
