@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getBillingStatus, cancelSubscription, reactivateSubscription } from '@/services/api';
+import { getBillingStatus, cancelSubscription, reactivateSubscription, createPortalSession } from '@/services/api';
 
 interface BillingStatus {
   plan: string;
@@ -38,6 +38,18 @@ export default function ManageSubscription({ isPlus }: { isPlus: boolean }) {
     } catch (e: any) {
       setError(e.message);
     } finally {
+      setWorking(false);
+    }
+  }
+
+  async function handlePortal() {
+    setWorking(true);
+    setError(null);
+    try {
+      const { url } = await createPortalSession();
+      window.location.href = url;
+    } catch (e: any) {
+      setError(e.message);
       setWorking(false);
     }
   }
@@ -176,8 +188,16 @@ export default function ManageSubscription({ isPlus }: { isPlus: boolean }) {
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', margin: '0 0 4px', lineHeight: 1.65 }}>
-                    You can cancel anytime. You'll keep Plus access until {formatDate(status.plan_expires_at)}.
+                  <button
+                    onClick={handlePortal}
+                    disabled={working}
+                    className="oria-btn-primary"
+                    style={{ fontSize: 15 }}
+                  >
+                    {working ? 'Redirecting…' : 'Change plan'}
+                  </button>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', margin: '0 0 8px', lineHeight: 1.65, textAlign: 'center' }}>
+                    Switch between monthly and yearly, update payment method, or view invoices.
                   </p>
                   <button
                     onClick={() => setConfirmCancel(true)}

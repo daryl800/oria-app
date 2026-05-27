@@ -297,6 +297,17 @@ export async function deleteAccount(): Promise<void> {
   if (!res.ok) throw new Error(await res.text());
 }
 
+export async function createPortalSession(): Promise<{ url: string }> {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/billing/portal`, {
+    method: 'POST',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ return_url: `${window.location.origin}/manage-subscription` }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
 export async function reactivateSubscription(): Promise<{
   plan_expires_at: string;
   plan_cancel_scheduled: boolean;

@@ -261,6 +261,33 @@ billingRouter.post('/reactivate', async (req: Request, res: Response) => {
   }
 });
 
+// POST /billing/portal — create a Stripe Customer Portal session
+billingRouter.post('/portal', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const returnUrl = (req.body?.return_url as string) || process.env.APP_URL || 'https://oria.app';
+
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select('stripe_customer_id')
+      .eq('id', userId)
+      .single();
+
+    if (!user?.stripe_customer_id) {
+      return res.status(400).json({ error: 'No billing account found.' });
+    }
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: user.stripe_customer_id,
+      return_url: returnUrl,
+    });
+
+    return res.json({ url: session.url });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // DELETE /billing/account — permanently delete account and all associated data
 billingRouter.delete('/account', async (req: Request, res: Response) => {
   const userId = (req as any).userId;
