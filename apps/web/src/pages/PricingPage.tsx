@@ -218,19 +218,6 @@ export default function PricingPage({ isPlus = false, user }: { isPlus?: boolean
       <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 32 }}>
         {t('billing.trust')}
       </p>
-      {isPlus && (
-        <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <a href={STRIPE_PORTAL_LINK || '#'} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-            <button style={{
-              background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)',
-              borderRadius: 999, padding: '8px 20px', fontSize: 13, fontWeight: 600,
-              color: '#C9A84C', cursor: 'pointer', fontFamily: 'inherit',
-            }}>
-              ✦ {t('billing.manageSubscription')}
-            </button>
-          </a>
-        </div>
-      )}
     </div>
   );
 }
