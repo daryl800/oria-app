@@ -180,6 +180,8 @@ function getRespondIn(lang: string): string {
   if (lang === 'ja') return '⚠️ CRITICAL: Write ALL JSON text values in Japanese. Do NOT use Chinese. / すべてのJSONテキスト値を日本語で記述してください。';
   if (lang === 'ko') return '⚠️ CRITICAL: Write ALL JSON text values in Korean. Do NOT use Chinese. / 모든 JSON 텍스트 값을 한국어로 작성하세요.';
   if (lang === 'sv') return '⚠️ CRITICAL: Write ALL JSON text values in Swedish (svenska). Do NOT use Chinese or any other language.';
+  if (lang === 'es') return '⚠️ CRITICAL: Write ALL JSON text values in Spanish (español). Do NOT use Chinese or any other language.';
+  if (lang === 'fr') return '⚠️ CRITICAL: Write ALL JSON text values in French (français). Do NOT use Chinese or any other language.';
   return '⚠️ CRITICAL: Write ALL JSON text values in English. Do NOT use Chinese.';
 }
 
@@ -190,6 +192,8 @@ function getLangGuard(lang: string): string {
   if (lang === 'sv') return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in Swedish (svenska). The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
   if (lang === 'ja') return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in Japanese. The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
   if (lang === 'ko') return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in Korean. The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
+  if (lang === 'es') return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in Spanish (español). The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
+  if (lang === 'fr') return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in French (français). The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
   return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in English. The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
 }
 
@@ -201,6 +205,8 @@ function getContextFocusSection(context_focus: string[] = [], lang: string = 'en
     'ja': 'ユーザーの関心領域',
     'ko': '사용자 관심 영역',
     'sv': 'Användarens fokusområden',
+    'es': 'Áreas de enfoque del usuario',
+    'fr': "Domaines d'intérêt de l'utilisateur",
   };
   const label = labels[lang] ?? 'User focus areas';
   const separator = ['zh-TW', 'zh-CN', 'ja'].includes(lang) ? '、' : ', ';

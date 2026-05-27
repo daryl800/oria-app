@@ -5,6 +5,8 @@ export const SUPPORTED_LANGUAGES = [
   { code: 'ja', label: '日本語', flag: '🇯🇵', shortLabel: '日本語' },
   { code: 'ko', label: '한국어', flag: '🇰🇷', shortLabel: '한국어' },
   { code: 'sv', label: 'sv', flag: '🇸🇪', shortLabel: 'sv' },
+  { code: 'es', label: 'ES', flag: '🇪🇸', shortLabel: 'ES' },
+  { code: 'fr', label: 'FR', flag: '🇫🇷', shortLabel: 'FR' },
 ] as const;
 
 export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number]['code'];
