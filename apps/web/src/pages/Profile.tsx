@@ -462,7 +462,7 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
           {t('profileLinks.account')}
         </div>
         {[
-          { label: isPlus ? t('profileLinks.manageSubscription') : t('profileLinks.upgradeToPlus'), path: '/pricing' },
+          { label: isPlus ? t('profileLinks.manageSubscription') : t('profileLinks.upgradeToPlus'), path: isPlus ? '/manage-subscription' : '/pricing' },
           { label: t('profileLinks.pricingPlans'), path: '/pricing' },
           { label: t('profileLinks.accountData'), path: '/account-and-data' },
         ].map(link => (
