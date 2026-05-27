@@ -40,7 +40,6 @@ import LegalPrivacy from './pages/LegalPrivacy';
 import LegalBilling from './pages/LegalBilling';
 import LegalDisclaimer from './pages/LegalDisclaimer';
 import ManageSubscription from './pages/ManageSubscription';
-import { getBillingStatus } from './services/api';
 
 
 function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
@@ -103,39 +102,30 @@ export default function App() {
     // Fetch plan + language before revealing the app
     const { data: userRecord } = await supabase
       .from('users')
-      .select('plan, pro_expires_at, preferred_language')
+      .select('plan, pro_expires_at, preferred_language, plan_interval')
       .eq('id', userId)
       .single();
     const pro = isPlusUser(userRecord);
     setIsPro(pro);
     setIsProLoaded(true);
+    setPlanInterval(userRecord?.plan_interval ?? null);
 
-    // Resolve language and plan interval in parallel — both must complete
-    // before the spinner drops so there's no post-render state flip.
-    const billingPromise = pro
-      ? getBillingStatus().then((s) => setPlanInterval(s.plan_interval ?? null)).catch(() => {})
-      : Promise.resolve();
-
-    let langPromise: Promise<void>;
+    // Apply language BEFORE setOnboardingComplete so the spinner never goes
+    // away while the language is still changing.
     if (userRecord?.preferred_language) {
-      langPromise = i18n.changeLanguage(userRecord.preferred_language).then(() => {
-        localStorage.setItem('oria_language', userRecord.preferred_language);
-      });
+      await i18n.changeLanguage(userRecord.preferred_language);
+      localStorage.setItem('oria_language', userRecord.preferred_language);
     } else {
       const lang = localStorage.getItem('oria_language');
       if (lang) {
-        langPromise = i18n.changeLanguage(lang).then(() => {
-          localStorage.setItem('oria_language', lang);
-          supabase.from('users').update({ preferred_language: lang }).eq('id', userId);
-        });
+        await i18n.changeLanguage(lang);
+        localStorage.setItem('oria_language', lang);
+        supabase.from('users').update({ preferred_language: lang }).eq('id', userId);
       } else {
         setLangUserId(userId);
         setShowLanguageModal(true);
-        langPromise = Promise.resolve();
       }
     }
-
-    await Promise.all([langPromise, billingPromise]);
 
     setOnboardingComplete(!!data?.current_bazi_version_id);
   }

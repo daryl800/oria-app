@@ -43,12 +43,14 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
         const customerId = session.customer as string | null;
         const subscriptionId = session.subscription as string | null;
 
-        // Fetch subscription period_end if this is a subscription
+        // Fetch subscription details (period_end + interval)
         let planExpiresAt: string | null = null;
+        let planInterval: string | null = null;
         if (subscriptionId) {
           try {
-            const sub = await stripe.subscriptions.retrieve(subscriptionId);
+            const sub = await stripe.subscriptions.retrieve(subscriptionId, { expand: ['items.data.price'] });
             planExpiresAt = periodEndToIso(sub.current_period_end);
+            planInterval = (sub.items.data[0]?.price as any)?.recurring?.interval ?? null;
           } catch (e: any) {
             console.warn('[billing] could not retrieve subscription:', e.message);
           }
@@ -57,10 +59,10 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
         const upgradeUser = async (uid: string) => {
           const { error } = await supabaseAdmin
             .from('users')
-            .update({ plan: 'plus', plan_cancel_scheduled: false, plan_expires_at: planExpiresAt })
+            .update({ plan: 'plus', plan_cancel_scheduled: false, plan_expires_at: planExpiresAt, plan_interval: planInterval })
             .eq('id', uid);
           if (error) console.error(`[billing] plan upgrade failed for ${uid}:`, error.message);
-          else console.log(`[billing] plan upgraded to plus for user ${uid}, expires=${planExpiresAt}`);
+          else console.log(`[billing] plan upgraded to plus for user ${uid}, expires=${planExpiresAt}, interval=${planInterval}`);
 
           if (customerId) {
             const { error: cidErr } = await supabaseAdmin
