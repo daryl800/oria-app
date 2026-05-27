@@ -40,6 +40,7 @@ import LegalPrivacy from './pages/LegalPrivacy';
 import LegalBilling from './pages/LegalBilling';
 import LegalDisclaimer from './pages/LegalDisclaimer';
 import ManageSubscription from './pages/ManageSubscription';
+import { getBillingStatus } from './services/api';
 
 
 function AppShell({ user, isPlus, children }: { user: User | null; isPlus: boolean; children: React.ReactNode }) {
@@ -85,6 +86,7 @@ export default function App() {
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
   const [isPlus, setIsPro] = useState(false);
   const [isPlusLoaded, setIsProLoaded] = useState(false);
+  const [planInterval, setPlanInterval] = useState<'month' | 'year' | null>(null);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [langUserId, setLangUserId] = useState<string | null>(null);
 
@@ -107,6 +109,11 @@ export default function App() {
     const pro = isPlusUser(userRecord);
     setIsPro(pro);
     setIsProLoaded(true);
+    if (pro) {
+      getBillingStatus()
+        .then((s) => setPlanInterval(s.plan_interval ?? null))
+        .catch(() => {});
+    }
 
     // Apply language BEFORE setOnboardingComplete so the spinner never goes
     // away while the language is still changing.
@@ -148,6 +155,7 @@ export default function App() {
         setUser(null);
         setIsPro(false);
         setIsProLoaded(false);
+        setPlanInterval(null);
         sessionStorage.clear();
         localStorage.removeItem('oria_mbti_result');
         localStorage.removeItem('oria_mbti_answers');
@@ -210,7 +218,7 @@ export default function App() {
           {/* Public info & legal pages */}
           <Route path="/about" element={<AboutOria />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/pricing" element={<PricingPage isPlus={isPlus} user={user} />} />
+          <Route path="/pricing" element={<PricingPage isPlus={isPlus} planInterval={planInterval} user={user} />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/legal/terms" element={<LegalTerms />} />
           <Route path="/legal/privacy" element={<LegalPrivacy />} />

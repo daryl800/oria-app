@@ -1,8 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { getBillingStatus } from '../services/api';
 
 const STRIPE_MONTHLY_LINK = import.meta.env.VITE_STRIPE_MONTHLY_LINK || 'https://buy.stripe.com/test_cNi7sLegE6kBcCo4Fn8N202';
 const STRIPE_YEARLY_LINK = import.meta.env.VITE_STRIPE_YEARLY_LINK || '#';
@@ -18,17 +16,9 @@ function buildPaymentLink(base: string, userId?: string): string {
   }
 }
 
-export default function PricingPage({ isPlus = false, user }: { isPlus?: boolean; user?: User | null }) {
+export default function PricingPage({ isPlus = false, planInterval = null, user }: { isPlus?: boolean; planInterval?: 'month' | 'year' | null; user?: User | null }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [planInterval, setPlanInterval] = useState<'month' | 'year' | null>(null);
-
-  useEffect(() => {
-    if (!isPlus || !user) return;
-    getBillingStatus()
-      .then((data) => { if (data?.plan_interval) setPlanInterval(data.plan_interval); })
-      .catch(() => {});
-  }, [isPlus, user]);
 
   const monthlyLink = buildPaymentLink(STRIPE_MONTHLY_LINK, user?.id);
   const yearlyLink = buildPaymentLink(STRIPE_YEARLY_LINK, user?.id);
