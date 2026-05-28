@@ -813,7 +813,7 @@
     "monthly_update": "Monthly update"
   },
   "billing": {
-    "title": "Choose your Oria plan",
+    "title": "Unlock Oria Full Insights Plan",
     "subtitle": "Understand your natural patterns and personality style, so Oria can support you in making clearer decisions.",
     "free": {
       "title": "Oria Free",
@@ -859,7 +859,7 @@
         "history": "Saved guidance history",
         "chatLimit": "5 full Oria Chat answers per day"
       },
-      "button": "Unlock Yearly Access"
+      "button": "Annual Savings Plan"
     },
     "currentPlan": "Current Plan",
     "manageSubscription": "Manage Subscription",

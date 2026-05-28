@@ -764,7 +764,7 @@
     "monthly_update": "毎月更新"
   },
   "billing": {
-    "title": "Oriaのプランを選択",
+    "title": "Oria 完全インサイトプランを解放",
     "subtitle": "あなたの天賦のパターンと性格傾向を理解し、より明確な判断をサポートします。",
     "free": {
       "title": "Oria Free",
@@ -810,7 +810,7 @@
         "history": "ガイダンス履歴の保存",
         "chatLimit": "1日5回の完全なOriaチャット回答"
       },
-      "button": "年額プランを解除"
+      "button": "お得な年額プラン"
     },
     "currentPlan": "現在のプラン",
     "manageSubscription": "サブスクリプション管理",

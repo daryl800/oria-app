@@ -813,7 +813,7 @@
     "monthly_update": "Actualización mensual"
   },
   "billing": {
-    "title": "Elige tu plan Oria",
+    "title": "Desbloquear el Plan Completo de Oria",
     "subtitle": "Comprende tus patrones naturales y estilo de personalidad.",
     "free": {
       "title": "Oria Gratis",
@@ -859,7 +859,7 @@
         "history": "Historial de guía guardado",
         "chatLimit": "5 respuestas completas de Oria Chat por día"
       },
-      "button": "Desbloquear acceso anual"
+      "button": "Plan Anual con Descuento"
     },
     "currentPlan": "Plan actual",
     "manageSubscription": "Gestionar suscripción",

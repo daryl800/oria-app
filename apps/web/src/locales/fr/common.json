@@ -813,7 +813,7 @@
     "monthly_update": "Mise à jour mensuelle"
   },
   "billing": {
-    "title": "Choisissez votre formule Oria",
+    "title": "Débloquer le Plan Complet Oria",
     "subtitle": "Comprenez vos schémas naturels et votre style de personnalité, afin qu'Oria puisse vous aider à prendre des décisions plus claires.",
     "free": {
       "title": "Oria Gratuit",
@@ -859,7 +859,7 @@
         "history": "Historique de guidance sauvegardé",
         "chatLimit": "5 réponses complètes Oria Chat par jour"
       },
-      "button": "Débloquer l'Accès Annuel"
+      "button": "Forfait annuel avantageux"
     },
     "currentPlan": "Formule Actuelle",
     "manageSubscription": "Gérer l'Abonnement",

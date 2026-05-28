@@ -204,7 +204,10 @@ export default function PricingPage({ isPlus = false, planInterval = null, user 
               type="button"
               className="oria-btn-premium"
               style={{ width: '100%' }}
-              onClick={() => { window.location.href = yearlyLink; }}
+              onClick={() => {
+                if (yearlyLink === '#' || yearlyLink.includes('placeholder')) { alert('Payment link not configured. Please contact support.'); return; }
+                window.location.href = yearlyLink;
+              }}
             >
               {t('billing.yearly.button')}
             </button>

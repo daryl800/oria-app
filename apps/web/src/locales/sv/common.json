@@ -764,7 +764,7 @@
     "monthly_update": "Månadsuppdatering"
   },
   "billing": {
-    "title": "Välj din Oria-plan",
+    "title": "Lås upp Orias Fullständiga Insiktsplan",
     "subtitle": "Förstå dina naturliga mönster och personlighetsstil, så att Oria kan stödja dig i att fatta tydligare beslut.",
     "free": {
       "title": "Oria Free",
@@ -810,7 +810,7 @@
         "history": "Sparad vägledningshistorik",
         "chatLimit": "5 fullständiga Oria Chat-svar per dag"
       },
-      "button": "Lås upp årsplan"
+      "button": "Förmånlig årsplan"
     },
     "currentPlan": "Nuvarande plan",
     "manageSubscription": "Hantera prenumeration",

@@ -764,7 +764,7 @@
     "monthly_update": "매월 업데이트"
   },
   "billing": {
-    "title": "Oria 플랜 선택",
+    "title": "Oria 완전한 인사이트 플랜 잠금 해제",
     "subtitle": "타고난 패턴과 성격 스타일을 이해하여 더 명확한 결정을 내릴 수 있도록 Oria가 지원합니다.",
     "free": {
       "title": "Oria 무료",
@@ -810,7 +810,7 @@
         "history": "저장된 가이던스 기록",
         "chatLimit": "하루 5회 완전한 Oria Chat 답변"
       },
-      "button": "연간 플랜 잠금 해제"
+      "button": "할인 연간 플랜"
     },
     "currentPlan": "현재 플랜",
     "manageSubscription": "구독 관리",

@@ -813,7 +813,7 @@
     "monthly_update": "Monatliche Aktualisierung"
   },
   "billing": {
-    "title": "Wähle deinen Oria-Plan",
+    "title": "Oria Vollständigen Einblicksplan freischalten",
     "subtitle": "Verstehe deine natürlichen Muster und deinen Persönlichkeitsstil, damit Oria dich bei klareren Entscheidungen unterstützen kann.",
     "free": {
       "title": "Oria Kostenlos",
@@ -859,7 +859,7 @@
         "history": "Gespeicherter Führungsverlauf",
         "chatLimit": "5 vollständige Oria-Chat-Antworten pro Tag"
       },
-      "button": "Jährlichen Zugang freischalten"
+      "button": "Vorteilhafter Jahresplan"
     },
     "currentPlan": "Aktueller Plan",
     "manageSubscription": "Abonnement Verwalten",

@@ -764,7 +764,7 @@
     "monthly_update": "每月更新"
   },
   "billing": {
-    "title": "选择你的 Oria 方案",
+    "title": "解锁 Oria 完整解读方案",
     "subtitle": "透过你的天赋模式与性格倾向，辅助你做出更清楚的选择。",
     "free": {
       "title": "Oria 免费版",
@@ -810,7 +810,7 @@
         "history": "已保存的指引记录",
         "chatLimit": "每日 5 则完整 Oria Chat 回复"
       },
-      "button": "解锁年费方案"
+      "button": "优惠年费方案"
     },
     "currentPlan": "当前方案",
     "manageSubscription": "管理订阅",
