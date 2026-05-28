@@ -3,7 +3,7 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { supabase } from '../lib/supabase';
-import { complete } from '../lib/llm';
+import { complete, sanitizeLlmJson } from '../lib/llm';
 import { calculateZodiac } from '../lib/zodiac';
 import { monthlyChartFocusPrompt } from '../lib/prompts';
 
@@ -104,7 +104,7 @@ router.get('/current', authMiddleware, async (req: Request, res: Response) => {
     const zodiac = baziVersion.birth_date ? calculateZodiac(baziVersion.birth_date) : null;
     const messages = monthlyChartFocusPrompt(baziVersion, mbtiProfile, monthKey, lang, zodiac, monthStem, monthBranch);
     const raw = await complete(messages, 'profile');
-    const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
+    const clean = sanitizeLlmJson(raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim());
     const focus = JSON.parse(clean);
 
     await supabase.from('monthly_chart_focus').upsert({

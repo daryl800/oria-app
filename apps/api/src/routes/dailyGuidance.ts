@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
-import { complete } from '../lib/llm';
+import { complete, sanitizeLlmJson } from '../lib/llm';
 import { calculateZodiac } from '../lib/zodiac';
 import { dailyGuidancePrompt } from '../lib/prompts';
 
@@ -165,7 +165,7 @@ router.get('/today', async (req: Request, res: Response) => {
       contextFocus ?? [],
     );
     const raw = await complete(messages, 'daily');
-    const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
+    const clean = sanitizeLlmJson(raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim());
     const summary = JSON.parse(clean);
 
     // 5. cache result with lang

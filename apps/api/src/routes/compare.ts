@@ -4,7 +4,7 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { supabase } from '../lib/supabase';
-import { complete } from '../lib/llm';
+import { complete, sanitizeLlmJson } from '../lib/llm';
 import { calculateZodiac } from '../lib/zodiac';
 import { comparisonPrompt } from '../lib/prompts';
 
@@ -175,7 +175,7 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
       personZodiac,
     );
     const raw = await complete(messages, 'profile');
-    const clean = raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim();
+    const clean = sanitizeLlmJson(raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim());
     comparison = JSON.parse(clean);
   } catch (err) {
     console.error('LLM or parse error:', err);

@@ -1,4 +1,28 @@
 // llm.ts - Multi-chain LLM client with per-use-case provider fallback
+
+/**
+ * Escapes any raw control characters (0x00–0x1F) that appear inside JSON
+ * string literals. LLMs occasionally emit literal newlines inside strings,
+ * which are invalid JSON and cause JSON.parse to throw.
+ */
+export function sanitizeLlmJson(raw: string): string {
+  let result = '';
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < raw.length; i++) {
+    const c = raw[i];
+    const code = raw.charCodeAt(i);
+    if (escaped) { result += c; escaped = false; continue; }
+    if (c === '\\' && inString) { result += c; escaped = true; continue; }
+    if (c === '"') { inString = !inString; result += c; continue; }
+    if (inString && code < 0x20) {
+      result += '\\u' + code.toString(16).padStart(4, '0');
+      continue;
+    }
+    result += c;
+  }
+  return result;
+}
 import OpenAI from 'openai';
 
 // ── Individual providers ──────────────────────────────────────────
