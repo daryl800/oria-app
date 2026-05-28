@@ -1,10 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { createPortalSession } from '../services/api';
 
 // Stripe payment links — set in Vercel env vars
 const STRIPE_MONTHLY_LINK = import.meta.env.VITE_STRIPE_MONTHLY_LINK || 'https://buy.stripe.com/test_cNi7sLegE6kBcCo4Fn8N202';
 const STRIPE_YEARLY_LINK = import.meta.env.VITE_STRIPE_YEARLY_LINK || '#';
-const STRIPE_PORTAL_LINK = import.meta.env.VITE_STRIPE_PORTAL_LINK || 'https://billing.stripe.com/p/login/test_placeholder';
 
 interface UpgradeProps {
   isPlus?: boolean;
@@ -13,6 +14,19 @@ interface UpgradeProps {
 export default function Upgrade({ isPlus = false }: UpgradeProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  const openPortal = async () => {
+    setPortalLoading(true);
+    try {
+      const { url } = await createPortalSession();
+      window.open(url, '_blank');
+    } catch {
+      alert('Could not open billing portal. Please contact support.');
+    } finally {
+      setPortalLoading(false);
+    }
+  };
 
   const freeFeatures = Object.values(t('billing.free.features', { returnObjects: true }) as Record<string, string>);
   const monthlyFeatures = Object.values(t('billing.monthly.features', { returnObjects: true }) as Record<string, string>);
@@ -56,15 +70,19 @@ export default function Upgrade({ isPlus = false }: UpgradeProps) {
         </p>
         {isPlus && (
           <div style={{ marginTop: 20, display: 'flex', justifyContent: 'center' }}>
-            <a href={STRIPE_PORTAL_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-              <button style={{
+            <button
+              type="button"
+              onClick={openPortal}
+              disabled={portalLoading}
+              style={{
                 background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)',
                 borderRadius: 999, padding: '8px 20px', fontSize: 13, fontWeight: 600,
-                color: '#C9A84C', cursor: 'pointer', fontFamily: 'inherit',
-              }}>
-                ✦ {t('billing.manageSubscription')}
-              </button>
-            </a>
+                color: '#C9A84C', cursor: portalLoading ? 'default' : 'pointer', fontFamily: 'inherit',
+                opacity: portalLoading ? 0.6 : 1,
+              }}
+            >
+              {portalLoading ? '…' : `✦ ${t('billing.manageSubscription')}`}
+            </button>
           </div>
         )}
       </div>
