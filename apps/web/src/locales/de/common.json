@@ -337,7 +337,7 @@
           "meaning": "Neigt dazu, sich in ruhigeren Umgebungen zu erholen, schätzt inneren Rhythmus und Tiefe der Konzentration."
         },
         "S": {
-          "label": "S (Sensing)",
+          "label": "S (Sensorik)",
           "meaning": "Geht von konkreten Fakten, Details und gelebter Erfahrung aus, nicht von abstrakten Annahmen."
         },
         "N": {
@@ -345,39 +345,151 @@
           "meaning": "Geht von Mustern, Kontext und zukünftigen Möglichkeiten aus, schätzt Richtung und Vorstellungskraft."
         },
         "T": {
-          "label": "T (Thinking)",
+          "label": "T (Denken)",
           "meaning": "Trifft Entscheidungen durch Logik, Konsistenz und Analyse, nicht durch den emotionalen Ton selbst."
         },
         "F": {
-          "label": "F (Feeling)",
+          "label": "F (Fühlen)",
           "meaning": "Trifft Entscheidungen durch Werte, relationale Wirkung und innere Ausrichtung."
         },
         "J": {
-          "label": "J (Judging)",
+          "label": "J (Urteilen)",
           "meaning": "Bevorzugt es, früh Ordnung zu schaffen, Entscheidungen früher zu treffen und in einem handhabbaren Rhythmus zu arbeiten."
         },
         "P": {
-          "label": "P (Perceiving)",
+          "label": "P (Wahrnehmen)",
           "meaning": "Bevorzugt Offenheit und Flexibilität, passt sich an, wenn die Umstände sich ändern."
         }
       },
       "types": {
-        "INTJ": { "nickname": "Der Architekt", "traits": ["Strategisch", "Unabhängig", "Visionär"] },
-        "INTP": { "nickname": "Der Denker", "traits": ["Analytisch", "Neugierig", "Erfinderisch"] },
-        "ENTJ": { "nickname": "Der Kommandeur", "traits": ["Kühn", "Entschlossen", "Führend"] },
-        "ENTP": { "nickname": "Der Debattierer", "traits": ["Schlagfertig", "Innovativ", "Charismatisch"] },
-        "INFJ": { "nickname": "Der Anwalt", "traits": ["Einfühlsam", "Prinzipientreu", "Visionär"] },
-        "INFP": { "nickname": "Der Vermittler", "traits": ["Kreativ", "Einfühlsam", "Idealistisch"] },
-        "ENFJ": { "nickname": "Der Protagonist", "traits": ["Inspirierend", "Einfühlsam", "Führend"] },
-        "ENFP": { "nickname": "Der Aktivist", "traits": ["Enthusiastisch", "Kreativ", "Optimistisch"] },
-        "ISTJ": { "nickname": "Der Logistiker", "traits": ["Zuverlässig", "Pragmatisch", "Detailorientiert"] },
-        "ISFJ": { "nickname": "Der Verteidiger", "traits": ["Warmherzig", "Engagiert", "Aufmerksam"] },
-        "ESTJ": { "nickname": "Der Direktor", "traits": ["Organisiert", "Entschlossen", "Loyal"] },
-        "ESFJ": { "nickname": "Der Konsul", "traits": ["Fürsorglich", "Gesellig", "Loyal"] },
-        "ISTP": { "nickname": "Der Virtuose", "traits": ["Pragmatisch", "Aufmerksam", "Unabhängig"] },
-        "ISFP": { "nickname": "Der Abenteurer", "traits": ["Künstlerisch", "Spontan", "Einfühlsam"] },
-        "ESTP": { "nickname": "Der Unternehmer", "traits": ["Kühn", "Aufmerksam", "Energetisch"] },
-        "ESFP": { "nickname": "Der Unterhalter", "traits": ["Spontan", "Energetisch", "Lebensfreudig"] }
+        "INTJ": {
+          "nickname": "Der Architekt",
+          "traits": [
+            "Strategisch",
+            "Unabhängig",
+            "Visionär"
+          ]
+        },
+        "INTP": {
+          "nickname": "Der Denker",
+          "traits": [
+            "Analytisch",
+            "Neugierig",
+            "Erfinderisch"
+          ]
+        },
+        "ENTJ": {
+          "nickname": "Der Kommandeur",
+          "traits": [
+            "Kühn",
+            "Entschlossen",
+            "Führend"
+          ]
+        },
+        "ENTP": {
+          "nickname": "Der Debattierer",
+          "traits": [
+            "Schlagfertig",
+            "Innovativ",
+            "Charismatisch"
+          ]
+        },
+        "INFJ": {
+          "nickname": "Der Anwalt",
+          "traits": [
+            "Einfühlsam",
+            "Prinzipientreu",
+            "Visionär"
+          ]
+        },
+        "INFP": {
+          "nickname": "Der Vermittler",
+          "traits": [
+            "Kreativ",
+            "Einfühlsam",
+            "Idealistisch"
+          ]
+        },
+        "ENFJ": {
+          "nickname": "Der Protagonist",
+          "traits": [
+            "Inspirierend",
+            "Einfühlsam",
+            "Führend"
+          ]
+        },
+        "ENFP": {
+          "nickname": "Der Aktivist",
+          "traits": [
+            "Enthusiastisch",
+            "Kreativ",
+            "Optimistisch"
+          ]
+        },
+        "ISTJ": {
+          "nickname": "Der Logistiker",
+          "traits": [
+            "Zuverlässig",
+            "Pragmatisch",
+            "Detailorientiert"
+          ]
+        },
+        "ISFJ": {
+          "nickname": "Der Verteidiger",
+          "traits": [
+            "Warmherzig",
+            "Engagiert",
+            "Aufmerksam"
+          ]
+        },
+        "ESTJ": {
+          "nickname": "Der Direktor",
+          "traits": [
+            "Organisiert",
+            "Entschlossen",
+            "Loyal"
+          ]
+        },
+        "ESFJ": {
+          "nickname": "Der Konsul",
+          "traits": [
+            "Fürsorglich",
+            "Gesellig",
+            "Loyal"
+          ]
+        },
+        "ISTP": {
+          "nickname": "Der Virtuose",
+          "traits": [
+            "Pragmatisch",
+            "Aufmerksam",
+            "Unabhängig"
+          ]
+        },
+        "ISFP": {
+          "nickname": "Der Abenteurer",
+          "traits": [
+            "Künstlerisch",
+            "Spontan",
+            "Einfühlsam"
+          ]
+        },
+        "ESTP": {
+          "nickname": "Der Unternehmer",
+          "traits": [
+            "Kühn",
+            "Aufmerksam",
+            "Energetisch"
+          ]
+        },
+        "ESFP": {
+          "nickname": "Der Unterhalter",
+          "traits": [
+            "Spontan",
+            "Energetisch",
+            "Lebensfreudig"
+          ]
+        }
       }
     },
     "insight": {
