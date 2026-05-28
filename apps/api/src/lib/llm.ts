@@ -64,8 +64,8 @@ const geminiLite = {
     apiKey: process.env.GEMINI_API_KEY!,
     baseURL: geminiBase,
   }),
-  model: process.env['GEMINI_LLM_MODEL_3.1-flash-lite'] || 'gemini-3.1-flash-lite',
-  timeoutMs: 60_000,
+  model: process.env['GEMINI_LLM_MODEL_3_1_flash_lite'] || 'gemini-3.1-flash-lite',
+  timeoutMs: 40_000,
 };
 
 const gemini35 = {
@@ -74,8 +74,8 @@ const gemini35 = {
     apiKey: process.env.GEMINI_API_KEY!,
     baseURL: geminiBase,
   }),
-  model: process.env['GEMINI_LLM_MODEL_3.5-flash'] || 'gemini-3.5-flash',
-  timeoutMs: 60_000,
+  model: process.env['GEMINI_LLM_MODEL_3_5_flash'] || 'gemini-3.5-flash',
+  timeoutMs: 40_000,
 };
 
 // ── Named chains (primary → fallback) ────────────────────────────
