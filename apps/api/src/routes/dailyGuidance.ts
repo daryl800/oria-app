@@ -164,7 +164,9 @@ router.get('/today', async (req: Request, res: Response) => {
       zodiac,
       contextFocus ?? [],
     );
-    const raw = await complete(messages, 'daily');
+    // Plus users get GPT-4.1 ~30% of the time for a quality boost
+    const chain = (isPlus && Math.random() < 0.3) ? 'daily_premium' : 'daily';
+    const raw = await complete(messages, chain);
     const clean = sanitizeLlmJson(raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim());
     const summary = JSON.parse(clean);
 

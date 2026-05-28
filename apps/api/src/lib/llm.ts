@@ -56,16 +56,26 @@ const deepseek = {
   timeoutMs: 60_000,
 };
 
-
+const chatgptMini = {
+  name: 'chatgpt-mini',
+  client: new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY!,
+    baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+  }),
+  model: 'gpt-4.1-mini',
+  timeoutMs: 30_000,
+};
 
 // ── Named chains (primary → fallback) ────────────────────────────
-// profile:  profile summary, monthly chart focus, compare
-// daily:    daily guidance
-// chat:     chat, conversation summary
+// profile:        profile summary, monthly chart focus, compare
+// daily:          daily guidance (free + plus standard)
+// daily_premium:  daily guidance for plus users (occasional GPT-4.1 upgrade)
+// chat:           chat, conversation summary
 const CHAINS = {
-  profile: [deepseek, chatgpt, hunyuan],
-  daily: [hunyuan, deepseek],
-  chat: [chatgpt, deepseek],
+  profile:       [deepseek, chatgpt, hunyuan],
+  daily:         [deepseek, chatgptMini],
+  daily_premium: [chatgpt, deepseek, chatgptMini],
+  chat:          [chatgpt, deepseek],
 } as const;
 
 export type LLMChain = keyof typeof CHAINS;
