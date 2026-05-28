@@ -56,12 +56,22 @@ const deepseek = {
   timeoutMs: 60_000,
 };
 
+const gemini = {
+  name: 'gemini',
+  client: new OpenAI({
+    apiKey: process.env.GEMINI_API_KEY!,
+    baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+  }),
+  model: process.env.GEMINI_LLM_MODEL || 'gemini-2.5-flash',
+  timeoutMs: 60_000,
+};
+
 // ── Named chains (primary → fallback) ────────────────────────────
 // profile:  profile summary, monthly chart focus, compare
 // daily:    daily guidance
 // chat:     chat, conversation summary
 const CHAINS = {
-  profile: [deepseek, chatgpt],
+  profile: [gemini,   deepseek, chatgpt],
   daily:   [hunyuan,  deepseek],
   chat:    [chatgpt,  deepseek],
 } as const;
