@@ -677,7 +677,10 @@
     "delete_plus_title": "활성 구독 감지됨",
     "delete_plus_body_pre": "현재 활성 Oria Plus 구독이 있습니다. 계정을 삭제하면 구독이 즉시 취소됩니다.",
     "delete_plus_no_refund": "환불이 제공되지 않습니다",
-    "delete_plus_body_post": "현재 청구 기간의 미사용 부분에 대해서는. 현재 기간이 끝날 때까지 접근을 유지하려면 계정을 삭제하기 전에 구독 관리에서 구독을 먼저 취소하세요."
+    "delete_plus_body_post": "현재 청구 기간의 미사용 부분에 대해서는. 현재 기간이 끝날 때까지 접근을 유지하려면 계정을 삭제하기 전에 구독 관리에서 구독을 먼저 취소하세요.",
+    "danger_zone": "위험 구역",
+    "delete_my_account": "계정 삭제",
+    "permanent": "영구적"
   },
   "settings_extra": {
     "change_language": "언어 변경",

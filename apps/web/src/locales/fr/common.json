@@ -364,67 +364,131 @@
       "types": {
         "INTJ": {
           "nickname": "L'Architecte",
-          "traits": ["Stratégique", "Indépendant", "Visionnaire"]
+          "traits": [
+            "Stratégique",
+            "Indépendant",
+            "Visionnaire"
+          ]
         },
         "INTP": {
           "nickname": "Le Penseur",
-          "traits": ["Analytique", "Curieux", "Inventif"]
+          "traits": [
+            "Analytique",
+            "Curieux",
+            "Inventif"
+          ]
         },
         "ENTJ": {
           "nickname": "Le Commandant",
-          "traits": ["Audacieux", "Décisif", "Leader"]
+          "traits": [
+            "Audacieux",
+            "Décisif",
+            "Leader"
+          ]
         },
         "ENTP": {
           "nickname": "Le Débatteur",
-          "traits": ["Vif d'esprit", "Innovant", "Charismatique"]
+          "traits": [
+            "Vif d'esprit",
+            "Innovant",
+            "Charismatique"
+          ]
         },
         "INFJ": {
           "nickname": "L'Avocat",
-          "traits": ["Empathique", "Principié", "Visionnaire"]
+          "traits": [
+            "Empathique",
+            "Principié",
+            "Visionnaire"
+          ]
         },
         "INFP": {
           "nickname": "Le Médiateur",
-          "traits": ["Créatif", "Empathique", "Idéaliste"]
+          "traits": [
+            "Créatif",
+            "Empathique",
+            "Idéaliste"
+          ]
         },
         "ENFJ": {
           "nickname": "Le Protagoniste",
-          "traits": ["Inspirant", "Empathique", "Leader"]
+          "traits": [
+            "Inspirant",
+            "Empathique",
+            "Leader"
+          ]
         },
         "ENFP": {
           "nickname": "Le Militant",
-          "traits": ["Enthousiaste", "Créatif", "Optimiste"]
+          "traits": [
+            "Enthousiaste",
+            "Créatif",
+            "Optimiste"
+          ]
         },
         "ISTJ": {
           "nickname": "Le Logisticien",
-          "traits": ["Fiable", "Pragmatique", "Méticuleux"]
+          "traits": [
+            "Fiable",
+            "Pragmatique",
+            "Méticuleux"
+          ]
         },
         "ISFJ": {
           "nickname": "Le Défenseur",
-          "traits": ["Chaleureux", "Dévoué", "Observateur"]
+          "traits": [
+            "Chaleureux",
+            "Dévoué",
+            "Observateur"
+          ]
         },
         "ESTJ": {
           "nickname": "Le Dirigeant",
-          "traits": ["Organisé", "Décisif", "Loyal"]
+          "traits": [
+            "Organisé",
+            "Décisif",
+            "Loyal"
+          ]
         },
         "ESFJ": {
           "nickname": "Le Consul",
-          "traits": ["Attentionné", "Sociable", "Loyal"]
+          "traits": [
+            "Attentionné",
+            "Sociable",
+            "Loyal"
+          ]
         },
         "ISTP": {
           "nickname": "Le Virtuose",
-          "traits": ["Pragmatique", "Observateur", "Indépendant"]
+          "traits": [
+            "Pragmatique",
+            "Observateur",
+            "Indépendant"
+          ]
         },
         "ISFP": {
           "nickname": "L'Aventurier",
-          "traits": ["Artistique", "Spontané", "Empathique"]
+          "traits": [
+            "Artistique",
+            "Spontané",
+            "Empathique"
+          ]
         },
         "ESTP": {
           "nickname": "L'Entrepreneur",
-          "traits": ["Audacieux", "Perspicace", "Énergique"]
+          "traits": [
+            "Audacieux",
+            "Perspicace",
+            "Énergique"
+          ]
         },
         "ESFP": {
           "nickname": "L'Animateur",
-          "traits": ["Spontané", "Énergique", "Jovial"]
+          "traits": [
+            "Spontané",
+            "Énergique",
+            "Jovial"
+          ]
         }
       }
     },
@@ -662,7 +726,10 @@
     "delete_plus_title": "Abonnement actif détecté",
     "delete_plus_body_pre": "Vous avez actuellement un abonnement Oria Plus actif. La suppression de votre compte annulera immédiatement votre abonnement.",
     "delete_plus_no_refund": "Aucun remboursement ne sera effectué",
-    "delete_plus_body_post": "pour la partie inutilisée de votre période de facturation. Si vous souhaitez conserver l'accès jusqu'à la fin de votre période actuelle, veuillez d'abord annuler votre abonnement depuis Gérer l'abonnement avant de supprimer votre compte."
+    "delete_plus_body_post": "pour la partie inutilisée de votre période de facturation. Si vous souhaitez conserver l'accès jusqu'à la fin de votre période actuelle, veuillez d'abord annuler votre abonnement depuis Gérer l'abonnement avant de supprimer votre compte.",
+    "danger_zone": "Zone de danger",
+    "delete_my_account": "Supprimer mon compte",
+    "permanent": "Permanent"
   },
   "settings_extra": {
     "change_language": "Changer de langue",

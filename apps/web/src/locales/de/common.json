@@ -726,7 +726,10 @@
     "delete_plus_title": "Aktives Abonnement erkannt",
     "delete_plus_body_pre": "Du hast derzeit ein aktives Oria Plus-Abonnement. Das Löschen deines Kontos wird dein Abonnement sofort kündigen.",
     "delete_plus_no_refund": "Es erfolgt keine Rückerstattung",
-    "delete_plus_body_post": "für den ungenutzten Teil deines Abrechnungszeitraums. Wenn du den Zugang bis zum Ende deines aktuellen Zeitraums behalten möchtest, kündige bitte zuerst dein Abonnement über Abonnement verwalten, bevor du dein Konto löschst."
+    "delete_plus_body_post": "für den ungenutzten Teil deines Abrechnungszeitraums. Wenn du den Zugang bis zum Ende deines aktuellen Zeitraums behalten möchtest, kündige bitte zuerst dein Abonnement über Abonnement verwalten, bevor du dein Konto löschst.",
+    "danger_zone": "Gefahrenzone",
+    "delete_my_account": "Konto löschen",
+    "permanent": "Dauerhaft"
   },
   "settings_extra": {
     "change_language": "Sprache ändern",

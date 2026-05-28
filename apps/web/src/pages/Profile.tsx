@@ -539,7 +539,7 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
       {/* Delete account */}
       <div style={{ marginTop: 32, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 28 }}>
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.25)', marginBottom: 14 }}>
-          Danger zone
+          {t('profile_extra.danger_zone')}
         </div>
         <button
           type="button"
@@ -555,8 +555,8 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}
         >
-          Delete my account
-          <span style={{ fontSize: 12, opacity: 0.6 }}>Permanent</span>
+          {t('profile_extra.delete_my_account')}
+          <span style={{ fontSize: 12, opacity: 0.6 }}>{t('profile_extra.permanent')}</span>
         </button>
       </div>
 

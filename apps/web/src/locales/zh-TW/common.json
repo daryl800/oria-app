@@ -677,7 +677,10 @@
     "delete_plus_title": "偵測到有效訂閱",
     "delete_plus_body_pre": "您目前擁有有效的 Oria Plus 訂閱。刪除帳號將立即取消您的訂閱。",
     "delete_plus_no_refund": "不予退款",
-    "delete_plus_body_post": "針對您當前計費週期的未使用部分。若您希望保留至當前週期結束，請先在「管理訂閱」中取消訂閱，再刪除帳號。"
+    "delete_plus_body_post": "針對您當前計費週期的未使用部分。若您希望保留至當前週期結束，請先在「管理訂閱」中取消訂閱，再刪除帳號。",
+    "danger_zone": "危險操作",
+    "delete_my_account": "刪除我的帳號",
+    "permanent": "永久刪除"
   },
   "settings_extra": {
     "change_language": "更改語言",

@@ -677,7 +677,10 @@
     "delete_plus_title": "检测到有效订阅",
     "delete_plus_body_pre": "您当前拥有有效的 Oria Plus 订阅。删除账号将立即取消您的订阅。",
     "delete_plus_no_refund": "不予退款",
-    "delete_plus_body_post": "针对您当前计费周期的未使用部分。若您希望保留至当前周期结束，请先在「管理订阅」中取消订阅，再删除账号。"
+    "delete_plus_body_post": "针对您当前计费周期的未使用部分。若您希望保留至当前周期结束，请先在「管理订阅」中取消订阅，再删除账号。",
+    "danger_zone": "危险操作",
+    "delete_my_account": "删除我的账号",
+    "permanent": "永久删除"
   },
   "settings_extra": {
     "change_language": "更改语言",

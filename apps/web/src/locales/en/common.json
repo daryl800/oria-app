@@ -726,7 +726,10 @@
     "delete_plus_title": "Active subscription detected",
     "delete_plus_body_pre": "You currently have an active Oria Plus subscription. Deleting your account will immediately cancel your subscription.",
     "delete_plus_no_refund": "No refund will be issued",
-    "delete_plus_body_post": "for any unused portion of your billing period. If you wish to retain access until the end of your current period, please cancel your subscription first from Manage Subscription before deleting your account."
+    "delete_plus_body_post": "for any unused portion of your billing period. If you wish to retain access until the end of your current period, please cancel your subscription first from Manage Subscription before deleting your account.",
+    "danger_zone": "Danger zone",
+    "delete_my_account": "Delete my account",
+    "permanent": "Permanent"
   },
   "settings_extra": {
     "change_language": "Change language",
