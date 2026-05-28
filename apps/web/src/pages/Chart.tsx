@@ -179,10 +179,7 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
 
   if (loading || (summaryLoading && !summary)) return (
     <div className="oria-page oria-loading">
-      <PlanetLoader text={t('chart.loading')} />
-      <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: 16 }}>
-        {summaryLoading ? t('chart.insight.analyzing') : t('chart.loading')}
-      </p>
+      <PlanetLoader text={summaryLoading ? t('chart.insight.analyzing') : t('chart.loading')} />
     </div>
   );
 

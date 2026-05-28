@@ -11,29 +11,29 @@ export default function PlanetLoader({ text }: PlanetLoaderProps) {
     }}>
       <style>{`
         @keyframes orbitDotLoader {
-          0%   { transform: rotate(0deg)   translateX(54px) rotate(0deg); }
-          100% { transform: rotate(360deg) translateX(54px) rotate(-360deg); }
+          0%   { transform: rotate(0deg)   translateX(70px) rotate(0deg); }
+          100% { transform: rotate(360deg) translateX(70px) rotate(-360deg); }
         }
         @keyframes orbitDot2Loader {
-          0%   { transform: rotate(0deg)   translateX(68px) rotate(0deg); }
-          100% { transform: rotate(360deg) translateX(68px) rotate(-360deg); }
+          0%   { transform: rotate(0deg)   translateX(88px) rotate(0deg); }
+          100% { transform: rotate(360deg) translateX(88px) rotate(-360deg); }
         }
         @keyframes planetPulseLoader {
-          0%, 100% { box-shadow: 0 0 40px 12px rgba(120,80,220,0.3), 0 0 80px 24px rgba(80,60,180,0.15); }
-          50%       { box-shadow: 0 0 55px 18px rgba(140,90,240,0.4), 0 0 110px 36px rgba(90,70,200,0.2); }
+          0%, 100% { box-shadow: 0 0 50px 16px rgba(120,80,220,0.35), 0 0 100px 30px rgba(80,60,180,0.18); }
+          50%       { box-shadow: 0 0 70px 22px rgba(140,90,240,0.45), 0 0 140px 45px rgba(90,70,200,0.22); }
         }
       `}</style>
 
       {/* Planet system */}
-      <div style={{ position: 'relative', width: 140, height: 140, flexShrink: 0 }}>
+      <div style={{ position: 'relative', width: 180, height: 180, flexShrink: 0 }}>
         {/* Orbit tracks */}
-        <div style={{ position: 'absolute', top: '50%', left: '50%', width: 108, height: 108, marginTop: -54, marginLeft: -54, borderRadius: '50%', border: '1px solid rgba(180,160,255,0.15)' }} />
-        <div style={{ position: 'absolute', top: '50%', left: '50%', width: 136, height: 136, marginTop: -68, marginLeft: -68, borderRadius: '50%', border: '1px solid rgba(180,160,255,0.08)' }} />
+        <div style={{ position: 'absolute', top: '50%', left: '50%', width: 140, height: 140, marginTop: -70, marginLeft: -70, borderRadius: '50%', border: '1px solid rgba(180,160,255,0.15)' }} />
+        <div style={{ position: 'absolute', top: '50%', left: '50%', width: 176, height: 176, marginTop: -88, marginLeft: -88, borderRadius: '50%', border: '1px solid rgba(180,160,255,0.08)' }} />
 
         {/* Planet */}
         <div style={{
           position: 'absolute', top: '50%', left: '50%',
-          width: 80, height: 80, marginTop: -40, marginLeft: -40,
+          width: 104, height: 104, marginTop: -52, marginLeft: -52,
           borderRadius: '50%',
           background: 'radial-gradient(circle at 38% 35%, #a78bfa 0%, #7c3aed 45%, #4c1d95 100%)',
           animation: 'planetPulseLoader 3s ease-in-out infinite',
