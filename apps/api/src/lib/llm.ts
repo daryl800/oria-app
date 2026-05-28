@@ -40,7 +40,7 @@ const chatgpt = {
   name: 'chatgpt',
   client: new OpenAI({
     apiKey: process.env.OPENAI_API_KEY!,
-    baseURL: 'https://api.openai.com/v1',
+    baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
   }),
   model: process.env.OPENAI_LLM_MODEL || 'gpt-4.1',
   timeoutMs: 30_000,
@@ -60,9 +60,9 @@ const gemini = {
   name: 'gemini',
   client: new OpenAI({
     apiKey: process.env.GEMINI_API_KEY!,
-    baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    baseURL: process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai/',
   }),
-  model: process.env.GEMINI_LLM_MODEL || 'gemini-2.5-flash',
+  model: process.env.GEMINI_LLM_MODEL || 'gemini-3.5-flash',
   timeoutMs: 60_000,
 };
 
@@ -71,9 +71,9 @@ const gemini = {
 // daily:    daily guidance
 // chat:     chat, conversation summary
 const CHAINS = {
-  profile: [gemini,   deepseek, chatgpt],
-  daily:   [hunyuan,  deepseek],
-  chat:    [chatgpt,  deepseek],
+  profile: [gemini, deepseek, chatgpt],
+  daily: [hunyuan, deepseek],
+  chat: [chatgpt, deepseek],
 } as const;
 
 export type LLMChain = keyof typeof CHAINS;
@@ -85,6 +85,7 @@ function isFallbackable(err: unknown): boolean {
   const name = err.constructor.name;
   if (name === 'APIConnectionError' || name === 'APIConnectionTimeoutError') return true;
   const status = (err as any).status as number | undefined;
+  if (status === 400) return true; // provider-specific bad request — try next
   if (status === 429 || (status !== undefined && status >= 500 && status < 600)) return true;
   return false;
 }
