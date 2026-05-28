@@ -53,7 +53,7 @@ const deepseek = {
     baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
   }),
   model: process.env.DEEPSEEK_LLM_MODEL || 'deepseek-v4-flash',
-  timeoutMs: 55_000,
+  timeoutMs: 60_000,
 };
 
 // ── Named chains (primary → fallback) ────────────────────────────
