@@ -275,7 +275,7 @@
         "day": "Dag",
         "hour": "Timme"
       },
-      "day_master": "Day Master",
+      "day_master": "Dagmästare",
       "core_pattern": "Kärnmönster",
       "core_text": "Din Day Master är {{dayMaster}}, vilket tyder på en naturligt starkare riktning mot handling, omdöme och hur du möter världen.",
       "chat_cta": "Frågor om din Bazi?",
@@ -363,131 +363,131 @@
       },
       "types": {
         "INTJ": {
-          "nickname": "The Architect",
+          "nickname": "Arkitekten",
           "traits": [
-            "Strategic",
-            "Independent",
-            "Visionary"
+            "Strategisk",
+            "Oberoende",
+            "Visionär"
           ]
         },
         "INTP": {
-          "nickname": "The Thinker",
+          "nickname": "Tänkaren",
           "traits": [
-            "Analytical",
-            "Curious",
-            "Inventive"
+            "Analytisk",
+            "Nyfiken",
+            "Uppfinningsrik"
           ]
         },
         "ENTJ": {
-          "nickname": "The Commander",
+          "nickname": "Befälhavaren",
           "traits": [
-            "Bold",
-            "Decisive",
-            "Leader"
+            "Djärv",
+            "Beslutsam",
+            "Ledartyp"
           ]
         },
         "ENTP": {
-          "nickname": "The Debater",
+          "nickname": "Debattören",
           "traits": [
-            "Quick-witted",
-            "Innovative",
-            "Charismatic"
+            "Kvicktänkt",
+            "Innovativ",
+            "Karismatisk"
           ]
         },
         "INFJ": {
-          "nickname": "The Advocate",
+          "nickname": "Förespråkaren",
           "traits": [
-            "Empathetic",
-            "Principled",
-            "Visionary"
+            "Empatisk",
+            "Principfast",
+            "Visionär"
           ]
         },
         "INFP": {
-          "nickname": "The Mediator",
+          "nickname": "Medlaren",
           "traits": [
-            "Creative",
-            "Empathetic",
-            "Idealistic"
+            "Kreativ",
+            "Empatisk",
+            "Idealistisk"
           ]
         },
         "ENFJ": {
-          "nickname": "The Protagonist",
+          "nickname": "Protagonisten",
           "traits": [
-            "Inspiring",
-            "Empathetic",
-            "Leader"
+            "Inspirerande",
+            "Empatisk",
+            "Ledartyp"
           ]
         },
         "ENFP": {
-          "nickname": "The Campaigner",
+          "nickname": "Aktivisten",
           "traits": [
-            "Enthusiastic",
-            "Creative",
-            "Optimistic"
+            "Entusiastisk",
+            "Kreativ",
+            "Optimistisk"
           ]
         },
         "ISTJ": {
-          "nickname": "The Logistician",
+          "nickname": "Logistikern",
           "traits": [
-            "Reliable",
-            "Practical",
-            "Detail-oriented"
+            "Pålitlig",
+            "Praktisk",
+            "Detaljorienterad"
           ]
         },
         "ISFJ": {
-          "nickname": "The Defender",
+          "nickname": "Försvararen",
           "traits": [
-            "Warm",
-            "Dedicated",
+            "Varm",
+            "Hängiven",
             "Observant"
           ]
         },
         "ESTJ": {
-          "nickname": "The Executive",
+          "nickname": "Chefen",
           "traits": [
-            "Organised",
-            "Decisive",
-            "Loyal"
+            "Organiserad",
+            "Beslutsam",
+            "Lojal"
           ]
         },
         "ESFJ": {
-          "nickname": "The Consul",
+          "nickname": "Konsuln",
           "traits": [
-            "Caring",
+            "Omtänksam",
             "Social",
-            "Loyal"
+            "Lojal"
           ]
         },
         "ISTP": {
-          "nickname": "The Virtuoso",
+          "nickname": "Virtuosen",
           "traits": [
-            "Practical",
+            "Praktisk",
             "Observant",
-            "Independent"
+            "Oberoende"
           ]
         },
         "ISFP": {
-          "nickname": "The Adventurer",
+          "nickname": "Äventyraren",
           "traits": [
-            "Artistic",
-            "Spontaneous",
-            "Empathetic"
+            "Konstnärlig",
+            "Spontan",
+            "Empatisk"
           ]
         },
         "ESTP": {
-          "nickname": "The Entrepreneur",
+          "nickname": "Entreprenören",
           "traits": [
-            "Bold",
-            "Perceptive",
-            "Energetic"
+            "Djärv",
+            "Skarpsynt",
+            "Energisk"
           ]
         },
         "ESFP": {
-          "nickname": "The Entertainer",
+          "nickname": "Underhållaren",
           "traits": [
-            "Spontaneous",
-            "Energetic",
-            "Fun-loving"
+            "Spontan",
+            "Energisk",
+            "Lekfull"
           ]
         }
       }

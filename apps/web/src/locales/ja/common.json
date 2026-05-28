@@ -267,98 +267,98 @@
     },
     "loading": "チャートを読み込み中...",
     "bazi": {
-      "section": "Four Pillars",
-      "explanation": "Your BaZi chart is formed by four pillars: Year, Month, Day, and Hour. The Day Stem, known as your Day Master, is the core of the chart.",
+      "section": "四柱推命",
+      "explanation": "BaZi（八字）チャートは四つの柱で構成されています：年柱・月柱・日柱・時柱。日干（日主）と呼ばれる日柱の天干がチャートの核心です。",
       "pillars": {
-        "year": "Year",
-        "month": "Month",
-        "day": "Day",
-        "hour": "Hour"
+        "year": "年柱",
+        "month": "月柱",
+        "day": "日柱",
+        "hour": "時柱"
       },
-      "day_master": "Day Master",
-      "core_pattern": "Core Pattern",
-      "core_text": "Your Day Master is {{dayMaster}}, suggesting a naturally stronger orientation toward action, judgment, and how you engage with the world.",
+      "day_master": "日主",
+      "core_pattern": "核心パターン",
+      "core_text": "あなたの日主は{{dayMaster}}で、行動・判断・世界との関わり方において自然な強い方向性があることを示しています。",
       "chat_cta": "八字について質問する",
-      "chat_prefill": "Based on my Four Pillars chart and Day Master {{dayMaster}}, what should I pay attention to right now?",
-      "deep_open": "See Four Pillars details ↓",
-      "deep_close": "Hide Four Pillars details ↑",
-      "five_elements": "Five Elements",
-      "inner_tension": "Inner Tension",
+      "chat_prefill": "私の四柱命盤と日主{{dayMaster}}に基づいて、今最も注目すべきことは何ですか？",
+      "deep_open": "四柱の詳細を見る ↓",
+      "deep_close": "四柱の詳細を隠す ↑",
+      "five_elements": "五行",
+      "inner_tension": "内なる葛藤",
       "levels": {
-        "dominant": "Dominant",
-        "strong": "Strong",
-        "moderate": "Moderate",
-        "weak": "Weak"
+        "dominant": "支配的",
+        "strong": "強い",
+        "moderate": "中程度",
+        "weak": "弱い"
       },
       "meanings": {
-        "Fire": "Momentum, expression and outward energy",
-        "Metal": "Discernment, boundaries and principles",
-        "Wood": "Growth, extension and inner development",
-        "Earth": "Grounding, stability and support",
-        "Water": "Reflection, inner flow and adaptability"
+        "Fire": "勢い・表現・外向きのエネルギー",
+        "Metal": "洞察力・境界・原則",
+        "Wood": "成長・拡張・内なる発展",
+        "Earth": "安定・基盤・サポート",
+        "Water": "内省・内なる流れ・適応力"
       },
       "tension_terms": {
-        "Fire": "drive and momentum",
-        "Metal": "judgment and decisiveness",
-        "Wood": "growth and expansion",
-        "Earth": "stability and grounding",
-        "Water": "reflection and inner regulation"
+        "Fire": "推進力と勢い",
+        "Metal": "判断力と決断力",
+        "Wood": "成長と拡張",
+        "Earth": "安定と基盤",
+        "Water": "内省と内的調節"
       },
-      "element_summary": "Your elemental structure is led by {{topElement}}, showing natural strength in {{topTerm}}, while {{weakestElement}} is comparatively weaker and may require more conscious balancing.",
-      "tension_two": "Your structure emphasizes both {{top1}} and {{top2}}. This often creates a tension between momentum and control: you want to move quickly, but also want things to be precise and right.",
-      "tension_one": "You tend to move forward through {{top1}}, but the {{weakest}}-related capacity for reflection, absorption, or regulation may not be as strong. You may move fast without fully processing as you go.",
-      "tension_balanced": "Your elemental profile is relatively balanced, without one overwhelmingly dominant force. The advantage is flexibility, but the tension is that in important moments, you may need to consciously choose how you want to act rather than relying on one natural default."
+      "element_summary": "あなたの五行構造は{{topElement}}が主導しており、{{topTerm}}において自然な強さを示しています。一方、{{weakestElement}}は比較的弱く、より意識的なバランスが必要かもしれません。",
+      "tension_two": "あなたの構造は{{top1}}と{{top2}}の両方を強調しています。これはしばしば勢いとコントロールの間の葛藤を生み出します：素早く動きたいが、物事を正確にこなしたいという思いもあります。",
+      "tension_one": "あなたは{{top1}}を通じて前進する傾向がありますが、内省・吸収・調節に関わる{{weakest}}の能力はそれほど強くないかもしれません。処理しきれないまま速く動いてしまうことがあります。",
+      "tension_balanced": "あなたの五行プロフィールは比較的バランスが取れており、一つの圧倒的な支配力はありません。柔軟性というメリットがありますが、重要な場面では自然なデフォルトに頼るのではなく、どう行動するかを意識的に選ぶ必要があるかもしれません。"
     },
     "mbti": {
-      "section": "MBTI Personality",
+      "section": "MBTI 性格",
       "identity": "{{type}}: {{nickname}}",
-      "key_insight": "One key insight",
-      "key_insight_text": "You work best when you can clarify the facts, then make a steady and practical decision.",
+      "key_insight": "重要な洞察",
+      "key_insight_text": "事実を明確にしたうえで、着実で実践的な決断を下せるときに最もよく機能します。",
       "chat_cta": "MBTIについてもっと知りたい？",
-      "chat_prefill": "Based on my {{type}} personality, what should I pay attention to when making decisions?",
-      "deep_open": "See personality details ↓",
-      "deep_close": "Hide personality details ↑",
-      "explanation": "MBTI describes your preferences, not your limits. It helps reveal how you take in information, make decisions, and respond under pressure.",
-      "profile_text": "Your personality profile shows a strong {{profileCode}} structure, favoring stability, practicality, rationality, and controlled decision-making.",
-      "inner_tension": "Inner Tension",
-      "inner_tension_text": "You tend to rely on structure, standards, and certainty when making decisions, but reality is not always clear or controllable. This creates an inner tension between your desire for order and the need to navigate ambiguity and change.",
-      "dimension_breakdown": "Dimension Breakdown",
-      "impact": "What This Means",
-      "impact_text": "In daily life, you tend to perform best in environments with clear expectations and defined responsibilities, where your judgment and consistency can show up fully. In more uncertain situations, you may need to consciously relax the need to have the answer too early.",
-      "cross_link_text": "Want to see how your MBTI and BaZi combine to reveal your unique pattern?",
-      "cross_link": "See Profile Insight →",
+      "chat_prefill": "私の{{type}}の性格に基づいて、意思決定の際に注意すべきことは何ですか？",
+      "deep_open": "性格の詳細を見る ↓",
+      "deep_close": "性格の詳細を隠す ↑",
+      "explanation": "MBTIはあなたの限界ではなく、傾向を表します。情報の受け取り方・意思決定・プレッシャー下での反応を明らかにします。",
+      "profile_text": "あなたの性格プロフィールは強い{{profileCode}}の構造を示しており、安定性・実用性・合理性・コントロールされた意思決定を好みます。",
+      "inner_tension": "内なる葛藤",
+      "inner_tension_text": "意思決定において構造・基準・確実性に頼る傾向がありますが、現実は常に明確でコントロール可能ではありません。これは秩序への欲求と曖昧さや変化への対応の必要性の間に内なる葛藤を生み出します。",
+      "dimension_breakdown": "次元の内訳",
+      "impact": "これが意味すること",
+      "impact_text": "日常では、明確な期待と定義された責任がある環境で最もよく機能する傾向があります。そこでは判断力と一貫性を十分に発揮できます。より不確実な状況では、早すぎる時点で答えを持とうとする欲求を意識的に和らげる必要があるかもしれません。",
+      "cross_link_text": "あなたのMBTIとBaZiがどのように組み合わさって独自のパターンを明らかにするかを見てみませんか？",
+      "cross_link": "プロフィール洞察を見る →",
       "dimensions": {
         "E": {
-          "label": "E (Extroversion)",
-          "meaning": "Tends to gain energy through interaction and external stimulation, with a more direct and outward style."
+          "label": "E（外向性）",
+          "meaning": "交流と外部刺激からエネルギーを得る傾向があり、より直接的で外向きのスタイルを持ちます。"
         },
         "I": {
-          "label": "I (Introversion)",
-          "meaning": "Tends to restore energy in quieter environments, valuing inner rhythm and depth of focus."
+          "label": "I（内向性）",
+          "meaning": "より静かな環境でエネルギーを回復し、内なるリズムと深い集中を大切にします。"
         },
         "S": {
-          "label": "S (Sensing)",
-          "meaning": "Starts from concrete facts, details, and lived experience rather than abstract assumptions."
+          "label": "S（感覚）",
+          "meaning": "抽象的な仮定よりも、具体的な事実・詳細・経験から始めます。"
         },
         "N": {
-          "label": "N (Intuition)",
-          "meaning": "Starts from patterns, context, and future possibilities, valuing direction and imagination."
+          "label": "N（直観）",
+          "meaning": "パターン・文脈・将来の可能性から始め、方向性と想像力を重視します。"
         },
         "T": {
-          "label": "T (Thinking)",
-          "meaning": "Makes decisions through logic, consistency, and analysis rather than emotional tone itself."
+          "label": "T（思考）",
+          "meaning": "感情的なトーンよりも、論理・一貫性・分析によって意思決定します。"
         },
         "F": {
-          "label": "F (Feeling)",
-          "meaning": "Makes decisions through values, relational impact, and inner alignment."
+          "label": "F（感情）",
+          "meaning": "価値観・関係への影響・内なる整合性によって意思決定します。"
         },
         "J": {
-          "label": "J (Judging)",
-          "meaning": "Prefers to create order early, make decisions sooner, and move within a manageable rhythm."
+          "label": "J（判断）",
+          "meaning": "早めに秩序を作り、素早く決断し、管理可能なリズムの中で動くことを好みます。"
         },
         "P": {
-          "label": "P (Perceiving)",
-          "meaning": "Prefers openness and flexibility, adjusting as circumstances change."
+          "label": "P（知覚）",
+          "meaning": "状況の変化に合わせて調整しながら、開放性と柔軟性を好みます。"
         }
       },
       "types": {

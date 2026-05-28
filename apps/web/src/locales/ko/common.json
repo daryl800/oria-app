@@ -267,98 +267,98 @@
     },
     "loading": "차트를 불러오는 중...",
     "bazi": {
-      "section": "Four Pillars",
-      "explanation": "Your BaZi chart is formed by four pillars: Year, Month, Day, and Hour. The Day Stem, known as your Day Master, is the core of the chart.",
+      "section": "사주 네 기둥",
+      "explanation": "BaZi(사주) 차트는 네 개의 기둥으로 구성됩니다: 년주, 월주, 일주, 시주. 일간이라고도 불리는 일주의 천간이 차트의 핵심입니다.",
       "pillars": {
-        "year": "Year",
-        "month": "Month",
-        "day": "Day",
-        "hour": "Hour"
+        "year": "년주",
+        "month": "월주",
+        "day": "일주",
+        "hour": "시주"
       },
-      "day_master": "Day Master",
-      "core_pattern": "Core Pattern",
-      "core_text": "Your Day Master is {{dayMaster}}, suggesting a naturally stronger orientation toward action, judgment, and how you engage with the world.",
+      "day_master": "일간",
+      "core_pattern": "핵심 패턴",
+      "core_text": "당신의 일간은 {{dayMaster}}로, 행동·판단·세계와의 관계 방식에서 자연스럽게 강한 방향성을 보여줍니다.",
       "chat_cta": "사주에 대해 질문하기",
-      "chat_prefill": "Based on my Four Pillars chart and Day Master {{dayMaster}}, what should I pay attention to right now?",
-      "deep_open": "See Four Pillars details ↓",
-      "deep_close": "Hide Four Pillars details ↑",
-      "five_elements": "Five Elements",
-      "inner_tension": "Inner Tension",
+      "chat_prefill": "나의 사주 명식과 일간 {{dayMaster}}를 기반으로, 지금 가장 주의해야 할 것은 무엇인가요?",
+      "deep_open": "사주 상세 보기 ↓",
+      "deep_close": "사주 상세 숨기기 ↑",
+      "five_elements": "오행",
+      "inner_tension": "내면의 긴장",
       "levels": {
-        "dominant": "Dominant",
-        "strong": "Strong",
-        "moderate": "Moderate",
-        "weak": "Weak"
+        "dominant": "지배적",
+        "strong": "강함",
+        "moderate": "중간",
+        "weak": "약함"
       },
       "meanings": {
-        "Fire": "Momentum, expression and outward energy",
-        "Metal": "Discernment, boundaries and principles",
-        "Wood": "Growth, extension and inner development",
-        "Earth": "Grounding, stability and support",
-        "Water": "Reflection, inner flow and adaptability"
+        "Fire": "추진력, 표현, 외향적 에너지",
+        "Metal": "통찰력, 경계, 원칙",
+        "Wood": "성장, 확장, 내면 발전",
+        "Earth": "안정, 기반, 지지",
+        "Water": "성찰, 내면의 흐름, 적응력"
       },
       "tension_terms": {
-        "Fire": "drive and momentum",
-        "Metal": "judgment and decisiveness",
-        "Wood": "growth and expansion",
-        "Earth": "stability and grounding",
-        "Water": "reflection and inner regulation"
+        "Fire": "추진력과 모멘텀",
+        "Metal": "판단력과 결단력",
+        "Wood": "성장과 확장",
+        "Earth": "안정과 기반",
+        "Water": "성찰과 내적 조절"
       },
-      "element_summary": "Your elemental structure is led by {{topElement}}, showing natural strength in {{topTerm}}, while {{weakestElement}} is comparatively weaker and may require more conscious balancing.",
-      "tension_two": "Your structure emphasizes both {{top1}} and {{top2}}. This often creates a tension between momentum and control: you want to move quickly, but also want things to be precise and right.",
-      "tension_one": "You tend to move forward through {{top1}}, but the {{weakest}}-related capacity for reflection, absorption, or regulation may not be as strong. You may move fast without fully processing as you go.",
-      "tension_balanced": "Your elemental profile is relatively balanced, without one overwhelmingly dominant force. The advantage is flexibility, but the tension is that in important moments, you may need to consciously choose how you want to act rather than relying on one natural default."
+      "element_summary": "당신의 오행 구조는 {{topElement}}이 주도하여 {{topTerm}}에서 자연스러운 강점을 보입니다. 반면 {{weakestElement}}은 상대적으로 약하며 더 의식적인 균형이 필요할 수 있습니다.",
+      "tension_two": "당신의 구조는 {{top1}}과 {{top2}} 모두를 강조합니다. 이것은 종종 추진력과 통제 사이의 긴장을 만들어냅니다: 빠르게 움직이고 싶지만 동시에 정확하고 올바르게 하고 싶어합니다.",
+      "tension_one": "당신은 {{top1}}을 통해 앞으로 나아가는 경향이 있지만, {{weakest}}와 관련된 성찰·흡수·조절 능력은 그만큼 강하지 않을 수 있습니다. 충분히 처리하지 않고 빠르게 움직일 수 있습니다.",
+      "tension_balanced": "당신의 오행 프로필은 압도적으로 지배적인 힘 없이 비교적 균형 잡혀 있습니다. 장점은 유연성이지만, 중요한 순간에는 자연스러운 기본값에 의존하기보다 어떻게 행동할지 의식적으로 선택해야 할 수 있습니다."
     },
     "mbti": {
-      "section": "MBTI Personality",
+      "section": "MBTI 성격",
       "identity": "{{type}}: {{nickname}}",
-      "key_insight": "One key insight",
-      "key_insight_text": "You work best when you can clarify the facts, then make a steady and practical decision.",
+      "key_insight": "핵심 인사이트",
+      "key_insight_text": "사실을 명확히 한 다음 안정적이고 실용적인 결정을 내릴 수 있을 때 가장 잘 작동합니다.",
       "chat_cta": "MBTI에 대해 더 알고 싶나요？",
-      "chat_prefill": "Based on my {{type}} personality, what should I pay attention to when making decisions?",
-      "deep_open": "See personality details ↓",
-      "deep_close": "Hide personality details ↑",
-      "explanation": "MBTI describes your preferences, not your limits. It helps reveal how you take in information, make decisions, and respond under pressure.",
-      "profile_text": "Your personality profile shows a strong {{profileCode}} structure, favoring stability, practicality, rationality, and controlled decision-making.",
-      "inner_tension": "Inner Tension",
-      "inner_tension_text": "You tend to rely on structure, standards, and certainty when making decisions, but reality is not always clear or controllable. This creates an inner tension between your desire for order and the need to navigate ambiguity and change.",
-      "dimension_breakdown": "Dimension Breakdown",
-      "impact": "What This Means",
-      "impact_text": "In daily life, you tend to perform best in environments with clear expectations and defined responsibilities, where your judgment and consistency can show up fully. In more uncertain situations, you may need to consciously relax the need to have the answer too early.",
-      "cross_link_text": "Want to see how your MBTI and BaZi combine to reveal your unique pattern?",
-      "cross_link": "See Profile Insight →",
+      "chat_prefill": "나의 {{type}} 성격을 바탕으로, 결정할 때 주의해야 할 점은 무엇인가요?",
+      "deep_open": "성격 상세 보기 ↓",
+      "deep_close": "성격 상세 숨기기 ↑",
+      "explanation": "MBTI는 당신의 한계가 아닌 선호를 설명합니다. 정보를 받아들이는 방식, 의사결정, 압박 하에서의 반응을 드러내는 데 도움을 줍니다.",
+      "profile_text": "당신의 성격 프로필은 강한 {{profileCode}} 구조를 보여주며, 안정성·실용성·합리성·통제된 의사결정을 선호합니다.",
+      "inner_tension": "내면의 긴장",
+      "inner_tension_text": "의사결정 시 구조·기준·확실성에 의존하는 경향이 있지만, 현실이 항상 명확하거나 통제 가능한 것은 아닙니다. 이것은 질서에 대한 욕구와 모호함 및 변화를 헤쳐나가야 하는 필요성 사이에 내면의 긴장을 만들어냅니다.",
+      "dimension_breakdown": "차원 분석",
+      "impact": "이것이 의미하는 것",
+      "impact_text": "일상에서 명확한 기대와 정의된 책임이 있는 환경에서 가장 잘 수행하는 경향이 있으며, 거기서 판단력과 일관성을 충분히 발휘할 수 있습니다. 더 불확실한 상황에서는 너무 일찍 답을 가지려는 욕구를 의식적으로 완화해야 할 수 있습니다.",
+      "cross_link_text": "MBTI와 사주가 어떻게 결합하여 당신의 고유한 패턴을 드러내는지 보고 싶으신가요?",
+      "cross_link": "프로필 인사이트 보기 →",
       "dimensions": {
         "E": {
-          "label": "E (Extroversion)",
-          "meaning": "Tends to gain energy through interaction and external stimulation, with a more direct and outward style."
+          "label": "E (외향성)",
+          "meaning": "상호작용과 외부 자극을 통해 에너지를 얻는 경향이 있으며, 더 직접적이고 외향적인 스타일을 가집니다."
         },
         "I": {
-          "label": "I (Introversion)",
-          "meaning": "Tends to restore energy in quieter environments, valuing inner rhythm and depth of focus."
+          "label": "I (내향성)",
+          "meaning": "더 조용한 환경에서 에너지를 회복하며, 내면의 리듬과 깊은 집중을 소중히 여깁니다."
         },
         "S": {
-          "label": "S (Sensing)",
-          "meaning": "Starts from concrete facts, details, and lived experience rather than abstract assumptions."
+          "label": "S (감각)",
+          "meaning": "추상적인 가정보다 구체적인 사실, 세부사항, 경험에서 시작합니다."
         },
         "N": {
-          "label": "N (Intuition)",
-          "meaning": "Starts from patterns, context, and future possibilities, valuing direction and imagination."
+          "label": "N (직관)",
+          "meaning": "패턴, 맥락, 미래의 가능성에서 시작하며 방향과 상상력을 소중히 여깁니다."
         },
         "T": {
-          "label": "T (Thinking)",
-          "meaning": "Makes decisions through logic, consistency, and analysis rather than emotional tone itself."
+          "label": "T (사고)",
+          "meaning": "감정적 어조 자체보다 논리, 일관성, 분석을 통해 결정을 내립니다."
         },
         "F": {
-          "label": "F (Feeling)",
-          "meaning": "Makes decisions through values, relational impact, and inner alignment."
+          "label": "F (감정)",
+          "meaning": "가치관, 관계적 영향, 내면의 정렬을 통해 결정을 내립니다."
         },
         "J": {
-          "label": "J (Judging)",
-          "meaning": "Prefers to create order early, make decisions sooner, and move within a manageable rhythm."
+          "label": "J (판단)",
+          "meaning": "일찍 질서를 만들고, 더 빨리 결정하며, 관리 가능한 리듬 안에서 움직이는 것을 선호합니다."
         },
         "P": {
-          "label": "P (Perceiving)",
-          "meaning": "Prefers openness and flexibility, adjusting as circumstances change."
+          "label": "P (인식)",
+          "meaning": "상황 변화에 맞게 조정하면서 개방성과 유연성을 선호합니다."
         }
       },
       "types": {
