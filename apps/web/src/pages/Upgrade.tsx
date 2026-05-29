@@ -139,7 +139,6 @@ export default function Upgrade({ isPlus = false }: UpgradeProps) {
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
             <span style={{ fontSize: 48, fontWeight: 800, color: '#C9A84C', lineHeight: 1 }}>US$9.99</span>
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>/month</span>
           </div>
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>
             {t('billing.monthly.priceNote')}
@@ -181,7 +180,6 @@ export default function Upgrade({ isPlus = false }: UpgradeProps) {
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
             <span style={{ fontSize: 48, fontWeight: 800, color: '#C9A84C', lineHeight: 1 }}>US$79.99</span>
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>/year</span>
           </div>
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 2 }}>
             {t('billing.yearly.priceNote')}
