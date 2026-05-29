@@ -29,6 +29,8 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = [
   'https://app.oria.io',
   'https://app.oriacompass.com',
+  'https://oriacompass.com',
+  'https://www.oriacompass.com',
   'https://oriacompass.vercel.app',
   'http://localhost:5173',
   'http://localhost:5174',
