@@ -7,3 +7,7 @@ __pycache__/
 *.pyc
 .venv/
 apps/web-b/
+test-daily-guidance.py
+test-daily-guidance-results/
+test-profile-summary.py
+test-profile-summary-results/
