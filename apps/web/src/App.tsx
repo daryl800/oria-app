@@ -172,8 +172,8 @@ export default function App() {
 
   // Auth checked — render app
   return (
-    <>
     <BrowserRouter>
+      <Analytics />
       <ScrollToTop />
       {showLanguageModal && langUserId && (
         <LanguageModal
@@ -230,7 +230,5 @@ export default function App() {
         </Routes>
       </AppShell>
     </BrowserRouter>
-    <Analytics />
-    </>
   );
 }
