@@ -40,6 +40,7 @@ import LegalPrivacy from './pages/LegalPrivacy';
 import LegalBilling from './pages/LegalBilling';
 import LegalDisclaimer from './pages/LegalDisclaimer';
 import ManageSubscription from './pages/ManageSubscription';
+import { Analytics } from '@vercel/analytics/react';
 
 
 function AppShell({ user, isPlus, planInterval, children }: { user: User | null; isPlus: boolean; planInterval: 'month' | 'year' | null; children: React.ReactNode }) {
@@ -228,5 +229,6 @@ export default function App() {
         </Routes>
       </AppShell>
     </BrowserRouter>
+    <Analytics />
   );
 }
