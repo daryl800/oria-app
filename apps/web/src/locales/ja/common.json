@@ -783,7 +783,7 @@
       "title": "Oria Plus 月額",
       "description": "完全なOriaガイダンス、月払い。",
       "price": "US$9.99",
-      "priceNote": "月額・いつでもキャンセル可",
+      "priceNote": "月額・自動更新・いつでもキャンセル可",
       "features": {
         "dailyFull": "完全な毎日のガイダンス",
         "chartFull": "完全な個人チャートインサイト",
@@ -799,7 +799,7 @@
       "badge": "最もお得",
       "description": "同じ完全なOria Plusアクセス、年間でさらにお得。",
       "price": "US$79.99",
-      "priceNote": "年額",
+      "priceNote": "年額・自動更新・いつでもキャンセル可",
       "priceMonthlyEquiv": "月換算わずかUS$6.67相当",
       "savingsNote": "月額プランと比較して約33%節約。",
       "features": {
@@ -814,7 +814,7 @@
     },
     "currentPlan": "現在のプラン",
     "manageSubscription": "サブスクリプション管理",
-    "trust": "安全な決済・いつでもキャンセル可",
+    "trust": "安全な決済・自動更新・いつでもキャンセル可",
     "limit": {
       "freeTitle": "今日の無料Oriaチャット回答を使い切りました。",
       "freeMessage": "Oria Plusをアンロックして、より深いガイダンスを続けましょう。",

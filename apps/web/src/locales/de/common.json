@@ -832,7 +832,7 @@
       "title": "Oria Plus Monatlich",
       "description": "Vollständige Oria-Führung, monatlich abgerechnet.",
       "price": "US$9,99",
-      "priceNote": "pro Monat · jederzeit kündbar",
+      "priceNote": "pro Monat · verlängert sich automatisch · jederzeit kündbar",
       "features": {
         "dailyFull": "Vollständige Tägliche Führung",
         "chartFull": "Vollständige Persönliche Chart-Einsicht",
@@ -848,7 +848,7 @@
       "badge": "Bestes Preis-Leistungs-Verhältnis",
       "description": "Gleicher vollständiger Oria-Plus-Zugang, besserer Wert fürs Jahr.",
       "price": "US$79,99",
-      "priceNote": "pro Jahr",
+      "priceNote": "pro Jahr · verlängert sich automatisch · jederzeit kündbar",
       "priceMonthlyEquiv": "Nur US$6,67/Monat äquivalent",
       "savingsNote": "Spare etwa 33 % gegenüber der monatlichen Abrechnung.",
       "features": {
@@ -863,7 +863,7 @@
     },
     "currentPlan": "Aktueller Plan",
     "manageSubscription": "Abonnement Verwalten",
-    "trust": "Sichere Zahlung · Jederzeit kündbar",
+    "trust": "Sichere Zahlung · Verlängert sich automatisch · Jederzeit kündbar",
     "limit": {
       "freeTitle": "Du hast deine kostenlose Oria-Chat-Antwort für heute verwendet.",
       "freeMessage": "Schalte Oria Plus frei, um mit tieferer Führung fortzufahren.",

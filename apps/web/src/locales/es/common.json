@@ -832,7 +832,7 @@
       "title": "Oria Plus Mensual",
       "description": "Guía completa de Oria, pagada mensualmente.",
       "price": "US$9.99",
-      "priceNote": "por mes · cancela cuando quieras",
+      "priceNote": "por mes · se renueva automáticamente · cancela cuando quieras",
       "features": {
         "dailyFull": "Guía diaria completa",
         "chartFull": "Perspectiva completa de carta personal",
@@ -848,7 +848,7 @@
       "badge": "Mejor valor",
       "description": "El mismo acceso completo, mejor valor para el año.",
       "price": "US$79.99",
-      "priceNote": "por año",
+      "priceNote": "por año · se renueva automáticamente · cancela cuando quieras",
       "priceMonthlyEquiv": "Solo US$6.67/mes equivalente",
       "savingsNote": "Ahorra aproximadamente un 33%.",
       "features": {
@@ -863,7 +863,7 @@
     },
     "currentPlan": "Plan actual",
     "manageSubscription": "Gestionar suscripción",
-    "trust": "Pago seguro · Cancela cuando quieras",
+    "trust": "Pago seguro · Se renueva automáticamente · Cancela cuando quieras",
     "limit": {
       "freeTitle": "Has usado la respuesta gratuita de Oria Chat de hoy.",
       "freeMessage": "Desbloquea Oria Plus para continuar.",

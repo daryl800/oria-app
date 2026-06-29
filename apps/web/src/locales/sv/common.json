@@ -783,7 +783,7 @@
       "title": "Oria Plus Månadsvis",
       "description": "Full Oria-vägledning, betald månadsvis.",
       "price": "US$9.99",
-      "priceNote": "per månad · avbryt när som helst",
+      "priceNote": "per månad · förnyas automatiskt · avbryt när som helst",
       "features": {
         "dailyFull": "Full daglig vägledning",
         "chartFull": "Full personlig diagraminsikt",
@@ -799,7 +799,7 @@
       "badge": "Bäst värde",
       "description": "Samma fullständiga Oria Plus-åtkomst, bättre värde för året.",
       "price": "US$79.99",
-      "priceNote": "per år",
+      "priceNote": "per år · förnyas automatiskt · avbryt när som helst",
       "priceMonthlyEquiv": "Endast US$6.67/månad motsvarande",
       "savingsNote": "Spara cirka 33% jämfört med månadsbetalning.",
       "features": {
@@ -814,7 +814,7 @@
     },
     "currentPlan": "Nuvarande plan",
     "manageSubscription": "Hantera prenumeration",
-    "trust": "Säker betalning · Avbryt när som helst",
+    "trust": "Säker betalning · Förnyas automatiskt · Avbryt när som helst",
     "limit": {
       "freeTitle": "Du har använt dagens gratis Oria Chat-svar.",
       "freeMessage": "Lås upp Oria Plus för att fortsätta med djupare vägledning.",

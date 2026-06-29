@@ -783,7 +783,7 @@
       "title": "Oria Plus 月費版",
       "description": "完整 Oria 指引，按月訂閱。",
       "price": "US$9.99",
-      "priceNote": "每月 · 隨時取消",
+      "priceNote": "每月自動續費 · 隨時取消",
       "features": {
         "dailyFull": "完整每日指引",
         "chartFull": "完整個人命盤洞察",
@@ -799,7 +799,7 @@
       "badge": "最超值",
       "description": "相同的完整 Oria Plus 功能，全年更划算。",
       "price": "US$79.99",
-      "priceNote": "每年",
+      "priceNote": "每年自動續費 · 隨時取消",
       "priceMonthlyEquiv": "相當於每月僅 US$6.67",
       "savingsNote": "比月費方案節省約 33%。",
       "features": {
@@ -814,7 +814,7 @@
     },
     "currentPlan": "目前方案",
     "manageSubscription": "管理訂閱",
-    "trust": "安全付款 · 隨時取消",
+    "trust": "安全付款 · 自動續費 · 隨時取消",
     "limit": {
       "freeTitle": "你已使用今日的免費 Oria Chat 回覆。",
       "freeMessage": "解鎖 Oria Plus 以繼續獲得更深入的指引。",

@@ -783,7 +783,7 @@
       "title": "Oria Plus 월간",
       "description": "완전한 Oria 가이던스, 월간 결제.",
       "price": "US$9.99",
-      "priceNote": "월간 · 언제든지 취소 가능",
+      "priceNote": "월간 · 자동 갱신 · 언제든지 취소 가능",
       "features": {
         "dailyFull": "완전한 일일 가이던스",
         "chartFull": "완전한 개인 차트 인사이트",
@@ -799,7 +799,7 @@
       "badge": "최고 가성비",
       "description": "동일한 완전한 Oria Plus 이용, 연간 더 나은 가치.",
       "price": "US$79.99",
-      "priceNote": "연간",
+      "priceNote": "연간 · 자동 갱신 · 언제든지 취소 가능",
       "priceMonthlyEquiv": "월 환산 US$6.67 상당",
       "savingsNote": "월간 결제 대비 약 33% 절약.",
       "features": {
@@ -814,7 +814,7 @@
     },
     "currentPlan": "현재 플랜",
     "manageSubscription": "구독 관리",
-    "trust": "안전한 결제 · 언제든지 취소 가능",
+    "trust": "안전한 결제 · 자동 갱신 · 언제든지 취소 가능",
     "limit": {
       "freeTitle": "오늘의 무료 Oria Chat 답변을 사용했습니다.",
       "freeMessage": "더 깊은 가이던스를 계속하려면 Oria Plus를 잠금 해제하세요.",
