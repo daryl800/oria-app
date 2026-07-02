@@ -1890,10 +1890,11 @@ html[lang^="zh"] .oria-home-primary-card h2 {
   }
 
   html[lang^="zh"] .oria-landing-title {
-    font-size: clamp(20px, 6vw, 24px);
+    font-size: 22px;
     line-height: 1.3;
     width: 100%;
-    max-width: 100%;
+    max-width: none;
+    justify-self: stretch;
   }
 
   .oria-landing-lead {
