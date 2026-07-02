@@ -35,18 +35,17 @@ export default function Landing() {
           <div className="mb-6 text-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
             <div style={{
               fontFamily: "'Cormorant Garamond', 'Playfair Display', serif",
-              fontWeight: 600,
+              fontWeight: 300,
               fontSize: 'clamp(28px, 8vw, 64px)',
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
+              letterSpacing: '0.2em',
               background: 'linear-gradient(90deg, #c8ad52 0%, #f1ecdf 50%, #c9b8ee 100%)',
               WebkitBackgroundClip: 'text',
               backgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               color: 'transparent',
               lineHeight: 1.1,
-              paddingRight: '0.22em',
-            }}>ORIA</div>
+              paddingRight: '0.2em',
+            }}>oria</div>
             <div style={{
               fontSize: 'clamp(10px, 1.5vw, 14px)',
               letterSpacing: '0.2em',
