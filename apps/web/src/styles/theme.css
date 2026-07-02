@@ -1294,6 +1294,58 @@ html[lang^="zh"] .oria-landing-title {
   white-space: pre-line;
 }
 
+.oria-landing-eyebrow {
+  margin-bottom: 14px;
+  color: rgba(201, 168, 76, 0.65);
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  font-weight: 500;
+}
+
+.oria-landing-supporting {
+  margin-top: 20px;
+  margin-bottom: 0;
+  color: rgba(244, 239, 231, 0.68);
+  font-size: clamp(13px, 1.8vw, 15px);
+  line-height: 1.85;
+  white-space: pre-line;
+}
+
+.oria-landing-usecases {
+  width: min(480px, 100%);
+  margin-top: 32px;
+  margin-bottom: 8px;
+}
+
+.oria-landing-usecase-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.oria-landing-usecase-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(201, 168, 76, 0.13);
+  border-radius: 16px;
+  padding: 16px 14px;
+  text-align: left;
+}
+
+.oria-landing-usecase-title {
+  color: rgba(201, 168, 76, 0.88);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.oria-landing-usecase-desc {
+  color: rgba(244, 239, 231, 0.5);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
 .oria-landing-actions {
   width: min(360px, 100%);
   margin-top: 26px;

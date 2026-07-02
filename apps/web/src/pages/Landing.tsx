@@ -57,12 +57,12 @@ export default function Landing() {
               marginTop: 2,
             }}>Eastern Metaphysics × Western Psychology</div>
           </div>
+          <p className="oria-landing-eyebrow">{t('landing.eyebrow')}</p>
           <h1 className="oria-landing-title">
             {t('landing.headline')}
           </h1>
-          <p className="oria-landing-lead">
-            {t('landing.lead')}
-            {' '}{t('landing.emphasis')}
+          <p className="oria-landing-supporting">
+            {t('landing.supporting')}
           </p>
 
           <div className="oria-landing-actions">
@@ -83,6 +83,17 @@ export default function Landing() {
             </p>
           </div>
         </section>
+        <section className="oria-landing-usecases">
+          <div className="oria-landing-usecase-grid">
+            {(['career', 'relationship', 'balance', 'next'] as const).map(key => (
+              <div key={key} className="oria-landing-usecase-card">
+                <div className="oria-landing-usecase-title">{t(`landing.usecase_${key}_title`)}</div>
+                <div className="oria-landing-usecase-desc">{t(`landing.usecase_${key}_body`)}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <p className="oria-landing-disclaimer">
           {t('landing.disclaimer')}
         </p>
