@@ -313,15 +313,23 @@ billingRouter.delete('/account', async (req: Request, res: Response) => {
     }
 
     // 2. Delete user data in dependency order
-    await supabaseAdmin.from('messages').delete().eq('user_id', userId);
-    await supabaseAdmin.from('conversation_summaries').delete().eq('user_id', userId);
-    await supabaseAdmin.from('conversations').delete().eq('user_id', userId);
-    await supabaseAdmin.from('daily_guidance').delete().eq('user_id', userId);
-    await supabaseAdmin.from('bazi_profile_versions').delete().eq('user_id', userId);
-    await supabaseAdmin.from('mbti_profile_versions').delete().eq('user_id', userId);
-    await supabaseAdmin.from('persons').delete().eq('user_id', userId);
-    await supabaseAdmin.from('user_profiles').delete().eq('user_id', userId);
-    await supabaseAdmin.from('users').delete().eq('id', userId);
+    const deletions: Array<{ table: string; result: { error: any } }> = [];
+    deletions.push({ table: 'messages',                result: await supabaseAdmin.from('messages').delete().eq('user_id', userId) });
+    deletions.push({ table: 'conversation_summaries',  result: await supabaseAdmin.from('conversation_summaries').delete().eq('user_id', userId) });
+    deletions.push({ table: 'conversations',           result: await supabaseAdmin.from('conversations').delete().eq('user_id', userId) });
+    deletions.push({ table: 'daily_guidance',          result: await supabaseAdmin.from('daily_guidance').delete().eq('user_id', userId) });
+    deletions.push({ table: 'bazi_profile_versions',   result: await supabaseAdmin.from('bazi_profile_versions').delete().eq('user_id', userId) });
+    deletions.push({ table: 'mbti_profile_versions',   result: await supabaseAdmin.from('mbti_profile_versions').delete().eq('user_id', userId) });
+    deletions.push({ table: 'persons',                 result: await supabaseAdmin.from('persons').delete().eq('user_id', userId) });
+    deletions.push({ table: 'user_profiles',           result: await supabaseAdmin.from('user_profiles').delete().eq('user_id', userId) });
+    deletions.push({ table: 'users',                   result: await supabaseAdmin.from('users').delete().eq('id', userId) });
+
+    const failed = deletions.filter(d => d.result.error);
+    if (failed.length > 0) {
+      const detail = failed.map(d => `${d.table}: ${d.result.error.message}`).join('; ');
+      console.error(`[billing] data deletion failed for ${userId} — ${detail}`);
+      return res.status(500).json({ error: `Account deletion failed (${detail}). Please contact support.` });
+    }
 
     // 3. Delete the Supabase auth user (must be last)
     const { error: authErr } = await supabaseAdmin.auth.admin.deleteUser(userId);
