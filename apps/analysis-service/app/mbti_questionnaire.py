@@ -1,3 +1,5 @@
+# mbti_questionnaire.py
+
 from typing import List, Dict
 
 # Language key resolver

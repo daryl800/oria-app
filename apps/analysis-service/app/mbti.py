@@ -1,3 +1,5 @@
+# mbti.py
+
 from typing import Dict
 
 MBTI_TYPES = [
