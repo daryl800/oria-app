@@ -206,6 +206,57 @@ router.post('/send', async (req: Request, res: Response) => {
       conversationId = newConv.id;
     }
 
+    // load personal context from other recent conversations
+    let previousConversationsContext = '';
+    try {
+      const { data: recentConvs } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .neq('id', conversationId)
+        .order('updated_at', { ascending: false })
+        .limit(4);
+
+      if (recentConvs?.length) {
+        const convIds = recentConvs.map((c: any) => c.id);
+        // prefer summaries — they are richer after the 30-message threshold
+        const { data: prevSummaries } = await supabase
+          .from('conversation_summaries')
+          .select('summary_text')
+          .in('conversation_id', convIds)
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        if (prevSummaries?.length) {
+          previousConversationsContext = prevSummaries
+            .map((s: any) => s.summary_text)
+            .join('\n\n');
+        } else {
+          // fallback: grab recent messages from the single most recent other conversation
+          const { data: recentMsgs } = await supabase
+            .from('messages')
+            .select('role, content')
+            .eq('conversation_id', convIds[0])
+            .order('created_at', { ascending: false })
+            .limit(6);
+
+          if (recentMsgs?.length) {
+            const snippet = recentMsgs
+              .reverse()
+              .filter((m: any) => m.role === 'user')
+              .map((m: any) => m.content)
+              .join('\n');
+            if (snippet.trim()) {
+              previousConversationsContext = `上次對話中用戶提到：\n${snippet}`;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to load cross-conversation context:', err);
+    }
+
     // build prompt and call LLM
     const zodiac = bazi.birth_date ? calculateZodiac(bazi.birth_date) : null;
     const messages = chatPrompt(
@@ -218,6 +269,7 @@ router.post('/send', async (req: Request, res: Response) => {
       userName,
       mbti.context_focus ?? [],
       zodiac,
+      previousConversationsContext,
     );
 
     const response = await complete(messages, 'chat');

@@ -412,6 +412,25 @@ export function dailyGuidancePrompt(
   const todayTone = STEM_TONE[todayStem] ?? { en: 'Steady Earth', zh: '穩重土氣' };
   const toneStr = lang === 'en' ? todayTone.en : todayTone.zh;
 
+  const isWeekend = [0, 6].includes(new Date().getDay());
+  const dayName = new Date().toLocaleDateString('zh-TW', { weekday: 'long' });
+  const dayContext = isWeekend
+    ? '今天是週末，請給出適合休息、個人成長和家庭時間的建議。不要提及工作任務或職場建議。'
+    : '今天是工作日。';
+  const tipsSchema = isWeekend
+    ? `[
+    {"area":"休息","text":"適合今天放鬆或充電的具體方式"},
+    {"area":"人際","text":"與家人或朋友的互動場景"},
+    {"area":"健康","text":"具體到身體狀態或行為"},
+    {"area":"個人時間","text":"具體的自我成長或興趣活動"}
+  ]`
+    : `[
+    {"area":"工作","text":"包含具體情境或行動"},
+    {"area":"人際","text":"包含互動場景"},
+    {"area":"健康","text":"具體到身體狀態或行為"},
+    {"area":"財務","text":"具體到決策或風險"}
+  ]`;
+
   return [
     {
       role: 'system',
@@ -425,13 +444,16 @@ export function dailyGuidancePrompt(
 - 必須讓內容看起來「只屬於這個人」
 星座在每日指引中只能用於補充今日情緒語氣或社交反應，不得主導今日判斷。
 今天日期：${gregorian}
+
+【今日情境】
+${dayContext}
 ${SAFETY_CLAUSE}`,
     },
     {
       role: 'user',
       content: `生成今日個人化指引。
 
-今天：${gregorian}（${dayOfWeek}）
+今天：${gregorian}（${dayName}）
 今日干支：${todayStem}${todayBranch}（今日五行：${todayElement}）
 今日基調（固定）：${toneStr}
 
@@ -473,12 +495,7 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
     "hex": "#rrggbb（必填：對應該顏色的十六進制色碼，例如橄欖綠→#6b7c3e）",
     "reason": "一句說明 + 使用場景"
   },
-  "tips": [
-    {"area":"工作","text":"包含具體情境或行動"},
-    {"area":"人際","text":"包含互動場景"},
-    {"area":"健康","text":"具體到身體狀態或行為"},
-    {"area":"財務","text":"具體到決策或風險"}
-  ],
+  "tips": ${tipsSchema},
   "identity": "一句點出：這種反應其實來自你的日主特性（強化自我認同）",
   "tension": "一句描述今日可能出現的內在張力或矛盾（例如：想推進但能量不足）",
   "nudge": "一句短而有力的提醒，必須帶對比或反直覺",
@@ -501,6 +518,7 @@ export function chatPrompt(
   userName: string = '',
   context_focus: string[] = [],
   zodiac: any = null,
+  previousConversationsContext: string = '',
 ): Messages {
   const { gregorian, dayOfWeek } = getDateContext();
   const name = userName || '用戶';
@@ -520,12 +538,19 @@ export function chatPrompt(
 今天日期：${gregorian}（${dayOfWeek}）
 用戶：${name}
 
-【用戶資料】
+【用戶命盤與性格資料】
 ${baziCtx}
 ${mbtiCtx}
 ${zodiacCtx}
-${contextFocusSection ? `${contextFocusSection}\n` : ''}
-—————————————————
+${contextFocusSection ? `${contextFocusSection}\n` : ''}${previousConversationsContext ? `—————————————————
+
+【用戶過往分享的個人背景】
+以下是用戶在過去對話中主動分享的具體生活細節。這些是真實個人資訊，不是命盤推算：
+
+${previousConversationsContext}
+
+（請在回應中自然引用這些細節，讓用戶感覺你記得他說過的話。在相關時直接點名——例如「你之前提到正在考慮……」——不需要每次都提，但在話題相關時主動帶入。）
+` : ''}—————————————————
 
 【範圍限制——必須優先執行】
 
@@ -688,12 +713,13 @@ B. 回答（分析）
 
 【回應原則】
 
-1. 必須具體，避免泛泛而談  
-2. 優先從日主 / 五行切入，再連到 MBTI  
-3. 不要只講 MBTI，也不要只講八字  
-4. 語氣：直接、有洞察，但不武斷  
+1. 必須具體，避免泛泛而談
+2. 優先從日主 / 五行切入，再連到 MBTI
+3. 不要只講 MBTI，也不要只講八字
+4. 語氣：直接、有洞察，但不武斷
+5. 若系統提示中有用戶過往分享，在話題相關時主動引用——點名具體情況，讓用戶感覺被記住，而非每次從零開始
 
-5. 避免空泛句子，例如：
+6. 避免空泛句子，例如：
 - 「保持努力」
 - 「抓住機會」
 - 「相信自己」
@@ -772,17 +798,32 @@ ${respondIn}
 }
 
 export function summarizationPrompt(messages: { role: string; content: string }[], lang: string = 'en'): Messages {
-  const formatted = messages.map(m => `${m.role === 'user' ? '用戶' : 'Oria'}: ${m.content}`).join('\\n\\n');
+  const formatted = messages.map(m => `${m.role === 'user' ? '用戶' : 'Oria'}: ${m.content}`).join('\n\n');
   const respondIn = getRespondIn(lang);
 
   return [
     {
       role: 'system',
-      content: '你是一個對話摘要助手。請將以下對話濃縮成150字以內的摘要，重點記錄用戶探討的主題、命盤相關的洞察，以及任何重要的個人背景。',
+      content: '你是一個對話記憶提取助手，專為個人化引導AI保存用戶的具體生活細節。你的任務是從對話中提取重要個人資訊，讓未來的對話可以直接引用，不需要用戶重新說明。',
     },
     {
       role: 'user',
-      content: `請摘要以下對話：\\n\\n${formatted}\\n\\n${respondIn}`,
+      content: `請從以下對話中提取並保存對未來對話有用的個人資訊。輸出300字以內的紀錄，必須包含以下有實際內容的部分：
+
+1. 個人情況：用戶的工作、職位、行業、所在地、年齡階段、生活狀態（只記錄用戶主動提及的）
+2. 進行中的計劃或決策：用戶正在考慮或已決定的事情（換工作、搬遷、感情決定等）
+3. 重要關係：提到的伴侶、家人、同事或朋友的具體情況
+4. 情緒與壓力：用戶描述的具體困擾、壓力來源或情緒狀態
+5. 對洞察的反應：用戶特別有共鳴或不認同的觀點
+6. 未解問題：對話中提出但尚未解決、值得後續跟進的問題
+
+格式：用簡潔的段落書寫，去掉沒有實際內容的項目。不要使用標題。只保留用戶主動分享的真實資訊。
+
+對話記錄：
+
+${formatted}
+
+${respondIn}`,
     },
   ];
 }
