@@ -582,6 +582,39 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
               )}
             </>
           )}
+
+          {summary.suggested_prompts?.length > 0 && (
+            <div className="oria-card" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={sectionLabelStyle}>
+                💬 {t('daily.explore_prompts')}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+                {summary.suggested_prompts.map((prompt, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => navigate('/chat', { state: { prefill: prompt } })}
+                    style={{
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.12)',
+                      borderRadius: 12,
+                      padding: '12px 16px',
+                      color: 'rgba(255,255,255,0.8)',
+                      fontSize: 14,
+                      lineHeight: 1.5,
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

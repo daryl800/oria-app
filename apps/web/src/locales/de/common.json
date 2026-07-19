@@ -46,6 +46,7 @@
     "color": "Heutige Farbe",
     "zodiac_tone": "Tierkreis-Hinweis",
     "deeper_reason": "Tieferer Grund",
+      "explore_prompts": "Weiter erkunden",
     "upgrade_body": "Es gibt einen tieferen Grund hinter diesem Muster.",
     "upgrade_cta": "Vollständige Einsicht freischalten ✦",
     "chat_prefill": "Die heutige Führung sagt {{text}}. Wie soll ich damit umgehen?",

@@ -46,6 +46,7 @@
     "color": "El color de hoy",
     "zodiac_tone": "Nota zodiacal",
     "deeper_reason": "Razón más profunda",
+      "explore_prompts": "Explorar más",
     "upgrade_body": "Hay un patrón más profundo detrás de esto.",
     "upgrade_cta": "Desbloquear perspectiva completa ✦",
     "chat_prefill": "La guía de hoy dice {{text}}. ¿Cómo puedo trabajar con eso?",

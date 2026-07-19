@@ -46,6 +46,7 @@
     "color": "Couleur du jour",
     "zodiac_tone": "Note zodiacale",
     "deeper_reason": "Raison profonde",
+      "explore_prompts": "Explorer davantage",
     "upgrade_body": "Il y a une raison plus profonde derrière ce schéma.",
     "upgrade_cta": "Débloquer l'aperçu complet ✦",
     "chat_prefill": "La guidance du jour dit {{text}}. Comment puis-je travailler avec ça ?",

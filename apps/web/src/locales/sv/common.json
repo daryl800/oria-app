@@ -46,6 +46,7 @@
     "color": "Dagens färg",
     "zodiac_tone": "Stjärntecken",
     "deeper_reason": "Djupare orsak",
+      "explore_prompts": "Utforska vidare",
     "upgrade_body": "Det finns en djupare orsak bakom det här mönstret.",
     "upgrade_cta": "Lås upp full insikt ✦",
     "chat_prefill": "Dagens vägledning säger \"{{text}}\". Hur ska jag arbeta med det?",

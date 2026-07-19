@@ -46,6 +46,7 @@
     "color": "今日顏色",
     "zodiac_tone": "星座語氣",
     "deeper_reason": "深層原因",
+      "explore_prompts": "繼續探索",
     "upgrade_body": "這種感覺背後，還有更深一層的原因。",
     "upgrade_cta": "解鎖完整解讀 ✦",
     "chat_prefill": "我今天的指引提到「{{text}}」，應該怎麼調整？",
