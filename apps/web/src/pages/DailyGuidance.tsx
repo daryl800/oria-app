@@ -524,7 +524,7 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
         <div className="animate-fade-in" style={{ display: 'grid', gap: 18 }}>
           {summary.identity && (
             <div className="oria-card" style={{ background: 'rgba(201,168,76,0.06)', textAlign: 'center' }}>
-              <p style={{ fontSize: 14, color: '#C9A84C', lineHeight: 1.6, margin: 0, fontStyle: 'italic' }}>
+              <p style={{ fontSize: 18, color: '#C9A84C', lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>
                 ✦ {shortText(summary.identity)}
               </p>
             </div>

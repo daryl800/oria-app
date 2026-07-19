@@ -414,6 +414,7 @@ export function dailyGuidancePrompt(
 
   const isWeekend = [0, 6].includes(new Date().getDay());
   const dayName = new Date().toLocaleDateString('zh-TW', { weekday: 'long' });
+  console.log(`[dailyGuidancePrompt] getDay=${new Date().getDay()} isWeekend=${isWeekend} dayName=${dayName}`);
   const dayContext = isWeekend
     ? '今天是週末，請給出適合休息、個人成長和家庭時間的建議。不要提及工作任務或職場建議。'
     : '今天是工作日。';
