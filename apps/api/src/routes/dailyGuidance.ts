@@ -144,7 +144,53 @@ router.get('/today', async (req: Request, res: Response) => {
       var contextFocus = (mbtiVersion as any)?.context_focus ?? [];
     }
 
-    // 4. call LLM directly from Node.js
+    // 4. load recent chat context to personalise guidance
+    let recentChatContext = '';
+    try {
+      const { data: recentConvs } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .order('updated_at', { ascending: false })
+        .limit(3);
+
+      if (recentConvs?.length) {
+        const convIds = recentConvs.map((c: any) => c.id);
+
+        // prefer summaries — they are richer after the 30-message threshold
+        const { data: summaries } = await supabase
+          .from('conversation_summaries')
+          .select('summary_text')
+          .in('conversation_id', convIds)
+          .order('created_at', { ascending: false })
+          .limit(2);
+
+        if (summaries?.length) {
+          recentChatContext = summaries.map((s: any) => s.summary_text).join('\n\n');
+        } else {
+          // fallback: grab recent user messages across the most recent conversations
+          const { data: msgs } = await supabase
+            .from('messages')
+            .select('content')
+            .in('conversation_id', convIds)
+            .eq('role', 'user')
+            .order('created_at', { ascending: false })
+            .limit(6);
+
+          if (msgs?.length) {
+            recentChatContext = msgs
+              .reverse()
+              .map((m: any) => m.content)
+              .join('\n');
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to load recent chat context for daily guidance:', err);
+    }
+
+    // 5. call LLM directly from Node.js
     const zodiac = baziVersion.birth_date ? calculateZodiac(baziVersion.birth_date) : null;
     const messages = dailyGuidancePrompt(
       {
@@ -163,6 +209,7 @@ router.get('/today', async (req: Request, res: Response) => {
       lang,
       zodiac,
       contextFocus ?? [],
+      recentChatContext,
     );
     // Plus users get GPT-4.1 ~30% of the time for a quality boost
     const chain = (isPlus && Math.random() < 0.3) ? 'daily_premium' : 'daily';

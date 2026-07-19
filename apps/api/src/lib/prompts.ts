@@ -400,6 +400,7 @@ export function dailyGuidancePrompt(
   lang: string = 'en',
   zodiac: any = null,
   context_focus: string[] = [],
+  recentChatContext: string = '',
 ): Messages {
   const { gregorian, dayOfWeek } = getDateContext();
   const baziCtx = getBaziContext(bazi);
@@ -462,7 +463,14 @@ ${SAFETY_CLAUSE}`,
 ${baziCtx}
 ${mbtiCtx}
 ${zodiacCtx}
-${contextFocusSection ? `\n${contextFocusSection}` : ''}
+
+【用戶當前關注與近期話題——所有指引必須以此為錨點】
+${contextFocusSection ? `關注重點：${contextFocusSection}\n` : ''}${recentChatContext ? `近期對話主題：\n${recentChatContext}` : '（尚無近期對話記錄）'}
+
+↑ 今日指引必須直接回應用戶上方的實際關注點。禁止給出與用戶當前處境無關的通用生活建議。
+若用戶有近期對話主題，moment / focus / tips 至少一項必須直接點名該話題。
+若用戶有關注重點，suggested_prompts 必須延伸這些關注點，而非泛問命盤。
+
 【核心分析邏輯（必須執行）】
 1. 判斷今日${todayElement}與日主${bazi.day_master}的關係（生我 / 我生 / 剋我 / 我剋 / 比肩）
 2. 根據關係選擇今日模式（dailyMode）：
@@ -477,9 +485,10 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
 
 【輸出要求（極重要）】
 - 每一段內容都必須「具體」，避免抽象建議
-- 至少包含一個「今天可能發生的情境」
+- 至少包含一個「今天可能發生的情境」，且必須與用戶當前關注的領域相關
 - 必須出現一次「這是因為你的日主特性」來強化個人化
 - nudge 必須直接呼應今日五行關係的結果，語氣可以積極也可以謹慎，由分析決定，帶有對比或洞察感
+- suggested_prompts 必須讓用戶感覺「這個問題是為我今天的處境量身設計的」
 
 以JSON回應：
 {
