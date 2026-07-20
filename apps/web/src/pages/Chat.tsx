@@ -27,6 +27,34 @@ interface Conversation {
   updated_at: string;
 }
 
+function renderAssistantContent(content: string) {
+  const parts = content.split(/(【[^】]+】)/);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (/^【[^】]+】$/.test(part)) {
+          return (
+            <span key={i} style={{
+              color: '#C9A84C',
+              fontWeight: 700,
+              fontSize: 15,
+              display: 'block',
+              marginTop: i === 0 ? 0 : 16,
+              marginBottom: 4,
+              letterSpacing: '0.02em',
+            }}>
+              {part}
+            </span>
+          );
+        }
+        return part.trim()
+          ? <ReactMarkdown key={i}>{part}</ReactMarkdown>
+          : null;
+      })}
+    </>
+  );
+}
+
 export default function Chat({ user, isPlus = false, planInterval = null }: { user: User; isPlus?: boolean; planInterval?: 'month' | 'year' | null }) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -454,7 +482,7 @@ export default function Chat({ user, isPlus = false, planInterval = null }: { us
                     </div>
                   )}
 
-                  {msg.role === 'assistant' ? <ReactMarkdown>{msg.content}</ReactMarkdown> : msg.content}
+                  {msg.role === 'assistant' ? renderAssistantContent(msg.content) : msg.content}
 
                   {msg.crisis && (
                     <div style={{ marginTop: 10, fontSize: 12, opacity: 0.7 }}>
