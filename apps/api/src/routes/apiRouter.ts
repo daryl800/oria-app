@@ -4,6 +4,7 @@ import UserRoutes from './UserRoutes';
 import dailyGuidanceRouter from './dailyGuidance';
 import profileRouter from './profile';
 import chatRouter from './chat';
+import debateRouter from './debate';
 import { authMiddleware } from '../middleware/auth';
 import contactRouter from './contact';
 import billingRouter from './billing';
@@ -108,5 +109,6 @@ apiRouter.use(Paths.DailyGuidance._, authMiddleware, dailyGuidanceRouter);
 apiRouter.use(Paths.Profile._, authMiddleware, profileRouter);
 apiRouter.use(Paths.Chat._, authMiddleware, chatRouter);
 apiRouter.use('/billing', authMiddleware, billingRouter);
+apiRouter.use('/debate', authMiddleware, debateRouter);
 
 export default apiRouter;

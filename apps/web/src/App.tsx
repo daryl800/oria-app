@@ -19,6 +19,7 @@ import Profile from './pages/Profile';
 import Chat from './pages/Chat';
 import MbtiQuestionnaire from './pages/MbtiQuestionnaire';
 import Compare from './pages/Compare';
+import Debate from './pages/Debate';
 import LanguageModal from './components/LanguageModal';
 // Upgrade page removed — redirects to /pricing
 import AuthCallback from './pages/AuthCallback';
@@ -199,6 +200,7 @@ export default function App() {
           <Route path="/compare" element={!user ? <Navigate to="/" /> : <Navigate to="/relationship-insights" replace />} />
           <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} isPlus={isPlus} isPlusLoaded={isPlusLoaded} />} />
           <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} isPlus={isPlus} planInterval={planInterval} />} />
+          <Route path="/debate" element={!user ? <Navigate to="/" /> : <Debate />} />
           <Route path="/profile" element={!user ? <Navigate to="/" /> : <Profile user={user} isPlus={isPlus} />} />
           <Route path="/settings" element={!user ? <Navigate to="/" /> : <Navigate to="/profile" replace />} />
           <Route path="/mbti-quiz" element={!user ? <Navigate to="/" /> : <MbtiQuestionnaire user={user} />} />

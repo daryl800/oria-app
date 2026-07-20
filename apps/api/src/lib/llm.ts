@@ -66,16 +66,32 @@ const chatgptMini = {
   timeoutMs: 30_000,
 };
 
+const gpt4o = {
+  name: 'gpt-4o',
+  client: new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY!,
+    baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+  }),
+  model: 'gpt-4o',
+  timeoutMs: 30_000,
+};
+
 // ── Named chains (primary → fallback) ────────────────────────────
-// profile:        profile summary, monthly chart focus, compare
-// daily:          daily guidance (free + plus standard)
-// daily_premium:  daily guidance for plus users (occasional GPT-4.1 upgrade)
-// chat:           chat, conversation summary
+// profile:          profile summary, monthly chart focus, compare
+// daily:            daily guidance (free + plus standard)
+// daily_premium:    daily guidance for plus users (occasional GPT-4.1 upgrade)
+// chat:             chat, conversation summary
+// debate_east:      East (BaZi) debater — Hunyuan primary
+// debate_west:      West (MBTI/Psychology) debater — DeepSeek primary
+// debate_synthesis: Neutral synthesis — GPT-4o primary
 const CHAINS = {
-  profile:       [deepseek, chatgpt, hunyuan],
-  daily:         [deepseek, chatgptMini],
-  daily_premium: [chatgpt, deepseek, chatgptMini],
-  chat:          [chatgpt, deepseek],
+  profile:          [deepseek, chatgpt, hunyuan],
+  daily:            [deepseek, chatgptMini],
+  daily_premium:    [chatgpt, deepseek, chatgptMini],
+  chat:             [chatgpt, deepseek],
+  debate_east:      [hunyuan, deepseek],
+  debate_west:      [deepseek, chatgptMini],
+  debate_synthesis: [gpt4o, chatgpt],
 } as const;
 
 export type LLMChain = keyof typeof CHAINS;
