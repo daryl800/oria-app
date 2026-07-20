@@ -76,6 +76,16 @@ const gpt4o = {
   timeoutMs: 30_000,
 };
 
+const gpt4oMini = {
+  name: 'gpt-4o-mini',
+  client: new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY!,
+    baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+  }),
+  model: 'gpt-4o-mini',
+  timeoutMs: 30_000,
+};
+
 // ── Named chains (primary → fallback) ────────────────────────────
 // profile:          profile summary, monthly chart focus, compare
 // daily:            daily guidance (free + plus standard)
@@ -90,7 +100,7 @@ const CHAINS = {
   daily_premium:    [chatgpt, deepseek, chatgptMini],
   chat:             [chatgpt, deepseek],
   debate_east:      [hunyuan, deepseek],
-  debate_west:      [deepseek, chatgptMini],
+  debate_west:      [gpt4oMini, chatgptMini],
   debate_synthesis: [gpt4o, chatgpt],
 } as const;
 

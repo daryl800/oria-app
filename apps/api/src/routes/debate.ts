@@ -3,10 +3,10 @@ import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
 import { complete } from '../lib/llm';
 import {
-  eastOpeningPrompt, westOpeningPrompt,
-  eastRebuttalPrompt, westRebuttalPrompt,
-  eastDefensePrompt, westDefensePrompt,
-  eastFinalPrompt, westFinalPrompt,
+  eastR1Prompt, westR1Prompt,
+  eastR2Prompt, westR2Prompt,
+  eastR3Prompt, westR3Prompt,
+  eastR4Prompt, westR4Prompt,
   synthesisPrompt,
 } from '../lib/debatePrompts';
 
@@ -101,12 +101,11 @@ async function loadRecentContext(userId: string): Promise<string> {
   }
 }
 
-function formatHistory(rounds: any[]): string {
+// Full round history for R5 synthesis
+function formatAllRounds(rounds: any[]): string {
   return rounds.map((r) => {
-    if (r.synthesis) {
-      return `【第五輪·裁決】\n${r.synthesis}`;
-    }
-    return `【第${r.round}輪】\n東方智者：\n${r.east}\n\n西方顧問：\n${r.west}`;
+    if (r.synthesis) return `【第五輪·綜合】\n${r.synthesis}`;
+    return `【第${r.round}輪】\n🏮 東方智者：\n${r.east}\n\n🧠 西方顧問：\n${r.west}`;
   }).join('\n\n---\n\n');
 }
 
@@ -126,9 +125,10 @@ router.post('/start', async (req: Request, res: Response) => {
       loadRecentContext(userId),
     ]);
 
+    // R1: both AIs analyse independently — no opponent view yet
     const [eastR1, westR1] = await Promise.all([
-      complete(eastOpeningPrompt(bazi, mbtiProfile, question, recentContext, lang), 'debate_east'),
-      complete(westOpeningPrompt(bazi, mbtiProfile, question, recentContext, lang), 'debate_west'),
+      complete(eastR1Prompt(bazi, mbtiProfile, question, recentContext, lang), 'debate_east'),
+      complete(westR1Prompt(bazi, mbtiProfile, question, recentContext, lang), 'debate_west'),
     ]);
 
     const rounds = [{ round: 1, east: eastR1, west: westR1 }];
@@ -175,22 +175,20 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
       .single();
 
     if (fetchErr || !session) {
-      return res.status(404).json({ error: 'Debate session not found' });
+      return res.status(404).json({ error: 'Analysis session not found' });
     }
     if (session.status === 'complete') {
-      return res.status(400).json({ error: 'Debate is already complete' });
+      return res.status(400).json({ error: 'Analysis is already complete' });
     }
 
     const rounds: any[] = session.rounds ?? [];
     const currentRound = rounds.length;
 
     if (currentRound >= 5) {
-      return res.status(400).json({ error: 'Debate is already at round 5' });
+      return res.status(400).json({ error: 'Analysis is already at round 5' });
     }
 
     const { question, lang = 'zh-TW' } = session;
-    const r1 = rounds[0];
-    const r2 = rounds[1];
     const nextRound = currentRound + 1;
 
     const [{ bazi, mbtiProfile }, recentContext] = await Promise.all([
@@ -202,31 +200,33 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
     let isComplete = false;
 
     if (nextRound === 2) {
+      // Each AI reads the opponent's R1
       const [eastR2, westR2] = await Promise.all([
-        complete(eastRebuttalPrompt(bazi, mbtiProfile, question, recentContext, r1.west, lang), 'debate_east'),
-        complete(westRebuttalPrompt(bazi, mbtiProfile, question, recentContext, r1.east, lang), 'debate_west'),
+        complete(eastR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].west, lang), 'debate_east'),
+        complete(westR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].east, lang), 'debate_west'),
       ]);
       newRoundData = { round: 2, east: eastR2, west: westR2 };
 
     } else if (nextRound === 3) {
+      // Each AI reads the opponent's R2
       const [eastR3, westR3] = await Promise.all([
-        complete(eastDefensePrompt(bazi, mbtiProfile, question, recentContext, r2.west, lang), 'debate_east'),
-        complete(westDefensePrompt(bazi, mbtiProfile, question, recentContext, r2.east, lang), 'debate_west'),
+        complete(eastR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].west, lang), 'debate_east'),
+        complete(westR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].east, lang), 'debate_west'),
       ]);
       newRoundData = { round: 3, east: eastR3, west: westR3 };
 
     } else if (nextRound === 4) {
-      const history = formatHistory(rounds);
+      // Each AI reads the opponent's R3
       const [eastR4, westR4] = await Promise.all([
-        complete(eastFinalPrompt(bazi, mbtiProfile, question, recentContext, history, lang), 'debate_east'),
-        complete(westFinalPrompt(bazi, mbtiProfile, question, recentContext, history, lang), 'debate_west'),
+        complete(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, lang), 'debate_east'),
+        complete(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, lang), 'debate_west'),
       ]);
       newRoundData = { round: 4, east: eastR4, west: westR4 };
 
     } else if (nextRound === 5) {
-      const allHistory = formatHistory(rounds);
+      // Synthesizer sees all 4 rounds of both AIs
       const synthesis = await complete(
-        synthesisPrompt(bazi, mbtiProfile, question, recentContext, allHistory, lang),
+        synthesisPrompt(bazi, mbtiProfile, question, recentContext, formatAllRounds(rounds), lang),
         'debate_synthesis',
       );
       newRoundData = { round: 5, synthesis };
@@ -269,7 +269,7 @@ router.get('/:debateId', async (req: Request, res: Response) => {
       .single();
 
     if (error || !session) {
-      return res.status(404).json({ error: 'Debate session not found' });
+      return res.status(404).json({ error: 'Analysis session not found' });
     }
 
     return res.json({ session });

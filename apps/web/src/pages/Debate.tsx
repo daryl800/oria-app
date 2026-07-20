@@ -77,11 +77,11 @@ function TypewriterText({ text }: { text: string }) {
 }
 
 const ROUND_LABELS: Record<number, string> = {
-  1: '第一輪·開場',
-  2: '第二輪·反駁',
-  3: '第三輪·辯護',
-  4: '第四輪·終陳',
-  5: '第五輪·裁決',
+  1: '第一輪·初觀',
+  2: '第二輪·時機',
+  3: '第三輪·風險',
+  4: '第四輪·行動',
+  5: '第五輪·綜合',
 };
 
 interface DebateRound {
@@ -196,7 +196,7 @@ export default function Debate() {
           ←
         </button>
         <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#e8dcc8' }}>
-          東西論辯
+          東西解析
         </h2>
       </div>
 
@@ -204,7 +204,7 @@ export default function Debate() {
       {!debateId && (
         <div className="oria-card" style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 13, color: '#999', marginBottom: 10 }}>
-            輸入你的問題，讓東方命理師與西方心理顧問展開辯論
+            輸入你的問題，讓東方命理師與西方心理顧問進行深度解析
           </div>
           <textarea
             value={question}
@@ -241,7 +241,7 @@ export default function Debate() {
               cursor: loading || !question.trim() ? 'not-allowed' : 'pointer',
             }}
           >
-            {loading ? '正在召喚智者…' : '開始辯論'}
+            {loading ? '正在召喚智者…' : '開始解析'}
           </button>
         </div>
       )}
@@ -291,7 +291,7 @@ export default function Debate() {
                 letterSpacing: '0.06em',
                 marginBottom: 12,
               }}>
-                ⚖️ 中立裁判 · 最終裁決
+                ⚖️ 綜合解析 · 最終建議
               </div>
               <div style={{ fontSize: 14, lineHeight: 1.7, color: '#e8dcc8' }}>
                 <TypewriterText text={r.synthesis} />
@@ -340,8 +340,8 @@ export default function Debate() {
       {loading && debateId && (
         <div style={{ textAlign: 'center', color: '#999', fontSize: 14, padding: '20px 0' }}>
           {currentRound === 4
-            ? '裁判正在思考最終裁決…'
-            : '兩位顧問正在準備下一輪論點…'}
+            ? '正在生成綜合解析與最終建議…'
+            : '兩位顧問正在進行深度解析…'}
         </div>
       )}
 
@@ -377,7 +377,7 @@ export default function Debate() {
               cursor: 'pointer',
             }}
           >
-            {currentRound === 4 ? '請裁判裁決 →' : `進入${ROUND_LABELS[currentRound + 1]} →`}
+            {currentRound === 4 ? '進入綜合解析 →' : `進入${ROUND_LABELS[currentRound + 1]} →`}
           </button>
         )}
 
@@ -396,7 +396,7 @@ export default function Debate() {
               cursor: 'pointer',
             }}
           >
-            重新辯論
+            重新解析
           </button>
         )}
 
