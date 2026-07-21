@@ -60,11 +60,15 @@ function getLangInstruction(lang: string): string {
 }
 
 function buildUserContext(bazi: any, mbti: any, question: string, recentContext: string): string {
+  const birthYear = bazi?.birth_date ? parseInt(bazi.birth_date.split('-')[0]) : null;
+  const age = birthYear ? new Date().getFullYear() - birthYear : null;
+
   return `【用戶提問】
 ${question}
 
 【命盤資料】
 ${getBaziContext(bazi)}
+${age !== null ? `用戶年齡：約${age}歲` : ''}
 
 【性格資料】
 ${getMbtiContext(mbti)}
