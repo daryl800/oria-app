@@ -41,17 +41,28 @@ function renderContent(content: string) {
     <>
       {parts.map((part, i) => {
         if (/^【[^】]+】$/.test(part)) {
+          const isNewSection = /^【本輪深析：/.test(part);
           return (
-            <span key={i} style={{
-              color: GOLD,
-              fontWeight: 700,
-              fontSize: 14,
-              display: 'block',
-              marginTop: i === 0 ? 0 : 12,
-              marginBottom: 3,
-              letterSpacing: '0.02em',
-            }}>
-              {part}
+            <span key={i}>
+              {isNewSection && (
+                <span style={{
+                  display: 'block',
+                  height: 1,
+                  background: 'rgba(255,255,255,0.07)',
+                  margin: '12px 0 10px',
+                }} />
+              )}
+              <span style={{
+                color: GOLD,
+                fontWeight: 700,
+                fontSize: 14,
+                display: 'block',
+                marginTop: isNewSection ? 0 : (i === 0 ? 0 : 12),
+                marginBottom: 3,
+                letterSpacing: '0.02em',
+              }}>
+                {part}
+              </span>
             </span>
           );
         }
