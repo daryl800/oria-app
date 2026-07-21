@@ -209,8 +209,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
         { text: eastR2, provider: eastProvider },
         { text: westR2, provider: westProvider },
       ] = await Promise.all([
-        completeTracked(eastR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].west, lang), 'debate_east'),
-        completeTracked(westR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].east, lang), 'debate_west'),
+        completeTracked(eastR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].west, rounds[0].east, lang), 'debate_east'),
+        completeTracked(westR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].east, rounds[0].west, lang), 'debate_west'),
       ]);
       newRoundData = { round: 2, east: eastR2, eastProvider, west: westR2, westProvider };
 
@@ -219,8 +219,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
         { text: eastR3, provider: eastProvider },
         { text: westR3, provider: westProvider },
       ] = await Promise.all([
-        completeTracked(eastR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].west, lang), 'debate_east'),
-        completeTracked(westR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].east, lang), 'debate_west'),
+        completeTracked(eastR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].west, rounds[1].east, lang), 'debate_east'),
+        completeTracked(westR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].east, rounds[1].west, lang), 'debate_west'),
       ]);
       newRoundData = { round: 3, east: eastR3, eastProvider, west: westR3, westProvider };
 
@@ -229,8 +229,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
         { text: eastR4, provider: eastProvider },
         { text: westR4, provider: westProvider },
       ] = await Promise.all([
-        completeTracked(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, lang), 'debate_east'),
-        completeTracked(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, lang), 'debate_west'),
+        completeTracked(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, rounds[2].east, lang), 'debate_east'),
+        completeTracked(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, rounds[2].west, lang), 'debate_west'),
       ]);
       newRoundData = { round: 4, east: eastR4, eastProvider, west: westR4, westProvider };
 

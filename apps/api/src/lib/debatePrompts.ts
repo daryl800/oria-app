@@ -113,6 +113,14 @@ ${getMbtiContext(mbti)}
 ${recentContext ? `【近期背景】\n${recentContext}\n` : ''}`.trim();
 }
 
+function ownPreviousBlock(own: string): string {
+  return `你在上一輪的立場是：
+${own}
+
+你必須與自己上一輪的核心結論保持一致。
+可以深化、補充、或調整細節，但不可完全推翻自己的上輪結論。`;
+}
+
 const HONEST_REACTION = `閱讀對手觀點後，誠實回應：
 - 若你真心認同 → 在【立場】直接說認同，然後從自己的框架補充為什麼
 - 若部分認同 → 說明哪部分認同、哪部分有不同看法
@@ -218,7 +226,7 @@ ${getLangInstruction(lang)}`,
 
 export function eastR2Prompt(
   bazi: any, mbti: any, question: string, recentContext: string,
-  opponentR1: string, lang: string,
+  opponentR1: string, ownR1: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
@@ -230,6 +238,8 @@ ${buildUserContext(bazi, mbti, question, recentContext)}
 ${BAZI_LIFECYCLE}
 
 ${COACHING_TONE}
+
+${ownPreviousBlock(ownR1)}
 
 西方顧問的第一輪觀點：
 ${opponentR1}
@@ -251,7 +261,7 @@ ${getLangInstruction(lang)}`,
 
 export function westR2Prompt(
   bazi: any, mbti: any, question: string, recentContext: string,
-  opponentR1: string, lang: string,
+  opponentR1: string, ownR1: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
@@ -265,6 +275,8 @@ ${MBTI_COGNITIVE}
 ${COACHING_TONE}
 
 ${WEST_USER_RULE}
+
+${ownPreviousBlock(ownR1)}
 
 東方智者的第一輪觀點：
 ${opponentR1}
@@ -288,7 +300,7 @@ ${getLangInstruction(lang)}`,
 
 export function eastR3Prompt(
   bazi: any, mbti: any, question: string, recentContext: string,
-  opponentR2: string, lang: string,
+  opponentR2: string, ownR2: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
@@ -300,6 +312,8 @@ ${buildUserContext(bazi, mbti, question, recentContext)}
 ${BAZI_LIFECYCLE}
 
 ${COACHING_TONE}
+
+${ownPreviousBlock(ownR2)}
 
 西方顧問的第二輪觀點：
 ${opponentR2}
@@ -321,7 +335,7 @@ ${getLangInstruction(lang)}`,
 
 export function westR3Prompt(
   bazi: any, mbti: any, question: string, recentContext: string,
-  opponentR2: string, lang: string,
+  opponentR2: string, ownR2: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
@@ -335,6 +349,8 @@ ${MBTI_COGNITIVE}
 ${COACHING_TONE}
 
 ${WEST_USER_RULE}
+
+${ownPreviousBlock(ownR2)}
 
 東方智者的第二輪觀點：
 ${opponentR2}
@@ -358,7 +374,7 @@ ${getLangInstruction(lang)}`,
 
 export function eastR4Prompt(
   bazi: any, mbti: any, question: string, recentContext: string,
-  opponentR3: string, lang: string,
+  opponentR3: string, ownR3: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
@@ -370,6 +386,8 @@ ${buildUserContext(bazi, mbti, question, recentContext)}
 ${BAZI_LIFECYCLE}
 
 ${COACHING_TONE}
+
+${ownPreviousBlock(ownR3)}
 
 西方顧問的第三輪觀點：
 ${opponentR3}
@@ -392,7 +410,7 @@ ${getLangInstruction(lang)}`,
 
 export function westR4Prompt(
   bazi: any, mbti: any, question: string, recentContext: string,
-  opponentR3: string, lang: string,
+  opponentR3: string, ownR3: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
@@ -406,6 +424,8 @@ ${MBTI_COGNITIVE}
 ${COACHING_TONE}
 
 ${WEST_USER_RULE}
+
+${ownPreviousBlock(ownR3)}
 
 東方智者的第三輪觀點：
 ${opponentR3}
