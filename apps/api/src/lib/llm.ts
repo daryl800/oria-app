@@ -29,7 +29,7 @@ import OpenAI from 'openai';
 const hunyuan = {
   name: 'hunyuan',
   client: new OpenAI({
-    apiKey: process.env.TENCENT_API_KEY!,
+    apiKey: process.env.HUNYUAN_API_KEY!,
     baseURL: process.env.HUNYUAN_BASE_URL || 'https://tokenhub.tencentmaas.com/v1',
   }),
   model: process.env.HUNYUAN_LLM_MODEL || 'Hy3',
