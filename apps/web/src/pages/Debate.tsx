@@ -9,6 +9,16 @@ const GOLD = '#C9A84C';
 const EAST_COLOR = '#8B2A2A';
 const WEST_COLOR = '#1A3A5C';
 
+const PROVIDER_LABEL: Record<string, string> = {
+  'hunyuan':      '混元',
+  'deepseek':     'DeepSeek',
+  'gpt-4o-mini':  'OpenAI',
+  'chatgpt-mini': 'OpenAI',
+  'gpt-4o':       'OpenAI',
+  'chatgpt':      'OpenAI',
+};
+function providerLabel(name: string) { return PROVIDER_LABEL[name] ?? name; }
+
 function renderContent(content: string) {
   const parts = content.split(/(【[^】]+】)/);
   return (
@@ -87,8 +97,11 @@ const ROUND_LABELS: Record<number, string> = {
 interface DebateRound {
   round: number;
   east?: string;
+  eastProvider?: string;
   west?: string;
+  westProvider?: string;
   synthesis?: string;
+  synthesisProvider?: string;
 }
 
 export default function Debate() {
@@ -137,7 +150,7 @@ export default function Debate() {
       if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to start debate');
       const data = await res.json();
       setDebateId(data.debateId);
-      setRounds([{ round: 1, east: data.east, west: data.west }]);
+      setRounds([{ round: 1, east: data.east, eastProvider: data.eastProvider, west: data.west, westProvider: data.westProvider }]);
       setComplete(data.complete);
     } catch (err: any) {
       setError(err.message);
@@ -162,8 +175,11 @@ export default function Debate() {
       setRounds(prev => [...prev, {
         round: data.round,
         east: data.east,
+        eastProvider: data.eastProvider,
         west: data.west,
+        westProvider: data.westProvider,
         synthesis: data.synthesis,
+        synthesisProvider: data.synthesisProvider,
       }]);
       setComplete(data.complete);
     } catch (err: any) {
@@ -266,16 +282,12 @@ export default function Debate() {
         <div key={r.round} style={{ marginBottom: 24 }}>
 
           {/* Round label */}
-          <div style={{
-            textAlign: 'center',
-            fontSize: 12,
-            fontWeight: 600,
-            color: GOLD,
-            letterSpacing: '0.08em',
-            marginBottom: 12,
-            textTransform: 'uppercase',
-          }}>
-            {ROUND_LABELS[r.round]}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, marginTop: 4 }}>
+            <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#E8C56A', letterSpacing: '0.1em' }}>
+              {ROUND_LABELS[r.round]}
+            </div>
+            <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
           </div>
 
           {/* Synthesis (R5) — full width */}
@@ -291,7 +303,7 @@ export default function Debate() {
                 letterSpacing: '0.06em',
                 marginBottom: 12,
               }}>
-                ⚖️ 綜合解析 · 最終建議
+                ⚖️ 綜合解析 · 最終建議{r.synthesisProvider && <span style={{ fontWeight: 400, color: '#a09060', marginLeft: 4 }}>（{providerLabel(r.synthesisProvider)}）</span>}
               </div>
               <div style={{ fontSize: 14, lineHeight: 1.7, color: '#e8dcc8' }}>
                 <TypewriterText text={r.synthesis} />
@@ -309,7 +321,7 @@ export default function Debate() {
                   letterSpacing: '0.06em',
                   marginBottom: 10,
                 }}>
-                  🏮 東方智者 · 八字命理
+                  🏮 東方智者 · 八字命理{r.eastProvider && <span style={{ fontWeight: 400, color: '#a06060', marginLeft: 4 }}>（{providerLabel(r.eastProvider)}）</span>}
                 </div>
                 <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
                   <TypewriterText text={r.east ?? ''} />
@@ -324,7 +336,7 @@ export default function Debate() {
                   letterSpacing: '0.06em',
                   marginBottom: 10,
                 }}>
-                  🧠 西方顧問 · MBTI心理
+                  🧠 西方顧問 · MBTI心理{r.westProvider && <span style={{ fontWeight: 400, color: '#6080a0', marginLeft: 4 }}>（{providerLabel(r.westProvider)}）</span>}
                 </div>
                 <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
                   <TypewriterText text={r.west ?? ''} />

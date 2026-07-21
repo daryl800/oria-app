@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
-import { complete } from '../lib/llm';
+import { completeTracked } from '../lib/llm';
 import {
   eastR1Prompt, westR1Prompt,
   eastR2Prompt, westR2Prompt,
@@ -126,12 +126,15 @@ router.post('/start', async (req: Request, res: Response) => {
     ]);
 
     // R1: both AIs analyse independently — no opponent view yet
-    const [eastR1, westR1] = await Promise.all([
-      complete(eastR1Prompt(bazi, mbtiProfile, question, recentContext, lang), 'debate_east'),
-      complete(westR1Prompt(bazi, mbtiProfile, question, recentContext, lang), 'debate_west'),
+    const [
+      { text: eastR1, provider: eastProvider },
+      { text: westR1, provider: westProvider },
+    ] = await Promise.all([
+      completeTracked(eastR1Prompt(bazi, mbtiProfile, question, recentContext, lang), 'debate_east'),
+      completeTracked(westR1Prompt(bazi, mbtiProfile, question, recentContext, lang), 'debate_west'),
     ]);
 
-    const rounds = [{ round: 1, east: eastR1, west: westR1 }];
+    const rounds = [{ round: 1, east: eastR1, west: westR1, eastProvider, westProvider }];
 
     const { data: session, error } = await supabase
       .from('debate_sessions')
@@ -152,7 +155,9 @@ router.post('/start', async (req: Request, res: Response) => {
       debateId: session.id,
       round: 1,
       east: eastR1,
+      eastProvider,
       west: westR1,
+      westProvider,
       complete: false,
     });
   } catch (err: any) {
@@ -200,36 +205,41 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
     let isComplete = false;
 
     if (nextRound === 2) {
-      // Each AI reads the opponent's R1
-      const [eastR2, westR2] = await Promise.all([
-        complete(eastR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].west, lang), 'debate_east'),
-        complete(westR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].east, lang), 'debate_west'),
+      const [
+        { text: eastR2, provider: eastProvider },
+        { text: westR2, provider: westProvider },
+      ] = await Promise.all([
+        completeTracked(eastR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].west, lang), 'debate_east'),
+        completeTracked(westR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].east, lang), 'debate_west'),
       ]);
-      newRoundData = { round: 2, east: eastR2, west: westR2 };
+      newRoundData = { round: 2, east: eastR2, eastProvider, west: westR2, westProvider };
 
     } else if (nextRound === 3) {
-      // Each AI reads the opponent's R2
-      const [eastR3, westR3] = await Promise.all([
-        complete(eastR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].west, lang), 'debate_east'),
-        complete(westR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].east, lang), 'debate_west'),
+      const [
+        { text: eastR3, provider: eastProvider },
+        { text: westR3, provider: westProvider },
+      ] = await Promise.all([
+        completeTracked(eastR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].west, lang), 'debate_east'),
+        completeTracked(westR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].east, lang), 'debate_west'),
       ]);
-      newRoundData = { round: 3, east: eastR3, west: westR3 };
+      newRoundData = { round: 3, east: eastR3, eastProvider, west: westR3, westProvider };
 
     } else if (nextRound === 4) {
-      // Each AI reads the opponent's R3
-      const [eastR4, westR4] = await Promise.all([
-        complete(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, lang), 'debate_east'),
-        complete(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, lang), 'debate_west'),
+      const [
+        { text: eastR4, provider: eastProvider },
+        { text: westR4, provider: westProvider },
+      ] = await Promise.all([
+        completeTracked(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, lang), 'debate_east'),
+        completeTracked(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, lang), 'debate_west'),
       ]);
-      newRoundData = { round: 4, east: eastR4, west: westR4 };
+      newRoundData = { round: 4, east: eastR4, eastProvider, west: westR4, westProvider };
 
     } else if (nextRound === 5) {
-      // Synthesizer sees all 4 rounds of both AIs
-      const synthesis = await complete(
+      const { text: synthesis, provider: synthesisProvider } = await completeTracked(
         synthesisPrompt(bazi, mbtiProfile, question, recentContext, formatAllRounds(rounds), lang),
         'debate_synthesis',
       );
-      newRoundData = { round: 5, synthesis };
+      newRoundData = { round: 5, synthesis, synthesisProvider };
       isComplete = true;
     }
 

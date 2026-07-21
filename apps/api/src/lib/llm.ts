@@ -32,7 +32,7 @@ const hunyuan = {
     apiKey: process.env.TENCENT_API_KEY!,
     baseURL: process.env.TENCENT_BASE_URL || 'https://tokenhub.tencentmaas.com/v1',
   }),
-  model: process.env.HUNYUAN_LLM_MODEL || 'Hy3',
+  model: process.env.TENCENT_LLM_MODEL || 'Hy3',
   timeoutMs: 35_000,
 };
 
@@ -95,12 +95,12 @@ const gpt4oMini = {
 // debate_west:      West (MBTI/Psychology) debater — DeepSeek primary
 // debate_synthesis: Neutral synthesis — GPT-4o primary
 const CHAINS = {
-  profile:          [deepseek, chatgpt, hunyuan],
-  daily:            [deepseek, chatgptMini],
-  daily_premium:    [chatgpt, deepseek, chatgptMini],
-  chat:             [chatgpt, deepseek],
-  debate_east:      [hunyuan, deepseek],
-  debate_west:      [gpt4oMini, chatgptMini],
+  profile: [deepseek, chatgpt, hunyuan],
+  daily: [deepseek, chatgptMini],
+  daily_premium: [chatgpt, deepseek, chatgptMini],
+  chat: [chatgpt, deepseek],
+  debate_east: [hunyuan, deepseek],
+  debate_west: [gpt4oMini, chatgptMini],
   debate_synthesis: [gpt4o, chatgpt],
 } as const;
 
@@ -155,6 +155,48 @@ export async function complete(
 
       console.log(`[LLM:${chain}] ${provider.name} completed in ${Date.now() - t0}ms (${answer.length} chars)`);
       return answer;
+
+    } catch (err) {
+      if (isFallbackable(err)) {
+        console.warn(`[LLM:${chain}] ${provider.name} failed, trying next…`, err);
+        lastError = err;
+        continue;
+      }
+      throw err;
+    }
+  }
+
+  throw new Error(`[LLM:${chain}] All providers failed. Last error: ${lastError}`);
+}
+
+// ── completeTracked() — like complete() but also returns provider name ───────
+export async function completeTracked(
+  messages: OpenAI.ChatCompletionMessageParam[],
+  chain: LLMChain = 'profile',
+): Promise<{ text: string; provider: string }> {
+  let lastError: unknown;
+
+  for (const provider of CHAINS[chain]) {
+    try {
+      const t0 = Date.now();
+      console.log(`[LLM:${chain}] Trying ${provider.name} model=${provider.model}`);
+      const stream = await provider.client.chat.completions.create({
+        model: provider.model,
+        messages,
+        stream: true,
+      });
+
+      const timeoutErr = Object.assign(
+        new Error(`${provider.name} exceeded ${provider.timeoutMs}ms`),
+        { isProviderTimeout: true },
+      );
+      const text = await Promise.race([
+        bufferStream(stream),
+        new Promise<never>((_, reject) => setTimeout(() => reject(timeoutErr), provider.timeoutMs)),
+      ]);
+
+      console.log(`[LLM:${chain}] ${provider.name} completed in ${Date.now() - t0}ms (${text.length} chars)`);
+      return { text, provider: provider.name };
 
     } catch (err) {
       if (isFallbackable(err)) {
