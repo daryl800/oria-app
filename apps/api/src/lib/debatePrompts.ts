@@ -10,14 +10,23 @@ function getBaziContext(bazi: any): string {
     `時柱：${bazi.hour_pillar?.gan ?? ''}${bazi.hour_pillar?.zhi ?? ''}`,
   ].join('\n');
 
-  let dayunLine = '';
-  if (bazi.dayun?.current_dayun) {
+  // Inject full timeline so the AI never needs to calculate ages itself
+  let dayunTimeline = '';
+  if (bazi.dayun?.dayuns?.length > 0) {
+    dayunTimeline = '\n用戶大運時間表（勿自行推算年齡）：\n' +
+      bazi.dayun.dayuns
+        .map((d: any) => {
+          const marker = d.is_current ? ' ← 現在' : '';
+          return `  ${d.start_age}歲–${d.end_age}歲（${d.start_year}-${d.end_year}）：${d.pillar}${marker}`;
+        })
+        .join('\n');
+  } else if (bazi.dayun?.current_dayun) {
     const cd = bazi.dayun.current_dayun;
-    dayunLine = `當前大運：${cd.pillar}（${cd.stem_en ?? ''}${cd.branch_en ?? ''}）`;
+    dayunTimeline = `\n當前大運：${cd.pillar}（${cd.start_age}歲–${cd.end_age}歲，${cd.start_year}-${cd.end_year}）`;
   }
 
   const fe = bazi.five_elements_strength ?? {};
-  return `八字四柱：\n${pillars}\n五行：木${fe.Wood ?? 0} 火${fe.Fire ?? 0} 土${fe.Earth ?? 0} 金${fe.Metal ?? 0} 水${fe.Water ?? 0}\n${dayunLine}`.trim();
+  return `八字四柱：\n${pillars}\n五行：木${fe.Wood ?? 0} 火${fe.Fire ?? 0} 土${fe.Earth ?? 0} 金${fe.Metal ?? 0} 水${fe.Water ?? 0}${dayunTimeline}`.trim();
 }
 
 function getMbtiContext(mbti: any): string {
