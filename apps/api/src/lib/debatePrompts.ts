@@ -10,19 +10,22 @@ function getBaziContext(bazi: any): string {
     `時柱：${bazi.hour_pillar?.gan ?? ''}${bazi.hour_pillar?.zhi ?? ''}`,
   ].join('\n');
 
-  // Inject full timeline so the AI never needs to calculate ages itself
   let dayunTimeline = '';
   if (bazi.dayun?.dayuns?.length > 0) {
-    dayunTimeline = '\n用戶大運時間表（勿自行推算年齡）：\n' +
-      bazi.dayun.dayuns
-        .map((d: any) => {
-          const marker = d.is_current ? ' ← 現在' : '';
-          return `  ${d.start_age}歲–${d.end_age}歲（${d.start_year}-${d.end_year}）：${d.pillar}${marker}`;
-        })
-        .join('\n');
+    const dayuns: any[] = bazi.dayun.dayuns;
+    const currentIdx = dayuns.findIndex((d: any) => d.is_current);
+    const slice = currentIdx >= 0 ? dayuns.slice(currentIdx, currentIdx + 3) : [];
+    if (slice.length > 0) {
+      const lines = slice.map((d: any, i: number) => {
+        const marker = i === 0 ? ' ← 當前' : i === 1 ? ' ← 下一個' : '';
+        return `- ${d.pillar} (${d.start_age}-${d.end_age}歲, ${d.start_year}-${d.end_year})${marker}`;
+      });
+      dayunTimeline = '\n大運時間表：\n' + lines.join('\n') +
+        '\n所有年齡和時間預測必須基於以上大運時間表。不可自行計算或假設大運年齡。';
+    }
   } else if (bazi.dayun?.current_dayun) {
     const cd = bazi.dayun.current_dayun;
-    dayunTimeline = `\n當前大運：${cd.pillar}（${cd.start_age}歲–${cd.end_age}歲，${cd.start_year}-${cd.end_year}）`;
+    dayunTimeline = `\n當前大運：${cd.pillar}（${cd.start_age}-${cd.end_age}歲，${cd.start_year}-${cd.end_year}）← 當前`;
   }
 
   const fe = bazi.five_elements_strength ?? {};
