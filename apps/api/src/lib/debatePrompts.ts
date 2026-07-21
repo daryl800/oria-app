@@ -3,6 +3,7 @@ import type OpenAI from 'openai';
 
 function getBaziContext(bazi: any): string {
   if (!bazi) return '八字資料未提供';
+
   const pillars = [
     `年柱：${bazi.year_pillar?.gan ?? ''}${bazi.year_pillar?.zhi ?? ''}`,
     `月柱：${bazi.month_pillar?.gan ?? ''}${bazi.month_pillar?.zhi ?? ''}`,
@@ -10,26 +11,41 @@ function getBaziContext(bazi: any): string {
     `時柱：${bazi.hour_pillar?.gan ?? ''}${bazi.hour_pillar?.zhi ?? ''}`,
   ].join('\n');
 
-  let dayunTimeline = '';
-  if (bazi.dayun?.dayuns?.length > 0) {
-    const dayuns: any[] = bazi.dayun.dayuns;
-    const currentIdx = dayuns.findIndex((d: any) => d.is_current);
-    const slice = currentIdx >= 0 ? dayuns.slice(currentIdx, currentIdx + 3) : [];
-    if (slice.length > 0) {
-      const lines = slice.map((d: any, i: number) => {
-        const marker = i === 0 ? ' ← 當前' : i === 1 ? ' ← 下一個' : '';
-        return `- ${d.pillar} (${d.start_age}-${d.end_age}歲, ${d.start_year}-${d.end_year})${marker}`;
+  const fe = bazi.five_elements_strength ?? {};
+  const elements = `五行：木${fe.Wood ?? 0} 火${fe.Fire ?? 0} 土${fe.Earth ?? 0} 金${fe.Metal ?? 0} 水${fe.Water ?? 0}`;
+
+  let dayunSection = '';
+  const dayuns: any[] = bazi.dayun?.dayuns ?? [];
+
+  if (dayuns.length > 0) {
+    let currentIdx = dayuns.findIndex((d: any) => d.is_current === true);
+    if (currentIdx === -1) {
+      const currentYear = new Date().getFullYear();
+      currentIdx = dayuns.findIndex((d: any) =>
+        d.start_year <= currentYear && d.end_year >= currentYear
+      );
+    }
+    if (currentIdx >= 0) {
+      const relevant = dayuns.slice(currentIdx, currentIdx + 3);
+      const lines = relevant.map((d: any, i: number) => {
+        const label = i === 0 ? '【當前】' : i === 1 ? '【下一個】' : '【之後】';
+        return `${label} ${d.pillar}（${Math.round(d.start_age)}-${Math.round(d.end_age)}歲 / ${d.start_year}-${d.end_year}年）`;
       });
-      dayunTimeline = '\n大運時間表：\n' + lines.join('\n') +
-        '\n所有年齡和時間預測必須基於以上大運時間表。不可自行計算或假設大運年齡。';
+      dayunSection = `
+大運時間表（嚴格依此推算，不可自行計算）：
+${lines.join('\n')}
+
+⚠️ 重要：所有涉及年齡或年份的預測，必須基於以上大運時間表。
+禁止使用表中未列出的大運名稱或年份。`;
     }
   } else if (bazi.dayun?.current_dayun) {
     const cd = bazi.dayun.current_dayun;
-    dayunTimeline = `\n當前大運：${cd.pillar}（${cd.start_age}-${cd.end_age}歲，${cd.start_year}-${cd.end_year}）← 當前`;
+    dayunSection = `\n當前大運：${cd.pillar}（約${Math.round(cd.start_age)}-${Math.round(cd.end_age)}歲 / ${cd.start_year}-${cd.end_year}年）`;
   }
 
-  const fe = bazi.five_elements_strength ?? {};
-  return `八字四柱：\n${pillars}\n五行：木${fe.Wood ?? 0} 火${fe.Fire ?? 0} 土${fe.Earth ?? 0} 金${fe.Metal ?? 0} 水${fe.Water ?? 0}${dayunTimeline}`.trim();
+  return `八字四柱：
+${pillars}
+${elements}${dayunSection}`.trim();
 }
 
 function getMbtiContext(mbti: any): string {
@@ -73,14 +89,23 @@ function getLangInstruction(lang: string): string {
 
 function buildUserContext(bazi: any, mbti: any, question: string, recentContext: string): string {
   const birthYear = bazi?.birth_date ? parseInt(bazi.birth_date.split('-')[0]) : null;
-  const age = birthYear ? new Date().getFullYear() - birthYear : null;
+  const currentYear = new Date().getFullYear();
+  const age = birthYear ? currentYear - birthYear : null;
+
+  let lifeStage = '';
+  if (age !== null) {
+    if (age < 30) lifeStage = '人生起步期';
+    else if (age < 45) lifeStage = '人生發展期';
+    else if (age < 60) lifeStage = '人生高峰期';
+    else lifeStage = '人生收成期';
+  }
 
   return `【用戶提問】
 ${question}
 
 【命盤資料】
 ${getBaziContext(bazi)}
-${age !== null ? `用戶年齡：約${age}歲` : ''}
+${age !== null ? `用戶年齡：${age}歲（${lifeStage}）` : ''}
 
 【性格資料】
 ${getMbtiContext(mbti)}
