@@ -113,6 +113,25 @@ ${getMbtiContext(mbti)}
 ${recentContext ? `【近期背景】\n${recentContext}\n` : ''}`.trim();
 }
 
+function westAgeBlock(bazi: any): string {
+  const birthYear = bazi?.birth_date ? parseInt(bazi.birth_date.split('-')[0]) : null;
+  if (!birthYear) return '';
+  const age = new Date().getFullYear() - birthYear;
+  let lifeStage = '';
+  if (age < 30) lifeStage = '人生起步期';
+  else if (age < 45) lifeStage = '人生發展期';
+  else if (age < 60) lifeStage = '人生高峰期';
+  else lifeStage = '人生收成期';
+  return `用戶年齡（${age}歲，${lifeStage}）是分析此問題的關鍵因素。請確保你的建議充分反映這個人生階段的實際需求、限制與優先考量。
+
+不同人生階段有不同的核心需求：
+年輕階段重視成長與嘗試；
+中年階段重視平衡與積累；
+人生後期重視穩定、安全感與意義感。
+
+根據用戶的實際年齡，調整你的建議深度與方向，而非給出適用所有年齡的通用建議。`;
+}
+
 function ownPreviousBlock(own: string): string {
   return `你在上一輪的立場是：
 ${own}
@@ -202,6 +221,8 @@ ${buildUserContext(bazi, mbti, question, recentContext)}
 
 ${MBTI_COGNITIVE}
 
+${westAgeBlock(bazi)}
+
 ${COACHING_TONE}
 
 ${WEST_USER_RULE}
@@ -271,6 +292,8 @@ export function westR2Prompt(
 ${buildUserContext(bazi, mbti, question, recentContext)}
 
 ${MBTI_COGNITIVE}
+
+${westAgeBlock(bazi)}
 
 ${COACHING_TONE}
 
@@ -346,6 +369,8 @@ ${buildUserContext(bazi, mbti, question, recentContext)}
 
 ${MBTI_COGNITIVE}
 
+${westAgeBlock(bazi)}
+
 ${COACHING_TONE}
 
 ${WEST_USER_RULE}
@@ -420,6 +445,8 @@ export function westR4Prompt(
 ${buildUserContext(bazi, mbti, question, recentContext)}
 
 ${MBTI_COGNITIVE}
+
+${westAgeBlock(bazi)}
 
 ${COACHING_TONE}
 
