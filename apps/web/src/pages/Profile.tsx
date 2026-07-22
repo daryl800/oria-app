@@ -149,6 +149,7 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
       };
       if (isReset) {
         await resetBazi(params);
+        sessionStorage.clear();
       } else {
         await saveBazi(params);
       }

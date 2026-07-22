@@ -285,6 +285,9 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
     // clear daily guidance cache
     await supabase.from('daily_guidance').delete().eq('user_id', userId);
 
+    // clear monthly chart focus cache
+    await supabase.from('monthly_chart_focus').delete().eq('user_id', userId);
+
     // clear profile summary cache
     await supabase
       .from('user_profiles')
