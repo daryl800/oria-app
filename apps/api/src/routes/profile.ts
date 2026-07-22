@@ -261,8 +261,9 @@ router.post('/summary', async (req: Request, res: Response) => {
     console.error(`[summary] error:`, err.message);
     return res.status(500).json({ error: err.message });
   }
+});
 
-// POST /api/profile/bazi/update — clears history before saving new BaZi
+// POST /api/profile/bazi/reset — clears history before saving new BaZi
 router.post('/bazi/reset', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
@@ -333,8 +334,6 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
     return res.status(500).json({ error: err.message });
   }
 });
-});
-
 
 // GET /api/profile/mbti/questions
 router.get('/mbti/questions', async (req: Request, res: Response) => {
