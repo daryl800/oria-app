@@ -87,11 +87,9 @@ function getLangInstruction(lang: string): string {
   return 'Write all responses in English.';
 }
 
-function buildUserContext(bazi: any, mbti: any, question: string, recentContext: string): string {
+function computeAgeLifeStage(bazi: any): { age: number | null; lifeStage: string } {
   const birthYear = bazi?.birth_date ? parseInt(bazi.birth_date.split('-')[0]) : null;
-  const currentYear = new Date().getFullYear();
-  const age = birthYear ? currentYear - birthYear : null;
-
+  const age = birthYear ? new Date().getFullYear() - birthYear : null;
   let lifeStage = '';
   if (age !== null) {
     if (age < 30) lifeStage = '人生起步期';
@@ -99,7 +97,11 @@ function buildUserContext(bazi: any, mbti: any, question: string, recentContext:
     else if (age < 60) lifeStage = '人生高峰期';
     else lifeStage = '人生收成期';
   }
+  return { age, lifeStage };
+}
 
+function buildEastContext(bazi: any, mbti: any, question: string, recentContext: string): string {
+  const { age, lifeStage } = computeAgeLifeStage(bazi);
   return `【用戶提問】
 ${question}
 
@@ -107,29 +109,26 @@ ${question}
 ${getBaziContext(bazi)}
 ${age !== null ? `用戶年齡：${age}歲（${lifeStage}）` : ''}
 
-【性格資料】
+【性格資料（參考）】
 ${getMbtiContext(mbti)}
 
 ${recentContext ? `【近期背景】\n${recentContext}\n` : ''}`.trim();
 }
 
-function westAgeBlock(bazi: any): string {
-  const birthYear = bazi?.birth_date ? parseInt(bazi.birth_date.split('-')[0]) : null;
-  if (!birthYear) return '';
-  const age = new Date().getFullYear() - birthYear;
-  let lifeStage = '';
-  if (age < 30) lifeStage = '人生起步期';
-  else if (age < 45) lifeStage = '人生發展期';
-  else if (age < 60) lifeStage = '人生高峰期';
-  else lifeStage = '人生收成期';
-  return `用戶年齡（${age}歲，${lifeStage}）是分析此問題的關鍵因素。請確保你的建議充分反映這個人生階段的實際需求、限制與優先考量。
+function buildWestContext(mbti: any, question: string, recentContext: string, age: number | null, lifeStage: string): string {
+  const ageBlock = age !== null ? `\n\n【用戶年齡與人生階段】
+用戶年齡：${age}歲（${lifeStage}）
+這是分析此問題的關鍵因素。請確保建議充分反映這個人生階段的實際需求、限制與優先考量。
+不同人生階段有不同核心需求：年輕階段重視成長與嘗試；中年階段重視平衡與積累；人生後期重視穩定、安全感與意義感。
+根據用戶的實際年齡，調整你的建議深度與方向，而非給出適用所有年齡的通用建議。` : '';
 
-不同人生階段有不同的核心需求：
-年輕階段重視成長與嘗試；
-中年階段重視平衡與積累；
-人生後期重視穩定、安全感與意義感。
+  return `【用戶提問】
+${question}
 
-根據用戶的實際年齡，調整你的建議深度與方向，而非給出適用所有年齡的通用建議。`;
+【性格資料】
+${getMbtiContext(mbti)}${ageBlock}
+
+${recentContext ? `【近期背景】\n${recentContext}\n` : ''}`.trim();
 }
 
 function ownPreviousBlock(own: string): string {
@@ -187,7 +186,7 @@ export function eastR1Prompt(
       role: 'system',
       content: `你是「東方智者」，只從八字命理角度分析問題。
 
-${buildUserContext(bazi, mbti, question, recentContext)}
+${buildEastContext(bazi, mbti, question, recentContext)}
 
 ${BAZI_LIFECYCLE}
 
@@ -212,16 +211,15 @@ ${getLangInstruction(lang)}`,
 export function westR1Prompt(
   bazi: any, mbti: any, question: string, recentContext: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
+  const { age, lifeStage } = computeAgeLifeStage(bazi);
   return [
     {
       role: 'system',
       content: `你是「西方顧問」，只從MBTI性格心理學角度分析問題。
 
-${buildUserContext(bazi, mbti, question, recentContext)}
+${buildWestContext(mbti, question, recentContext, age, lifeStage)}
 
 ${MBTI_COGNITIVE}
-
-${westAgeBlock(bazi)}
 
 ${COACHING_TONE}
 
@@ -254,7 +252,7 @@ export function eastR2Prompt(
       role: 'system',
       content: `你是「東方智者」，從八字命理角度繼續分析。
 
-${buildUserContext(bazi, mbti, question, recentContext)}
+${buildEastContext(bazi, mbti, question, recentContext)}
 
 ${BAZI_LIFECYCLE}
 
@@ -284,16 +282,15 @@ export function westR2Prompt(
   bazi: any, mbti: any, question: string, recentContext: string,
   opponentR1: string, ownR1: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
+  const { age, lifeStage } = computeAgeLifeStage(bazi);
   return [
     {
       role: 'system',
       content: `你是「西方顧問」，從MBTI心理學角度繼續分析。
 
-${buildUserContext(bazi, mbti, question, recentContext)}
+${buildWestContext(mbti, question, recentContext, age, lifeStage)}
 
 ${MBTI_COGNITIVE}
-
-${westAgeBlock(bazi)}
 
 ${COACHING_TONE}
 
@@ -330,7 +327,7 @@ export function eastR3Prompt(
       role: 'system',
       content: `你是「東方智者」，從八字命理角度進行風險評估。
 
-${buildUserContext(bazi, mbti, question, recentContext)}
+${buildEastContext(bazi, mbti, question, recentContext)}
 
 ${BAZI_LIFECYCLE}
 
@@ -360,16 +357,15 @@ export function westR3Prompt(
   bazi: any, mbti: any, question: string, recentContext: string,
   opponentR2: string, ownR2: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
+  const { age, lifeStage } = computeAgeLifeStage(bazi);
   return [
     {
       role: 'system',
       content: `你是「西方顧問」，從MBTI心理學角度進行風險評估。
 
-${buildUserContext(bazi, mbti, question, recentContext)}
+${buildWestContext(mbti, question, recentContext, age, lifeStage)}
 
 ${MBTI_COGNITIVE}
-
-${westAgeBlock(bazi)}
 
 ${COACHING_TONE}
 
@@ -406,7 +402,7 @@ export function eastR4Prompt(
       role: 'system',
       content: `你是「東方智者」，從八字命理角度給出最終行動建議。
 
-${buildUserContext(bazi, mbti, question, recentContext)}
+${buildEastContext(bazi, mbti, question, recentContext)}
 
 ${BAZI_LIFECYCLE}
 
@@ -437,16 +433,15 @@ export function westR4Prompt(
   bazi: any, mbti: any, question: string, recentContext: string,
   opponentR3: string, ownR3: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
+  const { age, lifeStage } = computeAgeLifeStage(bazi);
   return [
     {
       role: 'system',
       content: `你是「西方顧問」，從MBTI心理學角度給出最終行動建議。
 
-${buildUserContext(bazi, mbti, question, recentContext)}
+${buildWestContext(mbti, question, recentContext, age, lifeStage)}
 
 ${MBTI_COGNITIVE}
-
-${westAgeBlock(bazi)}
 
 ${COACHING_TONE}
 
@@ -487,7 +482,7 @@ export function synthesisPrompt(
 
 ${COACHING_TONE}
 
-${buildUserContext(bazi, mbti, question, recentContext)}
+${buildEastContext(bazi, mbti, question, recentContext)}
 
 東西方完整對話記錄：
 ${allRounds}
