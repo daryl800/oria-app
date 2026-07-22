@@ -160,12 +160,28 @@ function ThinkingPanel({ icon, accentColor }: { icon: string; accentColor: strin
   );
 }
 
+// Splits R2-R4 content into response section and new-topic section
+function splitRoundContent(content: string): { response: string; analysis: string } {
+  const splitIdx = content.indexOf('【本輪深析：');
+  if (splitIdx === -1) return { response: content, analysis: '' };
+  return {
+    response: content.slice(0, splitIdx).trim(),
+    analysis: content.slice(splitIdx).trim(),
+  };
+}
+
 const ROUND_LABELS: Record<number, string> = {
   1: '第一輪·初觀',
   2: '第二輪·時機',
   3: '第三輪·風險',
   4: '第四輪·行動',
   5: '第五輪·綜合',
+};
+
+const ROW2_LABELS: Record<number, string> = {
+  2: '時機',
+  3: '風險',
+  4: '行動',
 };
 
 interface DebateRound {
@@ -386,6 +402,7 @@ export default function Debate() {
           </div>
 
           {r.synthesis ? (
+            /* R5 — full-width synthesis */
             <div className="oria-card" style={{ border: `1px solid ${GOLD}55`, background: 'rgba(201,168,76,0.06)' }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: GOLD, letterSpacing: '0.06em', marginBottom: 12 }}>
                 ⚖️ 綜合解析 · 最終建議{r.synthesisProvider && <span style={{ fontWeight: 400, color: '#a09060', marginLeft: 4 }}>（{providerLabel(r.synthesisProvider)}）</span>}
@@ -394,7 +411,55 @@ export default function Debate() {
                 <TypewriterText text={r.synthesis} />
               </div>
             </div>
+          ) : r.round >= 2 ? (
+            /* R2-R4 — two rows: response row + new-topic row */
+            <>
+              {/* Row 1: Response to previous round */}
+              <div style={{ fontSize: 10, fontWeight: 600, color: '#666', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+                回應上輪觀點
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
+                    🏮 東方智者{r.eastProvider && <span style={{ fontWeight: 400, color: '#a06060', marginLeft: 4 }}>（{providerLabel(r.eastProvider)}）</span>}
+                  </div>
+                  <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
+                    <TypewriterText text={splitRoundContent(r.east ?? '').response} />
+                  </div>
+                </div>
+                <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
+                    🧠 西方顧問{r.westProvider && <span style={{ fontWeight: 400, color: '#6080a0', marginLeft: 4 }}>（{providerLabel(r.westProvider)}）</span>}
+                  </div>
+                  <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
+                    <TypewriterText text={splitRoundContent(r.west ?? '').response} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 2: New topic deep analysis */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '14px 0 10px' }}>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                <div style={{ fontSize: 10, fontWeight: 600, color: '#777', letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>
+                  {ROW2_LABELS[r.round]}
+                </div>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
+                  <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
+                    <TypewriterText text={splitRoundContent(r.east ?? '').analysis} />
+                  </div>
+                </div>
+                <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
+                  <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
+                    <TypewriterText text={splitRoundContent(r.west ?? '').analysis} />
+                  </div>
+                </div>
+              </div>
+            </>
           ) : (
+            /* R1 — standard two-column layout */
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
