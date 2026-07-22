@@ -101,7 +101,7 @@ const CHAINS = {
   chat: [chatgpt, deepseek],
   debate_east: [hunyuan, deepseek],
   debate_west: [gpt4oMini, chatgptMini],
-  debate_synthesis: [gpt4o, chatgpt],
+  debate_synthesis: [deepseek, gpt4o, chatgpt],
 } as const;
 
 export type LLMChain = keyof typeof CHAINS;
