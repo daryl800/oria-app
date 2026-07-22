@@ -415,8 +415,11 @@ export default function Debate() {
             /* R2-R4 — two rows: response row + new-topic row */
             <>
               {/* Row 1: Response to previous round */}
-              <div style={{ fontSize: 10, fontWeight: 600, color: '#666', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
-                回應上輪觀點
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, marginTop: 4 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: `${GOLD}cc`, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+                  回應上輪觀點
+                </div>
+                <div style={{ flex: 1, height: 1, background: `${GOLD}33` }} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
@@ -438,12 +441,11 @@ export default function Debate() {
               </div>
 
               {/* Row 2: New topic deep analysis */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '14px 0 10px' }}>
-                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
-                <div style={{ fontSize: 10, fontWeight: 600, color: '#777', letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '18px 0 10px' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: `${GOLD}cc`, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
                   {ROW2_LABELS[r.round]}
                 </div>
-                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                <div style={{ flex: 1, height: 1, background: `${GOLD}33` }} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
