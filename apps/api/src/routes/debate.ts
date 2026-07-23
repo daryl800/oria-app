@@ -109,12 +109,34 @@ function formatAllRounds(rounds: any[]): string {
   }).join('\n\n---\n\n');
 }
 
+// ── Model → chain helpers ─────────────────────────────────────────
+
+function getEastChain(model: string) {
+  const map: Record<string, any> = {
+    hunyuan: 'debate_east_hunyuan',
+    glm:     'debate_east_glm',
+    kimi:    'debate_east_kimi',
+    minimax: 'debate_east_minimax',
+  };
+  return map[model] ?? 'debate_east_hunyuan';
+}
+
+function getWestChain(model: string) {
+  const map: Record<string, any> = {
+    openai:  'debate_west_openai',
+    glm:     'debate_west_glm',
+    kimi:    'debate_west_kimi',
+    minimax: 'debate_west_minimax',
+  };
+  return map[model] ?? 'debate_west_openai';
+}
+
 // ── POST /debate/start ────────────────────────────────────────────
 
 router.post('/start', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
-    const { question, lang = 'zh-TW' } = req.body;
+    const { question, lang = 'zh-TW', eastModel = 'hunyuan', westModel = 'openai' } = req.body;
 
     if (!question?.trim()) {
       return res.status(400).json({ error: 'question is required' });
@@ -130,8 +152,8 @@ router.post('/start', async (req: Request, res: Response) => {
       { text: eastR1, provider: eastProvider },
       { text: westR1, provider: westProvider },
     ] = await Promise.all([
-      completeTracked(eastR1Prompt(bazi, mbtiProfile, question, recentContext, lang), 'debate_east'),
-      completeTracked(westR1Prompt(bazi, mbtiProfile, question, recentContext, lang), 'debate_west'),
+      completeTracked(eastR1Prompt(bazi, mbtiProfile, question, recentContext, lang), getEastChain(eastModel)),
+      completeTracked(westR1Prompt(bazi, mbtiProfile, question, recentContext, lang), getWestChain(westModel)),
     ]);
 
     const rounds = [{ round: 1, east: eastR1, west: westR1, eastProvider, westProvider }];
@@ -144,7 +166,7 @@ router.post('/start', async (req: Request, res: Response) => {
         lang,
         rounds,
         status: 'active',
-        models_used: ['hunyuan', 'deepseek'],
+        models_used: [eastModel, westModel],
       })
       .select('id')
       .single();
@@ -194,6 +216,7 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
     }
 
     const { question, lang = 'zh-TW' } = session;
+    const { eastModel = 'hunyuan', westModel = 'openai' } = req.body;
     const nextRound = currentRound + 1;
 
     const [{ bazi, mbtiProfile }, recentContext] = await Promise.all([
@@ -209,8 +232,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
         { text: eastR2, provider: eastProvider },
         { text: westR2, provider: westProvider },
       ] = await Promise.all([
-        completeTracked(eastR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].west, rounds[0].east, lang), 'debate_east'),
-        completeTracked(westR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].east, rounds[0].west, lang), 'debate_west'),
+        completeTracked(eastR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].west, rounds[0].east, lang), getEastChain(eastModel)),
+        completeTracked(westR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].east, rounds[0].west, lang), getWestChain(westModel)),
       ]);
       newRoundData = { round: 2, east: eastR2, eastProvider, west: westR2, westProvider };
 
@@ -219,8 +242,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
         { text: eastR3, provider: eastProvider },
         { text: westR3, provider: westProvider },
       ] = await Promise.all([
-        completeTracked(eastR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].west, rounds[1].east, lang), 'debate_east'),
-        completeTracked(westR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].east, rounds[1].west, lang), 'debate_west'),
+        completeTracked(eastR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].west, rounds[1].east, lang), getEastChain(eastModel)),
+        completeTracked(westR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].east, rounds[1].west, lang), getWestChain(westModel)),
       ]);
       newRoundData = { round: 3, east: eastR3, eastProvider, west: westR3, westProvider };
 
@@ -229,8 +252,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
         { text: eastR4, provider: eastProvider },
         { text: westR4, provider: westProvider },
       ] = await Promise.all([
-        completeTracked(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, rounds[2].east, lang), 'debate_east'),
-        completeTracked(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, rounds[2].west, lang), 'debate_west'),
+        completeTracked(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, rounds[2].east, lang), getEastChain(eastModel)),
+        completeTracked(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, rounds[2].west, lang), getWestChain(westModel)),
       ]);
       newRoundData = { round: 4, east: eastR4, eastProvider, west: westR4, westProvider };
 

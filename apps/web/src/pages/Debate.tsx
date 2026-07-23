@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,9 @@ const MIN_THINK_MS = 9000;
 
 const PROVIDER_LABEL: Record<string, string> = {
   'hunyuan':      '混元',
+  'glm':          'GLM',
+  'kimi':         'Kimi',
+  'minimax':      'MiniMax',
   'deepseek':     'DeepSeek',
   'gpt-4o-mini':  'OpenAI',
   'chatgpt-mini': 'OpenAI',
@@ -202,6 +205,8 @@ export default function Debate() {
 
   const prefill = (location.state as any)?.prefill ?? '';
   const [question, setQuestion] = useState(prefill);
+  const [eastModel, setEastModel] = useState('hunyuan');
+  const [westModel, setWestModel] = useState('openai');
   const [debateId, setDebateId] = useState<string | null>(null);
   const [rounds, setRounds] = useState<DebateRound[]>([]);
   const [thinkingRound, setThinkingRound] = useState<number | null>(null);
@@ -239,7 +244,7 @@ export default function Debate() {
       const res = await fetch(`${API_URL}/api/debate/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify({ question: question.trim(), lang }),
+        body: JSON.stringify({ question: question.trim(), lang, eastModel, westModel }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to start debate');
       const data = await res.json();
@@ -272,6 +277,7 @@ export default function Debate() {
       const res = await fetch(`${API_URL}/api/debate/${debateId}/next`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify({ eastModel, westModel }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to advance debate');
       const data = await res.json();
@@ -302,6 +308,8 @@ export default function Debate() {
     setDebateId(null);
     setRounds([]);
     setQuestion('');
+    setEastModel('hunyuan');
+    setWestModel('openai');
     setComplete(false);
     setError(null);
     setThinkingRound(null);
@@ -331,9 +339,47 @@ export default function Debate() {
       {/* Question input — hidden once loading or debate is active */}
       {!debateId && !loading && (
         <div className="oria-card" style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 13, color: '#999', marginBottom: 10 }}>
+          <div style={{ fontSize: 13, color: '#999', marginBottom: 14 }}>
             輸入你的問題，讓東方命理師與西方心理顧問進行深度解析
           </div>
+
+          {/* Model selector */}
+          {(() => {
+            const pillStyle = (active: boolean): React.CSSProperties => ({
+              padding: '5px 13px',
+              borderRadius: 20,
+              border: `1px solid ${active ? GOLD : 'rgba(255,255,255,0.15)'}`,
+              background: active ? `${GOLD}22` : 'transparent',
+              color: active ? GOLD : '#888',
+              fontSize: 12,
+              fontWeight: active ? 700 : 400,
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+            });
+            const rowLabel: React.CSSProperties = {
+              fontSize: 11,
+              color: '#666',
+              letterSpacing: '0.05em',
+              marginBottom: 6,
+            };
+            return (
+              <div style={{ marginBottom: 16 }}>
+                <div style={rowLabel}>選擇東方顧問</div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+                  {[['hunyuan','混元'],['glm','GLM'],['kimi','Kimi'],['minimax','MiniMax']].map(([val, label]) => (
+                    <button key={val} style={pillStyle(eastModel === val)} onClick={() => setEastModel(val)}>{label}</button>
+                  ))}
+                </div>
+                <div style={rowLabel}>選擇西方顧問</div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {[['openai','OpenAI'],['glm','GLM'],['kimi','Kimi'],['minimax','MiniMax']].map(([val, label]) => (
+                    <button key={val} style={pillStyle(westModel === val)} onClick={() => setWestModel(val)}>{label}</button>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
           <textarea
             value={question}
             onChange={e => setQuestion(e.target.value)}

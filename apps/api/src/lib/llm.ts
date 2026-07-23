@@ -26,15 +26,15 @@ export function sanitizeLlmJson(raw: string): string {
 import OpenAI from 'openai';
 
 // ── Individual providers ──────────────────────────────────────────
-const hunyuan = {
-  name: 'hunyuan',
-  client: new OpenAI({
-    apiKey: process.env.TENCENT_API_KEY!,
-    baseURL: process.env.TENCENT_BASE_URL || 'https://tokenhub.tencentmaas.com/v1',
-  }),
-  model: process.env.TENCENT_LLM_MODEL || 'Hy3',
-  timeoutMs: 35_000,
-};
+const tencentClient = new OpenAI({
+  apiKey: process.env.TENCENT_API_KEY!,
+  baseURL: process.env.TENCENT_BASE_URL || 'https://tokenhub.tencentmaas.com/v1',
+});
+
+const hunyuan = { name: 'hunyuan', client: tencentClient, model: process.env.TENCENT_LLM_MODEL    || 'Hy3',        timeoutMs: 35_000 };
+const glm     = { name: 'glm',     client: tencentClient, model: process.env.TENCENT_GLM_MODEL     || 'glm-5.2',    timeoutMs: 60_000 };
+const kimi    = { name: 'kimi',    client: tencentClient, model: process.env.TENCENT_KIMI_MODEL    || 'kimi-k3',    timeoutMs: 60_000 };
+const minimax = { name: 'minimax', client: tencentClient, model: process.env.TENCENT_MINIMAX_MODEL || 'minimax-m3', timeoutMs: 45_000 };
 
 const chatgpt = {
   name: 'chatgpt',
@@ -91,16 +91,22 @@ const gpt4oMini = {
 // daily:            daily guidance (free + plus standard)
 // daily_premium:    daily guidance for plus users (occasional GPT-4.1 upgrade)
 // chat:             chat, conversation summary
-// debate_east:      East (BaZi) debater — Hunyuan primary
-// debate_west:      West (MBTI/Psychology) debater — DeepSeek primary
-// debate_synthesis: Neutral synthesis — GPT-4o primary
+// debate_east*:     East (BaZi) debaters — Tencent primary, Hunyuan fallback
+// debate_west*:     West (MBTI) debaters — model primary, gpt4oMini fallback
+// debate_synthesis: Neutral synthesis — DeepSeek primary
 const CHAINS = {
   profile: [deepseek, chatgpt, hunyuan],
   daily: [deepseek, chatgptMini],
   daily_premium: [chatgpt, deepseek, chatgptMini],
   chat: [chatgpt, deepseek],
-  debate_east: [hunyuan, deepseek],
-  debate_west: [gpt4oMini, chatgptMini],
+  debate_east_hunyuan:      [hunyuan],
+  debate_east_glm:          [glm,     hunyuan],
+  debate_east_kimi:         [kimi,    hunyuan],
+  debate_east_minimax:      [minimax, hunyuan],
+  debate_west_openai:       [gpt4oMini],
+  debate_west_glm:          [glm,     gpt4oMini],
+  debate_west_kimi:         [kimi,    gpt4oMini],
+  debate_west_minimax:      [minimax, gpt4oMini],
   debate_synthesis: [deepseek, gpt4o, chatgpt],
 } as const;
 
