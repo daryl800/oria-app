@@ -42,6 +42,13 @@ export interface MbtiData {
   dimension_results?: DimensionResults;
 }
 
+export interface ProfileContext {
+  summary?: string;
+  life_pattern?: string;
+  friction_point?: string;
+  context_focus?: string[];
+}
+
 function getBaziContext(bazi: BaziData | null): string {
   if (!bazi) return '八字資料未提供';
 
@@ -142,8 +149,21 @@ function computeAgeLifeStage(bazi: BaziData | null): { age: number | null; lifeS
   return { age, lifeStage };
 }
 
-function buildEastContext(bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string): string {
+// includeSummary=false for West AI — summary contains BaZi terminology
+function buildProfileContext(ctx: ProfileContext | null, includeSummary = true): string {
+  if (!ctx) return '';
+  const parts: string[] = [];
+  if (includeSummary && ctx.summary) parts.push(`整體側寫：${ctx.summary}`);
+  if (ctx.life_pattern) parts.push(`行為規律：${ctx.life_pattern}`);
+  if (ctx.friction_point) parts.push(`人生卡點：${ctx.friction_point}`);
+  if (ctx.context_focus?.length) parts.push(`當前關注：${ctx.context_focus.join('、')}`);
+  if (!parts.length) return '';
+  return `【人物側寫】\n${parts.join('\n')}`;
+}
+
+function buildEastContext(bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string, profileCtx: ProfileContext | null): string {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
+  const profileSection = buildProfileContext(profileCtx, true);
   return `【用戶提問】
 ${question}
 
@@ -154,15 +174,17 @@ ${age !== null ? `用戶年齡：${age}歲（${lifeStage}）` : ''}
 【性格資料（參考）】
 ${getMbtiContext(mbti)}
 
-${recentContext ? `【近期背景】\n${recentContext}\n` : ''}`.trim();
+${profileSection ? `${profileSection}\n\n` : ''}${recentContext ? `【近期背景】\n${recentContext}` : ''}`.trim();
 }
 
-function buildWestContext(mbti: MbtiData | null, question: string, recentContext: string, age: number | null, lifeStage: string): string {
+function buildWestContext(mbti: MbtiData | null, question: string, recentContext: string, age: number | null, lifeStage: string, profileCtx: ProfileContext | null): string {
   const ageBlock = age !== null ? `\n\n【用戶年齡與人生階段】
 用戶年齡：${age}歲（${lifeStage}）
 這是分析此問題的關鍵因素。請確保建議充分反映這個人生階段的實際需求、限制與優先考量。
 不同人生階段有不同核心需求：年輕階段重視成長與嘗試；中年階段重視平衡與積累；人生後期重視穩定、安全感與意義感。
 根據用戶的實際年齡，調整你的建議深度與方向，而非給出適用所有年齡的通用建議。` : '';
+
+  const profileSection = buildProfileContext(profileCtx, false);
 
   return `【用戶提問】
 ${question}
@@ -170,7 +192,7 @@ ${question}
 【性格資料】
 ${getMbtiContext(mbti)}${ageBlock}
 
-${recentContext ? `【近期背景】\n${recentContext}\n` : ''}`.trim();
+${profileSection ? `${profileSection}\n\n` : ''}${recentContext ? `【近期背景】\n${recentContext}` : ''}`.trim();
 }
 
 function ownPreviousBlock(own: string): string {
@@ -215,14 +237,14 @@ const WEST_CONSTRAINT = `絕對禁止提及八字、五行、大運、命盤、�
 // ── R1 — 初觀 (Overall verdict, no opponent view) ─────────────────
 
 export function eastR1Prompt(
-  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string, lang: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
       role: 'system',
       content: `你是「東方智者」，只從八字命理角度分析問題。
 
-${buildEastContext(bazi, mbti, question, recentContext)}
+${buildEastContext(bazi, mbti, question, recentContext, profileCtx)}
 
 ${BAZI_LIFECYCLE}
 
@@ -245,7 +267,7 @@ ${getLangInstruction(lang)}`,
 }
 
 export function westR1Prompt(
-  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string, lang: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
   return [
@@ -253,7 +275,7 @@ export function westR1Prompt(
       role: 'system',
       content: `你是「西方顧問」，只從MBTI性格心理學角度分析問題。
 
-${buildWestContext(mbti, question, recentContext, age, lifeStage)}
+${buildWestContext(mbti, question, recentContext, age, lifeStage, profileCtx)}
 
 ${MBTI_COGNITIVE}
 
@@ -281,14 +303,14 @@ ${getLangInstruction(lang)}`,
 
 export function eastR2Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
-  opponentR1: string, ownR1: string, lang: string,
+  opponentR1: string, ownR1: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
       role: 'system',
       content: `你是「東方智者」，從八字命理角度繼續分析。
 
-${buildEastContext(bazi, mbti, question, recentContext)}
+${buildEastContext(bazi, mbti, question, recentContext, profileCtx)}
 
 大運背景已在第一輪建立，請基於此繼續深化分析。
 
@@ -316,7 +338,7 @@ ${getLangInstruction(lang)}`,
 
 export function westR2Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
-  opponentR1: string, ownR1: string, lang: string,
+  opponentR1: string, ownR1: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
   return [
@@ -324,7 +346,7 @@ export function westR2Prompt(
       role: 'system',
       content: `你是「西方顧問」，從MBTI心理學角度繼續分析。
 
-${buildWestContext(mbti, question, recentContext, age, lifeStage)}
+${buildWestContext(mbti, question, recentContext, age, lifeStage, profileCtx)}
 
 ${MBTI_COGNITIVE}
 
@@ -356,14 +378,14 @@ ${getLangInstruction(lang)}`,
 
 export function eastR3Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
-  opponentR2: string, ownR2: string, lang: string,
+  opponentR2: string, ownR2: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
       role: 'system',
       content: `你是「東方智者」，從八字命理角度進行風險評估。
 
-${buildEastContext(bazi, mbti, question, recentContext)}
+${buildEastContext(bazi, mbti, question, recentContext, profileCtx)}
 
 大運背景已在第一輪建立，請基於此繼續深化分析。
 
@@ -391,7 +413,7 @@ ${getLangInstruction(lang)}`,
 
 export function westR3Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
-  opponentR2: string, ownR2: string, lang: string,
+  opponentR2: string, ownR2: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
   return [
@@ -399,7 +421,7 @@ export function westR3Prompt(
       role: 'system',
       content: `你是「西方顧問」，從MBTI心理學角度進行風險評估。
 
-${buildWestContext(mbti, question, recentContext, age, lifeStage)}
+${buildWestContext(mbti, question, recentContext, age, lifeStage, profileCtx)}
 
 ${MBTI_COGNITIVE}
 
@@ -431,14 +453,14 @@ ${getLangInstruction(lang)}`,
 
 export function eastR4Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
-  opponentR3: string, ownR3: string, lang: string,
+  opponentR3: string, ownR3: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
       role: 'system',
       content: `你是「東方智者」，從八字命理角度給出最終行動建議。
 
-${buildEastContext(bazi, mbti, question, recentContext)}
+${buildEastContext(bazi, mbti, question, recentContext, profileCtx)}
 
 大運背景已在第一輪建立，請基於此繼續深化分析。
 
@@ -467,7 +489,7 @@ ${getLangInstruction(lang)}`,
 
 export function westR4Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
-  opponentR3: string, ownR3: string, lang: string,
+  opponentR3: string, ownR3: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
   return [
@@ -475,7 +497,7 @@ export function westR4Prompt(
       role: 'system',
       content: `你是「西方顧問」，從MBTI心理學角度給出最終行動建議。
 
-${buildWestContext(mbti, question, recentContext, age, lifeStage)}
+${buildWestContext(mbti, question, recentContext, age, lifeStage, profileCtx)}
 
 ${MBTI_COGNITIVE}
 
@@ -508,7 +530,7 @@ ${getLangInstruction(lang)}`,
 
 export function synthesisPrompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
-  allRounds: string, lang: string,
+  allRounds: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
@@ -518,7 +540,7 @@ export function synthesisPrompt(
 
 ${COACHING_TONE}
 
-${buildEastContext(bazi, mbti, question, recentContext)}
+${buildEastContext(bazi, mbti, question, recentContext, profileCtx)}
 
 東西方完整對話記錄：
 ${allRounds}

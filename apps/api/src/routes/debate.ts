@@ -18,7 +18,7 @@ const router = Router();
 async function loadUserProfiles(userId: string) {
   const { data: userProfile } = await supabase
     .from('user_profiles')
-    .select('current_bazi_version_id, current_mbti_version_id')
+    .select('current_bazi_version_id, current_mbti_version_id, profile_summary')
     .eq('user_id', userId)
     .single();
 
@@ -59,7 +59,12 @@ async function loadUserProfiles(userId: string) {
     }
   }
 
-  return { bazi, mbtiProfile };
+  return {
+    bazi,
+    mbtiProfile,
+    profileSummary: userProfile.profile_summary ?? null,
+    contextFocus: mbtiVersion?.context_focus ?? [],
+  };
 }
 
 async function loadRecentContext(userId: string): Promise<string> {
@@ -144,18 +149,26 @@ router.post('/start', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'question is required' });
     }
 
-    const [{ bazi, mbtiProfile }, recentContext] = await Promise.all([
+    const [{ bazi, mbtiProfile, profileSummary, contextFocus }, recentContext] = await Promise.all([
       loadUserProfiles(userId),
       loadRecentContext(userId),
     ]);
+    console.log('[DEBUG recentContext length]', recentContext?.length ?? 0);
+
+    const profileCtx = (profileSummary || contextFocus?.length) ? {
+      summary: profileSummary?.summary,
+      life_pattern: profileSummary?.life_pattern,
+      friction_point: profileSummary?.friction_point,
+      context_focus: contextFocus ?? [],
+    } : null;
 
     // R1: both AIs analyse independently — no opponent view yet
     const [
       { text: eastR1, provider: eastProvider },
       { text: westR1, provider: westProvider },
     ] = await Promise.all([
-      completeTracked(eastR1Prompt(bazi, mbtiProfile, question, recentContext, lang), getEastChain(eastModel)),
-      completeTracked(westR1Prompt(bazi, mbtiProfile, question, recentContext, lang), getWestChain(westModel)),
+      completeTracked(eastR1Prompt(bazi, mbtiProfile, question, recentContext, profileCtx, lang), getEastChain(eastModel)),
+      completeTracked(westR1Prompt(bazi, mbtiProfile, question, recentContext, profileCtx, lang), getWestChain(westModel)),
     ]);
 
     const rounds = [{ round: 1, east: eastR1, west: westR1, eastProvider, westProvider }];
@@ -221,10 +234,18 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
     const { eastModel = 'hunyuan', westModel = 'openai' } = req.body;
     const nextRound = currentRound + 1;
 
-    const [{ bazi, mbtiProfile }, recentContext] = await Promise.all([
+    const [{ bazi, mbtiProfile, profileSummary, contextFocus }, recentContext] = await Promise.all([
       loadUserProfiles(userId),
       loadRecentContext(userId),
     ]);
+    console.log('[DEBUG recentContext length]', recentContext?.length ?? 0);
+
+    const profileCtx = (profileSummary || contextFocus?.length) ? {
+      summary: profileSummary?.summary,
+      life_pattern: profileSummary?.life_pattern,
+      friction_point: profileSummary?.friction_point,
+      context_focus: contextFocus ?? [],
+    } : null;
 
     let newRoundData: any;
     let isComplete = false;
@@ -234,8 +255,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
         { text: eastR2, provider: eastProvider },
         { text: westR2, provider: westProvider },
       ] = await Promise.all([
-        completeTracked(eastR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].west, rounds[0].east, lang), getEastChain(eastModel)),
-        completeTracked(westR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].east, rounds[0].west, lang), getWestChain(westModel)),
+        completeTracked(eastR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].west, rounds[0].east, profileCtx, lang), getEastChain(eastModel)),
+        completeTracked(westR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].east, rounds[0].west, profileCtx, lang), getWestChain(westModel)),
       ]);
       newRoundData = { round: 2, east: eastR2, eastProvider, west: westR2, westProvider };
 
@@ -244,8 +265,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
         { text: eastR3, provider: eastProvider },
         { text: westR3, provider: westProvider },
       ] = await Promise.all([
-        completeTracked(eastR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].west, rounds[1].east, lang), getEastChain(eastModel)),
-        completeTracked(westR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].east, rounds[1].west, lang), getWestChain(westModel)),
+        completeTracked(eastR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].west, rounds[1].east, profileCtx, lang), getEastChain(eastModel)),
+        completeTracked(westR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].east, rounds[1].west, profileCtx, lang), getWestChain(westModel)),
       ]);
       newRoundData = { round: 3, east: eastR3, eastProvider, west: westR3, westProvider };
 
@@ -254,14 +275,14 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
         { text: eastR4, provider: eastProvider },
         { text: westR4, provider: westProvider },
       ] = await Promise.all([
-        completeTracked(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, rounds[2].east, lang), getEastChain(eastModel)),
-        completeTracked(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, rounds[2].west, lang), getWestChain(westModel)),
+        completeTracked(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, rounds[2].east, profileCtx, lang), getEastChain(eastModel)),
+        completeTracked(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, rounds[2].west, profileCtx, lang), getWestChain(westModel)),
       ]);
       newRoundData = { round: 4, east: eastR4, eastProvider, west: westR4, westProvider };
 
     } else if (nextRound === 5) {
       const { text: synthesis, provider: synthesisProvider } = await completeTracked(
-        synthesisPrompt(bazi, mbtiProfile, question, recentContext, formatAllRounds(rounds), lang),
+        synthesisPrompt(bazi, mbtiProfile, question, recentContext, formatAllRounds(rounds), profileCtx, lang),
         'debate_synthesis',
       );
       newRoundData = { round: 5, synthesis, synthesisProvider };
