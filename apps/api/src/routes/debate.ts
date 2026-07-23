@@ -117,6 +117,7 @@ function getEastChain(model: string) {
     openai:      'debate_east_openai',
     gemini_lite: 'debate_east_gemini_lite',
     deepseek:    'debate_east_deepseek',
+    qianwen:     'debate_east_qianwen',
   };
   return map[model] ?? 'debate_east_hunyuan';
 }

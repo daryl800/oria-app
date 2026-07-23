@@ -39,6 +39,16 @@ const geminiClient = new OpenAI({
 const hunyuan        = { name: 'hunyuan',         client: tencentClient, model: process.env.TENCENT_LLM_MODEL             || 'Hy3',                  timeoutMs: 35_000 };
 const geminiFlashLite = { name: 'gemini-flash-lite', client: geminiClient,  model: process.env.GEMINI_LLM_MODEL_3_1_flash_lite || 'gemini-3.1-flash-lite', timeoutMs: 30_000 };
 
+const qianwen = {
+  name: 'qianwen',
+  client: new OpenAI({
+    apiKey: process.env.QIANWEN_API_KEY!,
+    baseURL: process.env.QIANWEN_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+  }),
+  model: process.env.QIANWEN_LLM_MODEL || 'qwen-max',
+  timeoutMs: 45_000,
+};
+
 const chatgpt = {
   name: 'chatgpt',
   client: new OpenAI({
@@ -106,6 +116,7 @@ const CHAINS = {
   debate_east_openai:       [gpt4oMini,        hunyuan],
   debate_east_gemini_lite:  [geminiFlashLite,  hunyuan],
   debate_east_deepseek:     [deepseek,         hunyuan],
+  debate_east_qianwen:      [qianwen,          hunyuan],
   debate_west_openai:       [gpt4oMini,        hunyuan],
   debate_west_hunyuan:      [hunyuan,          gpt4oMini],
   debate_west_gemini_lite:  [geminiFlashLite,  gpt4oMini],

@@ -12,6 +12,7 @@ const MIN_THINK_MS = 9000;
 
 const PROVIDER_LABEL: Record<string, string> = {
   'hunyuan':           '混元 · Hy3',
+  'qianwen':           '千問 · qwen-max',
   'gpt-4o-mini':       'OpenAI · gpt-4o-mini',
   'gemini-flash-lite': 'Gemini · Flash Lite',
   'deepseek':          'DeepSeek · v4-flash',
@@ -354,15 +355,18 @@ export default function Debate() {
               textAlign: 'center',
               lineHeight: 1.3,
             });
-            const MODEL_OPTIONS: [string, string, string][] = [
-              ['hunyuan',     '混元',     'Hy3'],
+            const EAST_OPTIONS: [string, string, string][] = [
+              ['hunyuan', '混元',  'Hy3'],
+              ['qianwen', '千問',  'qwen-max'],
+            ];
+            const WEST_OPTIONS: [string, string, string][] = [
               ['openai',      'OpenAI',   'gpt-4o-mini'],
               ['gemini_lite', 'Gemini',   'Flash Lite'],
               ['deepseek',    'DeepSeek', 'v4-flash'],
             ];
-            const renderRow = (active: string, setter: (v: string) => void) => (
+            const renderRow = (options: [string, string, string][], active: string, setter: (v: string) => void) => (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {MODEL_OPTIONS.map(([val, label, sub]) => (
+                {options.map(([val, label, sub]) => (
                   <button key={val} style={pillStyle(active === val)} onClick={() => setter(val)}>
                     <div style={{ fontSize: 12, fontWeight: active === val ? 700 : 500 }}>{label}</div>
                     <div style={{ fontSize: 10, color: active === val ? `${GOLD}bb` : '#555', marginTop: 2 }}>{sub}</div>
@@ -375,11 +379,11 @@ export default function Debate() {
                 <div style={{ fontSize: 11, color: '#666', letterSpacing: '0.05em', marginBottom: 6 }}>
                   選擇東方顧問（八字）
                 </div>
-                <div style={{ marginBottom: 12 }}>{renderRow(eastModel, setEastModel)}</div>
+                <div style={{ marginBottom: 12 }}>{renderRow(EAST_OPTIONS, eastModel, setEastModel)}</div>
                 <div style={{ fontSize: 11, color: '#666', letterSpacing: '0.05em', marginBottom: 6 }}>
                   選擇西方顧問（MBTI）
                 </div>
-                {renderRow(westModel, setWestModel)}
+                {renderRow(WEST_OPTIONS, westModel, setWestModel)}
               </div>
             );
           })()}
