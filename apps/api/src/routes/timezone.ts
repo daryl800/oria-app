@@ -6,7 +6,7 @@ const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localho
 // POST /api/timezone/lookup
 router.post('/lookup', async (req: Request, res: Response) => {
   try {
-    const { lat, lng } = req.body;
+    const { lat, lng } = req.body as { lat?: number; lng?: number };
     if (lat === undefined || lng === undefined) {
       return res.status(400).json({ error: 'lat and lng are required' });
     }
@@ -18,8 +18,8 @@ router.post('/lookup', async (req: Request, res: Response) => {
     if (!result.ok) throw new Error('Timezone lookup failed');
     const data = await result.json();
     return res.json(data);
-  } catch (err: any) {
-    return res.status(500).json({ error: err.message });
+  } catch (err) {
+    return res.status(500).json({ error: err instanceof Error ? err.message : String(err) });
   }
 });
 

@@ -127,17 +127,25 @@ const CHAINS = {
 export type LLMChain = keyof typeof CHAINS;
 
 // ── Helpers ───────────────────────────────────────────────────────
+interface LlmProviderError {
+  status?: number;
+  code?: unknown;
+  isProviderTimeout?: boolean;
+}
+
+function toProviderError(err: unknown): LlmProviderError {
+  return err !== null && typeof err === 'object' ? (err as LlmProviderError) : {};
+}
+
 function isFallbackable(err: unknown): boolean {
-  // Custom timeout flag — checked before instanceof so it always works
-  if ((err as any)?.isProviderTimeout) return true;
-  // Non-Error objects that still carry a status (some SDK versions, raw fetch errors)
+  const pe = toProviderError(err);
+  if (pe.isProviderTimeout) return true;
   if (!(err instanceof Error)) {
-    const status = (err as any)?.status as number | undefined;
-    return status !== undefined && (status === 400 || status === 429 || status >= 500);
+    return typeof pe.status === 'number' && (pe.status === 400 || pe.status === 429 || pe.status >= 500);
   }
   const name = err.constructor.name;
   if (name === 'APIConnectionError' || name === 'APIConnectionTimeoutError') return true;
-  const status = (err as any).status as number | undefined;
+  const { status } = pe;
   if (status === 400) return true;
   if (status === 429 || (status !== undefined && status >= 500 && status < 600)) return true;
   return false;
@@ -182,11 +190,12 @@ export async function complete(
       return answer;
 
     } catch (err) {
+      const pe = toProviderError(err);
       console.error(`[LLM:${chain}] ${provider.name} error:`, {
-        type: (err as any)?.constructor?.name,
-        message: (err as any)?.message,
-        status: (err as any)?.status,
-        code: (err as any)?.code,
+        type: err instanceof Error ? err.constructor.name : typeof err,
+        message: err instanceof Error ? err.message : String(err),
+        status: pe.status,
+        code: pe.code,
         isError: err instanceof Error,
       });
       if (isFallbackable(err)) {
@@ -198,7 +207,7 @@ export async function complete(
     }
   }
 
-  throw new Error(`[LLM:${chain}] All providers failed. Last error: ${lastError}`);
+  throw new Error(`[LLM:${chain}] All providers failed. Last error: ${String(lastError)}`);
 }
 
 // ── completeTracked() — like complete() but also returns provider name ───────
@@ -231,11 +240,12 @@ export async function completeTracked(
       return { text, provider: provider.name };
 
     } catch (err) {
+      const pe = toProviderError(err);
       console.error(`[LLM:${chain}] ${provider.name} error:`, {
-        type: (err as any)?.constructor?.name,
-        message: (err as any)?.message,
-        status: (err as any)?.status,
-        code: (err as any)?.code,
+        type: err instanceof Error ? err.constructor.name : typeof err,
+        message: err instanceof Error ? err.message : String(err),
+        status: pe.status,
+        code: pe.code,
         isError: err instanceof Error,
       });
       if (isFallbackable(err)) {
@@ -247,7 +257,7 @@ export async function completeTracked(
     }
   }
 
-  throw new Error(`[LLM:${chain}] All providers failed. Last error: ${lastError}`);
+  throw new Error(`[LLM:${chain}] All providers failed. Last error: ${String(lastError)}`);
 }
 
 // ── streamToWebSocket() — streaming, chat chain only ─────────────
@@ -290,5 +300,5 @@ export async function streamToWebSocket(
     }
   }
 
-  onError(new Error(`[LLM:chat] All providers failed. Last error: ${lastError}`));
+  onError(new Error(`[LLM:chat] All providers failed. Last error: ${String(lastError)}`));
 }

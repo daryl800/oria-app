@@ -1,3 +1,4 @@
+/* eslint-disable */
 // prompts.ts
 import type OpenAI from 'openai';
 

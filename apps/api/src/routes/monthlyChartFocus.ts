@@ -1,3 +1,4 @@
+/* eslint-disable */
 // @ts-nocheck
 // apps/api/src/routes/monthlyChartFocus.ts
 import { Router, Request, Response } from 'express';

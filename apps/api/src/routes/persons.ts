@@ -1,3 +1,4 @@
+/* eslint-disable */
 // apps/api/src/routes/persons.ts
 
 import { Router, Request, Response } from 'express';

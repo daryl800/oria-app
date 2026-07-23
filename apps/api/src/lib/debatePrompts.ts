@@ -1,7 +1,48 @@
 // debatePrompts.ts — Prompt builders for East vs West analysis feature
 import type OpenAI from 'openai';
 
-function getBaziContext(bazi: any): string {
+interface Pillar { gan?: string; zhi?: string; }
+interface FiveElementsStrength { Wood?: number; Fire?: number; Earth?: number; Metal?: number; Water?: number; }
+interface Dayun {
+  is_current?: boolean;
+  start_year: number;
+  end_year: number;
+  start_age: number;
+  end_age: number;
+  pillar: string;
+}
+interface BaziDayun { dayuns?: Dayun[]; current_dayun?: Dayun; }
+
+export interface BaziData {
+  year_pillar?: Pillar;
+  month_pillar?: Pillar;
+  day_pillar?: Pillar;
+  hour_pillar?: Pillar;
+  day_master?: string;
+  five_elements_strength?: FiveElementsStrength;
+  dayun?: BaziDayun;
+  birth_date?: string;
+}
+
+interface DimensionResult { confidence?: number; dominant?: string; }
+interface DimensionResults {
+  EI?: DimensionResult;
+  SN?: DimensionResult;
+  TF?: DimensionResult;
+  JP?: DimensionResult;
+}
+
+export interface MbtiData {
+  type?: string;
+  mbti_type?: string;
+  nickname?: string;
+  core_traits?: string;
+  work_style?: string;
+  relationship_style?: string;
+  dimension_results?: DimensionResults;
+}
+
+function getBaziContext(bazi: BaziData | null): string {
   if (!bazi) return '八字資料未提供';
 
   const pillars = [
@@ -15,19 +56,19 @@ function getBaziContext(bazi: any): string {
   const elements = `五行：木${fe.Wood ?? 0} 火${fe.Fire ?? 0} 土${fe.Earth ?? 0} 金${fe.Metal ?? 0} 水${fe.Water ?? 0}`;
 
   let dayunSection = '';
-  const dayuns: any[] = bazi.dayun?.dayuns ?? [];
+  const dayuns: Dayun[] = bazi.dayun?.dayuns ?? [];
 
   if (dayuns.length > 0) {
-    let currentIdx = dayuns.findIndex((d: any) => d.is_current === true);
+    let currentIdx = dayuns.findIndex((d) => d.is_current === true);
     if (currentIdx === -1) {
       const currentYear = new Date().getFullYear();
-      currentIdx = dayuns.findIndex((d: any) =>
+      currentIdx = dayuns.findIndex((d) =>
         d.start_year <= currentYear && d.end_year >= currentYear
       );
     }
     if (currentIdx >= 0) {
       const relevant = dayuns.slice(currentIdx, currentIdx + 3);
-      const lines = relevant.map((d: any, i: number) => {
+      const lines = relevant.map((d, i) => {
         const label = i === 0 ? '【當前】' : i === 1 ? '【下一個】' : '【之後】';
         return `${label} ${d.pillar}（${Math.round(d.start_age)}-${Math.round(d.end_age)}歲 / ${d.start_year}-${d.end_year}年）`;
       });
@@ -48,13 +89,13 @@ ${pillars}
 ${elements}${dayunSection}`.trim();
 }
 
-function getMbtiContext(mbti: any): string {
+function getMbtiContext(mbti: MbtiData | null): string {
   if (!mbti) return 'MBTI：未知';
 
   let dimensionLine = '';
   const dr = mbti.dimension_results;
   if (dr) {
-    function fmt(dim: any, a: string, b: string): string {
+    function fmt(dim: DimensionResult | undefined, a: string, b: string): string {
       const conf: number = dim?.confidence ?? 0;
       const dominant: string = dim?.dominant ?? a;
       const other: string = dominant === a ? b : a;
@@ -87,8 +128,9 @@ function getLangInstruction(lang: string): string {
   return 'Write all responses in English.';
 }
 
-function computeAgeLifeStage(bazi: any): { age: number | null; lifeStage: string } {
-  const birthYear = bazi?.birth_date ? parseInt(bazi.birth_date.split('-')[0]) : null;
+function computeAgeLifeStage(bazi: BaziData | null): { age: number | null; lifeStage: string } {
+  const bd = bazi?.birth_date;
+  const birthYear = bd ? parseInt(bd.split('-')[0], 10) : null;
   const age = birthYear ? new Date().getFullYear() - birthYear : null;
   let lifeStage = '';
   if (age !== null) {
@@ -100,7 +142,7 @@ function computeAgeLifeStage(bazi: any): { age: number | null; lifeStage: string
   return { age, lifeStage };
 }
 
-function buildEastContext(bazi: any, mbti: any, question: string, recentContext: string): string {
+function buildEastContext(bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string): string {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
   return `【用戶提問】
 ${question}
@@ -115,7 +157,7 @@ ${getMbtiContext(mbti)}
 ${recentContext ? `【近期背景】\n${recentContext}\n` : ''}`.trim();
 }
 
-function buildWestContext(mbti: any, question: string, recentContext: string, age: number | null, lifeStage: string): string {
+function buildWestContext(mbti: MbtiData | null, question: string, recentContext: string, age: number | null, lifeStage: string): string {
   const ageBlock = age !== null ? `\n\n【用戶年齡與人生階段】
 用戶年齡：${age}歲（${lifeStage}）
 這是分析此問題的關鍵因素。請確保建議充分反映這個人生階段的實際需求、限制與優先考量。
@@ -138,12 +180,6 @@ ${own}
 你必須與自己上一輪的核心結論保持一致。
 可以深化、補充、或調整細節，但不可完全推翻自己的上輪結論。`;
 }
-
-const HONEST_REACTION = `閱讀對手觀點後，誠實回應：
-- 若你真心認同 → 在【立場】直接說認同，然後從自己的框架補充為什麼
-- 若部分認同 → 說明哪部分認同、哪部分有不同看法
-- 若不認同 → 只用自己的框架解釋原因，不攻擊對手
-不要為了製造對立而強行反對。不要為了和諧而假裝同意。`;
 
 const RESPONSE_RULE = `回應對方時只有兩種選擇：
 - 同意：說明為何你的框架也支持這個結論
@@ -179,7 +215,7 @@ const WEST_CONSTRAINT = `絕對禁止提及八字、五行、大運、命盤、�
 // ── R1 — 初觀 (Overall verdict, no opponent view) ─────────────────
 
 export function eastR1Prompt(
-  bazi: any, mbti: any, question: string, recentContext: string, lang: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
     {
@@ -209,7 +245,7 @@ ${getLangInstruction(lang)}`,
 }
 
 export function westR1Prompt(
-  bazi: any, mbti: any, question: string, recentContext: string, lang: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
   return [
@@ -244,7 +280,7 @@ ${getLangInstruction(lang)}`,
 // ── R2 — 時機 (React to opponent R1 + timing analysis) ───────────
 
 export function eastR2Prompt(
-  bazi: any, mbti: any, question: string, recentContext: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
   opponentR1: string, ownR1: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
@@ -279,7 +315,7 @@ ${getLangInstruction(lang)}`,
 }
 
 export function westR2Prompt(
-  bazi: any, mbti: any, question: string, recentContext: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
   opponentR1: string, ownR1: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
@@ -319,7 +355,7 @@ ${getLangInstruction(lang)}`,
 // ── R3 — 風險 (React to opponent R2 + risk assessment) ───────────
 
 export function eastR3Prompt(
-  bazi: any, mbti: any, question: string, recentContext: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
   opponentR2: string, ownR2: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
@@ -354,7 +390,7 @@ ${getLangInstruction(lang)}`,
 }
 
 export function westR3Prompt(
-  bazi: any, mbti: any, question: string, recentContext: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
   opponentR2: string, ownR2: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
@@ -394,7 +430,7 @@ ${getLangInstruction(lang)}`,
 // ── R4 — 行動 (React to opponent R3 + concrete next steps) ────────
 
 export function eastR4Prompt(
-  bazi: any, mbti: any, question: string, recentContext: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
   opponentR3: string, ownR3: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
@@ -430,7 +466,7 @@ ${getLangInstruction(lang)}`,
 }
 
 export function westR4Prompt(
-  bazi: any, mbti: any, question: string, recentContext: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
   opponentR3: string, ownR3: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
@@ -471,7 +507,7 @@ ${getLangInstruction(lang)}`,
 // ── R5 — 綜合 (Synthesis) ─────────────────────────────────────────
 
 export function synthesisPrompt(
-  bazi: any, mbti: any, question: string, recentContext: string,
+  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
   allRounds: string, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
   return [
