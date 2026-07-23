@@ -38,8 +38,6 @@ const geminiClient = new OpenAI({
 
 const hunyuan        = { name: 'hunyuan',         client: tencentClient, model: process.env.TENCENT_LLM_MODEL             || 'Hy3',                  timeoutMs: 35_000 };
 const geminiFlashLite = { name: 'gemini-flash-lite', client: geminiClient,  model: process.env.GEMINI_LLM_MODEL_3_1_flash_lite || 'gemini-3.1-flash-lite', timeoutMs: 30_000 };
-const geminiFlash     = { name: 'gemini-flash',      client: geminiClient,  model: process.env.GEMINI_LLM_MODEL_2_5_flash      || 'gemini-2.5-flash',      timeoutMs: 45_000 };
-const geminiPro       = { name: 'gemini-pro',        client: geminiClient,  model: process.env.GEMINI_LLM_MODEL_3_5_flash      || 'gemini-3.5-flash',      timeoutMs: 45_000 };
 
 const chatgpt = {
   name: 'chatgpt',
@@ -107,11 +105,11 @@ const CHAINS = {
   debate_east_hunyuan:      [hunyuan,          gpt4oMini],
   debate_east_openai:       [gpt4oMini,        hunyuan],
   debate_east_gemini_lite:  [geminiFlashLite,  hunyuan],
-  debate_east_gemini:       [geminiFlash,      hunyuan],
+  debate_east_deepseek:     [deepseek,         hunyuan],
   debate_west_openai:       [gpt4oMini,        hunyuan],
   debate_west_hunyuan:      [hunyuan,          gpt4oMini],
   debate_west_gemini_lite:  [geminiFlashLite,  gpt4oMini],
-  debate_west_gemini:       [geminiFlash,      gpt4oMini],
+  debate_west_deepseek:     [deepseek,         gpt4oMini],
   debate_synthesis: [deepseek, gpt4o, chatgpt],
 } as const;
 

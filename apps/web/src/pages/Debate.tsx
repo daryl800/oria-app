@@ -11,15 +11,13 @@ const WEST_COLOR = '#1A3A5C';
 const MIN_THINK_MS = 9000;
 
 const PROVIDER_LABEL: Record<string, string> = {
-  'hunyuan':          '混元',
-  'gemini-flash-lite':'Gemini Lite',
-  'gemini-flash':     'Gemini',
-  'gemini-pro':       'Gemini Pro',
-  'deepseek':         'DeepSeek',
-  'gpt-4o-mini':      'OpenAI',
-  'chatgpt-mini':     'OpenAI',
-  'gpt-4o':           'OpenAI',
-  'chatgpt':          'OpenAI',
+  'hunyuan':           '混元 · Hy3',
+  'gpt-4o-mini':       'OpenAI · gpt-4o-mini',
+  'gemini-flash-lite': 'Gemini · Flash Lite',
+  'deepseek':          'DeepSeek · v4-flash',
+  'chatgpt-mini':      'OpenAI',
+  'gpt-4o':            'OpenAI',
+  'chatgpt':           'OpenAI',
 };
 function providerLabel(name: string) { return PROVIDER_LABEL[name] ?? name; }
 
@@ -346,40 +344,42 @@ export default function Debate() {
           {/* Model selector */}
           {(() => {
             const pillStyle = (active: boolean): React.CSSProperties => ({
-              padding: '5px 13px',
-              borderRadius: 20,
-              border: `1px solid ${active ? GOLD : 'rgba(255,255,255,0.15)'}`,
+              padding: '7px 14px',
+              borderRadius: 10,
+              border: `1px solid ${active ? GOLD : 'rgba(255,255,255,0.12)'}`,
               background: active ? `${GOLD}22` : 'transparent',
               color: active ? GOLD : '#888',
-              fontSize: 12,
-              fontWeight: active ? 700 : 400,
               cursor: 'pointer',
               transition: 'all 0.15s',
+              textAlign: 'center',
+              lineHeight: 1.3,
             });
-            const MODEL_OPTIONS = [
-              ['hunyuan', '混元'],
-              ['openai', 'OpenAI'],
-              ['gemini_lite', 'Gemini Lite'],
-              ['gemini', 'Gemini'],
-            ] as const;
+            const MODEL_OPTIONS: [string, string, string][] = [
+              ['hunyuan',     '混元',     'Hy3'],
+              ['openai',      'OpenAI',   'gpt-4o-mini'],
+              ['gemini_lite', 'Gemini',   'Flash Lite'],
+              ['deepseek',    'DeepSeek', 'v4-flash'],
+            ];
+            const renderRow = (active: string, setter: (v: string) => void) => (
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {MODEL_OPTIONS.map(([val, label, sub]) => (
+                  <button key={val} style={pillStyle(active === val)} onClick={() => setter(val)}>
+                    <div style={{ fontSize: 12, fontWeight: active === val ? 700 : 500 }}>{label}</div>
+                    <div style={{ fontSize: 10, color: active === val ? `${GOLD}bb` : '#555', marginTop: 2 }}>{sub}</div>
+                  </button>
+                ))}
+              </div>
+            );
             return (
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, color: '#666', letterSpacing: '0.05em', marginBottom: 6 }}>
                   選擇東方顧問（八字）
                 </div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-                  {MODEL_OPTIONS.map(([val, label]) => (
-                    <button key={val} style={pillStyle(eastModel === val)} onClick={() => setEastModel(val)}>{label}</button>
-                  ))}
-                </div>
+                <div style={{ marginBottom: 12 }}>{renderRow(eastModel, setEastModel)}</div>
                 <div style={{ fontSize: 11, color: '#666', letterSpacing: '0.05em', marginBottom: 6 }}>
                   選擇西方顧問（MBTI）
                 </div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  {MODEL_OPTIONS.map(([val, label]) => (
-                    <button key={val} style={pillStyle(westModel === val)} onClick={() => setWestModel(val)}>{label}</button>
-                  ))}
-                </div>
+                {renderRow(westModel, setWestModel)}
               </div>
             );
           })()}
@@ -465,7 +465,8 @@ export default function Debate() {
             /* R2-R4 — two rows: response row + new-topic row */
             <>
               {/* Row 1: Response to previous round */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, marginTop: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10, marginTop: 4 }}>
+                <div style={{ flex: 1, height: 1, background: `${GOLD}33` }} />
                 <div style={{ fontSize: 12, fontWeight: 600, color: `${GOLD}cc`, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
                   回應上輪觀點
                 </div>
@@ -491,7 +492,8 @@ export default function Debate() {
               </div>
 
               {/* Row 2: New topic deep analysis */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '18px 0 10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '18px 0 10px' }}>
+                <div style={{ flex: 1, height: 1, background: `${GOLD}33` }} />
                 <div style={{ fontSize: 12, fontWeight: 600, color: `${GOLD}cc`, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
                   {ROW2_LABELS[r.round]}
                 </div>

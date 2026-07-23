@@ -116,7 +116,7 @@ function getEastChain(model: string) {
     hunyuan:     'debate_east_hunyuan',
     openai:      'debate_east_openai',
     gemini_lite: 'debate_east_gemini_lite',
-    gemini:      'debate_east_gemini',
+    deepseek:    'debate_east_deepseek',
   };
   return map[model] ?? 'debate_east_hunyuan';
 }
@@ -126,7 +126,7 @@ function getWestChain(model: string) {
     openai:      'debate_west_openai',
     hunyuan:     'debate_west_hunyuan',
     gemini_lite: 'debate_west_gemini_lite',
-    gemini:      'debate_west_gemini',
+    deepseek:    'debate_west_deepseek',
   };
   return map[model] ?? 'debate_west_openai';
 }
