@@ -24,6 +24,7 @@
     "@src": "dist"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.113.0",
     "@getbrevo/brevo": "^5.0.4",
     "@supabase/supabase-js": "^2.103.0",
     "axios": "^1.15.2",

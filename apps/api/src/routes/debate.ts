@@ -73,7 +73,6 @@ async function loadRecentContext(userId: string): Promise<string> {
       .from('conversations')
       .select('id')
       .eq('user_id', userId)
-      .eq('status', 'active')
       .order('updated_at', { ascending: false })
       .limit(3);
 
@@ -124,6 +123,7 @@ function getEastChain(model: string) {
     gemini_lite: 'debate_east_gemini_lite',
     deepseek:    'debate_east_deepseek',
     qianwen:     'debate_east_qianwen',
+    claude:      'debate_east_claude',
   };
   return map[model] ?? 'debate_east_hunyuan';
 }
@@ -134,6 +134,7 @@ function getWestChain(model: string) {
     hunyuan:     'debate_west_hunyuan',
     gemini_lite: 'debate_west_gemini_lite',
     deepseek:    'debate_west_deepseek',
+    claude:      'debate_west_claude',
   };
   return map[model] ?? 'debate_west_openai';
 }

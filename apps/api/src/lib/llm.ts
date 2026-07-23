@@ -1,5 +1,8 @@
 // llm.ts - Multi-chain LLM client with per-use-case provider fallback
 
+import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
+
 /**
  * Escapes any raw control characters (0x00–0x1F) that appear inside JSON
  * string literals. LLMs occasionally emit literal newlines inside strings,
@@ -23,7 +26,76 @@ export function sanitizeLlmJson(raw: string): string {
   }
   return result;
 }
-import OpenAI from 'openai';
+
+// ── Provider interface ────────────────────────────────────────────
+type TokenStream = AsyncIterable<string>;
+
+interface Provider {
+  name: string;
+  createStream(messages: OpenAI.ChatCompletionMessageParam[]): Promise<TokenStream>;
+  timeoutMs: number;
+}
+
+// ── OpenAI-compatible provider factory ───────────────────────────
+function openaiProvider(
+  name: string,
+  client: OpenAI,
+  model: string,
+  timeoutMs: number,
+): Provider {
+  return {
+    name,
+    timeoutMs,
+    async createStream(messages) {
+      const raw = await client.chat.completions.create({ model, messages, stream: true });
+      async function* tokens(): TokenStream {
+        for await (const chunk of raw) {
+          const content = chunk.choices[0]?.delta?.content;
+          if (content) yield content;
+        }
+      }
+      return tokens();
+    },
+  };
+}
+
+// ── Anthropic provider factory ────────────────────────────────────
+function toStr(content: OpenAI.ChatCompletionMessageParam['content']): string {
+  if (typeof content === 'string') return content;
+  if (content == null) return '';
+  return JSON.stringify(content);
+}
+
+function anthropicProvider(
+  name: string,
+  apiKey: string,
+  model: string,
+  timeoutMs: number,
+): Provider {
+  const client = new Anthropic({ apiKey });
+  return {
+    name,
+    timeoutMs,
+    async createStream(messages) {
+      const system = messages.find(m => m.role === 'system');
+      const userMsgs = messages
+        .filter(m => m.role !== 'system')
+        .map(m => ({ role: m.role as 'user' | 'assistant', content: toStr(m.content) }));
+      const response = await client.messages.create({
+        model,
+        max_tokens: 2048,
+        ...(system ? { system: toStr(system.content) } : {}),
+        messages: userMsgs,
+      });
+      const text = response.content
+        .filter(block => block.type === 'text')
+        .map(block => block.text)
+        .join('');
+      async function* tokens(): TokenStream { await Promise.resolve(); yield text; }
+      return tokens();
+    },
+  };
+}
 
 // ── Individual providers ──────────────────────────────────────────
 const tencentClient = new OpenAI({
@@ -36,95 +108,53 @@ const geminiClient = new OpenAI({
   baseURL: process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai/',
 });
 
-const hunyuan        = { name: 'hunyuan',         client: tencentClient, model: process.env.TENCENT_LLM_MODEL             || 'Hy3',                  timeoutMs: 35_000 };
-const geminiFlashLite = { name: 'gemini-flash-lite', client: geminiClient,  model: process.env.GEMINI_LLM_MODEL_3_1_flash_lite || 'gemini-3.1-flash-lite', timeoutMs: 30_000 };
+const chatgptClient = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!,
+  baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+});
 
-const qianwen = {
-  name: 'qianwen',
-  client: new OpenAI({
-    apiKey: process.env.QIANWEN_API_KEY!,
-    baseURL: process.env.QIANWEN_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-  }),
-  model: process.env.QIANWEN_LLM_MODEL || 'qwen-max',
-  timeoutMs: 45_000,
-};
+const hunyuan       = openaiProvider('hunyuan',          tencentClient, process.env.TENCENT_LLM_MODEL              || 'Hy3',                  35_000);
+const geminiFlashLite = openaiProvider('gemini-flash-lite', geminiClient,  process.env.GEMINI_LLM_MODEL_3_1_flash_lite || 'gemini-3.1-flash-lite', 30_000);
 
-const chatgpt = {
-  name: 'chatgpt',
-  client: new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY!,
-    baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
-  }),
-  model: process.env.OPENAI_LLM_MODEL || 'gpt-4.1',
-  timeoutMs: 30_000,
-};
+const qianwen   = openaiProvider('qianwen',     new OpenAI({ apiKey: process.env.QIANWEN_API_KEY!,  baseURL: process.env.QIANWEN_BASE_URL  || 'https://dashscope.aliyuncs.com/compatible-mode/v1' }), process.env.QIANWEN_LLM_MODEL  || 'qwen-max',        45_000);
+const chatgpt   = openaiProvider('chatgpt',     chatgptClient, process.env.OPENAI_LLM_MODEL   || 'gpt-4.1',       30_000);
+const deepseek  = openaiProvider('deepseek',    new OpenAI({ apiKey: process.env.DEEPSEEK_API_KEY!, baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com' }),                          process.env.DEEPSEEK_LLM_MODEL || 'deepseek-v4-flash', 60_000);
+const chatgptMini = openaiProvider('chatgpt-mini', chatgptClient, 'gpt-4.1-mini', 30_000);
+const gpt4o     = openaiProvider('gpt-4o',      chatgptClient, 'gpt-4o',        30_000);
+const gpt4oMini = openaiProvider('gpt-4o-mini', chatgptClient, 'gpt-4o-mini',   30_000);
 
-const deepseek = {
-  name: 'deepseek',
-  client: new OpenAI({
-    apiKey: process.env.DEEPSEEK_API_KEY!,
-    baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
-  }),
-  model: process.env.DEEPSEEK_LLM_MODEL || 'deepseek-v4-flash',
-  timeoutMs: 60_000,
-};
-
-const chatgptMini = {
-  name: 'chatgpt-mini',
-  client: new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY!,
-    baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
-  }),
-  model: 'gpt-4.1-mini',
-  timeoutMs: 30_000,
-};
-
-const gpt4o = {
-  name: 'gpt-4o',
-  client: new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY!,
-    baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
-  }),
-  model: 'gpt-4o',
-  timeoutMs: 30_000,
-};
-
-const gpt4oMini = {
-  name: 'gpt-4o-mini',
-  client: new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY!,
-    baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
-  }),
-  model: 'gpt-4o-mini',
-  timeoutMs: 30_000,
-};
+const claude = anthropicProvider(
+  'claude',
+  process.env.ANTHROPIC_API_KEY!,
+  process.env.ANTHROPIC_LLM_MODEL || 'claude-sonnet-4-6',
+  60_000,
+);
 
 // ── Named chains (primary → fallback) ────────────────────────────
-// profile:               profile summary, monthly chart focus, compare
-// daily:                 daily guidance (free + plus standard)
-// daily_premium:         daily guidance for plus users
-// chat:                  chat, conversation summary
-// debate_east_hunyuan:   East (BaZi) — Hunyuan only
-// debate_west*:          West (MBTI) — model primary, gpt4oMini fallback
-// debate_synthesis:      Neutral synthesis — DeepSeek primary
-const CHAINS = {
-  profile: [deepseek, chatgpt, hunyuan],
-  daily: [deepseek, chatgptMini],
-  daily_premium: [chatgpt, deepseek, chatgptMini],
-  chat: [chatgpt, deepseek],
+export type LLMChain =
+  | 'profile' | 'daily' | 'daily_premium' | 'chat'
+  | 'debate_east_hunyuan' | 'debate_east_openai' | 'debate_east_gemini_lite' | 'debate_east_deepseek' | 'debate_east_qianwen' | 'debate_east_claude'
+  | 'debate_west_openai'  | 'debate_west_hunyuan' | 'debate_west_gemini_lite' | 'debate_west_deepseek' | 'debate_west_claude'
+  | 'debate_synthesis';
+
+const CHAINS: Record<LLMChain, readonly Provider[]> = {
+  profile:               [deepseek, chatgpt, hunyuan],
+  daily:                 [deepseek, chatgptMini],
+  daily_premium:         [chatgpt, deepseek, chatgptMini],
+  chat:                  [chatgpt, deepseek],
   debate_east_hunyuan:      [hunyuan,          gpt4oMini],
   debate_east_openai:       [gpt4oMini,        hunyuan],
   debate_east_gemini_lite:  [geminiFlashLite,  hunyuan],
   debate_east_deepseek:     [deepseek,         hunyuan],
   debate_east_qianwen:      [qianwen,          hunyuan],
+  debate_east_claude:       [claude,           gpt4oMini],
   debate_west_openai:       [gpt4oMini,        hunyuan],
   debate_west_hunyuan:      [hunyuan,          gpt4oMini],
   debate_west_gemini_lite:  [geminiFlashLite,  gpt4oMini],
   debate_west_deepseek:     [deepseek,         gpt4oMini],
-  debate_synthesis: [deepseek, gpt4o, chatgpt],
-} as const;
-
-export type LLMChain = keyof typeof CHAINS;
+  debate_west_claude:       [claude,           gpt4oMini],
+  debate_synthesis:      [deepseek, gpt4o, chatgpt],
+};
 
 // ── Helpers ───────────────────────────────────────────────────────
 interface LlmProviderError {
@@ -151,13 +181,10 @@ function isFallbackable(err: unknown): boolean {
   return false;
 }
 
-async function bufferStream(stream: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>): Promise<string> {
-  let answer = '';
-  for await (const chunk of stream) {
-    const delta = chunk.choices[0]?.delta;
-    if (delta?.content) answer += delta.content;
-  }
-  return answer;
+async function collectTokens(stream: TokenStream): Promise<string> {
+  let text = '';
+  for await (const token of stream) text += token;
+  return text;
 }
 
 // ── complete() — buffered, returns full string ────────────────────
@@ -170,24 +197,19 @@ export async function complete(
   for (const provider of CHAINS[chain]) {
     try {
       const t0 = Date.now();
-      console.log(`[LLM:${chain}] Trying ${provider.name} model=${provider.model}`);
-      const stream = await provider.client.chat.completions.create({
-        model: provider.model,
-        messages,
-        stream: true,
-      });
+      console.log(`[LLM:${chain}] Trying ${provider.name}`);
 
       const timeoutErr = Object.assign(
         new Error(`${provider.name} exceeded ${provider.timeoutMs}ms`),
         { isProviderTimeout: true },
       );
-      const answer = await Promise.race([
-        bufferStream(stream),
+      const text = await Promise.race([
+        (async () => collectTokens(await provider.createStream(messages)))(),
         new Promise<never>((_, reject) => setTimeout(() => reject(timeoutErr), provider.timeoutMs)),
       ]);
 
-      console.log(`[LLM:${chain}] ${provider.name} completed in ${Date.now() - t0}ms (${answer.length} chars)`);
-      return answer;
+      console.log(`[LLM:${chain}] ${provider.name} completed in ${Date.now() - t0}ms (${text.length} chars)`);
+      return text;
 
     } catch (err) {
       const pe = toProviderError(err);
@@ -220,19 +242,14 @@ export async function completeTracked(
   for (const provider of CHAINS[chain]) {
     try {
       const t0 = Date.now();
-      console.log(`[LLM:${chain}] Trying ${provider.name} model=${provider.model}`);
-      const stream = await provider.client.chat.completions.create({
-        model: provider.model,
-        messages,
-        stream: true,
-      });
+      console.log(`[LLM:${chain}] Trying ${provider.name}`);
 
       const timeoutErr = Object.assign(
         new Error(`${provider.name} exceeded ${provider.timeoutMs}ms`),
         { isProviderTimeout: true },
       );
       const text = await Promise.race([
-        bufferStream(stream),
+        (async () => collectTokens(await provider.createStream(messages)))(),
         new Promise<never>((_, reject) => setTimeout(() => reject(timeoutErr), provider.timeoutMs)),
       ]);
 
@@ -273,29 +290,20 @@ export async function streamToWebSocket(
     let tokensSent = 0;
     try {
       console.log(`[LLM:chat] Streaming with provider: ${provider.name}`);
-      const stream = await provider.client.chat.completions.create({
-        model: provider.model,
-        messages,
-        stream: true,
-      });
-
-      for await (const chunk of stream) {
-        const delta = chunk.choices[0]?.delta;
-        if (delta?.content) {
-          onToken(delta.content);
-          tokensSent++;
-        }
+      const stream = await provider.createStream(messages);
+      for await (const token of stream) {
+        onToken(token);
+        tokensSent++;
       }
       onDone();
       return;
-
     } catch (err) {
       if (isFallbackable(err) && tokensSent === 0) {
         console.warn(`[LLM:chat] ${provider.name} failed before streaming, trying next…`, err);
         lastError = err;
         continue;
       }
-      onError(err as Error);
+      onError(err instanceof Error ? err : new Error(String(err)));
       return;
     }
   }

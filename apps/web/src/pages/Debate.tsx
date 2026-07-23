@@ -19,6 +19,7 @@ const PROVIDER_LABEL: Record<string, string> = {
   'chatgpt-mini':      'OpenAI',
   'gpt-4o':            'OpenAI',
   'chatgpt':           'OpenAI',
+  'claude':            'Claude · Sonnet',
 };
 function providerLabel(name: string) { return PROVIDER_LABEL[name] ?? name; }
 
@@ -307,8 +308,6 @@ export default function Debate() {
     setDebateId(null);
     setRounds([]);
     setQuestion('');
-    setEastModel('hunyuan');
-    setWestModel('openai');
     setComplete(false);
     setError(null);
     setThinkingRound(null);
@@ -356,13 +355,15 @@ export default function Debate() {
               lineHeight: 1.3,
             });
             const EAST_OPTIONS: [string, string, string][] = [
-              ['hunyuan', '混元',  'Hy3'],
-              ['qianwen', '千問',  'qwen-max'],
+              ['hunyuan', '混元',   'Hy3'],
+              ['qianwen', '千問',   'qwen-max'],
+              ['claude',  'Claude', 'Sonnet'],
             ];
             const WEST_OPTIONS: [string, string, string][] = [
               ['openai',      'OpenAI',   'gpt-4o-mini'],
               ['gemini_lite', 'Gemini',   'Flash Lite'],
               ['deepseek',    'DeepSeek', 'v4-flash'],
+              ['claude',      'Claude',   'Sonnet'],
             ];
             const renderRow = (options: [string, string, string][], active: string, setter: (v: string) => void) => (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
