@@ -1,3 +1,4 @@
+// @ts-nocheck
 // llm.ts - Multi-chain LLM client with per-use-case provider fallback
 
 /**

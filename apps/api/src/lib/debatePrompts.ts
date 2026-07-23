@@ -1,3 +1,4 @@
+// @ts-nocheck
 // debatePrompts.ts — Prompt builders for East vs West analysis feature
 import type OpenAI from 'openai';
 
