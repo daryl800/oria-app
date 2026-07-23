@@ -114,12 +114,17 @@ export type LLMChain = keyof typeof CHAINS;
 
 // ── Helpers ───────────────────────────────────────────────────────
 function isFallbackable(err: unknown): boolean {
-  if (!(err instanceof Error)) return false;
-  if ((err as any).isProviderTimeout) return true;
+  // Custom timeout flag — checked before instanceof so it always works
+  if ((err as any)?.isProviderTimeout) return true;
+  // Non-Error objects that still carry a status (some SDK versions, raw fetch errors)
+  if (!(err instanceof Error)) {
+    const status = (err as any)?.status as number | undefined;
+    return status !== undefined && (status === 400 || status === 429 || status >= 500);
+  }
   const name = err.constructor.name;
   if (name === 'APIConnectionError' || name === 'APIConnectionTimeoutError') return true;
   const status = (err as any).status as number | undefined;
-  if (status === 400) return true; // provider-specific bad request — try next
+  if (status === 400) return true;
   if (status === 429 || (status !== undefined && status >= 500 && status < 600)) return true;
   return false;
 }
@@ -163,8 +168,15 @@ export async function complete(
       return answer;
 
     } catch (err) {
+      console.error(`[LLM:${chain}] ${provider.name} error:`, {
+        type: (err as any)?.constructor?.name,
+        message: (err as any)?.message,
+        status: (err as any)?.status,
+        code: (err as any)?.code,
+        isError: err instanceof Error,
+      });
       if (isFallbackable(err)) {
-        console.warn(`[LLM:${chain}] ${provider.name} failed, trying next…`, err);
+        console.warn(`[LLM:${chain}] ${provider.name} failed (fallbackable), trying next…`);
         lastError = err;
         continue;
       }
@@ -205,8 +217,15 @@ export async function completeTracked(
       return { text, provider: provider.name };
 
     } catch (err) {
+      console.error(`[LLM:${chain}] ${provider.name} error:`, {
+        type: (err as any)?.constructor?.name,
+        message: (err as any)?.message,
+        status: (err as any)?.status,
+        code: (err as any)?.code,
+        isError: err instanceof Error,
+      });
       if (isFallbackable(err)) {
-        console.warn(`[LLM:${chain}] ${provider.name} failed, trying next…`, err);
+        console.warn(`[LLM:${chain}] ${provider.name} failed (fallbackable), trying next…`);
         lastError = err;
         continue;
       }
