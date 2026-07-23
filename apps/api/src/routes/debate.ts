@@ -112,21 +112,21 @@ function formatAllRounds(rounds: any[]): string {
 // ── Model → chain helpers ─────────────────────────────────────────
 
 function getEastChain(model: string) {
-  const map: Record<string, any> = {
-    hunyuan: 'debate_east_hunyuan',
-    glm:     'debate_east_glm',
-    kimi:    'debate_east_kimi',
-    minimax: 'debate_east_minimax',
+  const map: Record<string, string> = {
+    hunyuan:     'debate_east_hunyuan',
+    openai:      'debate_east_openai',
+    gemini_lite: 'debate_east_gemini_lite',
+    gemini:      'debate_east_gemini',
   };
   return map[model] ?? 'debate_east_hunyuan';
 }
 
 function getWestChain(model: string) {
-  const map: Record<string, any> = {
-    openai:  'debate_west_openai',
-    glm:     'debate_west_glm',
-    kimi:    'debate_west_kimi',
-    minimax: 'debate_west_minimax',
+  const map: Record<string, string> = {
+    openai:      'debate_west_openai',
+    hunyuan:     'debate_west_hunyuan',
+    gemini_lite: 'debate_west_gemini_lite',
+    gemini:      'debate_west_gemini',
   };
   return map[model] ?? 'debate_west_openai';
 }

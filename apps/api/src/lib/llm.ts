@@ -31,10 +31,15 @@ const tencentClient = new OpenAI({
   baseURL: process.env.TENCENT_BASE_URL || 'https://tokenhub.tencentmaas.com/v1',
 });
 
-const hunyuan = { name: 'hunyuan', client: tencentClient, model: process.env.TENCENT_LLM_MODEL    || 'Hy3',        timeoutMs: 35_000 };
-const glm     = { name: 'glm',     client: tencentClient, model: process.env.TENCENT_GLM_MODEL     || 'glm-5.2',    timeoutMs: 60_000 };
-const kimi    = { name: 'kimi',    client: tencentClient, model: process.env.TENCENT_KIMI_MODEL    || 'kimi-k3',    timeoutMs: 60_000 };
-const minimax = { name: 'minimax', client: tencentClient, model: process.env.TENCENT_MINIMAX_MODEL || 'minimax-m3', timeoutMs: 45_000 };
+const geminiClient = new OpenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
+  baseURL: process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai/',
+});
+
+const hunyuan        = { name: 'hunyuan',         client: tencentClient, model: process.env.TENCENT_LLM_MODEL             || 'Hy3',                  timeoutMs: 35_000 };
+const geminiFlashLite = { name: 'gemini-flash-lite', client: geminiClient,  model: process.env.GEMINI_LLM_MODEL_3_1_flash_lite || 'gemini-3.1-flash-lite', timeoutMs: 30_000 };
+const geminiFlash     = { name: 'gemini-flash',      client: geminiClient,  model: process.env.GEMINI_LLM_MODEL_2_5_flash      || 'gemini-2.5-flash',      timeoutMs: 45_000 };
+const geminiPro       = { name: 'gemini-pro',        client: geminiClient,  model: process.env.GEMINI_LLM_MODEL_3_5_flash      || 'gemini-3.5-flash',      timeoutMs: 45_000 };
 
 const chatgpt = {
   name: 'chatgpt',
@@ -87,26 +92,26 @@ const gpt4oMini = {
 };
 
 // ── Named chains (primary → fallback) ────────────────────────────
-// profile:          profile summary, monthly chart focus, compare
-// daily:            daily guidance (free + plus standard)
-// daily_premium:    daily guidance for plus users (occasional GPT-4.1 upgrade)
-// chat:             chat, conversation summary
-// debate_east*:     East (BaZi) debaters — Tencent primary, Hunyuan fallback
-// debate_west*:     West (MBTI) debaters — model primary, gpt4oMini fallback
-// debate_synthesis: Neutral synthesis — DeepSeek primary
+// profile:               profile summary, monthly chart focus, compare
+// daily:                 daily guidance (free + plus standard)
+// daily_premium:         daily guidance for plus users
+// chat:                  chat, conversation summary
+// debate_east_hunyuan:   East (BaZi) — Hunyuan only
+// debate_west*:          West (MBTI) — model primary, gpt4oMini fallback
+// debate_synthesis:      Neutral synthesis — DeepSeek primary
 const CHAINS = {
   profile: [deepseek, chatgpt, hunyuan],
   daily: [deepseek, chatgptMini],
   daily_premium: [chatgpt, deepseek, chatgptMini],
   chat: [chatgpt, deepseek],
-  debate_east_hunyuan:      [hunyuan],
-  debate_east_glm:          [glm,     hunyuan],
-  debate_east_kimi:         [kimi,    hunyuan],
-  debate_east_minimax:      [minimax, hunyuan],
-  debate_west_openai:       [gpt4oMini],
-  debate_west_glm:          [glm,     gpt4oMini],
-  debate_west_kimi:         [kimi,    gpt4oMini],
-  debate_west_minimax:      [minimax, gpt4oMini],
+  debate_east_hunyuan:      [hunyuan,          gpt4oMini],
+  debate_east_openai:       [gpt4oMini,        hunyuan],
+  debate_east_gemini_lite:  [geminiFlashLite,  hunyuan],
+  debate_east_gemini:       [geminiFlash,      hunyuan],
+  debate_west_openai:       [gpt4oMini,        hunyuan],
+  debate_west_hunyuan:      [hunyuan,          gpt4oMini],
+  debate_west_gemini_lite:  [geminiFlashLite,  gpt4oMini],
+  debate_west_gemini:       [geminiFlash,      gpt4oMini],
   debate_synthesis: [deepseek, gpt4o, chatgpt],
 } as const;
 

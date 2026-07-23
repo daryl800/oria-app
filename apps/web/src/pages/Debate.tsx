@@ -11,15 +11,15 @@ const WEST_COLOR = '#1A3A5C';
 const MIN_THINK_MS = 9000;
 
 const PROVIDER_LABEL: Record<string, string> = {
-  'hunyuan':      '混元',
-  'glm':          'GLM',
-  'kimi':         'Kimi',
-  'minimax':      'MiniMax',
-  'deepseek':     'DeepSeek',
-  'gpt-4o-mini':  'OpenAI',
-  'chatgpt-mini': 'OpenAI',
-  'gpt-4o':       'OpenAI',
-  'chatgpt':      'OpenAI',
+  'hunyuan':          '混元',
+  'gemini-flash-lite':'Gemini Lite',
+  'gemini-flash':     'Gemini',
+  'gemini-pro':       'Gemini Pro',
+  'deepseek':         'DeepSeek',
+  'gpt-4o-mini':      'OpenAI',
+  'chatgpt-mini':     'OpenAI',
+  'gpt-4o':           'OpenAI',
+  'chatgpt':          'OpenAI',
 };
 function providerLabel(name: string) { return PROVIDER_LABEL[name] ?? name; }
 
@@ -356,23 +356,27 @@ export default function Debate() {
               cursor: 'pointer',
               transition: 'all 0.15s',
             });
-            const rowLabel: React.CSSProperties = {
-              fontSize: 11,
-              color: '#666',
-              letterSpacing: '0.05em',
-              marginBottom: 6,
-            };
+            const MODEL_OPTIONS = [
+              ['hunyuan', '混元'],
+              ['openai', 'OpenAI'],
+              ['gemini_lite', 'Gemini Lite'],
+              ['gemini', 'Gemini'],
+            ] as const;
             return (
               <div style={{ marginBottom: 16 }}>
-                <div style={rowLabel}>選擇東方顧問</div>
+                <div style={{ fontSize: 11, color: '#666', letterSpacing: '0.05em', marginBottom: 6 }}>
+                  選擇東方顧問（八字）
+                </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-                  {[['hunyuan','混元'],['glm','GLM'],['kimi','Kimi'],['minimax','MiniMax']].map(([val, label]) => (
+                  {MODEL_OPTIONS.map(([val, label]) => (
                     <button key={val} style={pillStyle(eastModel === val)} onClick={() => setEastModel(val)}>{label}</button>
                   ))}
                 </div>
-                <div style={rowLabel}>選擇西方顧問</div>
+                <div style={{ fontSize: 11, color: '#666', letterSpacing: '0.05em', marginBottom: 6 }}>
+                  選擇西方顧問（MBTI）
+                </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  {[['openai','OpenAI'],['glm','GLM'],['kimi','Kimi'],['minimax','MiniMax']].map(([val, label]) => (
+                  {MODEL_OPTIONS.map(([val, label]) => (
                     <button key={val} style={pillStyle(westModel === val)} onClick={() => setWestModel(val)}>{label}</button>
                   ))}
                 </div>
