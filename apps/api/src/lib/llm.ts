@@ -91,7 +91,7 @@ function anthropicProvider(
         messages: userMsgs,
       });
       const text = response.content
-        .filter(block => block.type === 'text')
+        .filter((block): block is Anthropic.TextBlock => block.type === 'text')
         .map(block => block.text)
         .join('');
       async function* tokens(): TokenStream { await Promise.resolve(); yield text; }
