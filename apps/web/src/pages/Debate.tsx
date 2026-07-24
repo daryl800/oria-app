@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
+import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import DebateMiniOnboarding from './DebateMiniOnboarding';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '';
 const GOLD = '#C9A84C';
@@ -179,7 +181,8 @@ interface DebateRound {
   synthesisModel?: string;
 }
 
-export default function Debate({ creditBalance = null, onCreditsUpdated }: {
+export default function Debate({ user = null, hasBazi = false, onProfileComplete, creditBalance = null, onCreditsUpdated }: {
+  user?: User | null; hasBazi?: boolean; onProfileComplete?: () => void;
   creditBalance?: number | null; onCreditsUpdated?: (b: number) => void;
 } = {}) {
   const navigate = useNavigate();
@@ -307,6 +310,18 @@ export default function Debate({ creditBalance = null, onCreditsUpdated }: {
   const currentRound = rounds.length;
   const canAdvance = debateId && !complete && !loading && currentRound > 0 && currentRound < 5;
   const isSynthesisThinking = thinkingRound === 5;
+
+  if (!user || !hasBazi) {
+    return (
+      <div className="oria-page" style={{ padding: '20px 16px 32px', maxWidth: 520, margin: '0 auto' }}>
+        <style>{DEBATE_STYLES}</style>
+        <DebateMiniOnboarding
+          user={user}
+          onComplete={onProfileComplete ?? (() => {})}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="oria-page" style={{ padding: '20px 16px 32px', maxWidth: 760, margin: '0 auto' }}>
