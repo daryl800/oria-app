@@ -18,7 +18,8 @@
     "chart": "我的命盘",
     "compare": "兼容性分析",
     "home": "首頁",
-    "people": "关系解析"
+    "people": "关系解析",
+    "debate": "东西解析"
   },
   "daily": {
     "title": "每日指引",
@@ -785,8 +786,7 @@
         "dailyPreview": "每日指引预览",
         "chartPreview": "个人命盘预览",
         "relationshipPreview": "关系洞察预览",
-        "chatLimit": "每日 1 则简短 Oria Chat 回复",
-        "lockedPrompts": "深度洞察锁定时提示升级"
+        "credits": "6 积分试用（对话与东西解析共用）"
       },
       "button": "免费开始"
     },
@@ -801,7 +801,7 @@
         "relationshipFull": "完整关系洞察",
         "monthlyFocus": "每月焦点更新",
         "history": "已保存的指引记录",
-        "chatLimit": "每日 3 则完整 Oria Chat 回复"
+        "credits": "每月 60 积分（对话与东西解析共用）"
       },
       "button": "解锁 Oria Plus"
     },
@@ -819,7 +819,7 @@
         "relationshipFull": "完整关系洞察",
         "monthlyFocus": "每月焦点更新",
         "history": "已保存的指引记录",
-        "chatLimit": "每日 5 则完整 Oria Chat 回复"
+        "credits": "每月 60 积分（对话与东西解析共用）"
       },
       "button": "优惠年费方案"
     },
@@ -984,5 +984,49 @@
     "privacyPolicy": "隐私政策",
     "billingPolicy": "账单与退款政策",
     "disclaimer": "免责声明"
+  },
+  "debate": {
+    "title": "东西解析",
+    "subtitle": "输入你的问题，让东方命理师与西方心理顾问进行深度解析",
+    "eastLabel": "选择东方顾问（八字）",
+    "westLabel": "选择西方顾问（MBTI）",
+    "creditBefore": "此次解析需要",
+    "creditAfter": "积分（剩余",
+    "creditEnd": "积分）",
+    "placeholder": "例：我现在是否适合换工作？",
+    "startButton": "开始解析",
+    "analysisLabel": "解析：",
+    "synthesis": "综合解析 · 最终建议",
+    "eastAdvisor": "东方智者",
+    "eastAdvisorFull": "东方智者 · 八字命理",
+    "westAdvisor": "西方顾问",
+    "westAdvisorFull": "西方顾问 · MBTI心理",
+    "responseLabel": "回应上轮观点",
+    "nextRound": "进入{{label}} →",
+    "synthesisRound": "进入综合解析 →",
+    "resetButton": "重新解析",
+    "abandonButton": "放弃",
+    "hunyuan": "混元",
+    "rounds": {
+      "1": "第一轮·初观",
+      "2": "第二轮·时机",
+      "3": "第三轮·风险",
+      "4": "第四轮·行动",
+      "5": "第五轮·综合"
+    },
+    "row2": {
+      "2": "时机",
+      "3": "风险",
+      "4": "行动"
+    }
+  },
+  "topbar": {
+    "creditsBadge": "{{balance}} 积分",
+    "creditsTooltip": {
+      "total": "本月积分",
+      "used": "已使用",
+      "remaining": "剩余",
+      "resetDate": "重置日期"
+    }
   }
 }

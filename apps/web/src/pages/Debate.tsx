@@ -6,22 +6,14 @@ import { supabase } from '../lib/supabase';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '';
 const GOLD = '#C9A84C';
+
+const MODEL_CREDITS: Record<string, number> = {
+  hunyuan: 1, deepseek: 1, gemini_lite: 1, openai: 2, claude: 3,
+};
 const EAST_COLOR = '#8B2A2A';
 const WEST_COLOR = '#1A3A5C';
 const MIN_THINK_MS = 9000;
 
-const PROVIDER_LABEL: Record<string, string> = {
-  'hunyuan':           '混元 · Hy3',
-  'qianwen':           '千問 · qwen-max',
-  'gpt-4o-mini':       'OpenAI · gpt-4o-mini',
-  'gemini-flash-lite': 'Gemini · Flash Lite',
-  'deepseek':          'DeepSeek · v4-flash',
-  'chatgpt-mini':      'OpenAI',
-  'gpt-4o':            'OpenAI',
-  'chatgpt':           'OpenAI',
-  'claude':            'Claude · Sonnet',
-};
-function providerLabel(name: string) { return PROVIDER_LABEL[name] ?? name; }
 
 const DEBATE_STYLES = `
   @keyframes debate-orbit {
@@ -58,7 +50,7 @@ function renderContent(content: string) {
               <span style={{
                 color: GOLD,
                 fontWeight: 700,
-                fontSize: 14,
+                fontSize: 15,
                 display: 'block',
                 marginTop: isNewSection ? 0 : (i === 0 ? 0 : 12),
                 marginBottom: 3,
@@ -173,34 +165,26 @@ function splitRoundContent(content: string): { response: string; analysis: strin
   };
 }
 
-const ROUND_LABELS: Record<number, string> = {
-  1: '第一輪·初觀',
-  2: '第二輪·時機',
-  3: '第三輪·風險',
-  4: '第四輪·行動',
-  5: '第五輪·綜合',
-};
-
-const ROW2_LABELS: Record<number, string> = {
-  2: '時機',
-  3: '風險',
-  4: '行動',
-};
 
 interface DebateRound {
   round: number;
   east?: string;
   eastProvider?: string;
+  eastModel?: string;
   west?: string;
   westProvider?: string;
+  westModel?: string;
   synthesis?: string;
   synthesisProvider?: string;
+  synthesisModel?: string;
 }
 
-export default function Debate() {
+export default function Debate({ creditBalance = null, onCreditsUpdated }: {
+  creditBalance?: number | null; onCreditsUpdated?: (b: number) => void;
+} = {}) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const lang = i18n.language ?? 'zh-TW';
 
   const prefill = (location.state as any)?.prefill ?? '';
@@ -246,7 +230,10 @@ export default function Debate() {
         headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify({ question: question.trim(), lang, eastModel, westModel }),
       });
-      if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to start debate');
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.message ?? body.error ?? 'Failed to start debate');
+      }
       const data = await res.json();
 
       const elapsed = Date.now() - thinkingStartRef.current;
@@ -254,8 +241,9 @@ export default function Debate() {
       if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
 
       setDebateId(data.debateId);
-      setRounds([{ round: 1, east: data.east, eastProvider: data.eastProvider, west: data.west, westProvider: data.westProvider }]);
+      setRounds([{ round: 1, east: data.east, eastProvider: data.eastProvider, eastModel: data.eastModel, west: data.west, westProvider: data.westProvider, westModel: data.westModel }]);
       setComplete(data.complete);
+      if (data.credits_remaining !== undefined) onCreditsUpdated?.(data.credits_remaining);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -290,10 +278,13 @@ export default function Debate() {
         round: data.round,
         east: data.east,
         eastProvider: data.eastProvider,
+        eastModel: data.eastModel,
         west: data.west,
         westProvider: data.westProvider,
+        westModel: data.westModel,
         synthesis: data.synthesis,
         synthesisProvider: data.synthesisProvider,
+        synthesisModel: data.synthesisModel,
       }]);
       setComplete(data.complete);
     } catch (err: any) {
@@ -329,8 +320,8 @@ export default function Debate() {
         >
           ←
         </button>
-        <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#e8dcc8' }}>
-          東西解析
+        <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#e8dcc8' }}>
+          {t('debate.title')}
         </h2>
       </div>
 
@@ -338,14 +329,14 @@ export default function Debate() {
       {!debateId && !loading && (
         <div className="oria-card" style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 13, color: '#999', marginBottom: 14 }}>
-            輸入你的問題，讓東方命理師與西方心理顧問進行深度解析
+            {t('debate.subtitle')}
           </div>
 
           {/* Model selector */}
           {(() => {
             const pillStyle = (active: boolean): React.CSSProperties => ({
-              padding: '7px 14px',
-              borderRadius: 10,
+              padding: '8px 16px',
+              borderRadius: 999,
               border: `1px solid ${active ? GOLD : 'rgba(255,255,255,0.12)'}`,
               background: active ? `${GOLD}22` : 'transparent',
               color: active ? GOLD : '#888',
@@ -353,38 +344,48 @@ export default function Debate() {
               transition: 'all 0.15s',
               textAlign: 'center',
               lineHeight: 1.3,
+              fontFamily: 'inherit',
             });
-            const EAST_OPTIONS: [string, string, string][] = [
-              ['hunyuan', '混元',   'Hy3'],
-              ['qianwen', '千問',   'qwen-max'],
-              ['claude',  'Claude', 'Sonnet'],
+            const EAST_OPTIONS: [string, string][] = [
+              ['hunyuan',  t('debate.hunyuan')],
+              ['deepseek', 'DeepSeek'],
             ];
-            const WEST_OPTIONS: [string, string, string][] = [
-              ['openai',      'OpenAI',   'gpt-4o-mini'],
-              ['gemini_lite', 'Gemini',   'Flash Lite'],
-              ['deepseek',    'DeepSeek', 'v4-flash'],
-              ['claude',      'Claude',   'Sonnet'],
+            const WEST_OPTIONS: [string, string][] = [
+              ['openai',      'OpenAI'],
+              ['gemini_lite', 'Gemini'],
+              ['claude',      'Claude'],
             ];
-            const renderRow = (options: [string, string, string][], active: string, setter: (v: string) => void) => (
+            const renderRow = (options: [string, string][], active: string, setter: (v: string) => void) => (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {options.map(([val, label, sub]) => (
+                {options.map(([val, label]) => (
                   <button key={val} style={pillStyle(active === val)} onClick={() => setter(val)}>
-                    <div style={{ fontSize: 12, fontWeight: active === val ? 700 : 500 }}>{label}</div>
-                    <div style={{ fontSize: 10, color: active === val ? `${GOLD}bb` : '#555', marginTop: 2 }}>{sub}</div>
+                    <div style={{ fontSize: 15, fontWeight: active === val ? 700 : 600 }}>{label}</div>
                   </button>
                 ))}
               </div>
             );
             return (
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, color: '#666', letterSpacing: '0.05em', marginBottom: 6 }}>
-                  選擇東方顧問（八字）
+                <div style={{ fontSize: 14, fontWeight: 800, color: GOLD, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: 6 }}>
+                  {t('debate.eastLabel')}
                 </div>
                 <div style={{ marginBottom: 12 }}>{renderRow(EAST_OPTIONS, eastModel, setEastModel)}</div>
-                <div style={{ fontSize: 11, color: '#666', letterSpacing: '0.05em', marginBottom: 6 }}>
-                  選擇西方顧問（MBTI）
+                <div style={{ fontSize: 14, fontWeight: 800, color: GOLD, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: 6 }}>
+                  {t('debate.westLabel')}
                 </div>
                 {renderRow(WEST_OPTIONS, westModel, setWestModel)}
+              </div>
+            );
+          })()}
+
+          {creditBalance !== null && (() => {
+            const cost = (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
+            const insufficient = creditBalance < cost;
+            return (
+              <div style={{ fontSize: 14, color: '#999', marginBottom: 12, textAlign: 'right' }}>
+                {t('debate.creditBefore')}{' '}
+                <span style={{ color: GOLD, fontWeight: 600 }}>{cost}</span>{' '}{t('debate.creditAfter')}{' '}
+                <span style={{ color: insufficient ? '#e88' : GOLD, fontWeight: 600 }}>{creditBalance}</span>{' '}{t('debate.creditEnd')}
               </div>
             );
           })()}
@@ -392,7 +393,7 @@ export default function Debate() {
           <textarea
             value={question}
             onChange={e => setQuestion(e.target.value)}
-            placeholder="例：我現在是否適合換工作？"
+            placeholder={t('debate.placeholder')}
             rows={3}
             style={{
               width: '100%',
@@ -400,11 +401,12 @@ export default function Debate() {
               border: '1px solid rgba(255,255,255,0.12)',
               borderRadius: 10,
               color: '#e8dcc8',
-              padding: '10px 12px',
-              fontSize: 15,
+              padding: '12px 14px',
+              fontSize: 16,
               resize: 'none',
               boxSizing: 'border-box',
               outline: 'none',
+              fontFamily: 'inherit',
             }}
             onKeyDown={e => { if (e.key === 'Enter' && e.metaKey) startDebate(); }}
           />
@@ -414,17 +416,18 @@ export default function Debate() {
             style={{
               marginTop: 12,
               width: '100%',
-              padding: '12px',
+              padding: '16px',
+              minHeight: 56,
               background: !question.trim() ? 'rgba(201,168,76,0.3)' : GOLD,
               color: '#1a1410',
               border: 'none',
-              borderRadius: 10,
-              fontWeight: 700,
-              fontSize: 15,
+              borderRadius: 999,
+              fontWeight: 800,
+              fontSize: 16,
               cursor: !question.trim() ? 'not-allowed' : 'pointer',
             }}
           >
-            開始解析
+            {t('debate.startButton')}
           </button>
         </div>
       )}
@@ -437,10 +440,10 @@ export default function Debate() {
           borderRadius: 10,
           padding: '10px 14px',
           marginBottom: 20,
-          fontSize: 14,
+          fontSize: 15,
           color: '#c9b07a',
         }}>
-          <span style={{ color: GOLD, fontWeight: 600 }}>解析：</span>{question}
+          <span style={{ color: GOLD, fontWeight: 600 }}>{t('debate.analysisLabel')}</span>{question}
         </div>
       )}
 
@@ -451,7 +454,7 @@ export default function Debate() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, marginTop: 4 }}>
             <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
             <div style={{ fontSize: 15, fontWeight: 700, color: '#E8C56A', letterSpacing: '0.1em' }}>
-              {ROUND_LABELS[r.round]}
+              {t(`debate.rounds.${r.round}`)}
             </div>
             <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
           </div>
@@ -459,10 +462,10 @@ export default function Debate() {
           {r.synthesis ? (
             /* R5 — full-width synthesis */
             <div className="oria-card" style={{ border: `1px solid ${GOLD}55`, background: 'rgba(201,168,76,0.06)' }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: GOLD, letterSpacing: '0.06em', marginBottom: 12 }}>
-                ⚖️ 綜合解析 · 最終建議{r.synthesisProvider && <span style={{ fontWeight: 400, color: '#a09060', marginLeft: 4 }}>（{providerLabel(r.synthesisProvider)}）</span>}
+              <div style={{ fontSize: 13, fontWeight: 700, color: GOLD, letterSpacing: '0.06em', marginBottom: 12 }}>
+                ⚖️ {t('debate.synthesis')}{r.synthesisModel && <span style={{ fontWeight: 400, color: '#a09060', marginLeft: 4 }}>（{r.synthesisModel}）</span>}
               </div>
-              <div style={{ fontSize: 14, lineHeight: 1.7, color: '#e8dcc8' }}>
+              <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
                 <TypewriterText text={r.synthesis} />
               </div>
             </div>
@@ -472,25 +475,25 @@ export default function Debate() {
               {/* Row 1: Response to previous round */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10, marginTop: 4 }}>
                 <div style={{ flex: 1, height: 1, background: `${GOLD}33` }} />
-                <div style={{ fontSize: 12, fontWeight: 600, color: `${GOLD}cc`, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
-                  回應上輪觀點
+                <div style={{ fontSize: 13, fontWeight: 600, color: `${GOLD}cc`, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+                  {t('debate.responseLabel')}
                 </div>
                 <div style={{ flex: 1, height: 1, background: `${GOLD}33` }} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
-                    🏮 東方智者{r.eastProvider && <span style={{ fontWeight: 400, color: '#a06060', marginLeft: 4 }}>（{providerLabel(r.eastProvider)}）</span>}
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
+                    🏮 {t('debate.eastAdvisor')}{r.eastModel && <span style={{ fontWeight: 400, color: '#a06060', marginLeft: 4 }}>（{r.eastModel}）</span>}
                   </div>
-                  <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
+                  <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
                     <TypewriterText text={splitRoundContent(r.east ?? '').response} />
                   </div>
                 </div>
                 <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
-                    🧠 西方顧問{r.westProvider && <span style={{ fontWeight: 400, color: '#6080a0', marginLeft: 4 }}>（{providerLabel(r.westProvider)}）</span>}
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
+                    🧠 {t('debate.westAdvisor')}{r.westModel && <span style={{ fontWeight: 400, color: '#6080a0', marginLeft: 4 }}>（{r.westModel}）</span>}
                   </div>
-                  <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
+                  <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
                     <TypewriterText text={splitRoundContent(r.west ?? '').response} />
                   </div>
                 </div>
@@ -499,19 +502,19 @@ export default function Debate() {
               {/* Row 2: New topic deep analysis */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '18px 0 10px' }}>
                 <div style={{ flex: 1, height: 1, background: `${GOLD}33` }} />
-                <div style={{ fontSize: 12, fontWeight: 600, color: `${GOLD}cc`, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
-                  {ROW2_LABELS[r.round]}
+                <div style={{ fontSize: 13, fontWeight: 600, color: `${GOLD}cc`, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+                  {t(`debate.row2.${r.round}`)}
                 </div>
                 <div style={{ flex: 1, height: 1, background: `${GOLD}33` }} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
-                  <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
+                  <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
                     <TypewriterText text={splitRoundContent(r.east ?? '').analysis} />
                   </div>
                 </div>
                 <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
-                  <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
+                  <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
                     <TypewriterText text={splitRoundContent(r.west ?? '').analysis} />
                   </div>
                 </div>
@@ -521,18 +524,18 @@ export default function Debate() {
             /* R1 — standard two-column layout */
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
-                  🏮 東方智者 · 八字命理{r.eastProvider && <span style={{ fontWeight: 400, color: '#a06060', marginLeft: 4 }}>（{providerLabel(r.eastProvider)}）</span>}
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
+                  🏮 {t('debate.eastAdvisorFull')}{r.eastModel && <span style={{ fontWeight: 400, color: '#a06060', marginLeft: 4 }}>（{r.eastModel}）</span>}
                 </div>
-                <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
+                <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
                   <TypewriterText text={r.east ?? ''} />
                 </div>
               </div>
               <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
-                  🧠 西方顧問 · MBTI心理{r.westProvider && <span style={{ fontWeight: 400, color: '#6080a0', marginLeft: 4 }}>（{providerLabel(r.westProvider)}）</span>}
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
+                  🧠 {t('debate.westAdvisorFull')}{r.westModel && <span style={{ fontWeight: 400, color: '#6080a0', marginLeft: 4 }}>（{r.westModel}）</span>}
                 </div>
-                <div style={{ fontSize: 13, lineHeight: 1.7, color: '#e8dcc8' }}>
+                <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
                   <TypewriterText text={r.west ?? ''} />
                 </div>
               </div>
@@ -547,29 +550,29 @@ export default function Debate() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, marginTop: 4 }}>
             <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
             <div style={{ fontSize: 15, fontWeight: 700, color: '#E8C56A', letterSpacing: '0.1em' }}>
-              {ROUND_LABELS[thinkingRound]}
+              {t(`debate.rounds.${thinkingRound}`)}
             </div>
             <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
           </div>
 
           {isSynthesisThinking ? (
             <div className="oria-card" style={{ border: `1px solid ${GOLD}55`, background: 'rgba(201,168,76,0.06)' }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: GOLD, letterSpacing: '0.06em', marginBottom: 4 }}>
-                ⚖️ 綜合解析 · 最終建議
+              <div style={{ fontSize: 13, fontWeight: 700, color: GOLD, letterSpacing: '0.06em', marginBottom: 4 }}>
+                ⚖️ {t('debate.synthesis')}
               </div>
               <ThinkingPanel icon="⚖️" accentColor={GOLD} />
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
-                  🏮 東方智者 · 八字命理
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
+                  🏮 {t('debate.eastAdvisorFull')}
                 </div>
                 <ThinkingPanel icon="🏮" accentColor="#c87070" />
               </div>
               <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
-                  🧠 西方顧問 · MBTI心理
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
+                  🧠 {t('debate.westAdvisorFull')}
                 </div>
                 <ThinkingPanel icon="🧠" accentColor="#7090c8" />
               </div>
@@ -600,17 +603,17 @@ export default function Debate() {
             onClick={nextRound}
             style={{
               flex: 1,
-              padding: '12px',
+              padding: '14px',
               background: GOLD,
               color: '#1a1410',
               border: 'none',
-              borderRadius: 10,
-              fontWeight: 700,
-              fontSize: 15,
+              borderRadius: 999,
+              fontWeight: 800,
+              fontSize: 16,
               cursor: 'pointer',
             }}
           >
-            {currentRound === 4 ? '進入綜合解析 →' : `進入${ROUND_LABELS[currentRound + 1]} →`}
+            {currentRound === 4 ? t('debate.synthesisRound') : t('debate.nextRound', { label: t(`debate.rounds.${currentRound + 1}`) })}
           </button>
         )}
 
@@ -619,17 +622,17 @@ export default function Debate() {
             onClick={resetDebate}
             style={{
               flex: 1,
-              padding: '12px',
+              padding: '14px',
               background: 'rgba(255,255,255,0.06)',
               color: '#aaa',
               border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 10,
-              fontWeight: 600,
-              fontSize: 14,
+              borderRadius: 999,
+              fontWeight: 700,
+              fontSize: 16,
               cursor: 'pointer',
             }}
           >
-            重新解析
+            {t('debate.resetButton')}
           </button>
         )}
 
@@ -637,16 +640,16 @@ export default function Debate() {
           <button
             onClick={resetDebate}
             style={{
-              padding: '12px 16px',
+              padding: '14px 16px',
               background: 'none',
               color: '#777',
               border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 10,
-              fontSize: 13,
+              borderRadius: 999,
+              fontSize: 14,
               cursor: 'pointer',
             }}
           >
-            放棄
+            {t('debate.abandonButton')}
           </button>
         )}
       </div>

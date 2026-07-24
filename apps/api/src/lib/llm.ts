@@ -32,6 +32,7 @@ type TokenStream = AsyncIterable<string>;
 
 interface Provider {
   name: string;
+  model: string;
   createStream(messages: OpenAI.ChatCompletionMessageParam[]): Promise<TokenStream>;
   timeoutMs: number;
 }
@@ -45,6 +46,7 @@ function openaiProvider(
 ): Provider {
   return {
     name,
+    model,
     timeoutMs,
     async createStream(messages) {
       const raw = await client.chat.completions.create({ model, messages, stream: true });
@@ -75,6 +77,7 @@ function anthropicProvider(
   const client = new Anthropic({ apiKey });
   return {
     name,
+    model,
     timeoutMs,
     async createStream(messages) {
       const system = messages.find(m => m.role === 'system');
@@ -113,15 +116,14 @@ const chatgptClient = new OpenAI({
   baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
 });
 
-const hunyuan       = openaiProvider('hunyuan',          tencentClient, process.env.TENCENT_LLM_MODEL              || 'Hy3',                  35_000);
+const hunyuan       = openaiProvider('hunyuan',          tencentClient, process.env.TENCENT_HY_LLM_MODEL           || 'Hy3',                  35_000);
 const geminiFlashLite = openaiProvider('gemini-flash-lite', geminiClient,  process.env.GEMINI_LLM_MODEL_3_1_flash_lite || 'gemini-3.1-flash-lite', 30_000);
 
-const qianwen   = openaiProvider('qianwen',     new OpenAI({ apiKey: process.env.QIANWEN_API_KEY!,  baseURL: process.env.QIANWEN_BASE_URL  || 'https://dashscope.aliyuncs.com/compatible-mode/v1' }), process.env.QIANWEN_LLM_MODEL  || 'qwen-max',        45_000);
 const chatgpt   = openaiProvider('chatgpt',     chatgptClient, process.env.OPENAI_LLM_MODEL   || 'gpt-4.1',       30_000);
 const deepseek  = openaiProvider('deepseek',    new OpenAI({ apiKey: process.env.DEEPSEEK_API_KEY!, baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com' }),                          process.env.DEEPSEEK_LLM_MODEL || 'deepseek-v4-flash', 60_000);
 const chatgptMini = openaiProvider('chatgpt-mini', chatgptClient, 'gpt-4.1-mini', 30_000);
 const gpt4o     = openaiProvider('gpt-4o',      chatgptClient, 'gpt-4o',        30_000);
-const gpt4oMini = openaiProvider('gpt-4o-mini', chatgptClient, 'gpt-4o-mini',   30_000);
+const gpt4oMini = openaiProvider('gpt-4o-mini', chatgptClient, process.env.DEBATE_WEST_OPENAI_MODEL || 'gpt-4o-mini', 30_000);
 
 const claude = anthropicProvider(
   'claude',
@@ -133,8 +135,8 @@ const claude = anthropicProvider(
 // ── Named chains (primary → fallback) ────────────────────────────
 export type LLMChain =
   | 'profile' | 'daily' | 'daily_premium' | 'chat'
-  | 'debate_east_hunyuan' | 'debate_east_openai' | 'debate_east_gemini_lite' | 'debate_east_deepseek' | 'debate_east_qianwen' | 'debate_east_claude'
-  | 'debate_west_openai'  | 'debate_west_hunyuan' | 'debate_west_gemini_lite' | 'debate_west_deepseek' | 'debate_west_claude'
+  | 'debate_east_hunyuan' | 'debate_east_openai' | 'debate_east_gemini_lite' | 'debate_east_deepseek'
+  | 'debate_west_openai'  | 'debate_west_hunyuan' | 'debate_west_gemini_lite' | 'debate_west_claude'
   | 'debate_synthesis';
 
 const CHAINS: Record<LLMChain, readonly Provider[]> = {
@@ -146,12 +148,9 @@ const CHAINS: Record<LLMChain, readonly Provider[]> = {
   debate_east_openai:       [gpt4oMini,        hunyuan],
   debate_east_gemini_lite:  [geminiFlashLite,  hunyuan],
   debate_east_deepseek:     [deepseek,         hunyuan],
-  debate_east_qianwen:      [qianwen,          hunyuan],
-  debate_east_claude:       [claude,           gpt4oMini],
   debate_west_openai:       [gpt4oMini,        hunyuan],
   debate_west_hunyuan:      [hunyuan,          gpt4oMini],
   debate_west_gemini_lite:  [geminiFlashLite,  gpt4oMini],
-  debate_west_deepseek:     [deepseek,         gpt4oMini],
   debate_west_claude:       [claude,           gpt4oMini],
   debate_synthesis:      [deepseek, gpt4o, chatgpt],
 };
@@ -236,7 +235,7 @@ export async function complete(
 export async function completeTracked(
   messages: OpenAI.ChatCompletionMessageParam[],
   chain: LLMChain = 'profile',
-): Promise<{ text: string; provider: string }> {
+): Promise<{ text: string; provider: string; model: string }> {
   let lastError: unknown;
 
   for (const provider of CHAINS[chain]) {
@@ -254,7 +253,7 @@ export async function completeTracked(
       ]);
 
       console.log(`[LLM:${chain}] ${provider.name} completed in ${Date.now() - t0}ms (${text.length} chars)`);
-      return { text, provider: provider.name };
+      return { text, provider: provider.name, model: provider.model };
 
     } catch (err) {
       const pe = toProviderError(err);

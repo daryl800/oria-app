@@ -1,13 +1,14 @@
 // BottomNav.tsx
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Compass, MessageCircleMore, Sparkles, Users } from 'lucide-react';
+import { Compass, MessageCircleMore, Scale, Sparkles, Users } from 'lucide-react';
 import '../styles/theme.css';
 
 const NAV_ITEMS = [
   { path: '/daily',   labelKey: 'nav.daily',   icon: Compass },
-  { path: '/chat',    labelKey: 'nav.chat',     icon: MessageCircleMore },
-  { path: '/relationship-insights',  labelKey: 'nav.people',   icon: Users },
+  { path: '/chat',                  labelKey: 'nav.chat',    icon: MessageCircleMore },
+  { path: '/debate',                labelKey: 'nav.debate',  icon: Scale },
+  { path: '/relationship-insights', labelKey: 'nav.people',  icon: Users },
   { path: '/chart',   labelKey: 'nav.chart',    icon: Sparkles },
 ];
 

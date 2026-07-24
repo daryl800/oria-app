@@ -69,7 +69,7 @@ export default function OnboardingBazi() {
       });
       // Store token for callback
       sessionStorage.setItem('oria_onboarding_token', data.token);
-      navigate('/onboarding/signup');
+      navigate('/onboarding/bazi-preview');
     } catch (err: any) {
       setError(err.message);
     } finally {

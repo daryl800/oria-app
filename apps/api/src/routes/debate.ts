@@ -3,6 +3,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
 import { completeTracked } from '../lib/llm';
+import { calculateDebateCost, checkAndDeductCredits } from '../lib/credits';
 import {
   eastR1Prompt, westR1Prompt,
   eastR2Prompt, westR2Prompt,
@@ -122,8 +123,6 @@ function getEastChain(model: string) {
     openai:      'debate_east_openai',
     gemini_lite: 'debate_east_gemini_lite',
     deepseek:    'debate_east_deepseek',
-    qianwen:     'debate_east_qianwen',
-    claude:      'debate_east_claude',
   };
   return map[model] ?? 'debate_east_hunyuan';
 }
@@ -133,7 +132,6 @@ function getWestChain(model: string) {
     openai:      'debate_west_openai',
     hunyuan:     'debate_west_hunyuan',
     gemini_lite: 'debate_west_gemini_lite',
-    deepseek:    'debate_west_deepseek',
     claude:      'debate_west_claude',
   };
   return map[model] ?? 'debate_west_openai';
@@ -148,6 +146,19 @@ router.post('/start', async (req: Request, res: Response) => {
 
     if (!question?.trim()) {
       return res.status(400).json({ error: 'question is required' });
+    }
+
+    const cost = calculateDebateCost(eastModel, westModel);
+    const creditResult = await checkAndDeductCredits(userId, cost);
+    if (!creditResult.ok) {
+      return res.status(403).json({
+        error: 'insufficient_credits',
+        plan: (req as any).userPlan ?? 'free',
+        credits_remaining: creditResult.balance,
+        message: (req as any).userPlan === 'plus'
+          ? '本月積分已用完，下月自動重置'
+          : '免費積分已用完，升級Plus每月獲得60積分',
+      });
     }
 
     const [{ bazi, mbtiProfile, profileSummary, contextFocus }, recentContext] = await Promise.all([
@@ -165,14 +176,14 @@ router.post('/start', async (req: Request, res: Response) => {
 
     // R1: both AIs analyse independently — no opponent view yet
     const [
-      { text: eastR1, provider: eastProvider },
-      { text: westR1, provider: westProvider },
+      { text: eastR1, provider: eastProvider, model: eastModelName },
+      { text: westR1, provider: westProvider, model: westModelName },
     ] = await Promise.all([
       completeTracked(eastR1Prompt(bazi, mbtiProfile, question, recentContext, profileCtx, lang), getEastChain(eastModel)),
       completeTracked(westR1Prompt(bazi, mbtiProfile, question, recentContext, profileCtx, lang), getWestChain(westModel)),
     ]);
 
-    const rounds = [{ round: 1, east: eastR1, west: westR1, eastProvider, westProvider }];
+    const rounds = [{ round: 1, east: eastR1, west: westR1, eastProvider, westProvider, eastModel: eastModelName, westModel: westModelName }];
 
     const { data: session, error } = await supabase
       .from('debate_sessions')
@@ -194,9 +205,13 @@ router.post('/start', async (req: Request, res: Response) => {
       round: 1,
       east: eastR1,
       eastProvider,
+      eastModel: eastModelName,
       west: westR1,
       westProvider,
+      westModel: westModelName,
       complete: false,
+      credits_used: cost,
+      credits_remaining: creditResult.balance,
     });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
@@ -253,40 +268,40 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
 
     if (nextRound === 2) {
       const [
-        { text: eastR2, provider: eastProvider },
-        { text: westR2, provider: westProvider },
+        { text: eastR2, provider: eastProvider, model: eastModelName },
+        { text: westR2, provider: westProvider, model: westModelName },
       ] = await Promise.all([
         completeTracked(eastR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].west, rounds[0].east, profileCtx, lang), getEastChain(eastModel)),
         completeTracked(westR2Prompt(bazi, mbtiProfile, question, recentContext, rounds[0].east, rounds[0].west, profileCtx, lang), getWestChain(westModel)),
       ]);
-      newRoundData = { round: 2, east: eastR2, eastProvider, west: westR2, westProvider };
+      newRoundData = { round: 2, east: eastR2, eastProvider, eastModel: eastModelName, west: westR2, westProvider, westModel: westModelName };
 
     } else if (nextRound === 3) {
       const [
-        { text: eastR3, provider: eastProvider },
-        { text: westR3, provider: westProvider },
+        { text: eastR3, provider: eastProvider, model: eastModelName },
+        { text: westR3, provider: westProvider, model: westModelName },
       ] = await Promise.all([
         completeTracked(eastR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].west, rounds[1].east, profileCtx, lang), getEastChain(eastModel)),
         completeTracked(westR3Prompt(bazi, mbtiProfile, question, recentContext, rounds[1].east, rounds[1].west, profileCtx, lang), getWestChain(westModel)),
       ]);
-      newRoundData = { round: 3, east: eastR3, eastProvider, west: westR3, westProvider };
+      newRoundData = { round: 3, east: eastR3, eastProvider, eastModel: eastModelName, west: westR3, westProvider, westModel: westModelName };
 
     } else if (nextRound === 4) {
       const [
-        { text: eastR4, provider: eastProvider },
-        { text: westR4, provider: westProvider },
+        { text: eastR4, provider: eastProvider, model: eastModelName },
+        { text: westR4, provider: westProvider, model: westModelName },
       ] = await Promise.all([
         completeTracked(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, rounds[2].east, profileCtx, lang), getEastChain(eastModel)),
         completeTracked(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, rounds[2].west, profileCtx, lang), getWestChain(westModel)),
       ]);
-      newRoundData = { round: 4, east: eastR4, eastProvider, west: westR4, westProvider };
+      newRoundData = { round: 4, east: eastR4, eastProvider, eastModel: eastModelName, west: westR4, westProvider, westModel: westModelName };
 
     } else if (nextRound === 5) {
-      const { text: synthesis, provider: synthesisProvider } = await completeTracked(
+      const { text: synthesis, provider: synthesisProvider, model: synthesisModelName } = await completeTracked(
         synthesisPrompt(bazi, mbtiProfile, question, recentContext, formatAllRounds(rounds), profileCtx, lang),
         'debate_synthesis',
       );
-      newRoundData = { round: 5, synthesis, synthesisProvider };
+      newRoundData = { round: 5, synthesis, synthesisProvider, synthesisModel: synthesisModelName };
       isComplete = true;
     }
 

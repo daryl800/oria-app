@@ -11,14 +11,15 @@
     "sign_out": "Sign Out"
   },
   "nav": {
-    "daily": "Daily Compass",
-    "chat": "Talk with oria",
+    "daily": "Compass",
+    "chat": "Chat",
     "profile": "Profile",
     "settings": "Settings",
-    "chart": "My Chart",
+    "chart": "Chart",
     "compare": "Compatibility",
     "home": "Home",
-    "people": "Relationship Insights"
+    "people": "Compare",
+    "debate": "Debate"
   },
   "daily": {
     "title": "Daily Guidance",
@@ -834,8 +835,7 @@
         "dailyPreview": "Daily Guidance preview",
         "chartPreview": "Personal Chart preview",
         "relationshipPreview": "Relationship Insight preview",
-        "chatLimit": "1 short Oria Chat answer per day",
-        "lockedPrompts": "Upgrade prompts when deeper insight is locked"
+        "credits": "6 credits trial (shared for Chat and Debate)"
       },
       "button": "Start Free"
     },
@@ -850,7 +850,7 @@
         "relationshipFull": "Full Relationship Insights",
         "monthlyFocus": "Monthly Focus updates",
         "history": "Saved guidance history",
-        "chatLimit": "3 full Oria Chat answers per day"
+        "credits": "60 credits per month (shared for Chat and Debate)"
       },
       "button": "Unlock Oria Plus"
     },
@@ -868,7 +868,7 @@
         "relationshipFull": "Full Relationship Insights",
         "monthlyFocus": "Monthly Focus updates",
         "history": "Saved guidance history",
-        "chatLimit": "5 full Oria Chat answers per day"
+        "credits": "60 credits per month (shared for Chat and Debate)"
       },
       "button": "Annual Savings Plan"
     },
@@ -1033,5 +1033,49 @@
     "privacyPolicy": "Privacy Policy",
     "billingPolicy": "Billing & Refund Policy",
     "disclaimer": "Disclaimer"
+  },
+  "debate": {
+    "title": "East-West Analysis",
+    "subtitle": "Enter your question for deep analysis by an Eastern fate advisor and a Western psychology consultant",
+    "eastLabel": "Choose Eastern Advisor (BaZi)",
+    "westLabel": "Choose Western Advisor (MBTI)",
+    "creditBefore": "This analysis costs",
+    "creditAfter": "credits (remaining",
+    "creditEnd": "credits)",
+    "placeholder": "e.g. Is now a good time to change jobs?",
+    "startButton": "Begin Analysis",
+    "analysisLabel": "Analysis:",
+    "synthesis": "Synthesis · Final Recommendation",
+    "eastAdvisor": "Eastern Sage",
+    "eastAdvisorFull": "Eastern Sage · BaZi",
+    "westAdvisor": "Western Consultant",
+    "westAdvisorFull": "Western Consultant · MBTI",
+    "responseLabel": "Response to Previous Round",
+    "nextRound": "Enter {{label}} →",
+    "synthesisRound": "Enter Synthesis →",
+    "resetButton": "New Analysis",
+    "abandonButton": "Abandon",
+    "hunyuan": "Hunyuan",
+    "rounds": {
+      "1": "Round 1 · First View",
+      "2": "Round 2 · Timing",
+      "3": "Round 3 · Risk",
+      "4": "Round 4 · Action",
+      "5": "Round 5 · Synthesis"
+    },
+    "row2": {
+      "2": "Timing",
+      "3": "Risk",
+      "4": "Action"
+    }
+  },
+  "topbar": {
+    "creditsBadge": "{{balance}} pts",
+    "creditsTooltip": {
+      "total": "Monthly credits",
+      "used": "Used",
+      "remaining": "Remaining",
+      "resetDate": "Resets on"
+    }
   }
 }

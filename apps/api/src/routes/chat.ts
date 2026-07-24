@@ -6,6 +6,7 @@ import { complete } from '../lib/llm';
 import { chatPrompt, summarizationPrompt } from '../lib/prompts';
 import { containsCrisisLanguage, getCrisisResponse } from '../lib/safety';
 import { calculateZodiac } from '../lib/zodiac';
+import { checkAndDeductCredits } from '../lib/credits';
 
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
@@ -109,44 +110,24 @@ router.post('/send', async (req: Request, res: Response) => {
 
     // load user + profile in parallel
     const [{ data: userData }, { data: userProfile }] = await Promise.all([
-      supabase.from('users').select('display_name, plan, plan_interval, questions_today, last_question_date, created_at').eq('id', userId).single(),
+      supabase.from('users').select('display_name').eq('id', userId).single(),
       supabase.from('user_profiles').select('current_bazi_version_id, current_mbti_version_id').eq('user_id', userId).single(),
     ]);
 
-    const isPlus = userData?.plan === 'plus';
-    const today = new Date().toISOString().split('T')[0];
-    const lastDate = userData?.last_question_date;
-    const questionsToday = lastDate === today ? (userData?.questions_today ?? 0) : 0;
-
-    // Calculate days since signup
-    const createdAt = new Date(userData?.created_at ?? Date.now());
-    const daysSinceSignup = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
-    const isEarlyUser = daysSinceSignup <= 3;
-
-    // Check question limits — yearly Plus gets 5/day, monthly Plus gets 3/day, free gets 1/day
-    const isYearly = isPlus && userData?.plan_interval === 'year';
-    const dailyLimit = isYearly ? 5 : isPlus ? 3 : 1;
-    if (questionsToday >= dailyLimit) {
-      const limitCount = isYearly ? 5 : 3;
-      const msg = lang === 'zh-TW'
-        ? (isPlus ? `你已達到今天的提問上限（每日${limitCount}次）。\n明天我們可以繼續探討。\n✨ 靜心思考今日的洞察，明天見。` : `你已達到今天的提問上限。\n明天我們可以繼續探討。\n\n✨ 或者立即升級至 Oria Plus，繼續你的深度探索。`)
-        : (isPlus ? `You've reached today's limit (${limitCount} questions/day). Reflect on today's insights — see you tomorrow.` : `You've reached today's guidance limit. Take some time to reflect — we'll continue tomorrow.\n\n✨ Or continue now with Oria Plus.`);
-      return res.json({
-        response: msg,
-        conversation_id: conversation_id,
-        crisis_detected: false,
-        limit_reached: true,
-      });
-    }
-
-    // Update question count
-    await supabase.from('users').update({
-      questions_today: questionsToday + 1,
-      last_question_date: today,
-    }).eq('id', userId);
-
     if (!userProfile?.current_bazi_version_id || !userProfile?.current_mbti_version_id) {
       return res.status(400).json({ error: 'Please complete your BaZi and MBTI profiles first.' });
+    }
+
+    const creditResult = await checkAndDeductCredits(userId, 1);
+    if (!creditResult.ok) {
+      return res.status(403).json({
+        error: 'insufficient_credits',
+        credits_remaining: creditResult.balance,
+        plan: (req as any).userPlan ?? 'free',
+        message: (req as any).userPlan === 'plus'
+          ? '本月積分已用完，下月自動重置'
+          : '免費積分已用完，升級Plus每月獲得60積分',
+      });
     }
 
     const userName = userData?.display_name ?? '';
@@ -298,35 +279,11 @@ router.post('/send', async (req: Request, res: Response) => {
       });
     }, 0);
 
-    // For free users after day 3, return partial answer + paywall
-    let finalResponse = response;
-    let isPartial = false;
-
-    if (!isPlus && !isEarlyUser) {
-      // Find a good cutoff point ~40-50% through the response
-      const sentences = response.split(/(?<=[.!?])\s+/);
-      const cutoff = Math.max(2, Math.floor(sentences.length * 0.4));
-      const preview = sentences.slice(0, cutoff).join(' ');
-      const paywallMsg = lang === 'zh-TW'
-        ? `
-
-這背後可能有更深層的規律……
-
-🔒 解鎖完整洞察，深入了解你的命盤。`
-        : `
-
-There may be a deeper pattern behind this...
-
-🔒 Unlock the full insight to see how everything connects.`;
-      finalResponse = preview + paywallMsg;
-      isPartial = true;
-    }
-
     return res.json({
-      response: finalResponse,
+      response,
       conversation_id: conversationId,
       crisis_detected: false,
-      is_partial: isPartial,
+      credits_remaining: creditResult.balance,
     });
   } catch (err: any) {
     console.error('CHAT SEND ERROR:', err);

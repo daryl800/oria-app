@@ -95,6 +95,25 @@ export async function sendMessage(
     headers,
     body: JSON.stringify({ message, conversation_id: conversationId, lang }),
   });
+  if (res.status === 403) {
+    const body = await res.json();
+    const err: any = new Error(body.message ?? 'insufficient_credits');
+    err.code = body.error;
+    err.creditsRemaining = body.credits_remaining ?? 0;
+    err.plan = body.plan ?? 'free';
+    throw err;
+  }
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function getCreditBalance(): Promise<{
+  credit_balance: number;
+  credit_reset_date: string | null;
+  plan: string;
+}> {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/credits/balance`, { headers });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
@@ -173,6 +192,16 @@ export async function submitPublicMbtiAnswers(answers: Record<number, string>, l
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ answers, lang }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function getBaziPreview(token: string) {
+  const res = await fetch(`${API_URL}/api/profile/temp-preview`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token }),
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json();

@@ -55,7 +55,10 @@ function renderAssistantContent(content: string) {
   );
 }
 
-export default function Chat({ user, isPlus = false, planInterval = null }: { user: User; isPlus?: boolean; planInterval?: 'month' | 'year' | null }) {
+export default function Chat({ user, isPlus = false, planInterval = null, creditBalance = null, onCreditsUpdated }: {
+  user: User; isPlus?: boolean; planInterval?: 'month' | 'year' | null;
+  creditBalance?: number | null; onCreditsUpdated?: (b: number) => void;
+}) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const location = useLocation();
@@ -141,11 +144,17 @@ export default function Chat({ user, isPlus = false, planInterval = null }: { us
           content_language: getGeneratedLanguage(data, normalizeLanguage(i18n.language)),
         },
       ]);
-      // Increment daily chat count after successful response
-      incrementDailyCount();
+      if (data.credits_remaining !== undefined) onCreditsUpdated?.(data.credits_remaining);
     } catch (err: any) {
-      setError(err.message);
-      setMessages(prev => prev.slice(0, -1));
+      if (err.code === 'insufficient_credits') {
+        const msg = err.plan === 'plus'
+          ? '本月積分已用完 下月自動重置'
+          : '免費積分已用完 升級Plus繼續使用';
+        setMessages(prev => [...prev, { role: 'assistant', content: msg }]);
+      } else {
+        setError(err.message);
+        setMessages(prev => prev.slice(0, -1));
+      }
     } finally {
       setLoading(false);
     }
@@ -167,54 +176,6 @@ export default function Chat({ user, isPlus = false, planInterval = null }: { us
   }
 
   const quickStarts = t('chat.quick_starts', { returnObjects: true }) as Array<{ label: string; value: string }>;
-
-  // ── Daily chat limit logic ──────────────────────────────────────────────────
-  // Free: 1/day · Monthly Plus: 3/day · Yearly Plus: 5/day
-  const isYearly = isPlus && planInterval === 'year';
-  const DAILY_LIMIT = isYearly ? 5 : isPlus ? 3 : 1;
-  const today = new Date().toISOString().slice(0, 10);
-  const storageKey = `oria_chat_count_${today}_${user.id}`;
-
-  function getDailyCount(): number {
-    try { return parseInt(localStorage.getItem(storageKey) || '0', 10); } catch { return 0; }
-  }
-  function incrementDailyCount() {
-    try { localStorage.setItem(storageKey, String(getDailyCount() + 1)); } catch {}
-  }
-
-  const dailyCount = getDailyCount();
-  const hasReachedLimit = dailyCount >= DAILY_LIMIT;
-
-  if (hasReachedLimit) {
-    return (
-      <div className="oria-page oria-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
-        <div style={{ maxWidth: 420, width: '100%', textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>{isPlus ? '🌙' : '💬'}</div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 12 }}>
-            {isPlus ? (isYearly ? t('billing.limit.yearlyTitle') : t('billing.limit.plusTitle')) : t('billing.limit.freeTitle')}
-          </h2>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.62)', marginBottom: 32, lineHeight: 1.7 }}>
-            {isPlus ? t('billing.limit.plusMessage') : t('billing.limit.freeMessage')}
-          </p>
-          {isPlus ? (
-            <button className="oria-btn-primary" onClick={() => navigate('/home')} style={{ marginBottom: 16 }}>
-              {t('billing.limit.plusButton')}
-            </button>
-          ) : (
-            <>
-              <button className="oria-btn-premium" onClick={() => navigate('/upgrade')} style={{ marginBottom: 16 }}>
-                {t('billing.limit.freeButton')}
-              </button>
-              <br />
-              <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13 }}>
-                ← {t('common.back')}
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div

@@ -18,7 +18,8 @@
     "chart": "Mi carta",
     "compare": "Compatibilidad",
     "home": "Inicio",
-    "people": "Perspectivas de relaciones"
+    "people": "Perspectivas de relaciones",
+    "debate": "Debate"
   },
   "daily": {
     "title": "Guía diaria",
@@ -834,8 +835,7 @@
         "dailyPreview": "Vista previa de guía diaria",
         "chartPreview": "Vista previa de carta personal",
         "relationshipPreview": "Vista previa de perspectivas de relaciones",
-        "chatLimit": "1 respuesta corta de Oria Chat por día",
-        "lockedPrompts": "Indicaciones de mejora cuando se bloquea"
+        "credits": "6 créditos de prueba (compartidos para Chat y Debate)"
       },
       "button": "Comenzar gratis"
     },
@@ -850,7 +850,7 @@
         "relationshipFull": "Perspectivas completas de relaciones",
         "monthlyFocus": "Actualizaciones de enfoque mensual",
         "history": "Historial de guía guardado",
-        "chatLimit": "3 respuestas completas de Oria Chat por día"
+        "credits": "60 créditos por mes (compartidos para Chat y Debate)"
       },
       "button": "Desbloquear Oria Plus"
     },
@@ -868,7 +868,7 @@
         "relationshipFull": "Perspectivas completas de relaciones",
         "monthlyFocus": "Actualizaciones de enfoque mensual",
         "history": "Historial de guía guardado",
-        "chatLimit": "5 respuestas completas de Oria Chat por día"
+        "credits": "60 créditos por mes (compartidos para Chat y Debate)"
       },
       "button": "Plan Anual con Descuento"
     },
@@ -1033,5 +1033,49 @@
     "privacyPolicy": "Política de privacidad",
     "billingPolicy": "Política de facturación y reembolso",
     "disclaimer": "Aviso legal"
+  },
+  "debate": {
+    "title": "Análisis Este-Oeste",
+    "subtitle": "Ingresa tu pregunta para un análisis profundo por un asesor oriental del destino y un consultor de psicología occidental",
+    "eastLabel": "Elegir asesor oriental (BaZi)",
+    "westLabel": "Elegir asesor occidental (MBTI)",
+    "creditBefore": "Este análisis cuesta",
+    "creditAfter": "créditos (restantes:",
+    "creditEnd": "créditos)",
+    "placeholder": "Ej. ¿Es buen momento para cambiar de trabajo?",
+    "startButton": "Iniciar análisis",
+    "analysisLabel": "Análisis:",
+    "synthesis": "Síntesis · Recomendación final",
+    "eastAdvisor": "Sabio oriental",
+    "eastAdvisorFull": "Sabio oriental · BaZi",
+    "westAdvisor": "Consultor occidental",
+    "westAdvisorFull": "Consultor occidental · MBTI",
+    "responseLabel": "Respuesta a la ronda anterior",
+    "nextRound": "Entrar a {{label}} →",
+    "synthesisRound": "Entrar a síntesis →",
+    "resetButton": "Nuevo análisis",
+    "abandonButton": "Abandonar",
+    "hunyuan": "Hunyuan",
+    "rounds": {
+      "1": "Ronda 1 · Primera vista",
+      "2": "Ronda 2 · Momento",
+      "3": "Ronda 3 · Riesgo",
+      "4": "Ronda 4 · Acción",
+      "5": "Ronda 5 · Síntesis"
+    },
+    "row2": {
+      "2": "Momento",
+      "3": "Riesgo",
+      "4": "Acción"
+    }
+  },
+  "topbar": {
+    "creditsBadge": "{{balance}} pts",
+    "creditsTooltip": {
+      "total": "Créditos mensuales",
+      "used": "Usados",
+      "remaining": "Restantes",
+      "resetDate": "Se reinicia el"
+    }
   }
 }

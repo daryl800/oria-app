@@ -10,6 +10,39 @@ import type { StructuredLocation } from '../lib/locations';
 import OriaLogo from '../components/OriaLogo';
 import PlanetLoader from '../components/PlanetLoader';
 
+const API_URL = import.meta.env.VITE_API_URL ?? '';
+
+async function resolveLocationData(locationText: string): Promise<StructuredLocation | null> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationText)}&format=json&addressdetails=1&limit=1`,
+      { headers: { 'Accept-Language': 'en', 'User-Agent': 'Oria-App/1.0' } },
+    );
+    const results = await res.json();
+    if (!results?.length) return null;
+    const r = results[0];
+    const lat = parseFloat(r.lat);
+    const lng = parseFloat(r.lon);
+    const tzRes = await fetch(`${API_URL}/api/public/timezone/lookup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lat, lng }),
+    });
+    if (!tzRes.ok) return null;
+    const tzData = await tzRes.json();
+    return {
+      city: r.address?.city || r.address?.town || r.address?.county || locationText,
+      country: r.address?.country || '',
+      display_name: r.display_name,
+      lat,
+      lng,
+      timezone: tzData.timezone || 'UTC',
+    };
+  } catch {
+    return null;
+  }
+}
+
 const MBTI_TYPES = [
   'INTJ', 'INTP', 'ENTJ', 'ENTP',
   'INFJ', 'INFP', 'ENFJ', 'ENFP',
@@ -83,7 +116,13 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
         setDay(String(d.getUTCDate()));
         if (data.bazi.birth_location) {
           setLocation(data.bazi.birth_location);
-          setSelectedLocation(data.bazi.location_data || null);
+          const locData = data.bazi.location_data || null;
+          setSelectedLocation(locData);
+          if (!locData) {
+            resolveLocationData(data.bazi.birth_location).then(resolved => {
+              if (resolved) setSelectedLocation(resolved);
+            });
+          }
         }
       }
       if (data.mbti) {
@@ -104,7 +143,13 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
           setDay(String(d.getUTCDate()));
           if (data.bazi.birth_location) {
             setLocation(data.bazi.birth_location);
-            setSelectedLocation(data.bazi.location_data || null);
+            const locData = data.bazi.location_data || null;
+            setSelectedLocation(locData);
+            if (!locData) {
+              resolveLocationData(data.bazi.birth_location).then(resolved => {
+                if (resolved) setSelectedLocation(resolved);
+              });
+            }
           }
         }
         if (data.mbti) {

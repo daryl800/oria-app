@@ -18,7 +18,8 @@
     "chart": "Mitt diagram",
     "compare": "Kompatibilitet",
     "home": "Hem",
-    "people": "Relationsinsikter"
+    "people": "Relationsinsikter",
+    "debate": "Debatt"
   },
   "daily": {
     "title": "Daily Guidance",
@@ -785,8 +786,7 @@
         "dailyPreview": "Förhandsgranskning av daglig vägledning",
         "chartPreview": "Förhandsgranskning av personligt diagram",
         "relationshipPreview": "Förhandsgranskning av relationsinsikter",
-        "chatLimit": "1 kort Oria Chat-svar per dag",
-        "lockedPrompts": "Uppgraderingsuppmaningar när djupare insikt är låst"
+        "credits": "6 provkrediter (delas för Chat och Debatt)"
       },
       "button": "Börja gratis"
     },
@@ -801,7 +801,7 @@
         "relationshipFull": "Fullständiga relationsinsikter",
         "monthlyFocus": "Månatliga fokusuppdateringar",
         "history": "Sparad vägledningshistorik",
-        "chatLimit": "3 fullständiga Oria Chat-svar per dag"
+        "credits": "60 krediter per månad (delas för Chat och Debatt)"
       },
       "button": "Lås upp Oria Plus"
     },
@@ -819,7 +819,7 @@
         "relationshipFull": "Fullständiga relationsinsikter",
         "monthlyFocus": "Månatliga fokusuppdateringar",
         "history": "Sparad vägledningshistorik",
-        "chatLimit": "5 fullständiga Oria Chat-svar per dag"
+        "credits": "60 krediter per månad (delas för Chat och Debatt)"
       },
       "button": "Förmånlig årsplan"
     },
@@ -984,5 +984,49 @@
     "privacyPolicy": "Integritetspolicy",
     "billingPolicy": "Betalnings- och återbetalningspolicy",
     "disclaimer": "Friskrivning"
+  },
+  "debate": {
+    "title": "Öst-Väst Analys",
+    "subtitle": "Ange din fråga för djupanalys av en östlig ödesrådgivare och en västlig psykologikonsult",
+    "eastLabel": "Välj östlig rådgivare (BaZi)",
+    "westLabel": "Välj västlig rådgivare (MBTI)",
+    "creditBefore": "Denna analys kostar",
+    "creditAfter": "krediter (återstående:",
+    "creditEnd": "krediter)",
+    "placeholder": "T.ex. Är det ett bra tillfälle att byta jobb nu?",
+    "startButton": "Starta analys",
+    "analysisLabel": "Analys:",
+    "synthesis": "Syntes · Slutlig rekommendation",
+    "eastAdvisor": "Östlig vis",
+    "eastAdvisorFull": "Östlig vis · BaZi",
+    "westAdvisor": "Västlig konsult",
+    "westAdvisorFull": "Västlig konsult · MBTI",
+    "responseLabel": "Svar på föregående runda",
+    "nextRound": "Gå till {{label}} →",
+    "synthesisRound": "Gå till syntes →",
+    "resetButton": "Ny analys",
+    "abandonButton": "Avbryt",
+    "hunyuan": "Hunyuan",
+    "rounds": {
+      "1": "Runda 1 · Första syn",
+      "2": "Runda 2 · Timing",
+      "3": "Runda 3 · Risk",
+      "4": "Runda 4 · Handling",
+      "5": "Runda 5 · Syntes"
+    },
+    "row2": {
+      "2": "Timing",
+      "3": "Risk",
+      "4": "Handling"
+    }
+  },
+  "topbar": {
+    "creditsBadge": "{{balance}} pts",
+    "creditsTooltip": {
+      "total": "Månatliga krediter",
+      "used": "Använda",
+      "remaining": "Återstående",
+      "resetDate": "Återställs den"
+    }
   }
 }

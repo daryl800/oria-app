@@ -18,7 +18,8 @@
     "chart": "Mon Thème",
     "compare": "Compatibilité",
     "home": "Accueil",
-    "people": "Relations"
+    "people": "Relations",
+    "debate": "Débat"
   },
   "daily": {
     "title": "Guidance du Jour",
@@ -834,8 +835,7 @@
         "dailyPreview": "Aperçu de la Guidance Quotidienne",
         "chartPreview": "Aperçu du Thème Personnel",
         "relationshipPreview": "Aperçu des Relations",
-        "chatLimit": "1 réponse courte Oria Chat par jour",
-        "lockedPrompts": "Invites de mise à niveau quand l'aperçu approfondi est verrouillé"
+        "credits": "6 crédits d'essai (partagés pour Chat et Débat)"
       },
       "button": "Commencer Gratuitement"
     },
@@ -850,7 +850,7 @@
         "relationshipFull": "Insights Relationnels Complets",
         "monthlyFocus": "Mises à jour du Focus Mensuel",
         "history": "Historique de guidance sauvegardé",
-        "chatLimit": "3 réponses complètes Oria Chat par jour"
+        "credits": "60 crédits par mois (partagés pour Chat et Débat)"
       },
       "button": "Débloquer Oria Plus"
     },
@@ -868,7 +868,7 @@
         "relationshipFull": "Insights Relationnels Complets",
         "monthlyFocus": "Mises à jour du Focus Mensuel",
         "history": "Historique de guidance sauvegardé",
-        "chatLimit": "5 réponses complètes Oria Chat par jour"
+        "credits": "60 crédits par mois (partagés pour Chat et Débat)"
       },
       "button": "Forfait annuel avantageux"
     },
@@ -1033,5 +1033,49 @@
     "privacyPolicy": "Politique de Confidentialité",
     "billingPolicy": "Politique de Facturation et Remboursement",
     "disclaimer": "Avertissement"
+  },
+  "debate": {
+    "title": "Analyse Est-Ouest",
+    "subtitle": "Entrez votre question pour une analyse approfondie par un conseiller oriental du destin et un consultant en psychologie occidentale",
+    "eastLabel": "Choisir conseiller oriental (BaZi)",
+    "westLabel": "Choisir conseiller occidental (MBTI)",
+    "creditBefore": "Cette analyse coûte",
+    "creditAfter": "crédits (restants :",
+    "creditEnd": "crédits)",
+    "placeholder": "Ex. Est-ce le bon moment pour changer de travail ?",
+    "startButton": "Commencer l'analyse",
+    "analysisLabel": "Analyse :",
+    "synthesis": "Synthèse · Recommandation finale",
+    "eastAdvisor": "Sage oriental",
+    "eastAdvisorFull": "Sage oriental · BaZi",
+    "westAdvisor": "Consultant occidental",
+    "westAdvisorFull": "Consultant occidental · MBTI",
+    "responseLabel": "Réponse au tour précédent",
+    "nextRound": "Passer à {{label}} →",
+    "synthesisRound": "Passer à la synthèse →",
+    "resetButton": "Nouvelle analyse",
+    "abandonButton": "Abandonner",
+    "hunyuan": "Hunyuan",
+    "rounds": {
+      "1": "Tour 1 · Première vue",
+      "2": "Tour 2 · Moment",
+      "3": "Tour 3 · Risque",
+      "4": "Tour 4 · Action",
+      "5": "Tour 5 · Synthèse"
+    },
+    "row2": {
+      "2": "Moment",
+      "3": "Risque",
+      "4": "Action"
+    }
+  },
+  "topbar": {
+    "creditsBadge": "{{balance}} pts",
+    "creditsTooltip": {
+      "total": "Crédits mensuels",
+      "used": "Utilisés",
+      "remaining": "Restants",
+      "resetDate": "Réinitialise le"
+    }
   }
 }

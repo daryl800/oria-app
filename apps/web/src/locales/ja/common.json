@@ -18,7 +18,8 @@
     "chart": "マイチャート",
     "compare": "相性",
     "home": "ホーム",
-    "people": "関係性インサイト"
+    "people": "関係性インサイト",
+    "debate": "分析"
   },
   "daily": {
     "title": "Daily Guidance",
@@ -785,8 +786,7 @@
         "dailyPreview": "毎日のガイダンスプレビュー",
         "chartPreview": "個人チャートプレビュー",
         "relationshipPreview": "関係性インサイトプレビュー",
-        "chatLimit": "1日1回の短いOriaチャット回答",
-        "lockedPrompts": "深いインサイトがロックされた際のアップグレード案内"
+        "credits": "6クレジットお試し（チャットと東西討論で共有）"
       },
       "button": "無料で始める"
     },
@@ -801,7 +801,7 @@
         "relationshipFull": "完全な関係性インサイト",
         "monthlyFocus": "月間フォーカス更新",
         "history": "ガイダンス履歴の保存",
-        "chatLimit": "1日3回の完全なOriaチャット回答"
+        "credits": "毎月60クレジット（チャットと東西討論で共有）"
       },
       "button": "Oria Plusを解除"
     },
@@ -819,7 +819,7 @@
         "relationshipFull": "完全な関係性インサイト",
         "monthlyFocus": "月間フォーカス更新",
         "history": "ガイダンス履歴の保存",
-        "chatLimit": "1日5回の完全なOriaチャット回答"
+        "credits": "毎月60クレジット（チャットと東西討論で共有）"
       },
       "button": "お得な年額プラン"
     },
@@ -984,5 +984,49 @@
     "privacyPolicy": "プライバシーポリシー",
     "billingPolicy": "請求・返金ポリシー",
     "disclaimer": "免責事項"
+  },
+  "debate": {
+    "title": "東西解析",
+    "subtitle": "質問を入力して、東洋の命理師と西洋の心理コンサルタントによる深層分析を受けましょう",
+    "eastLabel": "東洋顧問を選択（八字）",
+    "westLabel": "西洋顧問を選択（MBTI）",
+    "creditBefore": "この解析には",
+    "creditAfter": "クレジットかかります（残り",
+    "creditEnd": "クレジット）",
+    "placeholder": "例：今は転職を考えるべき時期ですか？",
+    "startButton": "解析を開始",
+    "analysisLabel": "解析：",
+    "synthesis": "総合解析 · 最終提言",
+    "eastAdvisor": "東洋の賢者",
+    "eastAdvisorFull": "東洋の賢者 · 八字命理",
+    "westAdvisor": "西洋のコンサルタント",
+    "westAdvisorFull": "西洋のコンサルタント · MBTI",
+    "responseLabel": "前ラウンドへの回答",
+    "nextRound": "{{label}}へ進む →",
+    "synthesisRound": "総合解析へ進む →",
+    "resetButton": "新しい解析",
+    "abandonButton": "中止",
+    "hunyuan": "混元",
+    "rounds": {
+      "1": "第1ラウンド・初見",
+      "2": "第2ラウンド・時機",
+      "3": "第3ラウンド・リスク",
+      "4": "第4ラウンド・行動",
+      "5": "第5ラウンド・総合"
+    },
+    "row2": {
+      "2": "時機",
+      "3": "リスク",
+      "4": "行動"
+    }
+  },
+  "topbar": {
+    "creditsBadge": "{{balance}} pt",
+    "creditsTooltip": {
+      "total": "今月のクレジット",
+      "used": "使用済み",
+      "remaining": "残り",
+      "resetDate": "リセット日"
+    }
   }
 }

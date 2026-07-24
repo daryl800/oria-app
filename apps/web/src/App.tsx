@@ -14,6 +14,7 @@ import OnboardingSignup from './pages/OnboardingSignup';
 import OnboardingMbtiSummary from './pages/OnboardingMbtiSummary';
 import OnboardingResult from './pages/OnboardingResult';
 import OnboardingBazi from './pages/OnboardingBazi';
+import OnboardingBaziPreview from './pages/OnboardingBaziPreview';
 import DailyGuidance from './pages/DailyGuidance';
 import Profile from './pages/Profile';
 import Chat from './pages/Chat';
@@ -42,16 +43,21 @@ import LegalBilling from './pages/LegalBilling';
 import LegalDisclaimer from './pages/LegalDisclaimer';
 import ManageSubscription from './pages/ManageSubscription';
 import { Analytics } from '@vercel/analytics/react';
+import { getCreditBalance } from './services/api';
 
 
-function AppShell({ user, isPlus, planInterval, children }: { user: User | null; isPlus: boolean; planInterval: 'month' | 'year' | null; children: React.ReactNode }) {
+function AppShell({ user, isPlus, planInterval, creditBalance, creditResetDate, children }: {
+  user: User | null; isPlus: boolean; planInterval: 'month' | 'year' | null;
+  creditBalance: number | null; creditResetDate: string | null;
+  children: React.ReactNode;
+}) {
   const location = useLocation();
   const isLoggedIn = !!user;
-  const onboardingPaths = ['/onboarding/bazi', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/transition', '/onboarding/context', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup'];
+  const onboardingPaths = ['/onboarding/bazi', '/onboarding/bazi-preview', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/transition', '/onboarding/context', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup'];
   const showBottomNav = isLoggedIn && !onboardingPaths.includes(location.pathname);
   return (
     <div className="oria-shell">
-      <TopBar user={user} isPlus={isPlus} planInterval={planInterval} />
+      <TopBar user={user} isPlus={isPlus} planInterval={planInterval} creditBalance={creditBalance} creditResetDate={creditResetDate} />
       <div className="oria-shell-frame" style={{ paddingBottom: showBottomNav ? 110 : 24 }}>
         {children}
       </div>
@@ -88,6 +94,8 @@ export default function App() {
   const [isPlus, setIsPro] = useState(false);
   const [isPlusLoaded, setIsProLoaded] = useState(false);
   const [planInterval, setPlanInterval] = useState<'month' | 'year' | null>(null);
+  const [creditBalance, setCreditBalance] = useState<number | null>(null);
+  const [creditResetDate, setCreditResetDate] = useState<string | null>(null);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [langUserId, setLangUserId] = useState<string | null>(null);
 
@@ -153,6 +161,8 @@ export default function App() {
         setIsPro(false);
         setIsProLoaded(false);
         setPlanInterval(null);
+        setCreditBalance(null);
+        setCreditResetDate(null);
         sessionStorage.clear();
         localStorage.removeItem('oria_mbti_result');
         localStorage.removeItem('oria_mbti_answers');
@@ -161,6 +171,13 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!user) { setCreditBalance(null); setCreditResetDate(null); return; }
+    getCreditBalance()
+      .then(d => { setCreditBalance(d.credit_balance); setCreditResetDate(d.credit_reset_date); })
+      .catch(() => {});
+  }, [user?.id]);
 
   // Still checking auth or onboarding — show spinner
   if (user === undefined || (user && onboardingComplete === null)) return (
@@ -182,7 +199,7 @@ export default function App() {
           onDone={() => setShowLanguageModal(false)}
         />
       )}
-      <AppShell user={user} isPlus={isPlus} planInterval={planInterval}>
+      <AppShell user={user} isPlus={isPlus} planInterval={planInterval} creditBalance={creditBalance} creditResetDate={creditResetDate}>
         <Routes>
           <Route path="/" element={!user ? <Landing /> : <Navigate to="/chart" />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
@@ -193,14 +210,15 @@ export default function App() {
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
           <Route path="/onboarding/result" element={<OnboardingResult />} />
           <Route path="/onboarding/bazi" element={<OnboardingBazi />} />
+          <Route path="/onboarding/bazi-preview" element={<OnboardingBaziPreview />} />
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/chart" />} />
 
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
           <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} isPlus={isPlus} />} />
           <Route path="/compare" element={!user ? <Navigate to="/" /> : <Navigate to="/relationship-insights" replace />} />
           <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} isPlus={isPlus} isPlusLoaded={isPlusLoaded} />} />
-          <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} isPlus={isPlus} planInterval={planInterval} />} />
-          <Route path="/debate" element={!user ? <Navigate to="/" /> : <Debate />} />
+          <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} isPlus={isPlus} planInterval={planInterval} creditBalance={creditBalance} onCreditsUpdated={b => setCreditBalance(b)} />} />
+          <Route path="/debate" element={!user ? <Navigate to="/" /> : <Debate creditBalance={creditBalance} onCreditsUpdated={b => setCreditBalance(b)} />} />
           <Route path="/profile" element={!user ? <Navigate to="/" /> : <Profile user={user} isPlus={isPlus} />} />
           <Route path="/settings" element={!user ? <Navigate to="/" /> : <Navigate to="/profile" replace />} />
           <Route path="/mbti-quiz" element={!user ? <Navigate to="/" /> : <MbtiQuestionnaire user={user} />} />

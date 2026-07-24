@@ -18,7 +18,8 @@
     "chart": "Mein Chart",
     "compare": "Kompatibilität",
     "home": "Startseite",
-    "people": "Beziehungen"
+    "people": "Beziehungen",
+    "debate": "Debatte"
   },
   "daily": {
     "title": "Tägliche Führung",
@@ -834,8 +835,7 @@
         "dailyPreview": "Vorschau der Täglichen Führung",
         "chartPreview": "Vorschau des Persönlichen Charts",
         "relationshipPreview": "Vorschau der Beziehungseinblicke",
-        "chatLimit": "1 kurze Oria-Chat-Antwort pro Tag",
-        "lockedPrompts": "Upgrade-Hinweise, wenn tiefere Einsicht gesperrt ist"
+        "credits": "6 Test-Credits (geteilt für Chat und Debate)"
       },
       "button": "Kostenlos starten"
     },
@@ -850,7 +850,7 @@
         "relationshipFull": "Vollständige Beziehungseinblicke",
         "monthlyFocus": "Monatliche Fokus-Updates",
         "history": "Gespeicherter Führungsverlauf",
-        "chatLimit": "3 vollständige Oria-Chat-Antworten pro Tag"
+        "credits": "60 Credits pro Monat (geteilt für Chat und Debate)"
       },
       "button": "Oria Plus freischalten"
     },
@@ -868,7 +868,7 @@
         "relationshipFull": "Vollständige Beziehungseinblicke",
         "monthlyFocus": "Monatliche Fokus-Updates",
         "history": "Gespeicherter Führungsverlauf",
-        "chatLimit": "5 vollständige Oria-Chat-Antworten pro Tag"
+        "credits": "60 Credits pro Monat (geteilt für Chat und Debate)"
       },
       "button": "Vorteilhafter Jahresplan"
     },
@@ -1033,5 +1033,49 @@
     "privacyPolicy": "Datenschutzrichtlinie",
     "billingPolicy": "Abrechnungs- & Erstattungsrichtlinie",
     "disclaimer": "Haftungsausschluss"
+  },
+  "debate": {
+    "title": "Ost-West-Analyse",
+    "subtitle": "Gib deine Frage ein für eine Tiefenanalyse durch einen östlichen Schicksalsberater und einen westlichen Psychologieberater",
+    "eastLabel": "Östlichen Berater wählen (BaZi)",
+    "westLabel": "Westlichen Berater wählen (MBTI)",
+    "creditBefore": "Diese Analyse kostet",
+    "creditAfter": "Credits (verbleibend:",
+    "creditEnd": "Credits)",
+    "placeholder": "z.B. Ist jetzt ein guter Zeitpunkt für einen Jobwechsel?",
+    "startButton": "Analyse starten",
+    "analysisLabel": "Analyse:",
+    "synthesis": "Synthese · Abschließende Empfehlung",
+    "eastAdvisor": "Östlicher Weiser",
+    "eastAdvisorFull": "Östlicher Weiser · BaZi",
+    "westAdvisor": "Westlicher Berater",
+    "westAdvisorFull": "Westlicher Berater · MBTI",
+    "responseLabel": "Antwort auf vorherige Runde",
+    "nextRound": "Weiter zu {{label}} →",
+    "synthesisRound": "Zur Synthese →",
+    "resetButton": "Neue Analyse",
+    "abandonButton": "Abbrechen",
+    "hunyuan": "Hunyuan",
+    "rounds": {
+      "1": "Runde 1 · Erste Sicht",
+      "2": "Runde 2 · Zeitpunkt",
+      "3": "Runde 3 · Risiko",
+      "4": "Runde 4 · Aktion",
+      "5": "Runde 5 · Synthese"
+    },
+    "row2": {
+      "2": "Zeitpunkt",
+      "3": "Risiko",
+      "4": "Aktion"
+    }
+  },
+  "topbar": {
+    "creditsBadge": "{{balance}} Pts",
+    "creditsTooltip": {
+      "total": "Monatliche Credits",
+      "used": "Verwendet",
+      "remaining": "Verbleibend",
+      "resetDate": "Zurückgesetzt am"
+    }
   }
 }
