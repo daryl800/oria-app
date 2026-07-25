@@ -39,7 +39,6 @@ interface LuckyColor {
   reason: string;
 }
 
-// TODO: Remove after motto testing is complete
 interface MottoQuote {
   quote: string;
   source: string;
@@ -125,9 +124,9 @@ function GuidanceCard({ icon, sectionLabel, title, tag, description, style }: {
   );
 }
 
-function LockedCard({ sectionLabel, onUpgrade }: { sectionLabel: string; onUpgrade: () => void }) {
+function LockedCard({ onUpgrade }: { onUpgrade: () => void }) {
   return (
-    <div className="oria-card" style={{ position: 'relative', overflow: 'hidden', minHeight: 110 }}>
+    <div className="oria-card" style={{ position: 'relative', overflow: 'hidden', minHeight: 128 }}>
       <div style={{ filter: 'blur(5px)', opacity: 0.45, pointerEvents: 'none', userSelect: 'none' }}>
         <div style={{ height: 13, width: '38%', background: 'rgba(201,168,76,0.4)', borderRadius: 4, marginBottom: 12 }} />
         <div style={{ height: 20, width: '55%', background: 'rgba(255,255,255,0.3)', borderRadius: 4, marginBottom: 12 }} />
@@ -141,33 +140,50 @@ function LockedCard({ sectionLabel, onUpgrade }: { sectionLabel: string; onUpgra
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 8,
-        background: 'rgba(10,14,32,0.58)',
+        gap: 10,
+        background: 'rgba(10,14,32,0.62)',
         backdropFilter: 'blur(2px)',
       }}>
         <span style={{ fontSize: 22 }}>🔒</span>
-        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', fontWeight: 600, letterSpacing: 0.4 }}>{sectionLabel}</span>
+        <span style={{
+          fontSize: 13,
+          color: 'rgba(255,255,255,0.6)',
+          fontWeight: 600,
+          letterSpacing: 0.3,
+          textAlign: 'center',
+          padding: '0 20px',
+          lineHeight: 1.5,
+        }}>
+          升級 Plus 解鎖個人化每日解讀
+        </span>
         <button
           type="button"
           onClick={onUpgrade}
           style={{
-            border: '1px solid rgba(243,200,139,0.45)',
-            background: 'rgba(243,200,139,0.1)',
+            border: '1px solid rgba(243,200,139,0.5)',
+            background: 'rgba(243,200,139,0.12)',
             color: '#FFE4B8',
             borderRadius: 999,
-            padding: '7px 16px',
+            padding: '7px 18px',
             fontSize: 13,
             fontWeight: 800,
             cursor: 'pointer',
             fontFamily: 'inherit',
           }}
         >
-          升級解鎖
+          升級 Plus →
         </button>
       </div>
     </div>
   );
 }
+
+const MOTTO_REVEAL_CSS = `
+  @keyframes mottoReveal {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0);   }
+  }
+`;
 
 export default function DailyGuidance({ user, isPlus = false }: { user: User; isPlus?: boolean; isPlusLoaded?: boolean }) {
   const { t, i18n } = useTranslation();
@@ -176,9 +192,21 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [retrying, setRetrying] = useState(false);
-  // TODO: Remove after motto testing is complete
   const [mottoTest, setMottoTest] = useState<MottoTestData | null>(null);
   const [mottoTestLoading, setMottoTestLoading] = useState(false);
+
+  // 盲盒 — daily choice keyed by calendar date, resets automatically at midnight
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const mottoChoiceKey = `oria_motto_choice_${todayStr}`;
+  const [choice, setChoice] = useState<'east' | 'west' | null>(
+    () => localStorage.getItem(mottoChoiceKey) as 'east' | 'west' | null,
+  );
+
+  function handleChoice(side: 'east' | 'west') {
+    if (mottoTestLoading) return;
+    setChoice(side);
+    localStorage.setItem(mottoChoiceKey, side);
+  }
 
   const generationLanguage = normalizeLanguage(i18n.language);
   const todayKey = new Date().toDateString();
@@ -209,7 +237,6 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
-        // New format sentinel: stem_lesson field exists
         if (parsed?.stem_lesson) {
           setSummary(parsed);
           setLoading(false);
@@ -219,7 +246,6 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
       sessionStorage.removeItem(cacheKey);
     }
 
-    // Clear legacy cache keys from older formats
     for (const language of SUPPORTED_LANGUAGES) {
       sessionStorage.removeItem(`oria_daily_${todayKey}_${language.code}`);
     }
@@ -227,10 +253,9 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
     tryFetch(3).finally(() => setLoading(false));
   }, []);
 
-  // TODO: Remove after motto testing is complete
+  // Fetch motto only for Plus users
   useEffect(() => {
-    if (!summary?.ganzhi) return;
-    // v2 key busts old dual-model cached entries
+    if (!isPlus || !summary?.ganzhi) return;
     const mottoKey = `oria_motto_v2_${summary.ganzhi}`;
     const stored = sessionStorage.getItem(mottoKey);
     if (stored) {
@@ -249,7 +274,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
       })
       .catch((err: Error) => setMottoTest({ error: err.message }))
       .finally(() => setMottoTestLoading(false));
-  }, [summary?.ganzhi]);
+  }, [summary?.ganzhi, isPlus]);
 
   const dateLocale = generationLanguage === 'en' ? 'en-GB' : generationLanguage;
   const today = new Date().toLocaleDateString(dateLocale, {
@@ -300,7 +325,12 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
 
   const contentLanguage = getGeneratedLanguage(summary, i18n.language);
   const showGeneratedLanguage = contentLanguage !== normalizeLanguage(i18n.language);
-  const hasPersonal = !!(summary.personal_relation || summary.daily_question || summary.lucky_color);
+
+  const SIGNAL_CONFIG = {
+    '順勢': { color: '#4ade80', bg: 'rgba(74,222,128,0.12)',   border: 'rgba(74,222,128,0.3)' },
+    '留意': { color: '#facc15', bg: 'rgba(250,204,21,0.12)',   border: 'rgba(250,204,21,0.3)' },
+    '謹慎': { color: '#f87171', bg: 'rgba(248,113,113,0.12)',  border: 'rgba(248,113,113,0.3)' },
+  } as const;
 
   return (
     <div className="oria-page oria-container animate-fade-in">
@@ -365,86 +395,176 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
         />
       )}
 
-      {/* TODO: Remove after motto testing is complete — 今日格言 (Hunyuan) */}
-      <div className="oria-card" style={{
-        background: 'linear-gradient(135deg, rgba(201,168,76,0.07), rgba(17,26,50,0.88))',
-        border: '1px solid rgba(201,168,76,0.2)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <span style={{ fontSize: 18, lineHeight: 1 }}>📖</span>
-          <span style={sectionLabelStyle}>今日格言</span>
-        </div>
+      {/* Free user CTA — shown directly after 地支 */}
+      {!isPlus && (
+        <button
+          type="button"
+          className="oria-btn-primary"
+          style={{ marginBottom: 6 }}
+          onClick={() => navigate('/chat', { state: { prefill: '請幫我分析今天的運程方向。' } })}
+        >
+          💬 跟 Oria 聊聊今天的方向
+        </button>
+      )}
 
-        {mottoTestLoading && (
-          <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '8px 0' }}>
-            正在生成今日格言…
+      {/* 今日格言 — Plus only with 盲盒 mechanic */}
+      {isPlus ? (
+        <div className="oria-card" style={{
+          background: 'linear-gradient(135deg, rgba(201,168,76,0.07), rgba(17,26,50,0.88))',
+          border: '1px solid rgba(201,168,76,0.2)',
+        }}>
+          <style>{MOTTO_REVEAL_CSS}</style>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <span style={{ fontSize: 18, lineHeight: 1 }}>📖</span>
+            <span style={sectionLabelStyle}>今日格言</span>
           </div>
-        )}
 
-        {!mottoTestLoading && mottoTest?.error && (
-          <p style={{ fontSize: 15, color: 'rgba(255,100,100,0.7)', margin: 0 }}>⚠️ {mottoTest.error}</p>
-        )}
-
-        {!mottoTestLoading && mottoTest && !mottoTest.error && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {([
-              { quoteKey: 'east' as const, icon: '🏮', label: '東方智慧', accentColor: '#C9A84C' },
-              { quoteKey: 'west' as const, icon: '🌍', label: '西方智慧', accentColor: '#C9A84C' },
-            ]).map(({ quoteKey, icon, label, accentColor }, qIdx) => {
-              const q = mottoTest[quoteKey];
-              if (!q) return null;
-              return (
-                <div key={quoteKey} style={{
-                  paddingTop: qIdx > 0 ? 16 : 0,
-                  borderTop: qIdx > 0 ? '1px solid rgba(255,255,255,0.08)' : 'none',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                    <span style={{ fontSize: 14 }}>{icon}</span>
-                    <span style={{
-                      fontSize: 13, fontWeight: 800, letterSpacing: 0.8,
-                      color: accentColor, textTransform: 'uppercase' as const,
-                    }}>
-                      {label}
-                    </span>
-                    {q.tag && <span style={{ ...tagStyle, fontSize: 12, padding: '1px 9px' }}>{q.tag}</span>}
-                  </div>
-                  <p style={{
-                    fontSize: 17, color: '#e8dcc8', fontStyle: 'italic',
-                    lineHeight: 1.85, margin: '0 0 6px',
-                    fontFamily: '"Noto Serif TC", "Noto Serif SC", serif',
-                    letterSpacing: '0.03em',
+          {/* No choice yet — two mystery boxes */}
+          {!choice && (
+            <div style={{ display: 'flex', gap: 10 }}>
+              {([
+                { side: 'east' as const, icon: '🏮', label: '東方智慧', sublabel: '今日東方格言' },
+                { side: 'west' as const, icon: '🌍', label: '西方哲學', sublabel: '今日西方格言' },
+              ]).map(({ side, icon, label, sublabel }) => (
+                <button
+                  key={side}
+                  type="button"
+                  onClick={() => handleChoice(side)}
+                  disabled={mottoTestLoading}
+                  style={{
+                    flex: 1,
+                    background: 'rgba(201,168,76,0.06)',
+                    border: '1px solid rgba(201,168,76,0.28)',
+                    borderRadius: 14,
+                    padding: '22px 12px',
+                    cursor: mottoTestLoading ? 'default' : 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontFamily: 'inherit',
+                    opacity: mottoTestLoading ? 0.55 : 1,
+                    transition: 'opacity 0.2s',
+                  }}
+                >
+                  <span style={{ fontSize: 30 }}>{icon}</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#C9A84C' }}>{label}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>{sublabel}</span>
+                  <span style={{
+                    fontSize: 12, marginTop: 4,
+                    color: mottoTestLoading ? 'rgba(255,255,255,0.28)' : 'rgba(201,168,76,0.75)',
                   }}>
-                    「{q.quote}」
-                  </p>
-                  <p style={{ fontSize: 13, color: 'rgba(201,168,76,0.65)', margin: '0 0 10px', letterSpacing: 0.3 }}>
-                    ── {q.source}
-                  </p>
-                  {q.original && (
-                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.32)', fontStyle: 'italic', margin: '0 0 10px' }}>
-                      {q.original}
-                    </p>
-                  )}
-                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', lineHeight: 1.65, margin: '0 0 8px' }}>
-                    {q.explanation}
-                  </p>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', margin: 0 }}>
-                    🔗 {q.ganzhi_connection}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                    {mottoTestLoading ? '正在生成…' : '點擊開啟 ✨'}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
 
-      {/* Plus-gated content */}
+          {/* Choice made — revealed quote + closed box */}
+          {choice && (
+            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              {(['east', 'west'] as const).map((side) => {
+                const isChosen = choice === side;
+                const meta = side === 'east'
+                  ? { icon: '🏮', label: '東方智慧' }
+                  : { icon: '🌍', label: '西方哲學' };
+                const q = mottoTest?.[side];
+
+                if (!isChosen) {
+                  return (
+                    <div key={side} style={{
+                      width: 86,
+                      flexShrink: 0,
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.07)',
+                      borderRadius: 14,
+                      padding: '18px 8px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 8,
+                    }}>
+                      <span style={{ fontSize: 22 }}>🌙</span>
+                      <span style={{
+                        fontSize: 11, fontWeight: 700,
+                        color: 'rgba(255,255,255,0.28)',
+                        textAlign: 'center', lineHeight: 1.4,
+                      }}>
+                        {meta.label}
+                      </span>
+                      <span style={{
+                        fontSize: 11, color: 'rgba(255,255,255,0.2)',
+                        textAlign: 'center', lineHeight: 1.5,
+                      }}>
+                        明日再試 🌙
+                      </span>
+                    </div>
+                  );
+                }
+
+                // Revealed side
+                return (
+                  <div key={side} style={{ flex: 1, animation: 'mottoReveal 0.45s ease-out both' }}>
+                    {mottoTestLoading && (
+                      <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', padding: '12px 0' }}>
+                        正在生成今日格言…
+                      </div>
+                    )}
+                    {!mottoTestLoading && mottoTest?.error && (
+                      <p style={{ fontSize: 14, color: 'rgba(255,100,100,0.7)', margin: 0 }}>
+                        ⚠️ {mottoTest.error}
+                      </p>
+                    )}
+                    {!mottoTestLoading && q && (
+                      <>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                          <span style={{ fontSize: 14 }}>{meta.icon}</span>
+                          <span style={{
+                            fontSize: 13, fontWeight: 800, letterSpacing: 0.8,
+                            color: '#C9A84C', textTransform: 'uppercase' as const,
+                          }}>
+                            {meta.label}
+                          </span>
+                          {q.tag && <span style={{ ...tagStyle, fontSize: 12, padding: '1px 9px' }}>{q.tag}</span>}
+                        </div>
+                        <p style={{
+                          fontSize: 17, color: '#e8dcc8', fontStyle: 'italic',
+                          lineHeight: 1.85, margin: '0 0 6px',
+                          fontFamily: '"Noto Serif TC", "Noto Serif SC", serif',
+                          letterSpacing: '0.03em',
+                        }}>
+                          「{q.quote}」
+                        </p>
+                        <p style={{ fontSize: 13, color: 'rgba(201,168,76,0.65)', margin: '0 0 10px', letterSpacing: 0.3 }}>
+                          ── {q.source}
+                        </p>
+                        {q.original && (
+                          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.32)', fontStyle: 'italic', margin: '0 0 10px' }}>
+                            {q.original}
+                          </p>
+                        )}
+                        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', lineHeight: 1.65, margin: '0 0 8px' }}>
+                          {q.explanation}
+                        </p>
+                        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', margin: 0 }}>
+                          🔗 {q.ganzhi_connection}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ) : (
+        <LockedCard onUpgrade={() => navigate('/upgrade')} />
+      )}
+
+      {/* 今日對你的啟示 */}
       {summary.personal_relation ? (() => {
         const pr = summary.personal_relation!;
-        const SIGNAL_CONFIG = {
-          '順勢': { dot: '🟢', color: '#4ade80', bg: 'rgba(74,222,128,0.12)', border: 'rgba(74,222,128,0.3)' },
-          '留意': { dot: '🟡', color: '#facc15', bg: 'rgba(250,204,21,0.12)',  border: 'rgba(250,204,21,0.3)' },
-          '謹慎': { dot: '🔴', color: '#f87171', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
-        } as const;
         return (
           <div className="oria-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
@@ -473,11 +593,9 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
                       {sig && (
                         <span style={{
                           fontSize: 13, fontWeight: 800, letterSpacing: 0.5,
-                          color: sig.color,
-                          background: sig.bg,
+                          color: sig.color, background: sig.bg,
                           border: `1px solid ${sig.border}`,
-                          borderRadius: 999,
-                          padding: '2px 9px',
+                          borderRadius: 999, padding: '2px 9px',
                         }}>
                           {section.signal === '順勢' ? '🟢' : section.signal === '留意' ? '🟡' : '🔴'} {section.signal}
                         </span>
@@ -491,9 +609,10 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           </div>
         );
       })() : (
-        <LockedCard sectionLabel="今日對你的啟示" onUpgrade={() => navigate('/upgrade')} />
+        <LockedCard onUpgrade={() => navigate('/upgrade')} />
       )}
 
+      {/* 今日提問 */}
       {summary.daily_question ? (
         <div className="oria-card" style={{
           borderLeft: '3px solid #C9A84C',
@@ -528,16 +647,15 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           </button>
         </div>
       ) : (
-        <LockedCard sectionLabel="今日提問" onUpgrade={() => navigate('/upgrade')} />
+        <LockedCard onUpgrade={() => navigate('/upgrade')} />
       )}
 
+      {/* 今日幸運色 */}
       {summary.lucky_color ? (
         <div className="oria-card">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <div style={{
-              width: 22,
-              height: 22,
-              borderRadius: '50%',
+              width: 22, height: 22, borderRadius: '50%',
               background: summary.lucky_color.hex,
               boxShadow: `0 0 10px ${summary.lucky_color.hex}88`,
               border: '1px solid rgba(255,255,255,0.18)',
@@ -552,11 +670,11 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           <p style={bodyTextStyle}>{summary.lucky_color.reason}</p>
         </div>
       ) : (
-        <LockedCard sectionLabel="今日幸運色" onUpgrade={() => navigate('/upgrade')} />
+        <LockedCard onUpgrade={() => navigate('/upgrade')} />
       )}
 
-      {/* CTA */}
-      {hasPersonal && (
+      {/* Plus CTA */}
+      {isPlus && (
         <button
           type="button"
           className="oria-btn-primary"
