@@ -124,7 +124,12 @@ function GuidanceCard({ icon, sectionLabel, title, tag, description, style }: {
   );
 }
 
-function LockedCard({ onUpgrade }: { onUpgrade: () => void }) {
+function LockedCard({ sectionLabel, lockedDesc, lockedButton, onUpgrade }: {
+  sectionLabel: string;
+  lockedDesc: string;
+  lockedButton: string;
+  onUpgrade: () => void;
+}) {
   return (
     <div className="oria-card" style={{ position: 'relative', overflow: 'hidden', minHeight: 128 }}>
       <div style={{ filter: 'blur(5px)', opacity: 0.45, pointerEvents: 'none', userSelect: 'none' }}>
@@ -144,17 +149,18 @@ function LockedCard({ onUpgrade }: { onUpgrade: () => void }) {
         background: 'rgba(10,14,32,0.62)',
         backdropFilter: 'blur(2px)',
       }}>
-        <span style={{ fontSize: 22 }}>🔒</span>
+        <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: 1, color: '#C9A84C' }}>{sectionLabel}</span>
+        <span style={{ fontSize: 20 }}>🔒</span>
         <span style={{
-          fontSize: 13,
-          color: 'rgba(255,255,255,0.6)',
+          fontSize: 12,
+          color: 'rgba(255,255,255,0.5)',
           fontWeight: 600,
           letterSpacing: 0.3,
           textAlign: 'center',
           padding: '0 20px',
           lineHeight: 1.5,
         }}>
-          升級 Plus 解鎖個人化每日解讀
+          {lockedDesc}
         </span>
         <button
           type="button"
@@ -171,7 +177,7 @@ function LockedCard({ onUpgrade }: { onUpgrade: () => void }) {
             fontFamily: 'inherit',
           }}
         >
-          升級 Plus →
+          {lockedButton}
         </button>
       </div>
     </div>
@@ -377,7 +383,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
       {summary.stem_lesson && (
         <GuidanceCard
           icon={getElementIcon(summary.stem_lesson.element)}
-          sectionLabel="今日天干"
+          sectionLabel={t('daily.stem_label')}
           title={summary.stem_lesson.title}
           tag={summary.stem_lesson.tag}
           description={summary.stem_lesson.description}
@@ -388,7 +394,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
       {summary.branch_lesson && (
         <GuidanceCard
           icon={getElementIcon(summary.branch_lesson.element)}
-          sectionLabel="今日地支"
+          sectionLabel={t('daily.branch_label')}
           title={summary.branch_lesson.title}
           tag={summary.branch_lesson.tag}
           description={summary.branch_lesson.description}
@@ -401,9 +407,9 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           type="button"
           className="oria-btn-primary"
           style={{ marginBottom: 6 }}
-          onClick={() => navigate('/chat', { state: { prefill: '請幫我分析今天的運程方向。' } })}
+          onClick={() => navigate('/chat', { state: { prefill: t('daily.free_cta_prefill') } })}
         >
-          💬 跟 Oria 聊聊今天的方向
+          💬 {t('daily.free_cta')}
         </button>
       )}
 
@@ -416,15 +422,15 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           <style>{MOTTO_REVEAL_CSS}</style>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
             <span style={{ fontSize: 18, lineHeight: 1 }}>📖</span>
-            <span style={sectionLabelStyle}>今日格言</span>
+            <span style={sectionLabelStyle}>{t('daily.motto_label')}</span>
           </div>
 
           {/* No choice yet — two mystery boxes */}
           {!choice && (
             <div style={{ display: 'flex', gap: 10 }}>
               {([
-                { side: 'east' as const, icon: '🏮', label: '東方智慧', sublabel: '今日東方格言' },
-                { side: 'west' as const, icon: '🌍', label: '西方哲學', sublabel: '今日西方格言' },
+                { side: 'east' as const, icon: '🏮', label: t('daily.blindbox_east_label'), sublabel: t('daily.blindbox_east_sublabel') },
+                { side: 'west' as const, icon: '🌍', label: t('daily.blindbox_west_label'), sublabel: t('daily.blindbox_west_sublabel') },
               ]).map(({ side, icon, label, sublabel }) => (
                 <button
                   key={side}
@@ -454,7 +460,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
                     fontSize: 12, marginTop: 4,
                     color: mottoTestLoading ? 'rgba(255,255,255,0.28)' : 'rgba(201,168,76,0.75)',
                   }}>
-                    {mottoTestLoading ? '正在生成…' : '點擊開啟 ✨'}
+                    {mottoTestLoading ? t('daily.blindbox_generating') : t('daily.blindbox_open')}
                   </span>
                 </button>
               ))}
@@ -467,8 +473,8 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
               {(['east', 'west'] as const).map((side) => {
                 const isChosen = choice === side;
                 const meta = side === 'east'
-                  ? { icon: '🏮', label: '東方智慧' }
-                  : { icon: '🌍', label: '西方哲學' };
+                  ? { icon: '🏮', label: t('daily.blindbox_east_label') }
+                  : { icon: '🌍', label: t('daily.blindbox_west_label') };
                 const q = mottoTest?.[side];
 
                 if (!isChosen) {
@@ -497,7 +503,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
                         fontSize: 11, color: 'rgba(255,255,255,0.2)',
                         textAlign: 'center', lineHeight: 1.5,
                       }}>
-                        明日再試 🌙
+                        {t('daily.blindbox_tomorrow')}
                       </span>
                     </div>
                   );
@@ -508,7 +514,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
                   <div key={side} style={{ flex: 1, animation: 'mottoReveal 0.45s ease-out both' }}>
                     {mottoTestLoading && (
                       <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', padding: '12px 0' }}>
-                        正在生成今日格言…
+                        {t('daily.blindbox_generating_motto')}
                       </div>
                     )}
                     {!mottoTestLoading && mottoTest?.error && (
@@ -559,7 +565,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           )}
         </div>
       ) : (
-        <LockedCard onUpgrade={() => navigate('/upgrade')} />
+        <LockedCard sectionLabel={t('daily.motto_label')} lockedDesc={t('daily.locked_desc')} lockedButton={t('daily.locked_button')} onUpgrade={() => navigate('/upgrade')} />
       )}
 
       {/* 今日對你的啟示 */}
@@ -569,7 +575,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           <div className="oria-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <span style={{ fontSize: 18, lineHeight: 1 }}>✨</span>
-              <span style={sectionLabelStyle}>今日對你的啟示</span>
+              <span style={sectionLabelStyle}>{t('daily.relation_label')}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
               <span style={{ fontSize: 21, fontWeight: 800, color: '#F8F3FF' }}>{pr.title}</span>
@@ -609,7 +615,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           </div>
         );
       })() : (
-        <LockedCard onUpgrade={() => navigate('/upgrade')} />
+        <LockedCard sectionLabel={t('daily.relation_label')} lockedDesc={t('daily.locked_desc')} lockedButton={t('daily.locked_button')} onUpgrade={() => navigate('/upgrade')} />
       )}
 
       {/* 今日提問 */}
@@ -620,7 +626,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <span style={{ fontSize: 18, lineHeight: 1 }}>🪞</span>
-            <span style={sectionLabelStyle}>今日提問</span>
+            <span style={sectionLabelStyle}>{t('daily.question_label')}</span>
           </div>
           <p style={{ fontSize: 17, color: '#e8dcc8', lineHeight: 1.75, fontStyle: 'italic', margin: '0 0 6px' }}>
             {summary.daily_question.question}
@@ -643,11 +649,11 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
               fontFamily: 'inherit',
             }}
           >
-            💬 與 Oria 聊聊
+            💬 {t('daily.chat_with_oria')}
           </button>
         </div>
       ) : (
-        <LockedCard onUpgrade={() => navigate('/upgrade')} />
+        <LockedCard sectionLabel={t('daily.question_label')} lockedDesc={t('daily.locked_desc')} lockedButton={t('daily.locked_button')} onUpgrade={() => navigate('/upgrade')} />
       )}
 
       {/* 今日幸運色 */}
@@ -661,7 +667,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
               border: '1px solid rgba(255,255,255,0.18)',
               flexShrink: 0,
             }} />
-            <span style={sectionLabelStyle}>今日幸運色</span>
+            <span style={sectionLabelStyle}>{t('daily.lucky_color_label')}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
             <span style={{ fontSize: 21, fontWeight: 800, color: '#F8F3FF' }}>{summary.lucky_color.color}</span>
@@ -670,7 +676,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           <p style={bodyTextStyle}>{summary.lucky_color.reason}</p>
         </div>
       ) : (
-        <LockedCard onUpgrade={() => navigate('/upgrade')} />
+        <LockedCard sectionLabel={t('daily.lucky_color_label')} lockedDesc={t('daily.locked_desc')} lockedButton={t('daily.locked_button')} onUpgrade={() => navigate('/upgrade')} />
       )}
 
       {/* Plus CTA */}
