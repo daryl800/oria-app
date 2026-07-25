@@ -98,12 +98,15 @@ router.get('/today', async (req: Request, res: Response) => {
 
     if (cached) {
       const summary = cached.summary;
-      // For free users after day 5, trim the guidance
-      if (!isFullGuidance) {
-        const trimmed = trimGuidanceForFree(summary, lang);
-        return res.json({ summary: trimmed, cached: true, is_preview: true });
+      // Discard old-format cache entries that predate the 7-element redesign
+      if (summary && summary.ganzhi) {
+        if (!isFullGuidance) {
+          const trimmed = trimGuidanceForFree(summary, lang);
+          return res.json({ summary: trimmed, cached: true, is_preview: true });
+        }
+        return res.json({ summary, cached: true });
       }
-      return res.json({ summary, cached: true });
+      // Old format detected — fall through to regenerate
     }
 
     // 2. load bazi profile

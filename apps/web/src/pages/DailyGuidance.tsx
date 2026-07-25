@@ -79,20 +79,28 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
     const cacheKey = `oria_daily_${todayKey}`;
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
-      setSummary(JSON.parse(cached));
-      setLoading(false);
-      return;
+      const parsed = JSON.parse(cached);
+      // Discard old-format cache that predate the 7-element redesign
+      if (parsed.ganzhi) {
+        setSummary(parsed);
+        setLoading(false);
+        return;
+      }
+      sessionStorage.removeItem(cacheKey);
     }
 
     for (const language of SUPPORTED_LANGUAGES) {
       const legacyCached = sessionStorage.getItem(`oria_daily_${todayKey}_${language.code}`);
       if (legacyCached) {
         const parsed = JSON.parse(legacyCached);
-        const summaryWithLanguage = { ...parsed, content_language: getGeneratedLanguage(parsed, language.code) };
-        setSummary(summaryWithLanguage);
-        sessionStorage.setItem(cacheKey, JSON.stringify(summaryWithLanguage));
-        setLoading(false);
-        return;
+        if (parsed.ganzhi) {
+          const summaryWithLanguage = { ...parsed, content_language: getGeneratedLanguage(parsed, language.code) };
+          setSummary(summaryWithLanguage);
+          sessionStorage.setItem(cacheKey, JSON.stringify(summaryWithLanguage));
+          setLoading(false);
+          return;
+        }
+        sessionStorage.removeItem(`oria_daily_${todayKey}_${language.code}`);
       }
     }
 
