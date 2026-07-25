@@ -224,6 +224,9 @@
     "result": "約 60 秒完成 • 無需承諾",
     "primary_cta": "開始 1 分鐘洞察",
     "signin": "已有帳號？登入",
+    "demo_cta": "免費體驗東西解析 →",
+    "demo_or": "或",
+    "demo_hint": "無需帳號 · 通用試用版 · 完整個人化版本需要註冊",
     "lead": "決定你下一步的\n不是其中一個",
     "emphasis": "而是它們的組合",
     "method": "東方命理 × 西方心理",
@@ -1072,5 +1075,17 @@
     "errorBirthDate": "請輸入你的出生日期",
     "errorLocation": "請選擇你的出生地點",
     "errorMbti": "請回答全部四個問題"
+  },
+  "debateDemo": {
+    "bannerTitle": "⚡ 試用版東西解析",
+    "bannerBody": "此為通用版本，未包含你的八字與MBTI個人資料。",
+    "bannerCta": "完整個人化解析請 註冊免費帳號 →",
+    "modelLock": "完整版可自選顧問組合",
+    "ctaTitle": "喜歡這個分析嗎？",
+    "ctaBody": "註冊後，東西方顧問將根據你的八字命盤與MBTI性格給出真正屬於你的解析。",
+    "ctaButton": "免費註冊，獲得6積分 →",
+    "usedTitle": "你已使用免費體驗",
+    "usedBody": "註冊後即可獲得6積分，解鎖個人化的東西方解析。",
+    "usedButton": "免費建立帳號 →"
   }
 }

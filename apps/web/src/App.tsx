@@ -218,7 +218,7 @@ export default function App() {
           <Route path="/compare" element={!user ? <Navigate to="/" /> : <Navigate to="/relationship-insights" replace />} />
           <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} isPlus={isPlus} isPlusLoaded={isPlusLoaded} />} />
           <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} isPlus={isPlus} planInterval={planInterval} creditBalance={creditBalance} onCreditsUpdated={b => setCreditBalance(b)} />} />
-          <Route path="/debate" element={<Debate user={user ?? null} hasBazi={onboardingComplete === true} onProfileComplete={() => setOnboardingComplete(true)} creditBalance={creditBalance} onCreditsUpdated={b => setCreditBalance(b)} />} />
+          <Route path="/debate" element={<Debate user={user ?? null} creditBalance={creditBalance} onCreditsUpdated={b => setCreditBalance(b)} />} />
           <Route path="/profile" element={!user ? <Navigate to="/" /> : <Profile user={user} isPlus={isPlus} />} />
           <Route path="/settings" element={!user ? <Navigate to="/" /> : <Navigate to="/profile" replace />} />
           <Route path="/mbti-quiz" element={!user ? <Navigate to="/" /> : <MbtiQuestionnaire user={user} />} />

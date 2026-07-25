@@ -68,6 +68,39 @@ export default function Landing() {
             <button className="oria-btn-premium oria-landing-primary" onClick={startOnboarding}>
               {t('landing.primary_cta')}
             </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '2px 0' }}>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                {t('landing.demo_or')}
+              </span>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+            </div>
+
+            <button
+              onClick={() => navigate('/debate')}
+              style={{
+                width: '100%',
+                background: 'none',
+                border: '1.5px solid #C9A84C',
+                borderRadius: 999,
+                color: '#C9A84C',
+                fontSize: 15,
+                fontWeight: 700,
+                padding: '13px 20px',
+                minHeight: 50,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                letterSpacing: '0.01em',
+              }}
+            >
+              {t('landing.demo_cta')}
+            </button>
+
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textAlign: 'center', margin: '2px 0 6px', lineHeight: 1.5 }}>
+              {t('landing.demo_hint')}
+            </p>
+
             <button className="oria-secondary-link oria-landing-signin" onClick={() => navigate('/login', { state: { mode: 'signin', hideSignup: true } })}>
               {t('landing.signin')}
             </button>

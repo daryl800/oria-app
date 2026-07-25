@@ -224,6 +224,9 @@
     "result": "约 60 秒完成 • 无需承诺",
     "primary_cta": "开始 1 分钟洞察",
     "signin": "已有帐号？登录",
+    "demo_cta": "免费体验东西解析 →",
+    "demo_or": "或",
+    "demo_hint": "无需账号 · 通用试用版 · 完整个性化版本需要注册",
     "lead": "决定你下一步的\n不是其中一个",
     "emphasis": "而是它们的组合",
     "method": "东方命理 × 西方心理",
@@ -1072,5 +1075,17 @@
     "errorBirthDate": "请输入你的出生日期",
     "errorLocation": "请选择你的出生地点",
     "errorMbti": "请回答全部四个问题"
+  },
+  "debateDemo": {
+    "bannerTitle": "⚡ 试用版东西解析",
+    "bannerBody": "此为通用版本，未包含你的八字与MBTI个人资料。",
+    "bannerCta": "完整个人化解析请 注册免费账号 →",
+    "modelLock": "完整版可自选顾问组合",
+    "ctaTitle": "喜欢这个分析吗？",
+    "ctaBody": "注册后，东西方顾问将根据你的八字命盘与MBTI性格给出真正属于你的解析。",
+    "ctaButton": "免费注册，获得6积分 →",
+    "usedTitle": "你已使用免费体验",
+    "usedBody": "注册后即可获得6积分，解锁个人化的东西方解析。",
+    "usedButton": "免费创建账号 →"
   }
 }

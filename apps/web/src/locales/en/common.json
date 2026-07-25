@@ -224,6 +224,9 @@
     "result": "Takes about 60 seconds • No commitment",
     "primary_cta": "Start my 1-minute insight",
     "signin": "Already have an account? Sign in",
+    "demo_cta": "Try East-West Analysis free →",
+    "demo_or": "or",
+    "demo_hint": "No account needed · Generic demo · Personalised version requires registration",
     "lead": "What determines your next move\nis not either one alone",
     "emphasis": "but the combination of both",
     "method": "Eastern metaphysics × Western psychology",
@@ -1121,5 +1124,17 @@
     "errorBirthDate": "Please enter your date of birth",
     "errorLocation": "Please select your birth location",
     "errorMbti": "Please answer all four questions"
+  },
+  "debateDemo": {
+    "bannerTitle": "⚡ Demo East-West Analysis",
+    "bannerBody": "This is a general reading — your BaZi chart and MBTI profile are not included.",
+    "bannerCta": "Sign up for your personalised analysis →",
+    "modelLock": "Full version lets you choose your own advisor combination",
+    "ctaTitle": "Like this analysis?",
+    "ctaBody": "Sign up and your Eastern and Western advisors will give you a reading based on your personal BaZi chart and MBTI type.",
+    "ctaButton": "Sign up free — get 6 credits →",
+    "usedTitle": "You've used your free demo",
+    "usedBody": "Sign up to get 6 free credits and unlock your personalised East-West Analysis.",
+    "usedButton": "Create free account →"
   }
 }

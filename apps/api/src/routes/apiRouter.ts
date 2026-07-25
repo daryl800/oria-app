@@ -6,6 +6,7 @@ import dailyGuidanceRouter from './dailyGuidance';
 import profileRouter from './profile';
 import chatRouter from './chat';
 import debateRouter from './debate';
+import debateDemoRouter from './debateDemo';
 import { authMiddleware } from '../middleware/auth';
 import { creditsMiddleware } from '../middleware/credits';
 import { supabase } from '../lib/supabase';
@@ -152,6 +153,7 @@ apiRouter.use(Paths.DailyGuidance._, authMiddleware, dailyGuidanceRouter);
 apiRouter.use(Paths.Profile._, authMiddleware, profileRouter);
 apiRouter.use(Paths.Chat._, authMiddleware, creditsMiddleware, chatRouter);
 apiRouter.use('/billing', authMiddleware, billingRouter);
+apiRouter.use('/debate/demo', debateDemoRouter);
 apiRouter.use('/debate', authMiddleware, creditsMiddleware, debateRouter);
 
 apiRouter.get('/credits/balance', authMiddleware, creditsMiddleware, async (req: Request, res: Response) => {
