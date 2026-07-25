@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
+import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '';
@@ -179,13 +180,16 @@ interface DebateRound {
   synthesisModel?: string;
 }
 
-export default function Debate({ creditBalance = null, onCreditsUpdated }: {
+export default function Debate({ user = null, creditBalance = null, onCreditsUpdated }: {
+  user?: User | null;
   creditBalance?: number | null; onCreditsUpdated?: (b: number) => void;
 } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
   const { i18n, t } = useTranslation();
   const lang = i18n.language ?? 'zh-TW';
+  const isDemo = !user;
+  const [demoUsed] = useState(() => localStorage.getItem('oria_demo_used') === 'true');
 
   const prefill = (location.state as any)?.prefill ?? '';
   const [question, setQuestion] = useState(prefill);
@@ -223,27 +227,52 @@ export default function Debate({ creditBalance = null, onCreditsUpdated }: {
     setThinkingRound(1);
     thinkingStartRef.current = Date.now();
 
+    if (isDemo) {
+      localStorage.setItem('oria_demo_used', 'true');
+    }
+
     try {
-      const headers = await getAuthHeader();
-      const res = await fetch(`${API_URL}/api/debate/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify({ question: question.trim(), lang, eastModel, westModel }),
-      });
-      if (!res.ok) {
-        const body = await res.json();
-        throw new Error(body.message ?? body.error ?? 'Failed to start debate');
+      if (isDemo) {
+        const res = await fetch(`${API_URL}/api/debate/demo/start`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: question.trim(), lang }),
+        });
+        if (!res.ok) {
+          const body = await res.json();
+          throw new Error(body.error ?? 'Failed to start demo debate');
+        }
+        const data = await res.json();
+
+        const elapsed = Date.now() - thinkingStartRef.current;
+        const remaining = Math.max(0, MIN_THINK_MS - elapsed);
+        if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
+
+        setDebateId('demo');
+        setRounds([{ round: 1, east: data.east, eastModel: data.eastModel, west: data.west, westModel: data.westModel }]);
+        setComplete(data.complete);
+      } else {
+        const headers = await getAuthHeader();
+        const res = await fetch(`${API_URL}/api/debate/start`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...headers },
+          body: JSON.stringify({ question: question.trim(), lang, eastModel, westModel }),
+        });
+        if (!res.ok) {
+          const body = await res.json();
+          throw new Error(body.message ?? body.error ?? 'Failed to start debate');
+        }
+        const data = await res.json();
+
+        const elapsed = Date.now() - thinkingStartRef.current;
+        const remaining = Math.max(0, MIN_THINK_MS - elapsed);
+        if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
+
+        setDebateId(data.debateId);
+        setRounds([{ round: 1, east: data.east, eastProvider: data.eastProvider, eastModel: data.eastModel, west: data.west, westProvider: data.westProvider, westModel: data.westModel }]);
+        setComplete(data.complete);
+        if (data.credits_remaining !== undefined) onCreditsUpdated?.(data.credits_remaining);
       }
-      const data = await res.json();
-
-      const elapsed = Date.now() - thinkingStartRef.current;
-      const remaining = Math.max(0, MIN_THINK_MS - elapsed);
-      if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
-
-      setDebateId(data.debateId);
-      setRounds([{ round: 1, east: data.east, eastProvider: data.eastProvider, eastModel: data.eastModel, west: data.west, westProvider: data.westProvider, westModel: data.westModel }]);
-      setComplete(data.complete);
-      if (data.credits_remaining !== undefined) onCreditsUpdated?.(data.credits_remaining);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -261,32 +290,61 @@ export default function Debate({ creditBalance = null, onCreditsUpdated }: {
     thinkingStartRef.current = Date.now();
 
     try {
-      const headers = await getAuthHeader();
-      const res = await fetch(`${API_URL}/api/debate/${debateId}/next`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify({ eastModel, westModel }),
-      });
-      if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to advance debate');
-      const data = await res.json();
+      if (isDemo) {
+        const res = await fetch(`${API_URL}/api/debate/demo/next`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question,
+            lang,
+            rounds: rounds.map(r => ({ round: r.round, east: r.east, west: r.west, synthesis: r.synthesis })),
+          }),
+        });
+        if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to advance demo debate');
+        const data = await res.json();
 
-      const elapsed = Date.now() - thinkingStartRef.current;
-      const remaining = Math.max(0, MIN_THINK_MS - elapsed);
-      if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
+        const elapsed = Date.now() - thinkingStartRef.current;
+        const remaining = Math.max(0, MIN_THINK_MS - elapsed);
+        if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
 
-      setRounds(prev => [...prev, {
-        round: data.round,
-        east: data.east,
-        eastProvider: data.eastProvider,
-        eastModel: data.eastModel,
-        west: data.west,
-        westProvider: data.westProvider,
-        westModel: data.westModel,
-        synthesis: data.synthesis,
-        synthesisProvider: data.synthesisProvider,
-        synthesisModel: data.synthesisModel,
-      }]);
-      setComplete(data.complete);
+        setRounds(prev => [...prev, {
+          round: data.round,
+          east: data.east,
+          eastModel: data.eastModel,
+          west: data.west,
+          westModel: data.westModel,
+          synthesis: data.synthesis,
+          synthesisModel: data.synthesisModel,
+        }]);
+        setComplete(data.complete);
+      } else {
+        const headers = await getAuthHeader();
+        const res = await fetch(`${API_URL}/api/debate/${debateId}/next`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...headers },
+          body: JSON.stringify({ eastModel, westModel }),
+        });
+        if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to advance debate');
+        const data = await res.json();
+
+        const elapsed = Date.now() - thinkingStartRef.current;
+        const remaining = Math.max(0, MIN_THINK_MS - elapsed);
+        if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
+
+        setRounds(prev => [...prev, {
+          round: data.round,
+          east: data.east,
+          eastProvider: data.eastProvider,
+          eastModel: data.eastModel,
+          west: data.west,
+          westProvider: data.westProvider,
+          westModel: data.westModel,
+          synthesis: data.synthesis,
+          synthesisProvider: data.synthesisProvider,
+          synthesisModel: data.synthesisModel,
+        }]);
+        setComplete(data.complete);
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -308,6 +366,27 @@ export default function Debate({ creditBalance = null, onCreditsUpdated }: {
   const canAdvance = debateId && !complete && !loading && currentRound > 0 && currentRound < 5;
   const isSynthesisThinking = thinkingRound === 5;
 
+  // Demo already used — show registration gate instead
+  if (isDemo && demoUsed) {
+    return (
+      <div className="oria-page" style={{ padding: '20px 16px 32px', maxWidth: 520, margin: '0 auto' }}>
+        <style>{DEBATE_STYLES}</style>
+        <div className="oria-card" style={{ textAlign: 'center', padding: '36px 24px', maxWidth: 420, margin: '32px auto 0' }}>
+          <div style={{ fontSize: 36, marginBottom: 14 }}>✦</div>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#e8dcc8', margin: '0 0 10px' }}>
+            {t('debateDemo.usedTitle')}
+          </h2>
+          <p style={{ fontSize: 15, color: '#888', margin: '0 0 24px', lineHeight: 1.6 }}>
+            {t('debateDemo.usedBody')}
+          </p>
+          <button className="oria-btn-primary" style={{ width: '100%' }} onClick={() => navigate('/onboarding/start')}>
+            {t('debateDemo.usedButton')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="oria-page" style={{ padding: '20px 16px 32px', maxWidth: 760, margin: '0 auto' }}>
       <style>{DEBATE_STYLES}</style>
@@ -325,6 +404,40 @@ export default function Debate({ creditBalance = null, onCreditsUpdated }: {
         </h2>
       </div>
 
+      {/* Demo banner — shown when not yet started and not complete */}
+      {isDemo && !debateId && !loading && (
+        <div style={{
+          background: 'rgba(201,168,76,0.06)',
+          border: `1px solid ${GOLD}33`,
+          borderRadius: 12,
+          padding: '14px 16px',
+          marginBottom: 16,
+        }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: GOLD, marginBottom: 6 }}>
+            {t('debateDemo.bannerTitle')}
+          </div>
+          <div style={{ fontSize: 13, color: '#999', lineHeight: 1.6, marginBottom: 10 }}>
+            {t('debateDemo.bannerBody')}
+          </div>
+          <button
+            onClick={() => navigate('/onboarding/start')}
+            style={{
+              background: 'none',
+              border: `1px solid ${GOLD}55`,
+              borderRadius: 999,
+              color: GOLD,
+              fontSize: 13,
+              fontWeight: 600,
+              padding: '6px 14px',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            {t('debateDemo.bannerCta')}
+          </button>
+        </div>
+      )}
+
       {/* Question input — hidden once loading or debate is active */}
       {!debateId && !loading && (
         <div className="oria-card" style={{ marginBottom: 20 }}>
@@ -334,17 +447,18 @@ export default function Debate({ creditBalance = null, onCreditsUpdated }: {
 
           {/* Model selector */}
           {(() => {
-            const pillStyle = (active: boolean): React.CSSProperties => ({
+            const pillStyle = (active: boolean, disabled: boolean = false): React.CSSProperties => ({
               padding: '8px 16px',
               borderRadius: 999,
               border: `1px solid ${active ? GOLD : 'rgba(255,255,255,0.12)'}`,
               background: active ? `${GOLD}22` : 'transparent',
               color: active ? GOLD : '#888',
-              cursor: 'pointer',
+              cursor: disabled ? 'not-allowed' : 'pointer',
               transition: 'all 0.15s',
               textAlign: 'center',
               lineHeight: 1.3,
               fontFamily: 'inherit',
+              opacity: disabled ? 0.35 : 1,
             });
             const EAST_OPTIONS: [string, string][] = [
               ['hunyuan',  t('debate.hunyuan')],
@@ -355,13 +469,25 @@ export default function Debate({ creditBalance = null, onCreditsUpdated }: {
               ['gemini_lite', 'Gemini'],
               ['claude',      'Claude'],
             ];
-            const renderRow = (options: [string, string][], active: string, setter: (v: string) => void) => (
+            const renderRow = (
+              options: [string, string][],
+              active: string,
+              setter: (v: string) => void,
+              lockedValue?: string,
+            ) => (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {options.map(([val, label]) => (
-                  <button key={val} style={pillStyle(active === val)} onClick={() => setter(val)}>
-                    <div style={{ fontSize: 15, fontWeight: active === val ? 700 : 600 }}>{label}</div>
-                  </button>
-                ))}
+                {options.map(([val, label]) => {
+                  const isLocked = isDemo && val !== lockedValue;
+                  return (
+                    <button
+                      key={val}
+                      style={pillStyle(active === val, isLocked)}
+                      onClick={() => { if (!isLocked) setter(val); }}
+                    >
+                      <div style={{ fontSize: 15, fontWeight: active === val ? 700 : 600 }}>{label}</div>
+                    </button>
+                  );
+                })}
               </div>
             );
             return (
@@ -369,16 +495,23 @@ export default function Debate({ creditBalance = null, onCreditsUpdated }: {
                 <div style={{ fontSize: 14, fontWeight: 800, color: GOLD, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: 6 }}>
                   {t('debate.eastLabel')}
                 </div>
-                <div style={{ marginBottom: 12 }}>{renderRow(EAST_OPTIONS, eastModel, setEastModel)}</div>
-                <div style={{ fontSize: 14, fontWeight: 800, color: GOLD, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: 6 }}>
+                <div style={{ marginBottom: isDemo ? 4 : 12 }}>
+                  {renderRow(EAST_OPTIONS, eastModel, setEastModel, 'hunyuan')}
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: GOLD, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: 6, marginTop: isDemo ? 0 : 0 }}>
                   {t('debate.westLabel')}
                 </div>
-                {renderRow(WEST_OPTIONS, westModel, setWestModel)}
+                {renderRow(WEST_OPTIONS, westModel, setWestModel, 'openai')}
+                {isDemo && (
+                  <div style={{ fontSize: 12, color: '#666', marginTop: 8, fontStyle: 'italic' }}>
+                    {t('debateDemo.modelLock')}
+                  </div>
+                )}
               </div>
             );
           })()}
 
-          {creditBalance !== null && (() => {
+          {!isDemo && creditBalance !== null && (() => {
             const cost = (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
             const insufficient = creditBalance < cost;
             return (
@@ -653,6 +786,31 @@ export default function Debate({ creditBalance = null, onCreditsUpdated }: {
           </button>
         )}
       </div>
+
+      {/* Post-completion CTA — demo only */}
+      {complete && isDemo && (
+        <div className="oria-card" style={{
+          textAlign: 'center',
+          marginTop: 24,
+          padding: '28px 24px',
+          border: `1px solid ${GOLD}44`,
+          background: 'rgba(201,168,76,0.05)',
+        }}>
+          <div style={{ fontSize: 20, fontWeight: 800, color: '#e8dcc8', marginBottom: 10 }}>
+            {t('debateDemo.ctaTitle')}
+          </div>
+          <p style={{ fontSize: 15, color: '#999', lineHeight: 1.7, margin: '0 0 20px' }}>
+            {t('debateDemo.ctaBody')}
+          </p>
+          <button
+            className="oria-btn-primary"
+            style={{ width: '100%' }}
+            onClick={() => navigate('/onboarding/start')}
+          >
+            {t('debateDemo.ctaButton')}
+          </button>
+        </div>
+      )}
 
     </div>
   );
