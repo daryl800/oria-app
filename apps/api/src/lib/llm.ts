@@ -137,7 +137,8 @@ export type LLMChain =
   | 'profile' | 'daily' | 'daily_premium' | 'chat'
   | 'debate_east_hunyuan' | 'debate_east_openai' | 'debate_east_gemini_lite' | 'debate_east_deepseek'
   | 'debate_west_openai'  | 'debate_west_hunyuan' | 'debate_west_gemini_lite' | 'debate_west_claude'
-  | 'debate_synthesis';
+  | 'debate_synthesis'
+  | 'motto_test_hunyuan';
 
 const CHAINS: Record<LLMChain, readonly Provider[]> = {
   profile:               [deepseek, chatgpt, hunyuan],
@@ -153,6 +154,7 @@ const CHAINS: Record<LLMChain, readonly Provider[]> = {
   debate_west_gemini_lite:  [geminiFlashLite,  gpt4oMini],
   debate_west_claude:       [claude,           gpt4oMini],
   debate_synthesis:      [deepseek, gpt4o, chatgpt],
+  motto_test_hunyuan:  [hunyuan],
 };
 
 // ── Helpers ───────────────────────────────────────────────────────

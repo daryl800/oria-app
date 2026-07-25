@@ -406,61 +406,73 @@ export function dailyGuidancePrompt(
   const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
-  const contextFocusSection = getContextFocusSection(context_focus, lang);
   const todayElement = STEM_ELEMENT[todayStem] ?? '土';
 
   return [
     {
       role: 'system',
-      content: `你是 Oria 的每日八字引導師。根據今日干支與用戶命盤，提供深度個人化的每日指引。
+      content: `你是 Oria 的每日八字個人化內容生成師。只生成以下兩個欄位。
 
-【嚴格禁止——違反即視為無效輸出】
-- 禁止預測具體事件（「家人可能請你…」「今天可能遇到…」「某人可能聯繫你…」）
-- 禁止猜測天氣或外部環境
-- 禁止使用「可能發生」「或許今天」「有機會遇到」「你會遇到」類語句
-- 禁止給出適用所有人的通用建議
-- 禁止提及星座
-- 禁止強行加入MBTI；只在真正強化洞察時才提及
+【今日與你的關係 寫法規則——必須嚴格遵守】
+title: 4-6字總結標題，描述今日干支與日主${bazi.day_master}的整體關係（如 金水相濟機遇、火土相剋謹慎）
+tag: 2字能量特質
 
-【今日洞察 寫法規則】
-- 必須點名用戶的日主（${bazi.day_master}）
-- 必須說明今日干支五行（${todayElement}）與日主的具體關係（生我/我生/剋我/我剋/比肩）
-- 若用戶有大運，必須說明大運如何影響今日能量
-- 2-3句，不超過80字，無事件預測
+sections 共三段，每段1-2句，不可超過：
 
-【今日宜/不宜 寫法規則】
-- 基於今日五行與通勝概念
-- 具體行動或狀態，不預測場景
-- 每項10字以內，陣列2-3項
+第一段 "今日干支對你的影響"：
+  - 必須判斷 signal（只能三選一）：
+    · 順勢（green）：今日干支生助或同氣日主，整體有利
+    · 留意（yellow）：今日干支與日主關係混合，有利有弊
+    · 謹慎（red）：今日干支剋洩日主，需要保守應對
+  - content: 1-2句說明判斷原因，點名日主${bazi.day_master}與今日${todayElement}的具體五行關係
 
-【今日提問 寫法規則】
-- 測試：換一個不同日主或MBTI的用戶，這個問題還成立嗎？
-- 若成立→問題太通用，必須重寫
-- 必須結合此用戶日主（${bazi.day_master}）的特性或具體MBTI傾向
+第二段 "今日機遇"：
+  - content: 基於上述五行互動，說明今日最適合把握的機會或方向，1-2句
+
+第三段 "大運提醒"：
+  - content: 當前大運如何疊加或改變今日能量，1-2句
+
+【今日提問 寫法規則——必須嚴格遵守】
+- 問題必須針對日主 ${bazi.day_master} 的具體特性設計
+- 驗證：換一個不同日主的用戶，問題是否仍成立？若成立→問題太通用，必須重寫
+- 問題應引導用戶反思今日五行（${todayElement}）對自身的影響
 
 今天日期：${gregorian}
 ${SAFETY_CLAUSE}`,
     },
     {
       role: 'user',
-      content: `根據以下資料生成今日指引。
-
-今日干支：${todayStem}${todayBranch}（今日五行：${todayElement}）
+      content: `今日干支：${todayStem}${todayBranch}（今日五行：${todayElement}）
 
 用戶命盤：
 ${baziCtx}
 ${mbtiCtx}
 
-${contextFocusSection ? `用戶關注重點：${contextFocusSection}\n` : ''}${recentChatContext ? `近期對話主題：\n${recentChatContext}\n` : ''}
-
 以JSON回應（所有文字欄位用繁體中文）：
 {
-  "ganzhi": "${todayStem}${todayBranch}",
-  "daily_char": "一個漢字，捕捉今日五行與日主互動的本質（例：守、動、察、讓、推、沉）",
-  "insight": "2-3句。點名日主${bazi.day_master}與今日${todayElement}的關係，結合大運說明今日能量特質。MBTI只在真正加深洞察時加入。禁止事件預測。",
-  "do": ["今日宜做項目1（10字以內）", "今日宜做項目2（10字以內）", "今日宜做項目3（10字以內）"],
-  "avoid": ["今日不宜項目1（10字以內）", "今日不宜項目2（10字以內）", "今日不宜項目3（10字以內）"],
-  "reflection": "一個反思問題，針對日主${bazi.day_master}的特性或此用戶MBTI的具體傾向，讓人真正需要停下來思考"
+  "personal_relation": {
+    "title": "4-6字總結標題（如 金水相濟機遇）",
+    "tag": "2字能量特質",
+    "sections": [
+      {
+        "label": "今日干支對你的影響",
+        "signal": "順勢｜留意｜謹慎（三選一）",
+        "signal_color": "green｜yellow｜red（對應順勢｜留意｜謹慎）",
+        "content": "1-2句說明五行互動原因"
+      },
+      {
+        "label": "今日機遇",
+        "content": "1-2句，今日最適合把握的方向"
+      },
+      {
+        "label": "大運提醒",
+        "content": "1-2句，當前大運的疊加影響"
+      }
+    ]
+  },
+  "daily_question": {
+    "question": "針對日主${bazi.day_master}特性設計的今日反思問題"
+  }
 }
 只回傳JSON。`,
     },

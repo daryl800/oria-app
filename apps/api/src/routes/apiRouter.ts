@@ -3,6 +3,7 @@ import { Router, Request, Response } from 'express';
 import Paths from '@src/common/constants/Paths';
 import UserRoutes from './UserRoutes';
 import dailyGuidanceRouter from './dailyGuidance';
+import mottoTestRouter from './mottoTest';
 import profileRouter from './profile';
 import chatRouter from './chat';
 import debateRouter from './debate';
@@ -150,6 +151,7 @@ apiRouter.use('/public/contact', contactRouter);
 
 // oria routes (auth protected)
 apiRouter.use(Paths.DailyGuidance._, authMiddleware, dailyGuidanceRouter);
+apiRouter.use(Paths.DailyGuidance._, authMiddleware, mottoTestRouter);
 apiRouter.use(Paths.Profile._, authMiddleware, profileRouter);
 apiRouter.use(Paths.Chat._, authMiddleware, creditsMiddleware, chatRouter);
 apiRouter.use('/billing', authMiddleware, billingRouter);
