@@ -6,50 +6,22 @@ import { Lock } from 'lucide-react';
 import { fetchDailyGuidance } from '@/services/api';
 import { normalizeLanguage, SUPPORTED_LANGUAGES } from '@/lib/languages';
 import { getGeneratedLanguage, languageDisplayName } from '@/lib/contentLanguage';
-import OriaLogo from '@/components/OriaLogo';
 import PlanetLoader from '@/components/PlanetLoader';
 
 interface DailySummary {
-  tone: string;
-  dailyMode?: string;
-  moment?: string;
-  pace: string;
-  focus?: { do: string; avoid: string };
-  lucky_color?: { color: string; hex?: string; reason: string };
-  helpful_element?: { type: string; value: string; reason: string };
-  tips: { area: string; text: string }[];
-  identity?: string;
-  nudge: string;
-  suggested_prompts: string[];
-  deeper_insight?: string;
-  zodiac_tone?: string;
+  ganzhi: string;
+  daily_char: string;
+  insight: string;
+  do: string[];
+  avoid: string[];
+  lucky_wear?: { color: string; hex?: string; reason: string };
+  reflection?: string;
   content_language?: string;
   generated_language?: string;
   source_language?: string;
 }
 
-const DAILY_MODE_CONFIG: Record<string, { icon: string; color: string; label: Record<string, string> }> = {
-  'ACTION':       { icon: '⚡', color: '#f59e0b', label: { en: 'Action',       'zh-TW': '行動', 'zh-CN': '行动', ja: 'アクション', ko: '행동', sv: 'Action' } },
-  'OPPORTUNITY':  { icon: '🌟', color: '#a78bfa', label: { en: 'Opportunity',  'zh-TW': '機遇', 'zh-CN': '机遇', ja: '好機', ko: '기회', sv: 'Möjlighet' } },
-  'FOCUS':        { icon: '🎯', color: '#60a5fa', label: { en: 'Focus',        'zh-TW': '專注', 'zh-CN': '专注', ja: '集中', ko: '집중', sv: 'Fokus' } },
-  'COMMUNICATION':{ icon: '💬', color: '#34d399', label: { en: 'Communication','zh-TW': '溝通', 'zh-CN': '沟通', ja: 'コミュニケーション', ko: '소통', sv: 'Kommunikation' } },
-  'BOUNDARY':     { icon: '🛡️', color: '#f87171', label: { en: 'Boundary',    'zh-TW': '界限', 'zh-CN': '界限', ja: '境界', ko: '경계', sv: 'Gräns' } },
-  'REFLECTION':   { icon: '🌙', color: '#c4b5fd', label: { en: 'Reflection',   'zh-TW': '內觀', 'zh-CN': '内省', ja: '内省', ko: '성찰', sv: 'Reflektion' } },
-  'RECOVERY':     { icon: '🌿', color: '#6ee7b7', label: { en: 'Recovery',     'zh-TW': '修復', 'zh-CN': '修复', ja: '回復', ko: '회복', sv: 'Återhämtning' } },
-};
-
-const TONE_SYMBOLS: Record<string, string> = {
-  'balanced': '⚖️', 'active': '⚡', 'reflective': '🌙',
-  'inward': '🔮', 'gentle': '🌸', 'powerful': '🔥',
-  'creative': '✨', 'grounded': '🌿', 'intense': '🌊',
-  'calm': '☁️', 'focused': '🎯', 'fire': '🔥',
-  'water': '💧', 'metal': '⚔️', 'wood': '🌳', 'earth': '🪨',
-  '平衡': '⚖️', '積極': '⚡', '內省': '🌙', '反思': '🌙',
-  '火': '🔥', '水': '💧', '金': '⚔️', '木': '🌳', '土': '🪨',
-};
-
 const COLOR_MAP: Record<string, string> = {
-  // English base colors
   'red': '#ef4444', 'blue': '#3b82f6', 'green': '#22c55e',
   'yellow': '#eab308', 'orange': '#f97316', 'purple': '#a855f7',
   'gold': '#d97706', 'pink': '#ec4899', 'white': '#f1f5f9',
@@ -60,12 +32,11 @@ const COLOR_MAP: Record<string, string> = {
   'lavender': '#a78bfa', 'coral': '#fb7185', 'sage': '#84a98c',
   'gray': '#94a3b8', 'grey': '#94a3b8', 'light gray': '#d1d5db', 'light grey': '#d1d5db',
   'silver': '#cbd5e1', 'copper': '#b45309', 'burgundy': '#881337',
-  // Chinese color names
   '紅色': '#ef4444', '藍色': '#3b82f6', '綠色': '#22c55e',
   '黃色': '#eab308', '橙色': '#f97316', '紫色': '#a855f7',
   '金色': '#d97706', '粉色': '#ec4899', '白色': '#f1f5f9',
   '黑色': '#334155', '棕色': '#92400e', '褐色': '#92400e', '咖啡色': '#78350f',
-  '灰色': '#94a3b8', '淺灰色': '#d1d5db', '銀色': '#cbd5e1',
+  '灰色': '#94a3b8', '淺灰色': '#d1d5db', '銀色': '#cbd5e1', '灰銀色': '#cbd5e1',
   '橄欖綠': '#6b7c3e', '深橄欖': '#4a5c2e', '苔綠': '#5f7a4a', '草綠': '#4ade80',
   '薄荷綠': '#6ee7b7', '翠綠': '#10b981', '墨綠': '#166534', '森林綠': '#16a34a',
   '天藍': '#38bdf8', '水藍': '#7dd3fc', '寶藍': '#2563eb',
@@ -75,16 +46,6 @@ const COLOR_MAP: Record<string, string> = {
   '米白': '#fef9c3', '奶油': '#fef9c3', '象牙': '#fefce8',
   '土黃': '#ca8a04', '沙色': '#d4a574', '銅色': '#b45309',
 };
-
-
-
-function getToneSymbol(tone: string): string {
-  const lower = tone.toLowerCase();
-  for (const [key, symbol] of Object.entries(TONE_SYMBOLS)) {
-    if (lower.includes(key.toLowerCase())) return symbol;
-  }
-  return '✦';
-}
 
 function getElementColor(value: string): string | null {
   const lower = value.toLowerCase();
@@ -104,13 +65,12 @@ function isReadableOnDark(hex: string): boolean {
   return luminance > 0.32;
 }
 
-export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = false }: { user: User; isPlus?: boolean; isPlusLoaded?: boolean }) {
+export default function DailyGuidance({ user, isPlus = false }: { user: User; isPlus?: boolean; isPlusLoaded?: boolean }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [summary, setSummary] = useState<DailySummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showDeepDive, setShowDeepDive] = useState(false);
   const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
@@ -229,57 +189,34 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
 
   if (!summary) return null;
 
-  const toneSymbol = getToneSymbol(summary.tone);
+  const wearColor = summary.lucky_wear?.color ?? '';
+  const wearHex = summary.lucky_wear?.hex || getElementColor(wearColor);
+  const wearReason = summary.lucky_wear?.reason ?? '';
 
-  const TIP_ICONS: Record<string, string> = {
-    'Work': '🏢', 'work': '🏢', '工作': '🏢',
-    'Relationships': '❤️', 'relationships': '❤️', '人際': '❤️',
-    'Wellness': '🧘', 'wellness': '🧘', '健康': '🧘',
-    'Finance': '💰', 'finance': '💰', '財務': '💰',
-  };
-  const luckyColor = summary.lucky_color?.color || summary.helpful_element?.value || '';
-  const elementColor = summary.lucky_color?.hex || getElementColor(luckyColor);
-  const sectionLabelStyle = {
-    fontSize: 14,
+  const contentLanguage = getGeneratedLanguage(summary, i18n.language);
+  const showGeneratedLanguage = contentLanguage !== normalizeLanguage(i18n.language);
+
+  const sectionLabelStyle: React.CSSProperties = {
+    fontSize: 13,
     fontWeight: 800,
     letterSpacing: 1.2,
     color: '#C9A84C',
-    textTransform: 'uppercase' as const,
+    textTransform: 'uppercase',
     marginBottom: 10,
   };
-  const subLabelStyle = {
-    fontSize: 13,
-    color: '#F3C88B',
-    fontWeight: 800,
-    marginBottom: 8,
-  };
-  const bodyTextStyle = {
+  const bodyTextStyle: React.CSSProperties = {
     fontSize: 16,
     color: 'rgba(255,255,255,0.84)',
     lineHeight: 1.6,
     margin: 0,
   };
-  const shortText = (text?: string) => {
-    if (!text) return '';
-    const trimmed = text.trim();
-    const match = trimmed.match(/^.*?[。！？.!?](?=\s|$|[^。！？.!?])?/);
-    return (match?.[0] || trimmed).replace(/^["“]|["”]$/g, '');
-  };
-  const colorReason = shortText(summary.lucky_color?.reason || summary.helpful_element?.reason);
-  const chatPrefill = t('daily.chat_prefill', {
-    text: shortText(summary.focus?.do) || shortText(summary.nudge),
-  });
-  const contentLanguage = getGeneratedLanguage(summary, i18n.language);
-  const showGeneratedLanguage = contentLanguage !== normalizeLanguage(i18n.language);
 
   return (
     <div className="oria-page oria-container animate-fade-in">
       <header className="oria-page-header">
         <div className="oria-card-label">{t('nav.daily')}</div>
         <h1 className="oria-page-title">{today}</h1>
-        <div className="oria-page-subtitle">
-          {t('daily.refresh')}
-        </div>
+        <div className="oria-page-subtitle">{t('daily.refresh')}</div>
       </header>
 
       {showGeneratedLanguage && (
@@ -297,158 +234,133 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
         </div>
       )}
 
-      {/* Layer 1: quick daily guide */}
+      {/* 今日干支 + 今日字 */}
       <div className="oria-card" style={{
-        display: 'flex', alignItems: 'center',
-        gap: 18, padding: '20px 24px',
-        background: 'linear-gradient(135deg, rgba(201,168,76,0.14), rgba(17,26,50,0.92))',
-        border: '1px solid rgba(201,168,76,0.28)'
+        textAlign: 'center',
+        padding: '28px 24px 24px',
+        background: 'linear-gradient(135deg, rgba(201,168,76,0.12), rgba(17,26,50,0.92))',
+        border: '1px solid rgba(201,168,76,0.28)',
       }}>
-        <div style={{ fontSize: 48, flexShrink: 0 }}>{toneSymbol}</div>
-        <div>
-          <div style={sectionLabelStyle}>
-            {t('daily.rhythm')}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#F8F3FF', lineHeight: 1.15 }}>
-              {summary.tone}
-            </div>
-            {summary.dailyMode && DAILY_MODE_CONFIG[summary.dailyMode] && (
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
-                background: `${DAILY_MODE_CONFIG[summary.dailyMode].color}18`,
-                border: `1px solid ${DAILY_MODE_CONFIG[summary.dailyMode].color}55`,
-                borderRadius: 999, padding: '3px 10px',
-                fontSize: 12, fontWeight: 700,
-                color: DAILY_MODE_CONFIG[summary.dailyMode].color,
-                letterSpacing: 0.5,
+        <div style={{
+          fontSize: 13,
+          fontWeight: 700,
+          color: 'rgba(201,168,76,0.75)',
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase' as const,
+          marginBottom: 14,
+        }}>
+          今日干支 · {summary.ganzhi}
+        </div>
+        <div style={{
+          fontSize: 96,
+          fontWeight: 900,
+          color: '#C9A84C',
+          lineHeight: 1,
+          marginBottom: 6,
+          fontFamily: '"Noto Serif TC", "Noto Serif SC", serif',
+          textShadow: '0 0 40px rgba(201,168,76,0.35)',
+        }}>
+          {summary.daily_char}
+        </div>
+      </div>
+
+      {/* 今日洞察 */}
+      <div className="oria-card">
+        <div style={sectionLabelStyle}>今日洞察</div>
+        <p style={bodyTextStyle}>{summary.insight}</p>
+      </div>
+
+      {/* 今日宜 + 今日不宜 */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div className="oria-card" style={{ margin: 0, borderTop: '3px solid rgba(110,231,183,0.55)' }}>
+          <div style={{ ...sectionLabelStyle, color: '#6ee7b7' }}>今日宜</div>
+          <ul style={{ margin: 0, padding: '0 0 0 18px' }}>
+            {(summary.do ?? []).map((item, i) => (
+              <li key={i} style={{
+                ...bodyTextStyle,
+                fontSize: 15,
+                marginBottom: i < (summary.do?.length ?? 0) - 1 ? 8 : 0,
               }}>
-                <span>{DAILY_MODE_CONFIG[summary.dailyMode].icon}</span>
-                <span>{DAILY_MODE_CONFIG[summary.dailyMode].label[i18n.language] || DAILY_MODE_CONFIG[summary.dailyMode].label['en']}</span>
-              </div>
-            )}
-          </div>
-          <div style={bodyTextStyle}>
-            {shortText(summary.pace)}
-          </div>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="oria-card" style={{ margin: 0, borderTop: '3px solid rgba(248,113,113,0.55)' }}>
+          <div style={{ ...sectionLabelStyle, color: '#f87171' }}>今日不宜</div>
+          <ul style={{ margin: 0, padding: '0 0 0 18px' }}>
+            {(summary.avoid ?? []).map((item, i) => (
+              <li key={i} style={{
+                ...bodyTextStyle,
+                fontSize: 15,
+                marginBottom: i < (summary.avoid?.length ?? 0) - 1 ? 8 : 0,
+              }}>
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
-      {summary.focus && (
-        <div className="oria-card">
-          <div style={sectionLabelStyle}>
-            {t('daily.guidance')}
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
-            {summary.focus.do && (
-              <div style={{ padding: 16, borderRadius: 18, background: 'rgba(255,255,255,0.045)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <div style={subLabelStyle}>{t('daily.lean_into')}</div>
-                <p style={bodyTextStyle}>{shortText(summary.focus.do)}</p>
-              </div>
-            )}
-            {summary.focus.avoid && (
-              <div style={{ padding: 16, borderRadius: 18, background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                <div style={subLabelStyle}>{t('daily.avoid')}</div>
-                <p style={{ ...bodyTextStyle, color: 'rgba(255,255,255,0.78)' }}>{shortText(summary.focus.avoid)}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className="oria-card" style={{ borderLeft: '4px solid #C9A84C', background: 'rgba(201, 168, 76, 0.1)', textAlign: 'center' }}>
-        <div style={sectionLabelStyle}>
-          {t('daily.reminder')}
-        </div>
-        <p className="text-lg" style={{ fontStyle: 'italic', lineHeight: 1.55, fontSize: 19, color: '#FFFFFF', margin: 0 }}>
-          "{shortText(summary.nudge)}"
-        </p>
-      </div>
-
-      {(summary.lucky_color || summary.helpful_element) && (
-        <div
-          className="oria-card"
-          style={{
-            padding: '20px 22px',
-            background: isPlus
-              ? 'linear-gradient(135deg, rgba(255,255,255,0.045), rgba(201,168,76,0.055))'
-              : 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(201,168,76,0.08))',
-            border: isPlus ? '1px solid rgba(201,168,76,0.18)' : '1px solid rgba(243,200,139,0.24)',
-          }}
-        >
+      {/* 今日宜穿 (Plus-gated) */}
+      {summary.lucky_wear && (
+        <div className="oria-card" style={{
+          padding: '20px 22px',
+          background: isPlus
+            ? 'linear-gradient(135deg, rgba(255,255,255,0.045), rgba(201,168,76,0.055))'
+            : 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(201,168,76,0.08))',
+          border: isPlus ? '1px solid rgba(201,168,76,0.18)' : '1px solid rgba(243,200,139,0.24)',
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
             {isPlus ? (
-              <div
-                aria-hidden="true"
-                style={{
-                  width: 58,
-                  height: 58,
-                  borderRadius: '50%',
-                  background: elementColor || 'linear-gradient(135deg, rgba(216,180,254,0.65), rgba(243,200,139,0.52))',
-                  boxShadow: elementColor
-                    ? `0 0 28px ${elementColor}88`
-                    : '0 0 28px rgba(216,180,254,0.28)',
-                  border: '1px solid rgba(255,255,255,0.18)',
-                  flexShrink: 0,
-                }}
-              />
+              <div aria-hidden="true" style={{
+                width: 58,
+                height: 58,
+                borderRadius: '50%',
+                background: wearHex || 'linear-gradient(135deg, rgba(216,180,254,0.65), rgba(243,200,139,0.52))',
+                boxShadow: wearHex ? `0 0 28px ${wearHex}88` : '0 0 28px rgba(216,180,254,0.28)',
+                border: '1px solid rgba(255,255,255,0.18)',
+                flexShrink: 0,
+              }} />
             ) : (
-              <div
-                aria-hidden="true"
-                style={{
-                  width: 58,
-                  height: 58,
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, rgba(216,180,254,0.56), rgba(255,255,255,0.22), rgba(243,200,139,0.35))',
-                  filter: 'blur(3px)',
-                  opacity: 0.72,
-                  boxShadow: '0 0 28px rgba(216,180,254,0.22)',
-                  flexShrink: 0,
-                }}
-              />
+              <div aria-hidden="true" style={{
+                width: 58,
+                height: 58,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, rgba(216,180,254,0.56), rgba(255,255,255,0.22), rgba(243,200,139,0.35))',
+                filter: 'blur(3px)',
+                opacity: 0.72,
+                boxShadow: '0 0 28px rgba(216,180,254,0.22)',
+                flexShrink: 0,
+              }} />
             )}
 
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ ...sectionLabelStyle, marginBottom: 6 }}>
-                {t('daily.color')}
+                {t('daily.wear_label', '今日宜穿')}
               </div>
 
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                marginBottom: 6,
-              }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 {!isPlus && <Lock size={14} strokeWidth={2.2} color="rgba(243,200,139,0.78)" />}
                 <div style={{
-                fontSize: 24,
-                fontWeight: 850,
-                lineHeight: 1.15,
-                  color: isPlus && elementColor && isReadableOnDark(elementColor) ? elementColor : '#F8F3FF',
-                  textShadow: isPlus && elementColor && !isReadableOnDark(elementColor)
-                    ? `0 0 10px ${elementColor}, 0 1px 2px rgba(255,255,255,0.32)`
-                    : isPlus && elementColor
-                      ? `0 0 12px ${elementColor}66`
+                  fontSize: 24,
+                  fontWeight: 850,
+                  lineHeight: 1.15,
+                  color: isPlus && wearHex && isReadableOnDark(wearHex) ? wearHex : '#F8F3FF',
+                  textShadow: isPlus && wearHex && !isReadableOnDark(wearHex)
+                    ? `0 0 10px ${wearHex}, 0 1px 2px rgba(255,255,255,0.32)`
+                    : isPlus && wearHex
+                      ? `0 0 12px ${wearHex}66`
                       : undefined,
                   filter: isPlus ? undefined : 'blur(1px)',
                   opacity: isPlus ? 1 : 0.78,
                 }}>
-                  {isPlus ? luckyColor : t('daily.color_locked')}
+                  {isPlus ? wearColor : t('daily.color_locked')}
                 </div>
               </div>
 
-              <p style={{ ...bodyTextStyle, fontSize: 15, color: 'rgba(255,255,255,0.72)', marginBottom: 8 }}>
-                {isPlus ? colorReason : t('daily.color_locked_teaser')}
-              </p>
-
-              <p style={{
-                margin: 0,
-                fontSize: 13,
-                color: isPlus ? '#F3C88B' : 'rgba(255,255,255,0.45)',
-                fontWeight: isPlus ? 800 : 400,
-                lineHeight: 1.5,
-              }}>
-                {isPlus ? t('daily.color_micro_action') : t('daily.color_locked_microcopy')}
+              <p style={{ ...bodyTextStyle, fontSize: 15, color: 'rgba(255,255,255,0.72)', marginBottom: isPlus ? 8 : 0 }}>
+                {isPlus ? wearReason : t('daily.color_locked_teaser')}
               </p>
 
               {!isPlus && (
@@ -476,147 +388,35 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
         </div>
       )}
 
-      {isPlus ? (
-        <button
-          type="button"
-          className="oria-btn-primary"
-          style={{ marginBottom: 14 }}
-          onClick={() => navigate('/chat', { state: { prefill: t('chatEntry.daily.prompt') } })}
-        >
-          💬 {t('chatEntry.daily.button')}
-        </button>
-      ) : (
+      {/* 今日提問 */}
+      {summary.reflection && (
         <div className="oria-card" style={{
-          textAlign: 'center',
-          background: 'linear-gradient(135deg, rgba(201,168,76,0.12), rgba(243,200,139,0.08))',
-          border: '1px solid rgba(243,200,139,0.28)',
-          display: 'grid',
-          gap: 12,
+          borderLeft: '4px solid #C9A84C',
+          background: 'rgba(201,168,76,0.06)',
+          padding: '20px 22px',
         }}>
-          <div style={{ ...sectionLabelStyle, marginBottom: 0 }}>
-            {t('daily.locked_cta_title')}
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.68)', fontSize: 15, lineHeight: 1.6, margin: 0 }}>
-            {t('daily.locked_cta_subtext')}
+          <div style={{ ...sectionLabelStyle, marginBottom: 12 }}>今日提問</div>
+          <p style={{
+            fontSize: 17,
+            color: '#e8dcc8',
+            lineHeight: 1.75,
+            fontStyle: 'italic',
+            margin: 0,
+          }}>
+            {summary.reflection}
           </p>
-          <button
-            type="button"
-            className="oria-btn-premium"
-            onClick={() => navigate('/upgrade')}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-          >
-            <Lock size={16} strokeWidth={2.2} />
-            {t('daily.locked_cta_button')}
-          </button>
         </div>
       )}
 
+      {/* CTA */}
       <button
         type="button"
-        onClick={() => setShowDeepDive(value => !value)}
-        className="oria-btn-outline oria-deep-toggle"
-        style={{ margin: '8px 0 22px', fontSize: 16 }}
+        className="oria-btn-primary"
+        style={{ marginBottom: 14 }}
+        onClick={() => navigate('/chat', { state: { prefill: t('chatEntry.daily.prompt') } })}
       >
-        {showDeepDive ? t('daily.deep_close') : t('daily.deep_open')}
+        💬 {t('chatEntry.daily.button')}
       </button>
-
-      {showDeepDive && (
-        <div className="animate-fade-in" style={{ display: 'grid', gap: 18 }}>
-          {summary.identity && (
-            <div className="oria-card" style={{ background: 'rgba(201,168,76,0.06)', textAlign: 'center' }}>
-              <p style={{ fontSize: 18, color: '#C9A84C', lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>
-                ✦ {shortText(summary.identity)}
-              </p>
-            </div>
-          )}
-
-          {summary.moment && (
-            <div className="oria-card" style={{ background: 'rgba(201,168,76,0.06)', borderLeft: '3px solid rgba(201,168,76,0.5)' }}>
-              <div style={sectionLabelStyle}>
-                🔮 {t('daily.moment')}
-              </div>
-              <p style={{ ...bodyTextStyle, fontStyle: 'italic' }}>
-                {shortText(summary.moment)}
-              </p>
-            </div>
-          )}
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
-            {summary.tips.map((tip, i) => (
-              <div key={i} className="oria-card" style={{ margin: 0, padding: 22, textAlign: 'center' }}>
-                <div style={sectionLabelStyle}>
-                  {TIP_ICONS[tip.area] || '✦'} {tip.area}
-                </div>
-                <p className="text-sm" style={bodyTextStyle}>{shortText(tip.text)}</p>
-              </div>
-            ))}
-          </div>
-
-          {isPlusLoaded && isPlus && (
-            <>
-              {summary.deeper_insight && (
-                <div className="oria-card" style={{
-                  background: 'rgba(201,168,76,0.08)',
-                  border: '1px solid rgba(201,168,76,0.3)'
-                }}>
-                  <div style={sectionLabelStyle}>
-                    ✦ {t('daily.deeper_reason')}
-                  </div>
-                  <p style={bodyTextStyle}>
-                    {shortText(summary.deeper_insight)}
-                  </p>
-                </div>
-              )}
-              {summary.zodiac_tone && (
-                <div className="oria-card" style={{
-                  background: 'rgba(124,58,237,0.06)',
-                  border: '1px solid rgba(124,58,237,0.18)'
-                }}>
-                  <div style={{ ...sectionLabelStyle, color: 'rgba(192,132,252,0.85)' }}>
-                    ☽ {t('daily.zodiac_tone')}
-                  </div>
-                  <p style={{ ...bodyTextStyle, fontStyle: 'italic' }}>
-                    {summary.zodiac_tone}
-                  </p>
-                </div>
-              )}
-            </>
-          )}
-
-          {summary.suggested_prompts?.length > 0 && (
-            <div className="oria-card" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={sectionLabelStyle}>
-                💬 {t('daily.explore_prompts')}
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
-                {summary.suggested_prompts.map((prompt, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => navigate('/chat', { state: { prefill: prompt } })}
-                    style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      borderRadius: 12,
-                      padding: '12px 16px',
-                      color: 'rgba(255,255,255,0.8)',
-                      fontSize: 14,
-                      lineHeight: 1.5,
-                      textAlign: 'left',
-                      cursor: 'pointer',
-                      transition: 'background 0.15s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

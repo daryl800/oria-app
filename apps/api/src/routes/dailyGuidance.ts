@@ -56,18 +56,15 @@ async function getMbtiProfile(mbtiType: string, lang: string): Promise<any | nul
 }
 
 function trimGuidanceForFree(summary: any, lang: string): any {
-  // Keep key fields but shorten the main content
   const trimmed = { ...summary };
   const nudge = lang === 'zh-TW'
-    ? '\n\n今日還有更深層的指引。升級至 oria Plus，解鎖完整每日洞察。'
-    : '\n\nThere\'s more to this pattern today. Unlock full daily guidance with oria Plus.';
+    ? '\n\n升級至 oria Plus，解鎖完整每日洞察。'
+    : '\n\nUnlock full daily guidance with oria Plus.';
 
-  if (trimmed.summary && typeof trimmed.summary === 'string') {
-    const sentences = trimmed.summary.split(/(?<=[.!?。！？])\s*/);
-    trimmed.summary = sentences.slice(0, Math.max(2, Math.ceil(sentences.length * 0.5))).join(' ') + nudge;
+  if (trimmed.insight && typeof trimmed.insight === 'string') {
+    const sentences = trimmed.insight.split(/(?<=[。！？])\s*/);
+    trimmed.insight = (sentences[0] ?? trimmed.insight) + nudge;
   }
-  if (trimmed.reflection) delete trimmed.reflection;
-  if (trimmed.suggested_prompts) trimmed.suggested_prompts = trimmed.suggested_prompts.slice(0, 1);
   return trimmed;
 }
 
@@ -217,6 +214,8 @@ router.get('/today', async (req: Request, res: Response) => {
     const raw = await complete(messages, chain);
     const clean = sanitizeLlmJson(raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim());
     const summary = JSON.parse(clean);
+    // Ensure ganzhi always matches the authoritative value from the Python service
+    summary.ganzhi = stem + branch;
 
     // 5. cache result with lang
     await supabase.from('daily_guidance').insert({
