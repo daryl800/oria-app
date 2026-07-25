@@ -403,118 +403,78 @@ export function dailyGuidancePrompt(
   context_focus: string[] = [],
   recentChatContext: string = '',
 ): Messages {
-  const { gregorian, dayOfWeek } = getDateContext();
+  const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
-  const zodiacCtx = getZodiacContext(zodiac);
-  const respondIn = getRespondIn(lang);
-  const langGuard = getLangGuard(lang);
-  const contextFocusSection = getContextFocusSection(context_focus, lang);
   const todayElement = STEM_ELEMENT[todayStem] ?? '土';
-  const todayTone = STEM_TONE[todayStem] ?? { en: 'Steady Earth', zh: '穩重土氣' };
-  const toneStr = lang === 'en' ? todayTone.en : todayTone.zh;
-
-  const isWeekend = [0, 6].includes(new Date().getDay());
-  const dayName = new Date().toLocaleDateString('zh-TW', { weekday: 'long' });
-  console.log(`[dailyGuidancePrompt] getDay=${new Date().getDay()} isWeekend=${isWeekend} dayName=${dayName}`);
-  const dayContext = isWeekend
-    ? '今天是週末，請給出適合休息、個人成長和家庭時間的建議。不要提及工作任務或職場建議。'
-    : '今天是工作日。';
-  const tipsSchema = isWeekend
-    ? `[
-    {"area":"休息","text":"適合今天放鬆或充電的具體方式"},
-    {"area":"人際","text":"與家人或朋友的互動場景"},
-    {"area":"健康","text":"具體到身體狀態或行為"},
-    {"area":"個人時間","text":"具體的自我成長或興趣活動"}
-  ]`
-    : `[
-    {"area":"工作","text":"包含具體情境或行動"},
-    {"area":"人際","text":"包含互動場景"},
-    {"area":"健康","text":"具體到身體狀態或行為"},
-    {"area":"財務","text":"具體到決策或風險"}
-  ]`;
 
   return [
     {
       role: 'system',
-      content: `${langGuard}你是Oria的每日命盤引導師，結合八字命理與MBTI，提供高度個人化且具有「預測感」的每日指引。
-你的目標不是給建議，而是讓用戶感覺：「今天真的會發生這些事情」
-風格要求：
-- 溫和但精準，有洞察力
-- 避免空泛建議，必須具體到行為或場景
-- 不說教，不使用通用成功學語句
-- 全文30秒內可讀完
-- 必須讓內容看起來「只屬於這個人」
-星座在每日指引中只能用於補充今日情緒語氣或社交反應，不得主導今日判斷。
-今天日期：${gregorian}
+      content: `你是 Oria 的每日八字個人化內容生成師。只生成以下兩個欄位。
 
-【今日情境】
-${dayContext}
+【今日與你的關係 寫法規則——必須嚴格遵守】
+title: 4-6字總結標題，描述今日干支與日主${bazi.day_master}的整體關係（如 金水相濟機遇、火土相剋謹慎）
+tag: 2字能量特質
+
+sections 共三段，每段1-2句，不可超過：
+
+第一段 "今日干支對你的影響"：
+  - 必須判斷 signal（只能三選一）：
+    · 順勢（green）：今日干支生助或同氣日主，整體有利
+    · 留意（yellow）：今日干支與日主關係混合，有利有弊
+    · 謹慎（red）：今日干支剋洩日主，需要保守應對
+  - content: 1-2句說明判斷原因，點名日主${bazi.day_master}與今日${todayElement}的具體五行關係
+
+第二段 "今日機遇"：
+  - content: 基於上述五行互動，說明今日最適合把握的機會或方向，1-2句
+
+第三段 "大運提醒"：
+  - content: 當前大運如何疊加或改變今日能量，1-2句
+
+【今日提問 寫法規則——必須嚴格遵守】
+- 問題必須針對日主 ${bazi.day_master} 的具體特性設計
+- 驗證：換一個不同日主的用戶，問題是否仍成立？若成立→問題太通用，必須重寫
+- 問題應引導用戶反思今日五行（${todayElement}）對自身的影響
+
+今天日期：${gregorian}
 ${SAFETY_CLAUSE}`,
     },
     {
       role: 'user',
-      content: `生成今日個人化指引。
-
-今天：${gregorian}（${dayName}）
-今日干支：${todayStem}${todayBranch}（今日五行：${todayElement}）
-今日基調（固定）：${toneStr}
+      content: `今日干支：${todayStem}${todayBranch}（今日五行：${todayElement}）
 
 用戶命盤：
 ${baziCtx}
 ${mbtiCtx}
-${zodiacCtx}
 
-【用戶當前關注與近期話題——所有指引必須以此為錨點】
-${contextFocusSection ? `關注重點：${contextFocusSection}\n` : ''}${recentChatContext ? `近期對話主題：\n${recentChatContext}` : '（尚無近期對話記錄）'}
-
-↑ 今日指引必須直接回應用戶上方的實際關注點。禁止給出與用戶當前處境無關的通用生活建議。
-若用戶有近期對話主題，moment / focus / tips 至少一項必須直接點名該話題。
-若用戶有關注重點，suggested_prompts 必須延伸這些關注點，而非泛問命盤。
-
-【核心分析邏輯（必須執行）】
-1. 判斷今日${todayElement}與日主${bazi.day_master}的關係（生我 / 我生 / 剋我 / 我剋 / 比肩）
-2. 根據關係選擇今日模式（dailyMode）：
-   - 生我（印星）→ OPPORTUNITY（外部機會湧現，適合接收與把握）
-   - 我生（食傷）→ COMMUNICATION（表達力強，適合對話、輸出創意）
-   - 比肩（同類）→ FOCUS（能量平穩，適合深度專注、獨立作業）
-   - 剋我（官殺）→ BOUNDARY（外部壓力，適合設立界限、謹慎行事）
-   - 我剋（財星）→ ACTION（主動出擊，適合推進計劃、掌控資源）
-   - 中性/混合 → REFLECTION（適合內省、整理思路）
-3. 所有輸出欄位的語氣與方向，必須與步驟2選出的dailyMode完全一致
-4. 結合MBTI，強化行為層面的具體差異
-
-【輸出要求（極重要）】
-- 每一段內容都必須「具體」，避免抽象建議
-- 至少包含一個「今天可能發生的情境」，且必須與用戶當前關注的領域相關
-- 必須出現一次「這是因為你的日主特性」來強化個人化
-- nudge 必須直接呼應今日五行關係的結果，語氣可以積極也可以謹慎，由分析決定，帶有對比或洞察感
-- suggested_prompts 必須讓用戶感覺「這個問題是為我今天的處境量身設計的」
-
-以JSON回應：
+以JSON回應（所有文字欄位用繁體中文）：
 {
-  "tone": "${toneStr}",
-  "dailyMode": "今日模式，必須是以下之一：ACTION / FOCUS / RECOVERY / COMMUNICATION / BOUNDARY / REFLECTION / OPPORTUNITY",
-  "moment": "一句具體的今日情境預測（例如：你可能會在某個對話或決策時感到壓力）",
-  "pace": "一句節奏建議，必須具體",
-  "focus": {
-    "do": "今天最值得做的一件具體行動",
-    "avoid": "今天應避免的一件具體行為"
+  "personal_relation": {
+    "title": "4-6字總結標題（如 金水相濟機遇）",
+    "tag": "2字能量特質",
+    "sections": [
+      {
+        "label": "今日干支對你的影響",
+        "signal": "順勢｜留意｜謹慎（三選一）",
+        "signal_color": "green｜yellow｜red（對應順勢｜留意｜謹慎）",
+        "content": "1-2句說明五行互動原因"
+      },
+      {
+        "label": "今日機遇",
+        "content": "1-2句，今日最適合把握的方向"
+      },
+      {
+        "label": "大運提醒",
+        "content": "1-2句，當前大運的疊加影響"
+      }
+    ]
   },
-  "lucky_color": {
-    "color": "顏色名稱（用回應語言書寫）",
-    "hex": "#rrggbb（必填：對應該顏色的十六進制色碼，例如橄欖綠→#6b7c3e）",
-    "reason": "一句說明 + 使用場景"
-  },
-  "tips": ${tipsSchema},
-  "identity": "一句點出：這種反應其實來自你的日主特性（強化自我認同）",
-  "tension": "一句描述今日可能出現的內在張力或矛盾（例如：想推進但能量不足）",
-  "nudge": "一句短而有力的提醒，必須帶對比或反直覺",
-  "deeper_insight": "（Plus專屬）2-3句更深層的洞察，結合今日干支與大運的互動，指出今天對用戶長期命盤的意義",
-  "suggested_prompts": ["更深入探索今天情緒或決策的問題","與命盤相關的個人問題","延伸今日情境的提問"],
-  "zodiac_tone": "一句可選內容：用星座補充今天的情緒或社交語氣；若星座未知，請留空字串"
+  "daily_question": {
+    "question": "針對日主${bazi.day_master}特性設計的今日反思問題"
+  }
 }
-只回傳JSON。${respondIn}`,
+只回傳JSON。`,
     },
   ];
 }

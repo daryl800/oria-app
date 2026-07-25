@@ -59,7 +59,30 @@
     "color_micro_action": "适合今天的穿搭或随身物件",
     "color_locked": "已锁定",
     "color_locked_teaser": "看看今天适合的颜色与节奏",
-    "color_locked_microcopy": "解锁后可查看今天适合的颜色与节奏"
+    "color_locked_microcopy": "解锁后可查看今天适合的颜色与节奏",
+    "stem_label": "今日天干",
+    "branch_label": "今日地支",
+    "motto_label": "今日格言",
+    "relation_label": "今日对你的启示",
+    "question_label": "今日提问",
+    "lucky_color_label": "今日幸运色",
+    "blindbox_east_label": "东方智慧",
+    "blindbox_west_label": "西方哲学",
+    "blindbox_east_sublabel": "今日东方格言",
+    "blindbox_west_sublabel": "今日西方格言",
+    "blindbox_open": "点击开启 ✨",
+    "blindbox_generating": "正在生成…",
+    "blindbox_generating_motto": "正在生成今日格言…",
+    "blindbox_tomorrow": "明日再试 🌙",
+    "locked_desc": "升级 Plus 解锁个性化每日解读",
+    "locked_button": "升级 Plus →",
+    "free_cta": "跟 Oria 聊聊今天的方向",
+    "free_cta_prefill": "请帮我分析今天的运程方向。",
+    "chat_with_oria": "与 Oria 聊聊",
+    "connection_error": "连线异常",
+    "connection_error_detail": "服务正在启动中，请稍后再试。",
+    "retry": "重试",
+    "retrying": "重试中…"
   },
   "chat": {
     "title": "你现在在想什么？",
@@ -184,7 +207,7 @@
     "headline": "今天想从哪里开始？",
     "subtext": "让指引告诉你，此刻适合怎么做。",
     "primary": {
-      "label": "每日盘",
+      "label": "每日罗盘",
       "title": "看清今天的能量节奏，顺势过好这一天。",
       "subtext": "",
       "cta": "开始今天指引"
@@ -203,6 +226,12 @@
       "label": "关系解析",
       "title": "理解彼此，让相处更自在。",
       "subtitle": ""
+    },
+    "debate": {
+      "label": "东西解析",
+      "title": "东方命理与西方心理，双视角解读你的问题。",
+      "subtitle": "",
+      "cta": "开始解析"
     },
     "footer": "看清局势，做出更明智的选择。"
   },

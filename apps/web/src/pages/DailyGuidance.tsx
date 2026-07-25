@@ -2,164 +2,287 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
-import { Lock } from 'lucide-react';
-import { fetchDailyGuidance } from '@/services/api';
+import { fetchDailyGuidance, fetchMottoTest } from '@/services/api';
 import { normalizeLanguage, SUPPORTED_LANGUAGES } from '@/lib/languages';
 import { getGeneratedLanguage, languageDisplayName } from '@/lib/contentLanguage';
-import OriaLogo from '@/components/OriaLogo';
 import PlanetLoader from '@/components/PlanetLoader';
 
+interface Lesson {
+  character: string;
+  element: string;
+  title: string;
+  tag: string;
+  description: string;
+}
+
+interface RelationSection {
+  label: string;
+  content: string;
+  signal?: '順勢' | '留意' | '謹慎';
+  signal_color?: 'green' | 'yellow' | 'red';
+}
+interface PersonalRelation {
+  title: string;
+  tag: string;
+  sections: RelationSection[];
+}
+
+interface DailyQuestion {
+  question: string;
+  source: string;
+}
+
+interface LuckyColor {
+  color: string;
+  hex: string;
+  description: string;
+  reason: string;
+}
+
+interface MottoQuote {
+  quote: string;
+  source: string;
+  original?: string;
+  explanation: string;
+  ganzhi_connection: string;
+  tag: string;
+}
+interface MottoTestData {
+  east?: MottoQuote;
+  west?: MottoQuote;
+  error?: string;
+}
+
 interface DailySummary {
-  tone: string;
-  dailyMode?: string;
-  moment?: string;
-  pace: string;
-  focus?: { do: string; avoid: string };
-  lucky_color?: { color: string; hex?: string; reason: string };
-  helpful_element?: { type: string; value: string; reason: string };
-  tips: { area: string; text: string }[];
-  identity?: string;
-  nudge: string;
-  suggested_prompts: string[];
-  deeper_insight?: string;
-  zodiac_tone?: string;
+  ganzhi: string;
+  stem_lesson: Lesson;
+  branch_lesson: Lesson;
+  personal_relation?: PersonalRelation;
+  daily_question?: DailyQuestion;
+  lucky_color?: LuckyColor;
   content_language?: string;
   generated_language?: string;
   source_language?: string;
 }
 
-const DAILY_MODE_CONFIG: Record<string, { icon: string; color: string; label: Record<string, string> }> = {
-  'ACTION':       { icon: '⚡', color: '#f59e0b', label: { en: 'Action',       'zh-TW': '行動', 'zh-CN': '行动', ja: 'アクション', ko: '행동', sv: 'Action' } },
-  'OPPORTUNITY':  { icon: '🌟', color: '#a78bfa', label: { en: 'Opportunity',  'zh-TW': '機遇', 'zh-CN': '机遇', ja: '好機', ko: '기회', sv: 'Möjlighet' } },
-  'FOCUS':        { icon: '🎯', color: '#60a5fa', label: { en: 'Focus',        'zh-TW': '專注', 'zh-CN': '专注', ja: '集中', ko: '집중', sv: 'Fokus' } },
-  'COMMUNICATION':{ icon: '💬', color: '#34d399', label: { en: 'Communication','zh-TW': '溝通', 'zh-CN': '沟通', ja: 'コミュニケーション', ko: '소통', sv: 'Kommunikation' } },
-  'BOUNDARY':     { icon: '🛡️', color: '#f87171', label: { en: 'Boundary',    'zh-TW': '界限', 'zh-CN': '界限', ja: '境界', ko: '경계', sv: 'Gräns' } },
-  'REFLECTION':   { icon: '🌙', color: '#c4b5fd', label: { en: 'Reflection',   'zh-TW': '內觀', 'zh-CN': '内省', ja: '内省', ko: '성찰', sv: 'Reflektion' } },
-  'RECOVERY':     { icon: '🌿', color: '#6ee7b7', label: { en: 'Recovery',     'zh-TW': '修復', 'zh-CN': '修复', ja: '回復', ko: '회복', sv: 'Återhämtning' } },
+function getElementIcon(element: string): string {
+  if (element.includes('金')) return '🪙';
+  if (element.includes('木')) return '🌿';
+  if (element.includes('水')) return '💧';
+  if (element.includes('火')) return '🔥';
+  if (element.includes('土')) return '🌱';
+  return '☯️';
+}
+
+const sectionLabelStyle: React.CSSProperties = {
+  fontSize: 13,
+  fontWeight: 800,
+  letterSpacing: 1.1,
+  color: '#C9A84C',
+  textTransform: 'uppercase',
 };
 
-const TONE_SYMBOLS: Record<string, string> = {
-  'balanced': '⚖️', 'active': '⚡', 'reflective': '🌙',
-  'inward': '🔮', 'gentle': '🌸', 'powerful': '🔥',
-  'creative': '✨', 'grounded': '🌿', 'intense': '🌊',
-  'calm': '☁️', 'focused': '🎯', 'fire': '🔥',
-  'water': '💧', 'metal': '⚔️', 'wood': '🌳', 'earth': '🪨',
-  '平衡': '⚖️', '積極': '⚡', '內省': '🌙', '反思': '🌙',
-  '火': '🔥', '水': '💧', '金': '⚔️', '木': '🌳', '土': '🪨',
+const tagStyle: React.CSSProperties = {
+  display: 'inline-block',
+  padding: '2px 10px',
+  borderRadius: 999,
+  background: 'rgba(201,168,76,0.14)',
+  border: '1px solid rgba(201,168,76,0.28)',
+  color: '#C9A84C',
+  fontSize: 13,
+  fontWeight: 700,
+  letterSpacing: 0.4,
 };
 
-const COLOR_MAP: Record<string, string> = {
-  // English base colors
-  'red': '#ef4444', 'blue': '#3b82f6', 'green': '#22c55e',
-  'yellow': '#eab308', 'orange': '#f97316', 'purple': '#a855f7',
-  'gold': '#d97706', 'pink': '#ec4899', 'white': '#f1f5f9',
-  'black': '#334155', 'brown': '#92400e', 'cream': '#fef9c3',
-  'forest green': '#16a34a', 'navy': '#1d4ed8', 'teal': '#0d9488',
-  'deep navy': '#1e3a8a', 'indigo': '#3730a3', 'dark blue': '#1e40af',
-  'olive': '#6b7c3e', 'olive green': '#6b7c3e', 'dark olive': '#4a5c2e',
-  'lavender': '#a78bfa', 'coral': '#fb7185', 'sage': '#84a98c',
-  'gray': '#94a3b8', 'grey': '#94a3b8', 'light gray': '#d1d5db', 'light grey': '#d1d5db',
-  'silver': '#cbd5e1', 'copper': '#b45309', 'burgundy': '#881337',
-  // Chinese color names
-  '紅色': '#ef4444', '藍色': '#3b82f6', '綠色': '#22c55e',
-  '黃色': '#eab308', '橙色': '#f97316', '紫色': '#a855f7',
-  '金色': '#d97706', '粉色': '#ec4899', '白色': '#f1f5f9',
-  '黑色': '#334155', '棕色': '#92400e', '褐色': '#92400e', '咖啡色': '#78350f',
-  '灰色': '#94a3b8', '淺灰色': '#d1d5db', '銀色': '#cbd5e1',
-  '橄欖綠': '#6b7c3e', '深橄欖': '#4a5c2e', '苔綠': '#5f7a4a', '草綠': '#4ade80',
-  '薄荷綠': '#6ee7b7', '翠綠': '#10b981', '墨綠': '#166534', '森林綠': '#16a34a',
-  '天藍': '#38bdf8', '水藍': '#7dd3fc', '寶藍': '#2563eb',
-  '藏青': '#1e3a8a', '深藍': '#1e40af', '靛藍': '#3730a3',
-  '深紫': '#7c3aed', '薰衣草': '#a78bfa', '淡紫': '#c4b5fd',
-  '珊瑚': '#fb7185', '玫瑰': '#f43f5e', '酒紅': '#881337',
-  '米白': '#fef9c3', '奶油': '#fef9c3', '象牙': '#fefce8',
-  '土黃': '#ca8a04', '沙色': '#d4a574', '銅色': '#b45309',
+const bodyTextStyle: React.CSSProperties = {
+  fontSize: 16,
+  color: 'rgba(255,255,255,0.82)',
+  lineHeight: 1.65,
+  margin: 0,
 };
 
+function GuidanceCard({ icon, sectionLabel, title, tag, description, style }: {
+  icon: string;
+  sectionLabel: string;
+  title: string;
+  tag: string;
+  description: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div className="oria-card" style={style}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <span style={{ fontSize: 18, lineHeight: 1 }}>{icon}</span>
+        <span style={sectionLabelStyle}>{sectionLabel}</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+        <span style={{ fontSize: 21, fontWeight: 800, color: '#F8F3FF', lineHeight: 1.2 }}>{title}</span>
+        <span style={tagStyle}>{tag}</span>
+      </div>
+      <p style={bodyTextStyle}>{description}</p>
+    </div>
+  );
+}
 
+function LockedCard({ sectionLabel, lockedDesc, lockedButton, onUpgrade }: {
+  sectionLabel: string;
+  lockedDesc: string;
+  lockedButton: string;
+  onUpgrade: () => void;
+}) {
+  return (
+    <div className="oria-card" style={{ position: 'relative', overflow: 'hidden', minHeight: 128 }}>
+      <div style={{ filter: 'blur(5px)', opacity: 0.45, pointerEvents: 'none', userSelect: 'none' }}>
+        <div style={{ height: 13, width: '38%', background: 'rgba(201,168,76,0.4)', borderRadius: 4, marginBottom: 12 }} />
+        <div style={{ height: 20, width: '55%', background: 'rgba(255,255,255,0.3)', borderRadius: 4, marginBottom: 12 }} />
+        <div style={{ height: 13, width: '88%', background: 'rgba(255,255,255,0.18)', borderRadius: 4, marginBottom: 8 }} />
+        <div style={{ height: 13, width: '72%', background: 'rgba(255,255,255,0.18)', borderRadius: 4 }} />
+      </div>
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        background: 'rgba(10,14,32,0.62)',
+        backdropFilter: 'blur(2px)',
+      }}>
+        <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: 1, color: '#C9A84C' }}>{sectionLabel}</span>
+        <span style={{ fontSize: 20 }}>🔒</span>
+        <span style={{
+          fontSize: 12,
+          color: 'rgba(255,255,255,0.5)',
+          fontWeight: 600,
+          letterSpacing: 0.3,
+          textAlign: 'center',
+          padding: '0 20px',
+          lineHeight: 1.5,
+        }}>
+          {lockedDesc}
+        </span>
+        <button
+          type="button"
+          onClick={onUpgrade}
+          style={{
+            border: '1px solid rgba(243,200,139,0.5)',
+            background: 'rgba(243,200,139,0.12)',
+            color: '#FFE4B8',
+            borderRadius: 999,
+            padding: '7px 18px',
+            fontSize: 13,
+            fontWeight: 800,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+        >
+          {lockedButton}
+        </button>
+      </div>
+    </div>
+  );
+}
 
-function getToneSymbol(tone: string): string {
-  const lower = tone.toLowerCase();
-  for (const [key, symbol] of Object.entries(TONE_SYMBOLS)) {
-    if (lower.includes(key.toLowerCase())) return symbol;
+const MOTTO_REVEAL_CSS = `
+  @keyframes mottoReveal {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0);   }
   }
-  return '✦';
-}
+`;
 
-function getElementColor(value: string): string | null {
-  const lower = value.toLowerCase();
-  for (const [key, color] of Object.entries(COLOR_MAP)) {
-    if (lower.includes(key.toLowerCase())) return color;
-  }
-  return null;
-}
-
-function isReadableOnDark(hex: string): boolean {
-  const normalized = hex.replace('#', '');
-  if (normalized.length !== 6) return true;
-  const r = parseInt(normalized.slice(0, 2), 16) / 255;
-  const g = parseInt(normalized.slice(2, 4), 16) / 255;
-  const b = parseInt(normalized.slice(4, 6), 16) / 255;
-  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return luminance > 0.32;
-}
-
-export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = false }: { user: User; isPlus?: boolean; isPlusLoaded?: boolean }) {
+export default function DailyGuidance({ user, isPlus = false }: { user: User; isPlus?: boolean; isPlusLoaded?: boolean }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [summary, setSummary] = useState<DailySummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showDeepDive, setShowDeepDive] = useState(false);
   const [retrying, setRetrying] = useState(false);
+  const [mottoTest, setMottoTest] = useState<MottoTestData | null>(null);
+  const [mottoTestLoading, setMottoTestLoading] = useState(false);
+
+  // 盲盒 — daily choice keyed by calendar date, resets automatically at midnight
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const mottoChoiceKey = `oria_motto_choice_${todayStr}`;
+  const [choice, setChoice] = useState<'east' | 'west' | null>(
+    () => localStorage.getItem(mottoChoiceKey) as 'east' | 'west' | null,
+  );
+
+  function handleChoice(side: 'east' | 'west') {
+    if (mottoTestLoading) return;
+    setChoice(side);
+    localStorage.setItem(mottoChoiceKey, side);
+  }
+
+  const generationLanguage = normalizeLanguage(i18n.language);
+  const todayKey = new Date().toDateString();
+  const cacheKey = `oria_daily_${todayKey}`;
+
+  const isNetworkError = (msg: string) =>
+    msg === 'Failed to fetch' || msg === 'fetch failed' || msg === 'Network request failed' || msg === 'Load failed';
+
+  const tryFetch = (attemptsLeft: number): Promise<void> =>
+    fetchDailyGuidance(generationLanguage)
+      .then(data => {
+        const generatedLanguage = getGeneratedLanguage(data.summary, data.content_language || generationLanguage);
+        const full = { ...data.summary, content_language: generatedLanguage };
+        setSummary(full);
+        sessionStorage.setItem(cacheKey, JSON.stringify(full));
+      })
+      .catch((err: Error) => {
+        if (isNetworkError(err.message) && attemptsLeft > 0) {
+          return new Promise<void>(resolve =>
+            setTimeout(() => resolve(tryFetch(attemptsLeft - 1)), 2500)
+          );
+        }
+        setError(err.message);
+      });
 
   useEffect(() => {
-    const generationLanguage = normalizeLanguage(i18n.language);
-    const todayKey = new Date().toDateString();
-    const cacheKey = `oria_daily_${todayKey}`;
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
-      setSummary(JSON.parse(cached));
-      setLoading(false);
-      return;
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed?.stem_lesson) {
+          setSummary(parsed);
+          setLoading(false);
+          return;
+        }
+      } catch { /* fall through */ }
+      sessionStorage.removeItem(cacheKey);
     }
 
     for (const language of SUPPORTED_LANGUAGES) {
-      const legacyCached = sessionStorage.getItem(`oria_daily_${todayKey}_${language.code}`);
-      if (legacyCached) {
-        const parsed = JSON.parse(legacyCached);
-        const summaryWithLanguage = { ...parsed, content_language: getGeneratedLanguage(parsed, language.code) };
-        setSummary(summaryWithLanguage);
-        sessionStorage.setItem(cacheKey, JSON.stringify(summaryWithLanguage));
-        setLoading(false);
-        return;
-      }
+      sessionStorage.removeItem(`oria_daily_${todayKey}_${language.code}`);
     }
-
-    const isNetworkError = (msg: string) =>
-      msg === 'Failed to fetch' || msg === 'fetch failed' || msg === 'Network request failed' || msg === 'Load failed';
-
-    const tryFetch = (attemptsLeft: number): Promise<void> =>
-      fetchDailyGuidance(generationLanguage)
-        .then(data => {
-          const generatedLanguage = getGeneratedLanguage(data.summary, data.content_language || generationLanguage);
-          const summaryWithLanguage = { ...data.summary, content_language: generatedLanguage };
-          setSummary(summaryWithLanguage);
-          sessionStorage.setItem(cacheKey, JSON.stringify(summaryWithLanguage));
-        })
-        .catch((err: Error) => {
-          if (isNetworkError(err.message) && attemptsLeft > 0) {
-            return new Promise<void>(resolve =>
-              setTimeout(() => resolve(tryFetch(attemptsLeft - 1)), 2500)
-            );
-          }
-          setError(err.message);
-        });
 
     tryFetch(3).finally(() => setLoading(false));
   }, []);
 
-  const dateLocale = normalizeLanguage(i18n.language) === 'en' ? 'en-GB' : normalizeLanguage(i18n.language);
+  // Fetch motto only for Plus users
+  useEffect(() => {
+    if (!isPlus || !summary?.ganzhi) return;
+    const mottoKey = `oria_motto_v2_${summary.ganzhi}`;
+    const stored = sessionStorage.getItem(mottoKey);
+    if (stored) {
+      try {
+        setMottoTest(JSON.parse(stored));
+        return;
+      } catch {
+        sessionStorage.removeItem(mottoKey);
+      }
+    }
+    setMottoTestLoading(true);
+    fetchMottoTest(summary.ganzhi)
+      .then(data => {
+        setMottoTest(data);
+        sessionStorage.setItem(mottoKey, JSON.stringify(data));
+      })
+      .catch((err: Error) => setMottoTest({ error: err.message }))
+      .finally(() => setMottoTestLoading(false));
+  }, [summary?.ganzhi, isPlus]);
+
+  const dateLocale = generationLanguage === 'en' ? 'en-GB' : generationLanguage;
   const today = new Date().toLocaleDateString(dateLocale, {
     weekday: 'short', day: 'numeric', month: 'short',
   });
@@ -171,38 +294,15 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
     </div>
   );
 
-  const isNetworkErr = (msg: string) =>
-    msg === 'Failed to fetch' || msg === 'fetch failed' || msg === 'Network request failed' || msg === 'Load failed';
-
   const handleRetry = () => {
     setRetrying(true);
     setError('');
     setLoading(true);
-    const generationLanguage = normalizeLanguage(i18n.language);
-    const isNetworkError = (msg: string) =>
-      msg === 'Failed to fetch' || msg === 'fetch failed' || msg === 'Network request failed' || msg === 'Load failed';
-    const tryFetch = (attemptsLeft: number): Promise<void> =>
-      fetchDailyGuidance(generationLanguage)
-        .then(data => {
-          const generatedLanguage = getGeneratedLanguage(data.summary, data.content_language || generationLanguage);
-          const summaryWithLanguage = { ...data.summary, content_language: generatedLanguage };
-          setSummary(summaryWithLanguage);
-          const todayKey = new Date().toDateString();
-          sessionStorage.setItem(`oria_daily_${todayKey}`, JSON.stringify(summaryWithLanguage));
-        })
-        .catch((err: Error) => {
-          if (isNetworkError(err.message) && attemptsLeft > 0) {
-            return new Promise<void>(resolve =>
-              setTimeout(() => resolve(tryFetch(attemptsLeft - 1)), 2500)
-            );
-          }
-          setError(err.message);
-        });
     tryFetch(3).finally(() => { setLoading(false); setRetrying(false); });
   };
 
   if (error) {
-    const networkErr = isNetworkErr(error);
+    const networkErr = isNetworkError(error);
     return (
       <div className="oria-page oria-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="oria-card" style={{ textAlign: 'center', padding: '48px 24px', maxWidth: 420 }}>
@@ -229,57 +329,21 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
 
   if (!summary) return null;
 
-  const toneSymbol = getToneSymbol(summary.tone);
-
-  const TIP_ICONS: Record<string, string> = {
-    'Work': '🏢', 'work': '🏢', '工作': '🏢',
-    'Relationships': '❤️', 'relationships': '❤️', '人際': '❤️',
-    'Wellness': '🧘', 'wellness': '🧘', '健康': '🧘',
-    'Finance': '💰', 'finance': '💰', '財務': '💰',
-  };
-  const luckyColor = summary.lucky_color?.color || summary.helpful_element?.value || '';
-  const elementColor = summary.lucky_color?.hex || getElementColor(luckyColor);
-  const sectionLabelStyle = {
-    fontSize: 14,
-    fontWeight: 800,
-    letterSpacing: 1.2,
-    color: '#C9A84C',
-    textTransform: 'uppercase' as const,
-    marginBottom: 10,
-  };
-  const subLabelStyle = {
-    fontSize: 13,
-    color: '#F3C88B',
-    fontWeight: 800,
-    marginBottom: 8,
-  };
-  const bodyTextStyle = {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.84)',
-    lineHeight: 1.6,
-    margin: 0,
-  };
-  const shortText = (text?: string) => {
-    if (!text) return '';
-    const trimmed = text.trim();
-    const match = trimmed.match(/^.*?[。！？.!?](?=\s|$|[^。！？.!?])?/);
-    return (match?.[0] || trimmed).replace(/^["“]|["”]$/g, '');
-  };
-  const colorReason = shortText(summary.lucky_color?.reason || summary.helpful_element?.reason);
-  const chatPrefill = t('daily.chat_prefill', {
-    text: shortText(summary.focus?.do) || shortText(summary.nudge),
-  });
   const contentLanguage = getGeneratedLanguage(summary, i18n.language);
   const showGeneratedLanguage = contentLanguage !== normalizeLanguage(i18n.language);
+
+  const SIGNAL_CONFIG = {
+    '順勢': { color: '#4ade80', bg: 'rgba(74,222,128,0.12)',   border: 'rgba(74,222,128,0.3)' },
+    '留意': { color: '#facc15', bg: 'rgba(250,204,21,0.12)',   border: 'rgba(250,204,21,0.3)' },
+    '謹慎': { color: '#f87171', bg: 'rgba(248,113,113,0.12)',  border: 'rgba(248,113,113,0.3)' },
+  } as const;
 
   return (
     <div className="oria-page oria-container animate-fade-in">
       <header className="oria-page-header">
         <div className="oria-card-label">{t('nav.daily')}</div>
         <h1 className="oria-page-title">{today}</h1>
-        <div className="oria-page-subtitle">
-          {t('daily.refresh')}
-        </div>
+        <div className="oria-page-subtitle">{t('daily.refresh')}</div>
       </header>
 
       {showGeneratedLanguage && (
@@ -297,186 +361,326 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
         </div>
       )}
 
-      {/* Layer 1: quick daily guide */}
-      <div className="oria-card" style={{
-        display: 'flex', alignItems: 'center',
-        gap: 18, padding: '20px 24px',
-        background: 'linear-gradient(135deg, rgba(201,168,76,0.14), rgba(17,26,50,0.92))',
-        border: '1px solid rgba(201,168,76,0.28)'
-      }}>
-        <div style={{ fontSize: 48, flexShrink: 0 }}>{toneSymbol}</div>
-        <div>
-          <div style={sectionLabelStyle}>
-            {t('daily.rhythm')}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#F8F3FF', lineHeight: 1.15 }}>
-              {summary.tone}
-            </div>
-            {summary.dailyMode && DAILY_MODE_CONFIG[summary.dailyMode] && (
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
-                background: `${DAILY_MODE_CONFIG[summary.dailyMode].color}18`,
-                border: `1px solid ${DAILY_MODE_CONFIG[summary.dailyMode].color}55`,
-                borderRadius: 999, padding: '3px 10px',
-                fontSize: 12, fontWeight: 700,
-                color: DAILY_MODE_CONFIG[summary.dailyMode].color,
-                letterSpacing: 0.5,
-              }}>
-                <span>{DAILY_MODE_CONFIG[summary.dailyMode].icon}</span>
-                <span>{DAILY_MODE_CONFIG[summary.dailyMode].label[i18n.language] || DAILY_MODE_CONFIG[summary.dailyMode].label['en']}</span>
-              </div>
-            )}
-          </div>
-          <div style={bodyTextStyle}>
-            {shortText(summary.pace)}
-          </div>
-        </div>
+      {/* Ganzhi pill */}
+      <div style={{ textAlign: 'center', marginBottom: 6 }}>
+        <span style={{
+          display: 'inline-block',
+          padding: '6px 20px',
+          borderRadius: 999,
+          background: 'rgba(201,168,76,0.12)',
+          border: '1px solid rgba(201,168,76,0.32)',
+          color: '#C9A84C',
+          fontSize: 17,
+          fontWeight: 800,
+          letterSpacing: '0.18em',
+          fontFamily: '"Noto Serif TC", "Noto Serif SC", serif',
+        }}>
+          {summary.ganzhi}
+        </span>
       </div>
 
-      {summary.focus && (
-        <div className="oria-card">
-          <div style={sectionLabelStyle}>
-            {t('daily.guidance')}
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
-            {summary.focus.do && (
-              <div style={{ padding: 16, borderRadius: 18, background: 'rgba(255,255,255,0.045)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <div style={subLabelStyle}>{t('daily.lean_into')}</div>
-                <p style={bodyTextStyle}>{shortText(summary.focus.do)}</p>
-              </div>
-            )}
-            {summary.focus.avoid && (
-              <div style={{ padding: 16, borderRadius: 18, background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                <div style={subLabelStyle}>{t('daily.avoid')}</div>
-                <p style={{ ...bodyTextStyle, color: 'rgba(255,255,255,0.78)' }}>{shortText(summary.focus.avoid)}</p>
-              </div>
-            )}
-          </div>
-        </div>
+      {/* 今日天干 */}
+      {summary.stem_lesson && (
+        <GuidanceCard
+          icon={getElementIcon(summary.stem_lesson.element)}
+          sectionLabel={t('daily.stem_label')}
+          title={summary.stem_lesson.title}
+          tag={summary.stem_lesson.tag}
+          description={summary.stem_lesson.description}
+        />
       )}
 
-      <div className="oria-card" style={{ borderLeft: '4px solid #C9A84C', background: 'rgba(201, 168, 76, 0.1)', textAlign: 'center' }}>
-        <div style={sectionLabelStyle}>
-          {t('daily.reminder')}
-        </div>
-        <p className="text-lg" style={{ fontStyle: 'italic', lineHeight: 1.55, fontSize: 19, color: '#FFFFFF', margin: 0 }}>
-          "{shortText(summary.nudge)}"
-        </p>
-      </div>
+      {/* 今日地支 */}
+      {summary.branch_lesson && (
+        <GuidanceCard
+          icon={getElementIcon(summary.branch_lesson.element)}
+          sectionLabel={t('daily.branch_label')}
+          title={summary.branch_lesson.title}
+          tag={summary.branch_lesson.tag}
+          description={summary.branch_lesson.description}
+        />
+      )}
 
-      {(summary.lucky_color || summary.helpful_element) && (
-        <div
-          className="oria-card"
-          style={{
-            padding: '20px 22px',
-            background: isPlus
-              ? 'linear-gradient(135deg, rgba(255,255,255,0.045), rgba(201,168,76,0.055))'
-              : 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(201,168,76,0.08))',
-            border: isPlus ? '1px solid rgba(201,168,76,0.18)' : '1px solid rgba(243,200,139,0.24)',
-          }}
+      {/* Free user CTA — shown directly after 地支 */}
+      {!isPlus && (
+        <button
+          type="button"
+          className="oria-btn-primary"
+          style={{ marginBottom: 6 }}
+          onClick={() => navigate('/chat', { state: { prefill: t('daily.free_cta_prefill') } })}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            {isPlus ? (
-              <div
-                aria-hidden="true"
-                style={{
-                  width: 58,
-                  height: 58,
-                  borderRadius: '50%',
-                  background: elementColor || 'linear-gradient(135deg, rgba(216,180,254,0.65), rgba(243,200,139,0.52))',
-                  boxShadow: elementColor
-                    ? `0 0 28px ${elementColor}88`
-                    : '0 0 28px rgba(216,180,254,0.28)',
-                  border: '1px solid rgba(255,255,255,0.18)',
-                  flexShrink: 0,
-                }}
-              />
-            ) : (
-              <div
-                aria-hidden="true"
-                style={{
-                  width: 58,
-                  height: 58,
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, rgba(216,180,254,0.56), rgba(255,255,255,0.22), rgba(243,200,139,0.35))',
-                  filter: 'blur(3px)',
-                  opacity: 0.72,
-                  boxShadow: '0 0 28px rgba(216,180,254,0.22)',
-                  flexShrink: 0,
-                }}
-              />
-            )}
+          💬 {t('daily.free_cta')}
+        </button>
+      )}
 
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ ...sectionLabelStyle, marginBottom: 6 }}>
-                {t('daily.color')}
-              </div>
+      {/* 今日格言 — Plus only with 盲盒 mechanic */}
+      {isPlus ? (
+        <div className="oria-card" style={{
+          background: 'linear-gradient(135deg, rgba(201,168,76,0.07), rgba(17,26,50,0.88))',
+          border: '1px solid rgba(201,168,76,0.2)',
+        }}>
+          <style>{MOTTO_REVEAL_CSS}</style>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <span style={{ fontSize: 18, lineHeight: 1 }}>📖</span>
+            <span style={sectionLabelStyle}>{t('daily.motto_label')}</span>
+          </div>
 
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                marginBottom: 6,
-              }}>
-                {!isPlus && <Lock size={14} strokeWidth={2.2} color="rgba(243,200,139,0.78)" />}
-                <div style={{
-                fontSize: 24,
-                fontWeight: 850,
-                lineHeight: 1.15,
-                  color: isPlus && elementColor && isReadableOnDark(elementColor) ? elementColor : '#F8F3FF',
-                  textShadow: isPlus && elementColor && !isReadableOnDark(elementColor)
-                    ? `0 0 10px ${elementColor}, 0 1px 2px rgba(255,255,255,0.32)`
-                    : isPlus && elementColor
-                      ? `0 0 12px ${elementColor}66`
-                      : undefined,
-                  filter: isPlus ? undefined : 'blur(1px)',
-                  opacity: isPlus ? 1 : 0.78,
-                }}>
-                  {isPlus ? luckyColor : t('daily.color_locked')}
-                </div>
-              </div>
-
-              <p style={{ ...bodyTextStyle, fontSize: 15, color: 'rgba(255,255,255,0.72)', marginBottom: 8 }}>
-                {isPlus ? colorReason : t('daily.color_locked_teaser')}
-              </p>
-
-              <p style={{
-                margin: 0,
-                fontSize: 13,
-                color: isPlus ? '#F3C88B' : 'rgba(255,255,255,0.45)',
-                fontWeight: isPlus ? 800 : 400,
-                lineHeight: 1.5,
-              }}>
-                {isPlus ? t('daily.color_micro_action') : t('daily.color_locked_microcopy')}
-              </p>
-
-              {!isPlus && (
+          {/* No choice yet — two mystery boxes */}
+          {!choice && (
+            <div style={{ display: 'flex', gap: 10 }}>
+              {([
+                { side: 'east' as const, icon: '🏮', label: t('daily.blindbox_east_label'), sublabel: t('daily.blindbox_east_sublabel') },
+                { side: 'west' as const, icon: '🌍', label: t('daily.blindbox_west_label'), sublabel: t('daily.blindbox_west_sublabel') },
+              ]).map(({ side, icon, label, sublabel }) => (
                 <button
+                  key={side}
                   type="button"
-                  onClick={() => navigate('/upgrade')}
+                  onClick={() => handleChoice(side)}
+                  disabled={mottoTestLoading}
                   style={{
-                    marginTop: 14,
-                    border: '1px solid rgba(243,200,139,0.4)',
-                    background: 'rgba(243,200,139,0.08)',
-                    color: '#FFE4B8',
-                    borderRadius: 999,
-                    padding: '9px 16px',
-                    fontSize: 13,
-                    fontWeight: 800,
-                    cursor: 'pointer',
+                    flex: 1,
+                    background: 'rgba(201,168,76,0.06)',
+                    border: '1px solid rgba(201,168,76,0.28)',
+                    borderRadius: 14,
+                    padding: '22px 12px',
+                    cursor: mottoTestLoading ? 'default' : 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 8,
                     fontFamily: 'inherit',
+                    opacity: mottoTestLoading ? 0.55 : 1,
+                    transition: 'opacity 0.2s',
                   }}
                 >
-                  {t('daily.locked_cta_button')}
+                  <span style={{ fontSize: 30 }}>{icon}</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#C9A84C' }}>{label}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>{sublabel}</span>
+                  <span style={{
+                    fontSize: 12, marginTop: 4,
+                    color: mottoTestLoading ? 'rgba(255,255,255,0.28)' : 'rgba(201,168,76,0.75)',
+                  }}>
+                    {mottoTestLoading ? t('daily.blindbox_generating') : t('daily.blindbox_open')}
+                  </span>
                 </button>
-              )}
+              ))}
             </div>
-          </div>
+          )}
+
+          {/* Choice made — revealed quote + closed box */}
+          {choice && (
+            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              {(['east', 'west'] as const).map((side) => {
+                const isChosen = choice === side;
+                const meta = side === 'east'
+                  ? { icon: '🏮', label: t('daily.blindbox_east_label') }
+                  : { icon: '🌍', label: t('daily.blindbox_west_label') };
+                const q = mottoTest?.[side];
+
+                if (!isChosen) {
+                  return (
+                    <div key={side} style={{
+                      width: 86,
+                      flexShrink: 0,
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.07)',
+                      borderRadius: 14,
+                      padding: '18px 8px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 8,
+                    }}>
+                      <span style={{ fontSize: 22 }}>🌙</span>
+                      <span style={{
+                        fontSize: 11, fontWeight: 700,
+                        color: 'rgba(255,255,255,0.28)',
+                        textAlign: 'center', lineHeight: 1.4,
+                      }}>
+                        {meta.label}
+                      </span>
+                      <span style={{
+                        fontSize: 11, color: 'rgba(255,255,255,0.2)',
+                        textAlign: 'center', lineHeight: 1.5,
+                      }}>
+                        {t('daily.blindbox_tomorrow')}
+                      </span>
+                    </div>
+                  );
+                }
+
+                // Revealed side
+                return (
+                  <div key={side} style={{ flex: 1, animation: 'mottoReveal 0.45s ease-out both' }}>
+                    {mottoTestLoading && (
+                      <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', padding: '12px 0' }}>
+                        {t('daily.blindbox_generating_motto')}
+                      </div>
+                    )}
+                    {!mottoTestLoading && mottoTest?.error && (
+                      <p style={{ fontSize: 14, color: 'rgba(255,100,100,0.7)', margin: 0 }}>
+                        ⚠️ {mottoTest.error}
+                      </p>
+                    )}
+                    {!mottoTestLoading && q && (
+                      <>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                          <span style={{ fontSize: 14 }}>{meta.icon}</span>
+                          <span style={{
+                            fontSize: 13, fontWeight: 800, letterSpacing: 0.8,
+                            color: '#C9A84C', textTransform: 'uppercase' as const,
+                          }}>
+                            {meta.label}
+                          </span>
+                          {q.tag && <span style={{ ...tagStyle, fontSize: 12, padding: '1px 9px' }}>{q.tag}</span>}
+                        </div>
+                        <p style={{
+                          fontSize: 17, color: '#e8dcc8', fontStyle: 'italic',
+                          lineHeight: 1.85, margin: '0 0 6px',
+                          fontFamily: '"Noto Serif TC", "Noto Serif SC", serif',
+                          letterSpacing: '0.03em',
+                        }}>
+                          「{q.quote}」
+                        </p>
+                        <p style={{ fontSize: 13, color: 'rgba(201,168,76,0.65)', margin: '0 0 10px', letterSpacing: 0.3 }}>
+                          ── {q.source}
+                        </p>
+                        {q.original && (
+                          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.32)', fontStyle: 'italic', margin: '0 0 10px' }}>
+                            {q.original}
+                          </p>
+                        )}
+                        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', lineHeight: 1.65, margin: '0 0 8px' }}>
+                          {q.explanation}
+                        </p>
+                        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', margin: 0 }}>
+                          🔗 {q.ganzhi_connection}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
+      ) : (
+        <LockedCard sectionLabel={t('daily.motto_label')} lockedDesc={t('daily.locked_desc')} lockedButton={t('daily.locked_button')} onUpgrade={() => navigate('/upgrade')} />
       )}
 
-      {isPlus ? (
+      {/* 今日對你的啟示 */}
+      {summary.personal_relation ? (() => {
+        const pr = summary.personal_relation!;
+        return (
+          <div className="oria-card">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <span style={{ fontSize: 18, lineHeight: 1 }}>✨</span>
+              <span style={sectionLabelStyle}>{t('daily.relation_label')}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <span style={{ fontSize: 21, fontWeight: 800, color: '#F8F3FF' }}>{pr.title}</span>
+              {pr.tag && <span style={tagStyle}>{pr.tag}</span>}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {(pr.sections ?? []).map((section, i) => {
+                const sig = section.signal && SIGNAL_CONFIG[section.signal];
+                return (
+                  <div key={i} style={{
+                    paddingTop: i > 0 ? 14 : 0,
+                    borderTop: i > 0 ? '1px solid rgba(255,255,255,0.07)' : 'none',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                      <span style={{
+                        fontSize: 13, fontWeight: 800, letterSpacing: 0.8,
+                        color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' as const,
+                      }}>
+                        {section.label}
+                      </span>
+                      {sig && (
+                        <span style={{
+                          fontSize: 13, fontWeight: 800, letterSpacing: 0.5,
+                          color: sig.color, background: sig.bg,
+                          border: `1px solid ${sig.border}`,
+                          borderRadius: 999, padding: '2px 9px',
+                        }}>
+                          {section.signal === '順勢' ? '🟢' : section.signal === '留意' ? '🟡' : '🔴'} {section.signal}
+                        </span>
+                      )}
+                    </div>
+                    <p style={bodyTextStyle}>{section.content}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })() : (
+        <LockedCard sectionLabel={t('daily.relation_label')} lockedDesc={t('daily.locked_desc')} lockedButton={t('daily.locked_button')} onUpgrade={() => navigate('/upgrade')} />
+      )}
+
+      {/* 今日提問 */}
+      {summary.daily_question ? (
+        <div className="oria-card" style={{
+          borderLeft: '3px solid #C9A84C',
+          background: 'rgba(201,168,76,0.05)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <span style={{ fontSize: 18, lineHeight: 1 }}>🪞</span>
+            <span style={sectionLabelStyle}>{t('daily.question_label')}</span>
+          </div>
+          <p style={{ fontSize: 17, color: '#e8dcc8', lineHeight: 1.75, fontStyle: 'italic', margin: '0 0 6px' }}>
+            {summary.daily_question.question}
+          </p>
+          <p style={{ fontSize: 13, color: 'rgba(201,168,76,0.6)', margin: '0 0 16px' }}>
+            {summary.daily_question.source}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/chat', { state: { prefill: summary.daily_question!.question } })}
+            style={{
+              background: 'rgba(201,168,76,0.12)',
+              border: '1px solid rgba(201,168,76,0.35)',
+              color: '#FFE4B8',
+              borderRadius: 999,
+              padding: '9px 18px',
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            💬 {t('daily.chat_with_oria')}
+          </button>
+        </div>
+      ) : (
+        <LockedCard sectionLabel={t('daily.question_label')} lockedDesc={t('daily.locked_desc')} lockedButton={t('daily.locked_button')} onUpgrade={() => navigate('/upgrade')} />
+      )}
+
+      {/* 今日幸運色 */}
+      {summary.lucky_color ? (
+        <div className="oria-card">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <div style={{
+              width: 22, height: 22, borderRadius: '50%',
+              background: summary.lucky_color.hex,
+              boxShadow: `0 0 10px ${summary.lucky_color.hex}88`,
+              border: '1px solid rgba(255,255,255,0.18)',
+              flexShrink: 0,
+            }} />
+            <span style={sectionLabelStyle}>{t('daily.lucky_color_label')}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <span style={{ fontSize: 21, fontWeight: 800, color: '#F8F3FF' }}>{summary.lucky_color.color}</span>
+            <span style={tagStyle}>{summary.lucky_color.description}</span>
+          </div>
+          <p style={bodyTextStyle}>{summary.lucky_color.reason}</p>
+        </div>
+      ) : (
+        <LockedCard sectionLabel={t('daily.lucky_color_label')} lockedDesc={t('daily.locked_desc')} lockedButton={t('daily.locked_button')} onUpgrade={() => navigate('/upgrade')} />
+      )}
+
+      {/* Plus CTA */}
+      {isPlus && (
         <button
           type="button"
           className="oria-btn-primary"
@@ -485,137 +689,6 @@ export default function DailyGuidance({ user, isPlus = false, isPlusLoaded = fal
         >
           💬 {t('chatEntry.daily.button')}
         </button>
-      ) : (
-        <div className="oria-card" style={{
-          textAlign: 'center',
-          background: 'linear-gradient(135deg, rgba(201,168,76,0.12), rgba(243,200,139,0.08))',
-          border: '1px solid rgba(243,200,139,0.28)',
-          display: 'grid',
-          gap: 12,
-        }}>
-          <div style={{ ...sectionLabelStyle, marginBottom: 0 }}>
-            {t('daily.locked_cta_title')}
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.68)', fontSize: 15, lineHeight: 1.6, margin: 0 }}>
-            {t('daily.locked_cta_subtext')}
-          </p>
-          <button
-            type="button"
-            className="oria-btn-premium"
-            onClick={() => navigate('/upgrade')}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-          >
-            <Lock size={16} strokeWidth={2.2} />
-            {t('daily.locked_cta_button')}
-          </button>
-        </div>
-      )}
-
-      <button
-        type="button"
-        onClick={() => setShowDeepDive(value => !value)}
-        className="oria-btn-outline oria-deep-toggle"
-        style={{ margin: '8px 0 22px', fontSize: 16 }}
-      >
-        {showDeepDive ? t('daily.deep_close') : t('daily.deep_open')}
-      </button>
-
-      {showDeepDive && (
-        <div className="animate-fade-in" style={{ display: 'grid', gap: 18 }}>
-          {summary.identity && (
-            <div className="oria-card" style={{ background: 'rgba(201,168,76,0.06)', textAlign: 'center' }}>
-              <p style={{ fontSize: 18, color: '#C9A84C', lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>
-                ✦ {shortText(summary.identity)}
-              </p>
-            </div>
-          )}
-
-          {summary.moment && (
-            <div className="oria-card" style={{ background: 'rgba(201,168,76,0.06)', borderLeft: '3px solid rgba(201,168,76,0.5)' }}>
-              <div style={sectionLabelStyle}>
-                🔮 {t('daily.moment')}
-              </div>
-              <p style={{ ...bodyTextStyle, fontStyle: 'italic' }}>
-                {shortText(summary.moment)}
-              </p>
-            </div>
-          )}
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
-            {summary.tips.map((tip, i) => (
-              <div key={i} className="oria-card" style={{ margin: 0, padding: 22, textAlign: 'center' }}>
-                <div style={sectionLabelStyle}>
-                  {TIP_ICONS[tip.area] || '✦'} {tip.area}
-                </div>
-                <p className="text-sm" style={bodyTextStyle}>{shortText(tip.text)}</p>
-              </div>
-            ))}
-          </div>
-
-          {isPlusLoaded && isPlus && (
-            <>
-              {summary.deeper_insight && (
-                <div className="oria-card" style={{
-                  background: 'rgba(201,168,76,0.08)',
-                  border: '1px solid rgba(201,168,76,0.3)'
-                }}>
-                  <div style={sectionLabelStyle}>
-                    ✦ {t('daily.deeper_reason')}
-                  </div>
-                  <p style={bodyTextStyle}>
-                    {shortText(summary.deeper_insight)}
-                  </p>
-                </div>
-              )}
-              {summary.zodiac_tone && (
-                <div className="oria-card" style={{
-                  background: 'rgba(124,58,237,0.06)',
-                  border: '1px solid rgba(124,58,237,0.18)'
-                }}>
-                  <div style={{ ...sectionLabelStyle, color: 'rgba(192,132,252,0.85)' }}>
-                    ☽ {t('daily.zodiac_tone')}
-                  </div>
-                  <p style={{ ...bodyTextStyle, fontStyle: 'italic' }}>
-                    {summary.zodiac_tone}
-                  </p>
-                </div>
-              )}
-            </>
-          )}
-
-          {summary.suggested_prompts?.length > 0 && (
-            <div className="oria-card" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={sectionLabelStyle}>
-                💬 {t('daily.explore_prompts')}
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
-                {summary.suggested_prompts.map((prompt, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => navigate('/chat', { state: { prefill: prompt } })}
-                    style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      borderRadius: 12,
-                      padding: '12px 16px',
-                      color: 'rgba(255,255,255,0.8)',
-                      fontSize: 14,
-                      lineHeight: 1.5,
-                      textAlign: 'left',
-                      cursor: 'pointer',
-                      transition: 'background 0.15s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
       )}
     </div>
   );

@@ -11,6 +11,14 @@ async function getHeaders(): Promise<HeadersInit> {
   };
 }
 
+// TODO: Remove after motto testing is complete
+export async function fetchMottoTest(ganzhi: string) {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/daily-guidance/motto-test?ganzhi=${encodeURIComponent(ganzhi)}`, { headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
 export async function fetchDailyGuidance(lang: string = 'en') {
   const headers = await getHeaders();
   const localDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local timezone
