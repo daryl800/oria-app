@@ -55,6 +55,21 @@ async function getMbtiProfile(mbtiType: string, lang: string): Promise<any | nul
   return profile;
 }
 
+const ELEMENT_WEAR: Record<string, { color: string; hex: string; reason: string }> = {
+  Wood:  { color: '青綠色', hex: '#4CAF50', reason: '補木氣，增添生機與活力' },
+  Fire:  { color: '紅色',   hex: '#E53935', reason: '補火氣，提振熱情與行動力' },
+  Earth: { color: '黃色',   hex: '#F9A825', reason: '補土氣，增強穩定與踏實感' },
+  Metal: { color: '白色',   hex: '#E8E8E8', reason: '補金氣，提升專注與判斷力' },
+  Water: { color: '深藍色', hex: '#1565C0', reason: '補水氣，增添靈活與智慧' },
+};
+
+function getLuckyWear(five_elements_strength: Record<string, number> | null) {
+  if (!five_elements_strength) return ELEMENT_WEAR['Water'];
+  const weakest = Object.entries(five_elements_strength)
+    .sort(([, a], [, b]) => a - b)[0]?.[0] ?? 'Water';
+  return ELEMENT_WEAR[weakest] ?? ELEMENT_WEAR['Water'];
+}
+
 function trimGuidanceForFree(summary: any, lang: string): any {
   const trimmed = { ...summary };
   const nudge = lang === 'zh-TW'
@@ -219,6 +234,8 @@ router.get('/today', async (req: Request, res: Response) => {
     const summary = JSON.parse(clean);
     // Ensure ganzhi always matches the authoritative value from the Python service
     summary.ganzhi = stem + branch;
+    // Lucky wear is deterministic — derived from weakest element, never AI-generated
+    summary.lucky_wear = getLuckyWear(baziVersion.five_elements_strength);
 
     // 5. cache result with lang
     await supabase.from('daily_guidance').insert({
