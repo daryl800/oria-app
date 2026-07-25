@@ -227,6 +227,12 @@
       "title": "Understand each other and make interactions more at ease.",
       "subtitle": ""
     },
+    "debate": {
+      "label": "East-West Analysis",
+      "title": "Balance Eastern and Western perspectives on your question.",
+      "subtitle": "",
+      "cta": "Start Analysis"
+    },
     "footer": "A clearer way to choose."
   },
   "page_taglines": {

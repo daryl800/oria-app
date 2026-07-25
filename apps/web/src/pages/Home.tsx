@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { User } from '@supabase/supabase-js';
-import { Compass, MessageCircleMore, Sparkles, UsersRound } from 'lucide-react';
+import { Compass, MessageCircleMore, Scale, Sparkles, UsersRound } from 'lucide-react';
 
 interface HomeProps {
   user: User;
@@ -11,7 +11,24 @@ export default function Home(_props: HomeProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const secondaryActions = [
+  const topCards = [
+    {
+      path: '/daily',
+      icon: Compass,
+      label: t('home.primary.label'),
+      title: t('home.primary.title'),
+      subtitle: t('home.primary.cta'),
+    },
+    {
+      path: '/debate',
+      icon: Scale,
+      label: t('home.debate.label'),
+      title: t('home.debate.title'),
+      subtitle: t('home.debate.cta'),
+    },
+  ];
+
+  const secondaryCards = [
     {
       path: '/chat',
       icon: MessageCircleMore,
@@ -43,21 +60,34 @@ export default function Home(_props: HomeProps) {
           <h1 className="oria-page-title">{t('home.headline')}</h1>
         </div>
 
-        <button
-          className="oria-card oria-card-elevated oria-home-primary-card"
-          onClick={() => navigate('/daily')}
-        >
-          <span className="oria-home-primary-icon"><Compass size={30} strokeWidth={2.1} /></span>
-          <div>
-            <div className="oria-card-label">{t('home.primary.label')}</div>
-            <h2>{t('home.primary.title')}</h2>
-            <p className="oria-home-primary-subtext">{t('home.primary.subtext')}</p>
-          </div>
-          <span className="oria-home-primary-cta">{t('home.primary.cta')}</span>
-        </button>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          {topCards.map(action => (
+            <button key={action.path} className="oria-card oria-card-elevated oria-feature-card" onClick={() => navigate(action.path)}>
+              <div className="oria-feature-card-head">
+                <span className="oria-feature-icon"><action.icon size={22} strokeWidth={2.1} /></span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6, width: '100%' }}>
+                  <span className="oria-card-label">{action.label}</span>
+                  <span className="text-lg">{action.title}</span>
+                  <span style={{
+                    marginTop: 6,
+                    padding: '9px 18px',
+                    borderRadius: 999,
+                    color: '#16120A',
+                    background: 'linear-gradient(135deg, #C9A84C 0%, #E7D59A 100%)',
+                    boxShadow: '0 6px 16px rgba(201,168,76,0.22)',
+                    fontSize: 15,
+                    fontWeight: 900,
+                    letterSpacing: '0.02em',
+                    whiteSpace: 'nowrap',
+                  }}>{action.subtitle}</span>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
 
         <div className="oria-home-secondary-grid">
-          {secondaryActions.map(action => (
+          {secondaryCards.map(action => (
             <button key={action.path} className="oria-card oria-card-elevated oria-feature-card" onClick={() => navigate(action.path)}>
               <div className="oria-feature-card-head">
                 <span className="oria-feature-icon"><action.icon size={22} strokeWidth={2.1} /></span>
