@@ -106,20 +106,58 @@ const BRANCH_LESSONS: Record<string, LessonData> = {
 };
 
 
-// Lucky color — deterministic from weakest five element, never AI-generated
-const LUCKY_COLOR_MAP: Record<string, { color: string; hex: string; description: string; reason: string }> = {
-  Wood:  { color: '青綠色', hex: '#4CAF50', description: '適合今天的穿搭或隨身物件', reason: '根據你的五行推算，補木氣，增添生機與活力' },
-  Fire:  { color: '紅色',   hex: '#E53935', description: '適合今天的穿搭或隨身物件', reason: '根據你的五行推算，補火氣，提振熱情與行動力' },
-  Earth: { color: '黃色',   hex: '#F9A825', description: '適合今天的穿搭或隨身物件', reason: '根據你的五行推算，補土氣，增強穩定與踏實感' },
-  Metal: { color: '白色',   hex: '#E8E8E8', description: '適合今天的穿搭或隨身物件', reason: '根據你的五行推算，補金氣，提升專注與判斷力' },
-  Water: { color: '深藍色', hex: '#1565C0', description: '適合今天的穿搭或隨身物件', reason: '根據你的五行推算，補水氣，增添靈活與智慧' },
+// Character → five element mapping (stems + branches)
+const CHAR_TO_ELEMENT: Record<string, string> = {
+  '甲': 'Wood',  '乙': 'Wood',
+  '丙': 'Fire',  '丁': 'Fire',
+  '戊': 'Earth', '己': 'Earth',
+  '庚': 'Metal', '辛': 'Metal',
+  '壬': 'Water', '癸': 'Water',
+  '子': 'Water', '丑': 'Earth', '寅': 'Wood',  '卯': 'Wood',  '辰': 'Earth',
+  '巳': 'Fire',  '午': 'Fire',  '未': 'Earth', '申': 'Metal', '酉': 'Metal',
+  '戌': 'Earth', '亥': 'Water',
 };
 
-function getLuckyColor(five_elements_strength: Record<string, number> | null) {
-  if (!five_elements_strength) return LUCKY_COLOR_MAP['Water'];
-  const weakest = Object.entries(five_elements_strength)
-    .sort(([, a], [, b]) => a - b)[0]?.[0] ?? 'Water';
-  return LUCKY_COLOR_MAP[weakest] ?? LUCKY_COLOR_MAP['Water'];
+// 相生 — what each element generates
+const GENERATES: Record<string, string> = {
+  Wood: 'Fire', Fire: 'Earth', Earth: 'Metal', Metal: 'Water', Water: 'Wood',
+};
+
+// Reverse 相生 — what generates each element
+const GENERATED_BY: Record<string, string> = {
+  Fire: 'Wood', Earth: 'Fire', Metal: 'Earth', Water: 'Metal', Wood: 'Water',
+};
+
+// Lucky color — dynamic: today's 干支 × user's Day Master via 相生
+const LUCKY_COLOR_MAP: Record<string, { color: string; hex: string; description: string; reason: string }> = {
+  Wood:  { color: '青綠色', hex: '#4CAF50', description: '適合今天的穿搭或隨身物件', reason: '今日木氣流通，補木增添生機與活力' },
+  Fire:  { color: '紅橙色', hex: '#E53935', description: '適合今天的穿搭或隨身物件', reason: '今日火氣旺盛，補火提振熱情與行動力' },
+  Earth: { color: '米黃色', hex: '#F9A825', description: '適合今天的穿搭或隨身物件', reason: '今日土氣滋養，補土增強穩定與踏實感' },
+  Metal: { color: '白銀色', hex: '#E8E8E8', description: '適合今天的穿搭或隨身物件', reason: '今日金氣清明，補金提升專注與判斷力' },
+  Water: { color: '深藍色', hex: '#1565C0', description: '適合今天的穿搭或隨身物件', reason: '今日水氣流動，補水增添靈活與智慧' },
+};
+
+function getLuckyColor(stem: string, branch: string, dayMaster: string) {
+  const stemEl   = CHAR_TO_ELEMENT[stem];
+  const branchEl = CHAR_TO_ELEMENT[branch];
+  const dmEl     = CHAR_TO_ELEMENT[dayMaster];
+
+  let luckyEl: string | undefined;
+
+  if (dmEl) {
+    const parentEl = GENERATED_BY[dmEl];
+    // If today's 干 or 支 feeds the Day Master, that supporting element is lucky
+    if (parentEl && (stemEl === parentEl || branchEl === parentEl)) {
+      luckyEl = parentEl;
+    } else {
+      // Fallback: what today's stem generates
+      luckyEl = stemEl ? GENERATES[stemEl] : undefined;
+    }
+  } else {
+    luckyEl = stemEl ? GENERATES[stemEl] : undefined;
+  }
+
+  return LUCKY_COLOR_MAP[luckyEl ?? 'Water'] ?? LUCKY_COLOR_MAP['Water'];
 }
 
 // Strip Plus-only fields for free users
@@ -158,19 +196,7 @@ router.get('/today', async (req: Request, res: Response) => {
     const daysSinceSignup = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
     const isFullGuidance = isPlus || daysSinceSignup <= 5;
 
-    if (cached) {
-      const summary = cached.summary;
-      // Format sentinel: stem_lesson with Chinese character
-      if (summary?.stem_lesson?.character && /[一-鿿]/.test(summary.stem_lesson.character)) {
-        if (!isFullGuidance) {
-          return res.json({ summary: trimGuidanceForFree(summary), cached: true, is_preview: true });
-        }
-        return res.json({ summary, cached: true });
-      }
-      // Old format or romanized — fall through to regenerate
-    }
-
-    // 2. Load BaZi profile
+    // 2. Load BaZi profile — needed for deterministic fields regardless of cache
     const { data: userProfile } = await supabase
       .from('user_profiles')
       .select('current_bazi_version_id, current_mbti_version_id')
@@ -187,7 +213,7 @@ router.get('/today', async (req: Request, res: Response) => {
       .eq('id', userProfile.current_bazi_version_id)
       .single();
 
-    // 3. Get today's stem/branch (Chinese characters)
+    // 3. Get today's stem/branch (fast — in-memory cache after first call)
     const { stem, branch } = await getTodayStemBranch(today);
 
     // 4. Normalize stored bazi values from romanized → Chinese characters
@@ -201,6 +227,24 @@ router.get('/today', async (req: Request, res: Response) => {
       birth_date: baziVersion.birth_date,
       dayun: baziVersion.dayun,
     };
+
+    // Cache hit — re-inject deterministic fields so they're always fresh, then return early
+    if (cached) {
+      const summary = cached.summary;
+      if (summary?.stem_lesson?.character && /[一-鿿]/.test(summary.stem_lesson.character)) {
+        summary.ganzhi = stem + branch;
+        summary.lucky_color = getLuckyColor(stem, branch, baziForPrompt.day_master);
+        const stemData = STEM_LESSONS[stem];
+        if (stemData) summary.stem_lesson = { character: stem, ...stemData, title: `${stem}・${stemData.element}` };
+        const branchData = BRANCH_LESSONS[branch];
+        if (branchData) summary.branch_lesson = { character: branch, ...branchData, title: `${branch}・${branchData.element}` };
+        if (!isFullGuidance) {
+          return res.json({ summary: trimGuidanceForFree(summary), cached: true, is_preview: true });
+        }
+        return res.json({ summary, cached: true });
+      }
+      // Old format — fall through to regenerate
+    }
 
     // 5. Load MBTI profile
     let mbtiProfile = null;
@@ -276,7 +320,7 @@ router.get('/today', async (req: Request, res: Response) => {
     // 8. Inject all deterministic fields — always override LLM output
 
     summary.ganzhi = stem + branch;
-    summary.lucky_color = getLuckyColor(baziVersion.five_elements_strength);
+    summary.lucky_color = getLuckyColor(stem, branch, baziForPrompt.day_master);
 
     // Stem lesson from lookup table
     const stemData = STEM_LESSONS[stem];

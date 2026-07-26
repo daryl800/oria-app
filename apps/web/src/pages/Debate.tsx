@@ -388,20 +388,14 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   }
 
   return (
-    <div className="oria-page" style={{ padding: '20px 16px 32px', maxWidth: 760, margin: '0 auto' }}>
+    <div className="oria-page oria-container" style={{ padding: '20px 16px 32px', maxWidth: 760, margin: '0 auto' }}>
       <style>{DEBATE_STYLES}</style>
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-        <button
-          onClick={() => navigate(-1)}
-          style={{ background: 'none', border: 'none', color: '#aaa', fontSize: 22, cursor: 'pointer', padding: 0 }}
-        >
-          ←
-        </button>
-        <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#e8dcc8' }}>
-          {t('debate.title')}
-        </h2>
+      {/* Header — centered, matches chat page style */}
+      <div className="oria-page-header" style={{ marginBottom: 28 }}>
+        <div className="oria-card-label">{t('debate.title')}</div>
+        <h1 className="oria-page-title">{t('debate.headline')}</h1>
+        <p className="oria-page-subtitle">{t('debate.tagline')}</p>
       </div>
 
       {/* Demo banner — shown when not yet started and not complete */}
@@ -441,9 +435,9 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
       {/* Question input — hidden once loading or debate is active */}
       {!debateId && !loading && (
         <div className="oria-card" style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 13, color: '#999', marginBottom: 14 }}>
+          <p className="oria-page-subtitle" style={{ textAlign: 'center', marginBottom: 20, marginTop: 0, color: 'rgba(255,255,255,0.85)' }}>
             {t('debate.subtitle')}
-          </div>
+          </p>
 
           {/* Model selector */}
           {(() => {
@@ -492,13 +486,13 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
             );
             return (
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: GOLD, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: 6 }}>
+                <div className="oria-card-label" style={{ marginBottom: 8 }}>
                   {t('debate.eastLabel')}
                 </div>
-                <div style={{ marginBottom: isDemo ? 4 : 12 }}>
+                <div style={{ marginBottom: isDemo ? 4 : 14 }}>
                   {renderRow(EAST_OPTIONS, eastModel, setEastModel, 'hunyuan')}
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 800, color: GOLD, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: 6, marginTop: isDemo ? 0 : 0 }}>
+                <div className="oria-card-label" style={{ marginBottom: 8 }}>
                   {t('debate.westLabel')}
                 </div>
                 {renderRow(WEST_OPTIONS, westModel, setWestModel, 'openai')}
@@ -546,17 +540,11 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
           <button
             onClick={startDebate}
             disabled={!question.trim()}
+            className="oria-btn-primary"
             style={{
               marginTop: 12,
               width: '100%',
-              padding: '16px',
-              minHeight: 56,
-              background: !question.trim() ? 'rgba(201,168,76,0.3)' : GOLD,
-              color: '#1a1410',
-              border: 'none',
-              borderRadius: 999,
-              fontWeight: 800,
-              fontSize: 16,
+              opacity: !question.trim() ? 0.4 : 1,
               cursor: !question.trim() ? 'not-allowed' : 'pointer',
             }}
           >

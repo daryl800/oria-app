@@ -70,6 +70,7 @@
     "blindbox_west_label": "西方哲学",
     "blindbox_east_sublabel": "今日东方格言",
     "blindbox_west_sublabel": "今日西方格言",
+    "blindbox_instruction": "今天，选择你想聆听的智慧。\n东方或西方，择一开启。\n明日，再探索另一份智慧。",
     "blindbox_open": "点击开启 ✨",
     "blindbox_generating": "正在生成…",
     "blindbox_generating_motto": "正在生成今日格言…",
@@ -1019,7 +1020,9 @@
   },
   "debate": {
     "title": "东西解析",
-    "subtitle": "输入你的问题，东方命理师与西方心理顾问将从不同角度分析你的情况，展开四轮深度对话，最后由AI整合双方观点，提供个性化洞察与建议。",
+    "headline": "有让你困惑的问题？",
+    "tagline": "不用完美，说出来就对了",
+    "subtitle": "输入你的问题，选择你的东方与西方顾问模型。你选择的东方模型，作为具备深厚东方命理知识的顾问，将根据你的八字资料，分析你的性格特质、人生方向与时机；你选择的西方模型，作为具备心理分析专业知识的顾问，将根据你的MBTI结果，探索你的心理模式与行动方式。双方将展开四轮深度交流：洞察、时机、风险、行动，最后由 Oria 智能分析整合双方观点，提供个人化洞察与建议。",
     "eastLabel": "选择东方顾问（八字）",
     "westLabel": "选择西方顾问（MBTI）",
     "creditBefore": "此次解析需要",

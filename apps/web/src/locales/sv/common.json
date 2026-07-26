@@ -987,7 +987,9 @@
   },
   "debate": {
     "title": "Öst-Väst Analys",
-    "subtitle": "Ange din fråga för djupanalys av en östlig ödesrådgivare och en västlig psykologikonsult",
+    "headline": "Har du en fråga som du funderat på?",
+    "tagline": "Det behöver inte vara perfekt — säg det bara",
+    "subtitle": "Ange din fråga och välj dina östliga och västliga rådgivarmodeller. Din valda östliga modell, som rådgivare med djup kunskap om östlig metafysik, analyserar din karaktär, livsriktning och timing baserat på dina BaZi-data. Din valda västliga modell, som rådgivare med expertis inom psykologisk analys, utforskar dina mentala mönster och beteendestilar baserat på dina MBTI-resultat. Båda genomför fyra rundor av djupt utbyte — insikt, timing, risk och handling — innan Orias AI syntetiserar båda perspektiv för att ge personliga insikter och rekommendationer.",
     "eastLabel": "Välj östlig rådgivare (BaZi)",
     "westLabel": "Välj västlig rådgivare (MBTI)",
     "creditBefore": "Denna analys kostar",

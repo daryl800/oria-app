@@ -420,10 +420,24 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           border: '1px solid rgba(201,168,76,0.2)',
         }}>
           <style>{MOTTO_REVEAL_CSS}</style>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <span style={{ fontSize: 18, lineHeight: 1 }}>📖</span>
             <span style={sectionLabelStyle}>{t('daily.motto_label')}</span>
           </div>
+
+          {!choice && (
+            <p style={{
+              textAlign: 'center',
+              fontStyle: 'italic',
+              fontSize: 13,
+              lineHeight: 1.8,
+              color: 'rgba(201,168,76,0.65)',
+              margin: '0 0 18px 0',
+              whiteSpace: 'pre-line',
+            }}>
+              {t('daily.blindbox_instruction')}
+            </p>
+          )}
 
           {/* No choice yet — two mystery boxes */}
           {!choice && (
@@ -453,12 +467,12 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
                     transition: 'opacity 0.2s',
                   }}
                 >
-                  <span style={{ fontSize: 30 }}>{icon}</span>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: '#C9A84C' }}>{label}</span>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>{sublabel}</span>
+                  <span style={{ fontSize: 48 }}>{icon}</span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: '#C9A84C' }}>{label}</span>
+                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)' }}>{sublabel}</span>
                   <span style={{
-                    fontSize: 12, marginTop: 4,
-                    color: mottoTestLoading ? 'rgba(255,255,255,0.28)' : 'rgba(201,168,76,0.75)',
+                    fontSize: 15, fontWeight: 700, marginTop: 4,
+                    color: mottoTestLoading ? 'rgba(255,255,255,0.28)' : 'rgba(201,168,76,0.9)',
                   }}>
                     {mottoTestLoading ? t('daily.blindbox_generating') : t('daily.blindbox_open')}
                   </span>
