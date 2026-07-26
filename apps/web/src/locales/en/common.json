@@ -70,6 +70,7 @@
     "blindbox_west_label": "Western Philosophy",
     "blindbox_east_sublabel": "Today’s Eastern Motto",
     "blindbox_west_sublabel": "Today’s Western Motto",
+    "blindbox_instruction": "Today, choose the wisdom you wish to hear.\nEastern or Western — open one.\nTomorrow, explore the other.",
     "blindbox_open": "Tap to open ✨",
     "blindbox_generating": "Generating…",
     "blindbox_generating_motto": "Generating today’s motto…",
@@ -1068,7 +1069,9 @@
   },
   "debate": {
     "title": "East-West Analysis",
-    "subtitle": "Enter your question — an Eastern fate advisor and Western psychology consultant will analyse your situation from different angles across four rounds of dialogue, with AI synthesising both perspectives into personalised insights and recommendations.",
+    "headline": "Got a question that's been on your mind?",
+    "tagline": "It doesn't have to be perfect — just say it",
+    "subtitle": "Enter your question and choose your Eastern and Western advisor models. Your chosen Eastern model, acting as an advisor with deep knowledge of Eastern metaphysics, will analyse your character, life direction and timing based on your BaZi data. Your chosen Western model, acting as an advisor with expertise in psychological analysis, will explore your mental patterns and behavioural style based on your MBTI results. Both will engage in four rounds of deep exchange — Insight, Timing, Risk, and Action — before Oria's AI synthesises both perspectives to provide personalised insights and recommendations.",
     "eastLabel": "Choose Eastern Advisor (BaZi)",
     "westLabel": "Choose Western Advisor (MBTI)",
     "creditBefore": "This analysis costs",

@@ -1,11 +1,11 @@
-// TODO: Remove after motto testing is complete
 import { Router, Request, Response } from 'express';
 import { complete, sanitizeLlmJson } from '../lib/llm';
+import { supabase } from '../lib/supabase';
 
 const router = Router();
 
-// Server-side cache keyed by ganzhi (e.g. '庚子') — same day pillar = same quotes for all users
-const mottoCache = new Map<string, { east: object; west: object }>();
+// L1: process-level cache — avoids Supabase round-trip within same process run
+const mottoL1Cache = new Map<string, { east: object; west: object }>();
 
 function buildMottoPrompt(ganzhi: string): { role: string; content: string }[] {
   const now = new Date();
@@ -72,16 +72,37 @@ router.get('/motto-test', async (req: Request, res: Response) => {
   try {
     const ganzhi = (req.query.ganzhi as string) ?? '今日';
 
-    if (mottoCache.has(ganzhi)) {
-      return res.json({ ...mottoCache.get(ganzhi), cached: true });
+    // L1: in-memory hit
+    if (mottoL1Cache.has(ganzhi)) {
+      const hit = mottoL1Cache.get(ganzhi)!;
+      return res.json({ ...hit, cached: true });
     }
 
+    // L2: Supabase hit
+    const { data: stored } = await supabase
+      .from('daily_mottos')
+      .select('east, west')
+      .eq('ganzhi', ganzhi)
+      .single();
+
+    if (stored?.east && stored?.west) {
+      mottoL1Cache.set(ganzhi, { east: stored.east, west: stored.west });
+      return res.json({ east: stored.east, west: stored.west, cached: true });
+    }
+
+    // Miss — call LLM
     const messages = buildMottoPrompt(ganzhi) as any;
     const raw = await complete(messages, 'motto_test_hunyuan');
     const parsed = parseResult(raw) as any;
 
     if (!('error' in parsed)) {
-      mottoCache.set(ganzhi, { east: parsed.east, west: parsed.west });
+      const entry = { east: parsed.east, west: parsed.west };
+
+      // Write to Supabase (upsert in case of race)
+      await supabase.from('daily_mottos').upsert({ ganzhi, ...entry });
+
+      // Populate L1
+      mottoL1Cache.set(ganzhi, entry);
     }
 
     return res.json({ ...parsed, cached: false });
