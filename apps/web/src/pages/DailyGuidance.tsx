@@ -420,9 +420,14 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           border: '1px solid rgba(201,168,76,0.2)',
         }}>
           <style>{MOTTO_REVEAL_CSS}</style>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <span style={{ fontSize: 18, lineHeight: 1 }}>📖</span>
-            <span style={sectionLabelStyle}>{t('daily.motto_label')}</span>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <span style={{ fontSize: 18, lineHeight: 1 }}>📖</span>
+              <span style={sectionLabelStyle}>{t('daily.motto_label')}</span>
+            </div>
+            <div style={{ fontSize: 12, color: 'rgba(201,168,76,0.7)', letterSpacing: '0.03em' }}>
+              {t('daily.motto_sublabel')}
+            </div>
           </div>
 
           {!choice && (
