@@ -369,7 +369,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   // Demo already used — show registration gate instead
   if (isDemo && demoUsed) {
     return (
-      <div className="oria-page" style={{ padding: '20px 16px 32px', maxWidth: 520, margin: '0 auto' }}>
+      <div className="oria-page oria-container" style={{ padding: '20px 16px 32px' }}>
         <style>{DEBATE_STYLES}</style>
         <div className="oria-card" style={{ textAlign: 'center', padding: '36px 24px', maxWidth: 420, margin: '32px auto 0' }}>
           <div style={{ fontSize: 36, marginBottom: 14 }}>✦</div>
@@ -388,7 +388,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   }
 
   return (
-    <div className="oria-page oria-container" style={{ padding: '20px 16px 32px', maxWidth: 760, margin: '0 auto' }}>
+    <div className="oria-page oria-container" style={{ padding: '20px 16px 32px' }}>
       <style>{DEBATE_STYLES}</style>
 
       {/* Header — centered, matches chat page style */}
