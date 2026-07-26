@@ -59,7 +59,9 @@
     "color_micro_action": "Bra för det du bär eller har med dig idag",
     "color_locked": "Låst",
     "color_locked_teaser": "Se dagens färg och rytm",
-    "color_locked_microcopy": "Lås upp för att se dagens färg och rytm"
+    "color_locked_microcopy": "Lås upp för att se dagens färg och rytm",
+    "motto_label": "Dagens visdom",
+    "motto_sublabel": "Uppdateras dagligen・östlig och västlig visdom"
   },
   "chat": {
     "title": "Vad tänker du på just nu?",
