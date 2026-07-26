@@ -76,9 +76,11 @@ function parseResult(raw: string): object {
 router.get('/motto-test', async (req: Request, res: Response) => {
   try {
     const ganzhi = (req.query.ganzhi as string) ?? '今日';
+    console.log('[motto] ganzhi key:', ganzhi);
 
     // L1: in-memory hit
     if (mottoL1Cache.has(ganzhi)) {
+      console.log('[motto] cache hit: true | source: l1-memory');
       const hit = mottoL1Cache.get(ganzhi)!;
       return res.json({ ...hit, cached: true });
     }
@@ -91,11 +93,13 @@ router.get('/motto-test', async (req: Request, res: Response) => {
       .single();
 
     if (stored?.east && stored?.west) {
+      console.log('[motto] cache hit: true | source: supabase');
       mottoL1Cache.set(ganzhi, { east: stored.east, west: stored.west });
       return res.json({ east: stored.east, west: stored.west, cached: true });
     }
 
     // Miss — call LLM
+    console.log('[motto] cache hit: false | source: llm-generated');
     const messages = buildMottoPrompt(ganzhi) as any;
     const raw = await complete(messages, 'motto_test_hunyuan');
     const parsed = parseResult(raw) as any;
@@ -104,7 +108,12 @@ router.get('/motto-test', async (req: Request, res: Response) => {
       const entry = { east: parsed.east, west: parsed.west };
 
       // Write to Supabase (upsert in case of race)
-      await supabase.from('daily_mottos').upsert({ ganzhi, ...entry });
+      const { error: upsertError } = await supabase.from('daily_mottos').upsert({ ganzhi, ...entry });
+      if (upsertError) {
+        console.error('[motto] supabase upsert failed:', upsertError.message);
+      } else {
+        console.log('[motto] saved to supabase:', ganzhi);
+      }
 
       // Populate L1
       mottoL1Cache.set(ganzhi, entry);
