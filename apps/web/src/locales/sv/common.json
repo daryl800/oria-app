@@ -995,7 +995,7 @@
     "creditBefore": "Denna analys kostar",
     "creditAfter": "krediter (återstående:",
     "creditEnd": "krediter)",
-    "placeholder": "T.ex. Är det ett bra tillfälle att byta jobb nu?",
+    "placeholder": "t.ex. Borde jag lämna mitt nuvarande jobb och söka en ny riktning?",
     "startButton": "Starta analys",
     "analysisLabel": "Analys:",
     "synthesis": "Syntes · Slutlig rekommendation",
@@ -1074,5 +1074,17 @@
     "errorBirthDate": "Ange ditt födelsedatum",
     "errorLocation": "Välj din födelseort",
     "errorMbti": "Svara på alla fyra frågorna"
+  },
+  "debateDemo": {
+    "bannerTitle": "⚡ Demoversion: Öst-Väst-analys",
+    "bannerBody": "Upplev hur östliga och västliga rådgivare för en djup dialog kring din fråga. Den här versionen använder inte dina BaZi- eller MBTI-data, så analysen är från ett allmänt perspektiv. Registrera dig för att lägga till din personliga profil och få insikter anpassade specifikt till dig.",
+    "bannerCta": "Fullständig personlig analys | Registrera gratis →",
+    "modelLock": "I fullversionen kan du välja din egen rådgivarkombination",
+    "ctaTitle": "Gillade du den här analysen?",
+    "ctaBody": "Registrera dig så ger dina östliga och västliga rådgivare dig en analys baserad på din personliga BaZi och MBTI.",
+    "ctaButton": "Registrera gratis — få 6 krediter →",
+    "usedTitle": "Du har redan använt din gratis demo",
+    "usedBody": "Registrera dig för att få 6 gratis krediter och lås upp din personliga öst-väst-analys.",
+    "usedButton": "Skapa gratis konto →"
   }
 }
