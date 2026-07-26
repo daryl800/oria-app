@@ -1077,7 +1077,7 @@
     "creditBefore": "This analysis costs",
     "creditAfter": "credits (remaining",
     "creditEnd": "credits)",
-    "placeholder": "e.g. Is now a good time to change jobs?",
+    "placeholder": "e.g. Should I leave my current job and look for a new direction?",
     "startButton": "Begin Analysis",
     "analysisLabel": "Analysis:",
     "synthesis": "Synthesis · Final Recommendation",
@@ -1158,9 +1158,9 @@
     "errorMbti": "Please answer all four questions"
   },
   "debateDemo": {
-    "bannerTitle": "⚡ Demo East-West Analysis",
-    "bannerBody": "This is a general reading — your BaZi chart and MBTI profile are not included.",
-    "bannerCta": "Sign up for your personalised analysis →",
+    "bannerTitle": "⚡ Demo: East-West Analysis",
+    "bannerBody": "Experience how Eastern and Western advisors engage in deep dialogue around your question. This version does not use your BaZi or MBTI data, so the analysis is from a general perspective. Register to add your personal profile for insights tailored specifically to you.",
+    "bannerCta": "Full Personalised Analysis | Register Free →",
     "modelLock": "Full version lets you choose your own advisor combination",
     "ctaTitle": "Like this analysis?",
     "ctaBody": "Sign up and your Eastern and Western advisors will give you a reading based on your personal BaZi chart and MBTI type.",
