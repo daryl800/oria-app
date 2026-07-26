@@ -425,7 +425,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
               <span style={{ fontSize: 18, lineHeight: 1 }}>📖</span>
               <span style={sectionLabelStyle}>{t('daily.motto_label')}</span>
             </div>
-            <div style={{ fontSize: 12, color: 'rgba(201,168,76,0.7)', letterSpacing: '0.03em' }}>
+            <div style={{ fontSize: 12, color: 'rgba(201,168,76,0.7)', letterSpacing: '0.03em', paddingLeft: 26 }}>
               {t('daily.motto_sublabel')}
             </div>
           </div>
