@@ -42,6 +42,7 @@ interface LuckyColor {
 interface MottoQuote {
   quote: string;
   source: string;
+  source_context?: string;
   original?: string;
   explanation: string;
   ganzhi_connection: string;
@@ -561,9 +562,14 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
                         }}>
                           「{q.quote}」
                         </p>
-                        <p style={{ fontSize: 13, color: 'rgba(201,168,76,0.65)', margin: '0 0 10px', letterSpacing: 0.3 }}>
+                        <p style={{ fontSize: 13, color: 'rgba(201,168,76,0.65)', margin: '0 0 4px', letterSpacing: 0.3 }}>
                           ── {q.source}
                         </p>
+                        {q.source_context && (
+                          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', fontStyle: 'italic', lineHeight: 1.6, margin: '0 0 10px' }}>
+                            {q.source_context}
+                          </p>
+                        )}
                         {q.original && (
                           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.32)', fontStyle: 'italic', margin: '0 0 10px' }}>
                             {q.original}
