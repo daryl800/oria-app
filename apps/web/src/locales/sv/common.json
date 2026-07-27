@@ -47,7 +47,7 @@
     "color": "Dagens färg",
     "zodiac_tone": "Stjärntecken",
     "deeper_reason": "Djupare orsak",
-      "explore_prompts": "Utforska vidare",
+    "explore_prompts": "Utforska vidare",
     "upgrade_body": "Det finns en djupare orsak bakom det här mönstret.",
     "upgrade_cta": "Lås upp full insikt ✦",
     "chat_prefill": "Dagens vägledning säger \"{{text}}\". Hur ska jag arbeta med det?",
@@ -221,7 +221,7 @@
     "kicker": "oria Compass",
     "eyebrow": "Inför ett viktigt beslut, förstå dig själv först",
     "headline": "När du känner dig fast, förstå dina mönster innan du bestämmer nästa steg",
-    "supporting": "Oria kombinerar ditt födelsehoroskop (BaZi) med personlighetsprofil (MBTI) för att hjälpa dig förstå dina styrkor, din karaktär och din nuvarande situation — oavsett om du navigerar karriärskifte, relationer, balans eller ett nytt kapitel. Se tydligare. Gå framåt med mer trygghet.",
+    "supporting": "Oria kombinerar ditt BaZi-horoskop med MBTI-personlighet för att hjälpa dig förstå dina styrkor, din karaktär och din situation. Se tydligare innan ditt nästa beslut.",
     "subtitle": "En snabb personlig läsning av ditt nuläge — och nästa steg som faktiskt passar dig.",
     "result": "Tar cirka 60 sekunder • Ingen bindning",
     "primary_cta": "Starta min 1-minutsinsikt",
@@ -234,7 +234,7 @@
     "usecase_relationship_title": "Relationsklarhet",
     "usecase_relationship_body": "När du vill förstå dina mönster i relationer",
     "usecase_balance_title": "Balans i livet",
-    "usecase_balance_body": "När du känner att du ständigt är på reserven",
+    "usecase_balance_body": "När du känner dig utmattad men inte hittar en utväg",
     "usecase_next_title": "Ditt nästa kapitel",
     "usecase_next_body": "När du är redo för en ny fas men inte vet var du ska börja",
     "disclaimer": "Denna app kombinerar BaZi och MBTI-baserad personlighetsanalys som ett referensverktyg för självförståelse och reflektion kring beslut. Innehållet är endast avsett för inspiration och vägledning och utgör inte psykologisk, medicinsk, juridisk, finansiell eller annan professionell rådgivning.",
@@ -1022,7 +1022,10 @@
       "2": "Timing",
       "3": "Risk",
       "4": "Handling"
-    }
+    },
+    "questionLabel": "Din fråga",
+    "showReason": "Visa resonemang",
+    "hideReason": "Dölj resonemang"
   },
   "topbar": {
     "creditsBadge": "{{balance}} pts",

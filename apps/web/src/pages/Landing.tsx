@@ -65,16 +65,13 @@ export default function Landing() {
           </p>
 
           <div className="oria-landing-actions">
-            <button className="oria-btn-premium oria-landing-primary" onClick={startOnboarding}>
-              {t('landing.primary_cta')}
-            </button>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '2px 0' }}>
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                {t('landing.demo_or')}
-              </span>
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, width: '100%' }}>
+              <button className="oria-btn-premium oria-landing-primary" onClick={startOnboarding}>
+                {t('landing.primary_cta')}
+              </button>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.62)', textAlign: 'center', margin: 0, letterSpacing: '0.01em', textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}>
+                {t('landing.result')}
+              </p>
             </div>
 
             <button
@@ -97,7 +94,7 @@ export default function Landing() {
               {t('landing.demo_cta')}
             </button>
 
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textAlign: 'center', margin: '2px 0 6px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.62)', textAlign: 'center', margin: 0, lineHeight: 1.6, textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}>
               {t('landing.demo_hint')}
             </p>
 
@@ -106,11 +103,16 @@ export default function Landing() {
             </button>
           </div>
 
-          <div style={{ marginTop: 20, textAlign: 'center' }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.04em', marginBottom: 4 }}>
+          <div style={{
+            marginTop: 20, textAlign: 'center',
+            background: 'rgba(0,0,0,0.22)',
+            borderRadius: 12,
+            padding: '12px 18px',
+          }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.68)', letterSpacing: '0.04em', marginBottom: 5 }}>
               🔒 {t('landing.privacy_tagline')}
             </p>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.58)', lineHeight: 1.75, margin: 0 }}>
               {t('landing.privacy_body')}
             </p>
           </div>

@@ -47,7 +47,7 @@
     "color": "今日顏色",
     "zodiac_tone": "星座語氣",
     "deeper_reason": "深層原因",
-      "explore_prompts": "繼續探索",
+    "explore_prompts": "繼續探索",
     "upgrade_body": "這種感覺背後，還有更深一層的原因。",
     "upgrade_cta": "解鎖完整解讀 ✦",
     "chat_prefill": "我今天的指引提到「{{text}}」，應該怎麼調整？",
@@ -250,7 +250,7 @@
     "kicker": "oria Compass",
     "eyebrow": "在重要抉擇前，先看清自己",
     "headline": "當你卡住時，先理解自己的模式，再決定下一步",
-    "supporting": "Oria 結合出生命盤（BaZi）與性格測驗（MBTI），\n幫你理解自己的天賦、性格與當下面對的處境，\n在轉職、關係、工作與生活平衡，或人生下一章裡，\n看得更清楚，更有把握地選擇下一步。",
+    "supporting": "Oria 結合八字命盤與 MBTI 性格，幫你理解自己的天賦、性格與當下處境。在重要抉擇前，看得更清楚，選得更有把握。",
     "subtitle": "合在一起，讓你看清局勢，做出更明智的抉擇。",
     "result": "約 60 秒完成 • 無需承諾",
     "primary_cta": "開始 1 分鐘洞察",
@@ -266,7 +266,7 @@
     "usecase_relationship_title": "關係方向",
     "usecase_relationship_body": "當你想看清自己在關係中的模式",
     "usecase_balance_title": "工作與生活平衡",
-    "usecase_balance_body": "當你覺得一直在消耗自己",
+    "usecase_balance_body": "當你覺得持續消耗卻找不到出口",
     "usecase_next_title": "人生下一章",
     "usecase_next_body": "當你準備進入新的階段，卻還沒有方向",
     "disclaimer": "本 app 結合八字命理與 MBTI 性格分析，作為自我理解與決策反思的參考工具。內容僅供啟發與參考，並不構成心理、醫療、法律、財務或其他專業建議。",
@@ -1054,7 +1054,10 @@
       "2": "時機",
       "3": "風險",
       "4": "行動"
-    }
+    },
+    "questionLabel": "本次問題",
+    "showReason": "展開理由",
+    "hideReason": "收起理由"
   },
   "topbar": {
     "creditsBadge": "{{balance}} 積分",

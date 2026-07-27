@@ -47,7 +47,7 @@
     "color": "今日の色",
     "zodiac_tone": "星座の気質",
     "deeper_reason": "深い理由",
-      "explore_prompts": "さらに探る",
+    "explore_prompts": "さらに探る",
     "upgrade_body": "この感覚の裏には、もう一段深い理由があります。",
     "upgrade_cta": "完全な洞察を解放 ✦",
     "chat_prefill": "今日のガイダンスでは「{{text}}」と出ています。どう調整すればいいですか？",
@@ -221,7 +221,7 @@
     "kicker": "oria Compass",
     "eyebrow": "大切な決断の前に、まず自分を知る",
     "headline": "行き詰まったとき、自分のパターンを理解してから次の一歩を決める",
-    "supporting": "Oria は生まれた日の命盤（八字）と性格分析（MBTI）を組み合わせ、あなたの才能・性格・現在の状況を理解する手助けをします。キャリア転換・人間関係・ワークライフバランス・人生の新たな章——より明確に見て、より安心して前に進む。",
+    "supporting": "Oria は八字命盤と MBTI を組み合わせ、あなたの才能・性格・当下の状況を理解する手助けをします。大切な選択の前に、より明確に見て、より自信を持って進む。",
     "subtitle": "それらを組み合わせることで、\n全体像を見極め、より良い選択ができる。",
     "result": "約60秒で完了 • 契約不要",
     "primary_cta": "1分の洞察を始める",
@@ -234,7 +234,7 @@
     "usecase_relationship_title": "関係の方向性",
     "usecase_relationship_body": "人間関係での自分のパターンを知りたいとき",
     "usecase_balance_title": "仕事と生活のバランス",
-    "usecase_balance_body": "ずっと消耗し続けていると感じるとき",
+    "usecase_balance_body": "ずっと消耗し続けて、出口が見えないとき",
     "usecase_next_title": "人生の次の章",
     "usecase_next_body": "新しい段階の準備はできているが、方向性がまだ見えないとき",
     "disclaimer": "本アプリは、八字命理とMBTI性格分析を組み合わせ、自己理解と意思決定の振り返りのための参考ツールとして提供されます。内容は気づきと参考を目的としたものであり、心理、医療、法律、財務、その他の専門的助言を構成するものではありません。",
@@ -1022,7 +1022,10 @@
       "2": "時機",
       "3": "リスク",
       "4": "行動"
-    }
+    },
+    "questionLabel": "あなたの質問",
+    "showReason": "理由を展開",
+    "hideReason": "理由を閉じる"
   },
   "topbar": {
     "creditsBadge": "{{balance}} pt",
