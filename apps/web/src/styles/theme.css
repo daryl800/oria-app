@@ -1296,7 +1296,7 @@ html[lang^="zh"] .oria-landing-title {
 
 .oria-landing-eyebrow {
   margin-bottom: 14px;
-  color: rgba(201, 168, 76, 0.65);
+  color: rgba(201, 168, 76, 0.78);
   font-size: 13px;
   line-height: 1.5;
   letter-spacing: 0.03em;
@@ -1306,7 +1306,7 @@ html[lang^="zh"] .oria-landing-title {
 .oria-landing-supporting {
   margin-top: 20px;
   margin-bottom: 0;
-  color: rgba(244, 239, 231, 0.68);
+  color: rgba(244, 239, 231, 0.75);
   font-size: clamp(13px, 1.8vw, 15px);
   line-height: 1.85;
   white-space: pre-line;
@@ -1341,7 +1341,7 @@ html[lang^="zh"] .oria-landing-title {
 }
 
 .oria-landing-usecase-desc {
-  color: rgba(244, 239, 231, 0.5);
+  color: rgba(244, 239, 231, 0.62);
   font-size: 12px;
   line-height: 1.65;
 }
@@ -1359,6 +1359,12 @@ html[lang^="zh"] .oria-landing-title {
   font-size: 18px;
   padding: 18px 32px;
   letter-spacing: 0.03em;
+}
+
+.oria-landing-signin {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 15px;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.65);
 }
 
 .oria-tip-banner {
