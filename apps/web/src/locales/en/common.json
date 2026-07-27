@@ -47,7 +47,7 @@
     "color": "Today’s color",
     "zodiac_tone": "Zodiac note",
     "deeper_reason": "Deeper reason",
-      "explore_prompts": "Explore further",
+    "explore_prompts": "Explore further",
     "upgrade_body": "There is a deeper reason behind this pattern.",
     "upgrade_cta": "Unlock full insight ✦",
     "chat_prefill": "Today’s guidance says {{text}}. How should I work with that?",
@@ -1103,7 +1103,10 @@
       "2": "Timing",
       "3": "Risk",
       "4": "Action"
-    }
+    },
+    "questionLabel": "Your question",
+    "showReason": "Show reasoning",
+    "hideReason": "Hide reasoning"
   },
   "topbar": {
     "creditsBadge": "{{balance}} pts",

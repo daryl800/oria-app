@@ -47,7 +47,7 @@
     "color": "오늘의 색",
     "zodiac_tone": "별자리 기운",
     "deeper_reason": "깊은 이유",
-      "explore_prompts": "더 탐색하기",
+    "explore_prompts": "더 탐색하기",
     "upgrade_body": "이 패턴 뒤에는 더 깊은 이유가 있습니다.",
     "upgrade_cta": "전체 인사이트 잠금 해제 ✦",
     "chat_prefill": "오늘의 가이드에서 \"{{text}}\"라고 했습니다. 어떻게 조정하면 좋을까요?",
@@ -1022,7 +1022,10 @@
       "2": "타이밍",
       "3": "리스크",
       "4": "행동"
-    }
+    },
+    "questionLabel": "질문 내용",
+    "showReason": "이유 보기",
+    "hideReason": "이유 닫기"
   },
   "topbar": {
     "creditsBadge": "{{balance}} pt",

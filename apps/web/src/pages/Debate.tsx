@@ -29,7 +29,94 @@ const DEBATE_STYLES = `
     0%, 100% { opacity: 1; }
     50%       { opacity: 0; }
   }
+  @keyframes debate-fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .debate-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 600px) {
+    .debate-card-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .debate-card-grid, .debate-round-progress, .debate-card-animate {
+      animation: none !important;
+      transform: none !important;
+      transition: opacity 0.15s ease !important;
+    }
+  }
 `;
+
+const ROUND_SHORT = ['初觀', '時機', '風險', '行動', '綜合'];
+
+function RoundProgress({ activeStep }: { activeStep: number }) {
+  return (
+    <div
+      className="debate-round-progress"
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        marginBottom: 24,
+        gap: 0,
+      }}
+    >
+      {ROUND_SHORT.map((label, i) => {
+        const step = i + 1;
+        const completed = step < activeStep;
+        const active = step === activeStep;
+        return (
+          <React.Fragment key={step}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, minWidth: 44 }}>
+              <div style={{
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 12,
+                fontWeight: 700,
+                background: completed ? `${GOLD}28` : active ? GOLD : 'rgba(255,255,255,0.05)',
+                border: `1.5px solid ${completed ? `${GOLD}55` : active ? GOLD : 'rgba(255,255,255,0.1)'}`,
+                color: completed ? `${GOLD}bb` : active ? '#16120A' : 'rgba(255,255,255,0.2)',
+                transition: 'all 0.22s ease',
+                flexShrink: 0,
+              }}>
+                {completed ? '✓' : step}
+              </div>
+              <div style={{
+                fontSize: 11,
+                letterSpacing: '0.01em',
+                color: completed ? `${GOLD}77` : active ? GOLD : 'rgba(255,255,255,0.18)',
+                fontWeight: active ? 700 : 400,
+                transition: 'all 0.22s ease',
+                whiteSpace: 'nowrap',
+              }}>
+                {label}
+              </div>
+            </div>
+            {i < 4 && (
+              <div style={{
+                flex: 1,
+                maxWidth: 28,
+                height: 1,
+                marginTop: 15,
+                background: completed ? `${GOLD}44` : 'rgba(255,255,255,0.07)',
+                transition: 'background 0.22s ease',
+              }} />
+            )}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
 
 function renderContent(content: string) {
   const parts = content.split(/(【[^】]+】)/);
@@ -70,8 +157,116 @@ function renderContent(content: string) {
   );
 }
 
+interface ParsedSection { label: string; content: string; }
+
+function parseDebateContent(text: string): ParsedSection[] {
+  const parts = text.split(/(【[^】]+】)/);
+  const sections: ParsedSection[] = [];
+  let label = '';
+  for (const part of parts) {
+    if (/^【[^】]+】$/.test(part)) {
+      label = part.slice(1, -1);
+    } else if (part.trim()) {
+      sections.push({ label, content: part.trim() });
+      label = '';
+    }
+  }
+  return sections;
+}
+
+function DebateCardContent({ text }: { text: string }) {
+  const { t } = useTranslation();
+  const [reasonExpanded, setReasonExpanded] = useState(false);
+  const sections = parseDebateContent(text);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {sections.map(({ label, content }, i) => {
+        const isAction     = /建議|行動/.test(label);
+        const isReason     = /理由|分歧/.test(label);
+        const isConfidence = /信心/.test(label);
+        const isHeartfelt  = /心語/.test(label);
+
+        if (isConfidence) return (
+          <div key={i} style={{
+            display: 'inline-flex', alignItems: 'flex-start', gap: 6,
+            padding: '5px 10px', borderRadius: 999,
+            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+            fontSize: 12, color: 'rgba(255,255,255,0.38)', alignSelf: 'flex-start', lineHeight: 1.5,
+          }}>
+            <span style={{ color: `${GOLD}66`, fontSize: 10, marginTop: 2, flexShrink: 0 }}>◆</span>
+            <span>{content}</span>
+          </div>
+        );
+
+        if (isReason) return (
+          <div key={i}>
+            <button
+              onClick={() => setReasonExpanded(e => !e)}
+              style={{
+                background: 'none', border: 'none', color: `${GOLD}77`, fontSize: 12,
+                cursor: 'pointer', padding: '2px 0', fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', gap: 5,
+              }}
+            >
+              <span style={{
+                fontSize: 9, display: 'inline-block', transition: 'transform 0.15s',
+                transform: reasonExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              }}>▶</span>
+              {reasonExpanded ? t('debate.hideReason') : t('debate.showReason')}
+            </button>
+            {reasonExpanded && (
+              <div style={{ fontSize: 14, lineHeight: 1.65, color: 'rgba(255,255,255,0.5)', marginTop: 6, paddingLeft: 4 }}>
+                <ReactMarkdown>{content}</ReactMarkdown>
+              </div>
+            )}
+          </div>
+        );
+
+        if (isAction) return (
+          <div key={i} style={{ borderLeft: `2px solid ${GOLD}77`, paddingLeft: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}88`, letterSpacing: '0.06em', marginBottom: 3 }}>
+              {label}
+            </div>
+            <div style={{ fontSize: 14, lineHeight: 1.65, color: '#ddd0b0' }}>
+              <ReactMarkdown>{content}</ReactMarkdown>
+            </div>
+          </div>
+        );
+
+        if (isHeartfelt) return (
+          <div key={i} style={{
+            fontSize: 14, lineHeight: 1.85, color: 'rgba(255,255,255,0.6)', fontStyle: 'italic',
+            borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 12, marginTop: 2,
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}77`, letterSpacing: '0.06em', marginBottom: 6, fontStyle: 'normal' }}>
+              {label}
+            </div>
+            <ReactMarkdown>{content}</ReactMarkdown>
+          </div>
+        );
+
+        // Primary: 立場 / 回應 / 本輪深析 / 裁決 / 共識 / unlabeled
+        const isBold = /立場|裁決/.test(label);
+        return (
+          <div key={i}>
+            {label && (
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.28)', letterSpacing: '0.06em', marginBottom: 5 }}>
+                {label}
+              </div>
+            )}
+            <div style={{ fontSize: 16, lineHeight: 1.7, color: '#F0E8D8', fontWeight: isBold ? 600 : 400 }}>
+              <ReactMarkdown>{content}</ReactMarkdown>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // 1 char per 28ms ≈ 35 chars/sec
-function TypewriterText({ text }: { text: string }) {
+function TypewriterText({ text, renderDone }: { text: string; renderDone?: (s: string) => React.ReactNode }) {
   const [displayed, setDisplayed] = useState('');
   const [done, setDone] = useState(false);
   const textRef = useRef(text);
@@ -96,7 +291,7 @@ function TypewriterText({ text }: { text: string }) {
     return animate();
   }, [text, animate]);
 
-  if (done) return <>{renderContent(text)}</>;
+  if (done) return <>{renderDone ? renderDone(text) : renderContent(text)}</>;
   return (
     <span style={{ whiteSpace: 'pre-wrap', display: 'block' }}>
       {displayed}
@@ -517,6 +712,9 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
             );
           })()}
 
+          <div className="oria-card-label" style={{ marginBottom: 8 }}>
+            {t('debate.questionLabel')}
+          </div>
           <textarea
             value={question}
             onChange={e => setQuestion(e.target.value)}
@@ -525,7 +723,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
             style={{
               width: '100%',
               background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.12)',
+              border: `1px solid rgba(255,255,255,0.15)`,
               borderRadius: 10,
               color: '#e8dcc8',
               padding: '12px 14px',
@@ -556,21 +754,29 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
       {/* Active debate question banner */}
       {(debateId || loading) && question && (
         <div style={{
-          background: 'rgba(201,168,76,0.08)',
-          border: `1px solid ${GOLD}33`,
-          borderRadius: 10,
-          padding: '10px 14px',
+          background: 'rgba(201,168,76,0.07)',
+          border: `1px solid ${GOLD}44`,
+          borderRadius: 12,
+          padding: '12px 16px',
           marginBottom: 20,
-          fontSize: 15,
-          color: '#c9b07a',
         }}>
-          <span style={{ color: GOLD, fontWeight: 600 }}>{t('debate.analysisLabel')}</span>{question}
+          <div style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}99`, letterSpacing: '0.08em', marginBottom: 5 }}>
+            {t('debate.questionLabel')}
+          </div>
+          <div style={{ fontSize: 15, color: '#ddd0b0', lineHeight: 1.6 }}>
+            {question}
+          </div>
         </div>
+      )}
+
+      {/* Round progress indicator */}
+      {(debateId || loading) && (
+        <RoundProgress activeStep={thinkingRound ?? currentRound} />
       )}
 
       {/* Completed rounds */}
       {rounds.map((r) => (
-        <div key={r.round} style={{ marginBottom: 24 }}>
+        <div key={r.round} className="debate-card-animate" style={{ marginBottom: 24, animation: 'debate-fadein 0.22s ease both' }}>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, marginTop: 4 }}>
             <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
@@ -582,13 +788,15 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
 
           {r.synthesis ? (
             /* R5 — full-width synthesis */
-            <div className="oria-card" style={{ border: `1px solid ${GOLD}55`, background: 'rgba(201,168,76,0.06)' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: GOLD, letterSpacing: '0.06em', marginBottom: 12 }}>
+            <div className="oria-card debate-card-animate" style={{
+              border: `1px solid ${GOLD}66`,
+              background: 'rgba(201,168,76,0.07)',
+              animation: 'debate-fadein 0.26s ease both',
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: GOLD, letterSpacing: '0.06em', marginBottom: 14 }}>
                 ⚖️ {t('debate.synthesis')}{r.synthesisModel && <span style={{ fontWeight: 400, color: '#a09060', marginLeft: 4 }}>（{r.synthesisModel}）</span>}
               </div>
-              <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
-                <TypewriterText text={r.synthesis} />
-              </div>
+              <TypewriterText text={r.synthesis} renderDone={str => <DebateCardContent text={str} />} />
             </div>
           ) : r.round >= 2 ? (
             /* R2-R4 — two rows: response row + new-topic row */
@@ -601,22 +809,18 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
                 </div>
                 <div style={{ flex: 1, height: 1, background: `${GOLD}33` }} />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="debate-card-grid">
                 <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
                     🏮 {t('debate.eastAdvisor')}{r.eastModel && <span style={{ fontWeight: 400, color: '#a06060', marginLeft: 4 }}>（{r.eastModel}）</span>}
                   </div>
-                  <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
-                    <TypewriterText text={splitRoundContent(r.east ?? '').response} />
-                  </div>
+                  <TypewriterText text={splitRoundContent(r.east ?? '').response} renderDone={str => <DebateCardContent text={str} />} />
                 </div>
                 <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
                     🧠 {t('debate.westAdvisor')}{r.westModel && <span style={{ fontWeight: 400, color: '#6080a0', marginLeft: 4 }}>（{r.westModel}）</span>}
                   </div>
-                  <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
-                    <TypewriterText text={splitRoundContent(r.west ?? '').response} />
-                  </div>
+                  <TypewriterText text={splitRoundContent(r.west ?? '').response} renderDone={str => <DebateCardContent text={str} />} />
                 </div>
               </div>
 
@@ -628,37 +832,29 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
                 </div>
                 <div style={{ flex: 1, height: 1, background: `${GOLD}33` }} />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="debate-card-grid">
                 <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
-                  <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
-                    <TypewriterText text={splitRoundContent(r.east ?? '').analysis} />
-                  </div>
+                  <TypewriterText text={splitRoundContent(r.east ?? '').analysis} renderDone={str => <DebateCardContent text={str} />} />
                 </div>
                 <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
-                  <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
-                    <TypewriterText text={splitRoundContent(r.west ?? '').analysis} />
-                  </div>
+                  <TypewriterText text={splitRoundContent(r.west ?? '').analysis} renderDone={str => <DebateCardContent text={str} />} />
                 </div>
               </div>
             </>
           ) : (
             /* R1 — standard two-column layout */
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
+            <div className="debate-card-grid">
+              <div className="oria-card debate-card-animate" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px', animation: 'debate-fadein 0.22s ease both' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
                   🏮 {t('debate.eastAdvisorFull')}{r.eastModel && <span style={{ fontWeight: 400, color: '#a06060', marginLeft: 4 }}>（{r.eastModel}）</span>}
                 </div>
-                <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
-                  <TypewriterText text={r.east ?? ''} />
-                </div>
+                <TypewriterText text={r.east ?? ''} renderDone={str => <DebateCardContent text={str} />} />
               </div>
-              <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
+              <div className="oria-card debate-card-animate" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px', animation: 'debate-fadein 0.22s ease both', animationDelay: '60ms' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
                   🧠 {t('debate.westAdvisorFull')}{r.westModel && <span style={{ fontWeight: 400, color: '#6080a0', marginLeft: 4 }}>（{r.westModel}）</span>}
                 </div>
-                <div style={{ fontSize: 15, lineHeight: 1.7, color: '#e8dcc8' }}>
-                  <TypewriterText text={r.west ?? ''} />
-                </div>
+                <TypewriterText text={r.west ?? ''} renderDone={str => <DebateCardContent text={str} />} />
               </div>
             </div>
           )}
@@ -684,7 +880,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
               <ThinkingPanel icon="⚖️" accentColor={GOLD} />
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="debate-card-grid">
               <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
                   🏮 {t('debate.eastAdvisorFull')}

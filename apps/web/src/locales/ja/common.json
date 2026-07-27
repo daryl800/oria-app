@@ -47,7 +47,7 @@
     "color": "今日の色",
     "zodiac_tone": "星座の気質",
     "deeper_reason": "深い理由",
-      "explore_prompts": "さらに探る",
+    "explore_prompts": "さらに探る",
     "upgrade_body": "この感覚の裏には、もう一段深い理由があります。",
     "upgrade_cta": "完全な洞察を解放 ✦",
     "chat_prefill": "今日のガイダンスでは「{{text}}」と出ています。どう調整すればいいですか？",
@@ -1022,7 +1022,10 @@
       "2": "時機",
       "3": "リスク",
       "4": "行動"
-    }
+    },
+    "questionLabel": "あなたの質問",
+    "showReason": "理由を展開",
+    "hideReason": "理由を閉じる"
   },
   "topbar": {
     "creditsBadge": "{{balance}} pt",
