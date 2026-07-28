@@ -1023,7 +1023,12 @@
     },
     "questionLabel": "질문 내용",
     "showReason": "이유 보기",
-    "hideReason": "이유 닫기"
+    "hideReason": "이유 닫기",
+    "followUpTitle": "추가 질문이 있으신가요？",
+    "followUpPlaceholder": "추가 질문을 입력하세요...",
+    "followUpCost": "이 추가 질문에는 {{cost}} 크레딧이 필요합니다",
+    "followUpButton": "추가 질문 제출 →",
+    "followUpRoundLabel": "추가 · {{n}}라운드"
   },
   "topbar": {
     "creditsBadge": "{{balance}} pt",

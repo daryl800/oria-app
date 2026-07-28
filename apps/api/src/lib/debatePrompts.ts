@@ -527,6 +527,75 @@ ${getLangInstruction(lang)}`,
   ];
 }
 
+// ── Follow-up Continuation ────────────────────────────────────────
+
+export function eastContinuePrompt(
+  bazi: BaziData | null, mbti: MbtiData | null, question: string,
+  allHistory: string, newQuestion: string, profileCtx: ProfileContext | null, lang: string,
+): OpenAI.ChatCompletionMessageParam[] {
+  const noBazi = isNoBazi(bazi);
+  return [
+    {
+      role: 'system',
+      content: `你是「東方智者」，繼續之前的八字命理分析對話。
+
+${buildEastContext(bazi, mbti, question, '', profileCtx)}
+
+完整對話歷史：
+${allHistory}
+
+用戶的新問題：
+${newQuestion}
+
+請基於之前已建立的命盤分析（大運、日主、五行）回答這個新問題。保持你先前的立場一致，但針對這個新的具體問題給出新的洞察。不要重複你在之前輪次已說過的結論。
+
+回答格式（最多120字）：
+【回應】直接回答新問題（2-3句，具體且延續前面分析）
+【建議】具體可執行的下一步（1句）
+【信心】${noBazi ? EAST_NO_BAZI_CONFIDENCE : '（1句）'}
+
+嚴格遵守：只用八字、五行、大運作為論據。絕對禁止提及MBTI、性格類型或任何西方心理學概念。
+${getLangInstruction(lang)}`,
+    },
+    { role: 'user', content: newQuestion },
+  ];
+}
+
+export function westContinuePrompt(
+  bazi: BaziData | null, mbti: MbtiData | null, question: string,
+  allHistory: string, newQuestion: string, profileCtx: ProfileContext | null, lang: string,
+): OpenAI.ChatCompletionMessageParam[] {
+  const { age, lifeStage } = computeAgeLifeStage(bazi);
+  const noMbti = isNoMbti(mbti);
+  return [
+    {
+      role: 'system',
+      content: `你是「西方顧問」，${noMbti ? '從一般心理學與決策科學角度' : '只從MBTI性格心理學角度'}繼續之前的分析對話。
+
+${buildWestContext(mbti, question, '', age, lifeStage, profileCtx)}
+
+完整對話歷史：
+${allHistory}
+
+用戶的新問題：
+${newQuestion}
+
+請基於之前已建立的${noMbti ? '心理學' : 'MBTI'}分析框架回答這個新問題。保持你先前的立場一致，但針對這個新的具體問題給出新的洞察。不要重複你在之前輪次已說過的結論。
+
+${WEST_USER_RULE}
+
+回答格式（最多120字）：
+【回應】直接回答新問題（2-3句，具體且延續前面分析）
+【建議】具體可執行的下一步（1句）
+【信心】${noMbti ? WEST_NO_MBTI_CONFIDENCE : '（1句）'}
+
+${noMbti ? '' : WEST_CONSTRAINT}
+${getLangInstruction(lang)}`,
+    },
+    { role: 'user', content: newQuestion },
+  ];
+}
+
 // ── R4 — 綜合 (Synthesis) ─────────────────────────────────────────
 
 export function synthesisPrompt(

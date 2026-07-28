@@ -1104,7 +1104,12 @@
     },
     "questionLabel": "Your question",
     "showReason": "Show reasoning",
-    "hideReason": "Hide reasoning"
+    "hideReason": "Hide reasoning",
+    "followUpTitle": "Any follow-up questions?",
+    "followUpPlaceholder": "Ask a follow-up...",
+    "followUpCost": "This follow-up costs {{cost}} credits",
+    "followUpButton": "Submit follow-up →",
+    "followUpRoundLabel": "Follow-up · Round {{n}}"
   },
   "topbar": {
     "creditsBadge": "{{balance}} pts",

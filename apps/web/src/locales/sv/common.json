@@ -1023,7 +1023,12 @@
     },
     "questionLabel": "Din fråga",
     "showReason": "Visa resonemang",
-    "hideReason": "Dölj resonemang"
+    "hideReason": "Dölj resonemang",
+    "followUpTitle": "Fler frågor att ställa?",
+    "followUpPlaceholder": "Skriv en följdfråga...",
+    "followUpCost": "Denna följdfråga kostar {{cost}} krediter",
+    "followUpButton": "Skicka följdfråga →",
+    "followUpRoundLabel": "Följdfråga · Runda {{n}}"
   },
   "topbar": {
     "creditsBadge": "{{balance}} pts",

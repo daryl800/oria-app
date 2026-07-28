@@ -9,6 +9,7 @@ import {
   eastR2Prompt, westR2Prompt,
   eastR3Prompt, westR3Prompt,
   synthesisPrompt,
+  eastContinuePrompt, westContinuePrompt,
 } from '../lib/debatePrompts';
 
 const router = Router();
@@ -309,6 +310,106 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
       round: nextRound,
       ...newRoundData,
       complete: isComplete,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// ── POST /debate/:debateId/continue ──────────────────────────────
+
+router.post('/:debateId/continue', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { debateId } = req.params;
+    const { newQuestion, eastModel = 'hunyuan', westModel = 'openai' } = req.body;
+
+    if (!newQuestion?.trim()) {
+      return res.status(400).json({ error: 'newQuestion is required' });
+    }
+
+    const { data: session, error: fetchErr } = await supabase
+      .from('debate_sessions')
+      .select('*')
+      .eq('id', debateId)
+      .eq('user_id', userId)
+      .single();
+
+    if (fetchErr || !session) {
+      return res.status(404).json({ error: 'Analysis session not found' });
+    }
+    if (session.status !== 'complete') {
+      return res.status(400).json({ error: 'Continuation is only allowed after the debate is complete' });
+    }
+
+    const cost = calculateDebateCost(eastModel, westModel);
+    const creditResult = await checkAndDeductCredits(userId, cost);
+    if (!creditResult.ok) {
+      return res.status(403).json({
+        error: 'insufficient_credits',
+        plan: (req as any).userPlan ?? 'free',
+        credits_remaining: creditResult.balance,
+        message: (req as any).userPlan === 'plus'
+          ? '本月積分已用完，下月自動重置'
+          : '免費積分已用完，升級Plus每月獲得60積分',
+      });
+    }
+
+    const { question, lang = 'zh-TW' } = session;
+    const rounds: any[] = session.rounds ?? [];
+
+    const [{ bazi, mbtiProfile, profileSummary, contextFocus }] = await Promise.all([
+      loadUserProfiles(userId),
+    ]);
+
+    const profileCtx = (profileSummary || contextFocus?.length) ? {
+      summary: profileSummary?.summary,
+      life_pattern: profileSummary?.life_pattern,
+      friction_point: profileSummary?.friction_point,
+      context_focus: contextFocus ?? [],
+    } : null;
+
+    const allHistory = formatAllRounds(rounds);
+
+    const [
+      { text: eastReply, provider: eastProvider, model: eastModelName },
+      { text: westReply, provider: westProvider, model: westModelName },
+    ] = await Promise.all([
+      completeTracked(eastContinuePrompt(bazi, mbtiProfile, question, allHistory, newQuestion.trim(), profileCtx, lang), getEastChain(eastModel)),
+      completeTracked(westContinuePrompt(bazi, mbtiProfile, question, allHistory, newQuestion.trim(), profileCtx, lang), getWestChain(westModel)),
+    ]);
+
+    const newRound = {
+      round: rounds.length + 1,
+      east: eastReply,
+      eastProvider,
+      eastModel: eastModelName,
+      west: westReply,
+      westProvider,
+      westModel: westModelName,
+      isFollowUp: true,
+      followUpQuestion: newQuestion.trim(),
+    };
+
+    const updatedRounds = [...rounds, newRound];
+    await supabase
+      .from('debate_sessions')
+      .update({ rounds: updatedRounds, updated_at: new Date().toISOString() })
+      .eq('id', debateId);
+
+    return res.json({
+      debateId,
+      round: newRound.round,
+      east: eastReply,
+      eastProvider,
+      eastModel: eastModelName,
+      west: westReply,
+      westProvider,
+      westModel: westModelName,
+      isFollowUp: true,
+      complete: true,
+      credits_used: cost,
+      credits_remaining: creditResult.balance,
     });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });

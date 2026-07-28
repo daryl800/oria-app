@@ -107,4 +107,9 @@ router.post('/next', async (req: Request, res: Response) => {
   }
 });
 
+// Continuation is not available in demo mode
+router.post('/:debateId/continue', (_req: Request, res: Response) => {
+  return res.status(403).json({ error: 'Continuation requires a full account. Please sign up to continue.' });
+});
+
 export default router;

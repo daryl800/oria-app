@@ -1055,7 +1055,12 @@
     },
     "questionLabel": "本次问题",
     "showReason": "展开理由",
-    "hideReason": "收起理由"
+    "hideReason": "收起理由",
+    "followUpTitle": "还有其他想追问的吗？",
+    "followUpPlaceholder": "继续提问...",
+    "followUpCost": "此次追问需要 {{cost}} 积分",
+    "followUpButton": "送出追问 →",
+    "followUpRoundLabel": "追问・第 {{n}} 轮"
   },
   "topbar": {
     "creditsBadge": "{{balance}} 积分",
