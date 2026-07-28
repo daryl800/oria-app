@@ -148,7 +148,10 @@ export default function OnboardingBazi() {
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.62)', lineHeight: 1.7, margin: 0 }}>
             {t('onboarding.bazi.body')}
           </p>
-
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', lineHeight: 1.65, margin: '14px 0 0' }}>
+            <span style={{ color: 'rgba(201,168,76,0.5)', marginRight: 6, verticalAlign: 'middle', fontSize: 14 }}>☯</span>
+            {t('onboarding.bazi.signature_hint')}
+          </p>
         </div>
 
         {/* Form */}

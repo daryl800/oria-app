@@ -169,6 +169,7 @@ function buildProfileContext(ctx: ProfileContext | null, includeSummary = true):
   return `【人物側寫】\n${parts.join('\n')}`;
 }
 
+// Full context — used in R1 and synthesis only
 function buildEastContext(bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string, profileCtx: ProfileContext | null): string {
   const { age, lifeStage } = computeAgeLifeStage(bazi);
   const profileSection = buildProfileContext(profileCtx, true);
@@ -203,6 +204,38 @@ ${getMbtiContext(mbti)}${ageBlock}
 ${profileSection ? `${profileSection}\n\n` : ''}${recentContext ? `【近期背景】\n${recentContext}` : ''}`.trim();
 }
 
+// Minimal context for R2+ — only dayun timeline for East (year references), nothing for West
+function buildLightEastContext(bazi: BaziData | null, question: string): string {
+  const dayuns: Dayun[] = bazi?.dayun?.dayuns ?? [];
+  let dayunSection = '';
+
+  if (dayuns.length > 0) {
+    let currentIdx = dayuns.findIndex((d) => d.is_current === true);
+    if (currentIdx === -1) {
+      const currentYear = new Date().getFullYear();
+      currentIdx = dayuns.findIndex((d) =>
+        d.start_year <= currentYear && d.end_year >= currentYear
+      );
+    }
+    if (currentIdx >= 0) {
+      const relevant = dayuns.slice(currentIdx, currentIdx + 3);
+      const lines = relevant.map((d, i) => {
+        const label = i === 0 ? '【當前】' : i === 1 ? '【下一個】' : '【之後】';
+        return `${label} ${d.pillar}（${Math.round(d.start_age)}-${Math.round(d.end_age)}歲 / ${d.start_year}-${d.end_year}年）`;
+      });
+      dayunSection = lines.join('\n');
+    }
+  } else if (bazi?.dayun?.current_dayun) {
+    const cd = bazi.dayun.current_dayun;
+    dayunSection = `當前大運：${cd.pillar}（約${Math.round(cd.start_age)}-${Math.round(cd.end_age)}歲 / ${cd.start_year}-${cd.end_year}年）`;
+  }
+
+  return [
+    `【用戶提問】\n${question}`,
+    dayunSection ? `【大運時間表（僅供年份計算）】\n${dayunSection}` : '',
+  ].filter(Boolean).join('\n\n');
+}
+
 function ownPreviousBlock(own: string): string {
   return `你在上一輪的立場是：
 ${own}
@@ -220,6 +253,11 @@ const RESPONSE_RULE = `回應對方時只有兩種選擇：
   不同意哪一點（具體說明原因）
 不可模糊帶過。
 不要為了製造對立而強行反對。不要為了和諧而假裝同意。`;
+
+const NO_REPEAT_RULE = `嚴格禁止重複前面輪次已經說過的論點、結論或建議。如果本輪的核心觀點與前輪相同，必須換一個完全不同的切入角度，或明確說明「維持先前判斷，但補充：」並給出真正新的資訊。單純重複已說過的結論且無新增內容，是不可接受的。`;
+
+const CONTEXT_CARRY_EAST = `延續第一輪已建立的大運與九運背景，本輪不重複解釋，直接應用。`;
+const CONTEXT_CARRY_WEST = `延續第一輪已建立的MBTI認知功能框架，本輪不重複解釋，直接應用。`;
 
 const FORMAT_NOTE = `格式要求：每個標題單獨一行。語言直接、具體、有立場，避免學術語言。用戶需要知道該做什麼。`;
 
@@ -262,7 +300,7 @@ const EAST_NO_BAZI_GUIDANCE = `此用戶尚未提供八字生辰資料。請從�
 
 const EAST_NO_BAZI_CONFIDENCE = '此為通用命理智慧。提供你的八字生辰後，我可根據你的日主、大運給出精準個人化分析。';
 
-// ── R1 — 初觀 (Overall verdict, no opponent view) ─────────────────
+// ── R1 — 初觀 (Overall verdict) ───────────────────────────────────
 
 export function eastR1Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string, profileCtx: ProfileContext | null, lang: string,
@@ -281,7 +319,7 @@ ${COACHING_TONE}
 
 任務：給出你對這個問題的整體命理判斷。
 
-回答格式（最多120字）：
+回答格式（最多100字）：
 【立場】你的核心結論（1句，直接說答案，不要模糊）
 【理由】${noBazi ? '通用命理智慧的依據（2句，從傳統哲學與陰陽五行通則）' : '命盤中支持這個結論的具體依據（2句，必須點名日主或大運）'}
 【建議】用戶現在應該做什麼（1句，具體可執行）
@@ -315,7 +353,7 @@ ${WEST_USER_RULE}
 
 任務：給出你對這個問題的整體心理學判斷。
 
-回答格式（最多120字）：
+回答格式（最多100字）：
 【立場】你的核心結論（1句，直接說答案，不要模糊）
 【理由】${noMbti ? '心理學依據（2句，從決策科學角度，不假設性格類型）' : 'MBTI性格中支持這個結論的具體依據（2句，必須點名具體特質或認知功能）'}
 【建議】用戶現在應該做什麼（1句，具體可執行）
@@ -329,7 +367,7 @@ ${getLangInstruction(lang)}`,
   ];
 }
 
-// ── R2 — 時機 (React to opponent R1 + timing analysis) ───────────
+// ── R2 — 時機與風險 (Timing + Risk combined) ──────────────────────
 
 export function eastR2Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
@@ -340,30 +378,32 @@ export function eastR2Prompt(
     {
       role: 'system',
       content: `你是「東方智者」，從八字命理角度繼續分析。
+${CONTEXT_CARRY_EAST}
 
-${buildEastContext(bazi, mbti, question, recentContext, profileCtx)}
-
-${noBazi ? '請繼續從傳統命理通則深化分析。' : '大運背景已在第一輪建立，請基於此繼續深化分析。'}
-
-${COACHING_TONE}
+${buildLightEastContext(bazi, question)}
 
 ${ownPreviousBlock(ownR1)}
 
 西方顧問的第一輪觀點：
 ${opponentR1}
 
+${NO_REPEAT_RULE}
+
 ${RESPONSE_RULE}
 
-回答格式（最多130字）：
+回答格式（最多120字）：
 【對西方上輪觀點的回應】必須至少2句話。同意請說明為何八字框架支持此結論。不同意請說明八字框架為何得出不同結論。如使用部份同意，必須明確指出同意哪一點＋不同意哪一點。單獨一句「部份同意」不可接受。
-【本輪深析：時機】${noBazi ? '從陰陽消長與季節周期角度分析此問題的時機（2句）' : '大運流年如何影響此問題的時機（2句）'}
-【建議】考慮時機後，現在最應該做的一件事（1句，具體可執行）
+【本輪深析：時機與風險】本輪必須同時回答：
+1. 具體時機 — 何時是轉折點？給出具體流年或大運交接的年份。
+2. 具體風險 — 命盤中有哪些沖剋或忌神會在近期造成實際問題？
+不可只重複Round 1已說過的結論。必須提供Round 1沒有的新資訊。
+【建議】考慮時機與風險後，現在最應該做的一件事（1句，具體可執行）
 【信心】${noBazi ? EAST_NO_BAZI_CONFIDENCE : '（1句）'}
 
 嚴格遵守：只用八字、五行、大運作為論據。絕對禁止提及MBTI、性格類型或任何西方心理學概念。
 ${getLangInstruction(lang)}`,
     },
-    { role: 'user', content: '請回應西方觀點並給出時機分析。' },
+    { role: 'user', content: '請回應西方觀點並給出時機與風險分析。' },
   ];
 }
 
@@ -371,42 +411,44 @@ export function westR2Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
   opponentR1: string, ownR1: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
-  const { age, lifeStage } = computeAgeLifeStage(bazi);
   const noMbti = isNoMbti(mbti);
   return [
     {
       role: 'system',
       content: `你是「西方顧問」，從${noMbti ? '心理學與決策科學' : 'MBTI心理學'}角度繼續分析。
+${CONTEXT_CARRY_WEST}
 
-${buildWestContext(mbti, question, recentContext, age, lifeStage, profileCtx)}
-
-${noMbti ? WEST_NO_MBTI_NOTICE : MBTI_COGNITIVE}
-
-${COACHING_TONE}
-
-${WEST_USER_RULE}
+【用戶提問】
+${question}
 
 ${ownPreviousBlock(ownR1)}
 
 東方智者的第一輪觀點：
 ${opponentR1}
 
+${NO_REPEAT_RULE}
+
+${WEST_USER_RULE}
+
 ${RESPONSE_RULE}
 
-回答格式（最多130字）：
+回答格式（最多120字）：
 【對東方上輪觀點的回應】必須至少2句話。同意請說明為何${noMbti ? '心理學' : 'MBTI'}框架支持此結論。不同意請說明${noMbti ? '心理學' : 'MBTI'}框架為何得出不同結論。如使用部份同意，必須明確指出同意哪一點＋不同意哪一點。單獨一句「部份同意」不可接受。
-【本輪深析：時機】${noMbti ? '從一般心理學角度分析此時機的機會與風險（2句）' : '這個性格類型在此時機的優劣勢（2句，具體到特質）'}
-【建議】考慮時機後，現在最應該做的一件事（1句，具體可執行）
+【本輪深析：時機與風險】本輪必須同時回答：
+1. 心理時機 — 什麼心理狀態或外部條件下，你的認知功能運作最好？
+2. 心理風險 — 你的認知功能盲點會如何在這個情境中造成問題？
+不可只重複Round 1已說過的策略建議。必須提供Round 1沒有的新資訊。
+【建議】考慮時機與風險後，現在最應該做的一件事（1句，具體可執行）
 【信心】${noMbti ? WEST_NO_MBTI_CONFIDENCE : '（1句）'}
 
 ${noMbti ? '' : WEST_CONSTRAINT}
 ${getLangInstruction(lang)}`,
     },
-    { role: 'user', content: '請回應東方觀點並給出時機分析。' },
+    { role: 'user', content: '請回應東方觀點並給出時機與風險分析。' },
   ];
 }
 
-// ── R3 — 風險 (React to opponent R2 + risk assessment) ───────────
+// ── R3 — 行動 (Concrete next steps) ──────────────────────────────
 
 export function eastR3Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
@@ -416,31 +458,32 @@ export function eastR3Prompt(
   return [
     {
       role: 'system',
-      content: `你是「東方智者」，從八字命理角度進行風險評估。
+      content: `你是「東方智者」，從八字命理角度給出最終行動建議。
+${CONTEXT_CARRY_EAST}
 
-${buildEastContext(bazi, mbti, question, recentContext, profileCtx)}
-
-${noBazi ? '請繼續從傳統命理通則深化分析。' : '大運背景已在第一輪建立，請基於此繼續深化分析。'}
-
-${COACHING_TONE}
+${buildLightEastContext(bazi, question)}
 
 ${ownPreviousBlock(ownR2)}
 
-西方顧問的第二輪觀點：
+西方顧問的上輪觀點：
 ${opponentR2}
+
+${NO_REPEAT_RULE}
 
 ${RESPONSE_RULE}
 
-回答格式（最多130字）：
+回答格式（最多90字）：
 【對西方上輪觀點的回應】必須至少2句話。同意請說明為何八字框架支持此結論。不同意請說明八字框架為何得出不同結論。如使用部份同意，必須明確指出同意哪一點＋不同意哪一點。單獨一句「部份同意」不可接受。
-【本輪深析：風險】${noBazi ? '從命理通則角度分析此問題的潛在風險（2句）' : '命盤中具體的風險訊號與警示（2句）'}
-【建議】如何規避這個風險的具體做法（1句）
+【本輪深析：行動】${noBazi ? '支持這個行動的傳統命理通則依據（2句）' : '支持這個行動的命理依據（2句）'}
+必須給出比前面兩輪更具體、更可立即執行的單一行動步驟。
+【建議】最重要的一個立即可執行步驟（1句，非常具體）
 【信心】${noBazi ? EAST_NO_BAZI_CONFIDENCE : '（1句）'}
 
+這是你的最終建議，言簡意賅，只留最核心的行動指引。
 嚴格遵守：只用八字、五行、大運作為論據。絕對禁止提及MBTI、性格類型或任何西方心理學概念。
 ${getLangInstruction(lang)}`,
     },
-    { role: 'user', content: '請回應西方觀點並給出命理風險評估。' },
+    { role: 'user', content: '請回應上輪觀點並給出最終行動建議。' },
   ];
 }
 
@@ -448,109 +491,31 @@ export function westR3Prompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
   opponentR2: string, ownR2: string, profileCtx: ProfileContext | null, lang: string,
 ): OpenAI.ChatCompletionMessageParam[] {
-  const { age, lifeStage } = computeAgeLifeStage(bazi);
-  const noMbti = isNoMbti(mbti);
-  return [
-    {
-      role: 'system',
-      content: `你是「西方顧問」，從${noMbti ? '心理學與決策科學' : 'MBTI心理學'}角度進行風險評估。
-
-${buildWestContext(mbti, question, recentContext, age, lifeStage, profileCtx)}
-
-${noMbti ? WEST_NO_MBTI_NOTICE : MBTI_COGNITIVE}
-
-${COACHING_TONE}
-
-${WEST_USER_RULE}
-
-${ownPreviousBlock(ownR2)}
-
-東方智者的第二輪觀點：
-${opponentR2}
-
-${RESPONSE_RULE}
-
-回答格式（最多130字）：
-【對東方上輪觀點的回應】必須至少2句話。同意請說明為何${noMbti ? '心理學' : 'MBTI'}框架支持此結論。不同意請說明${noMbti ? '心理學' : 'MBTI'}框架為何得出不同結論。如使用部份同意，必須明確指出同意哪一點＋不同意哪一點。單獨一句「部份同意」不可接受。
-【本輪深析：風險】${noMbti ? '從心理學角度分析決策偏差或認知盲點帶來的具體風險（2句）' : '性格盲點或行為模式帶來的具體風險（2句）'}
-【建議】如何規避這個風險的具體做法（1句）
-【信心】${noMbti ? WEST_NO_MBTI_CONFIDENCE : '（1句）'}
-
-${noMbti ? '' : WEST_CONSTRAINT}
-${getLangInstruction(lang)}`,
-    },
-    { role: 'user', content: '請回應東方觀點並給出心理學風險評估。' },
-  ];
-}
-
-// ── R4 — 行動 (React to opponent R3 + concrete next steps) ────────
-
-export function eastR4Prompt(
-  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
-  opponentR3: string, ownR3: string, profileCtx: ProfileContext | null, lang: string,
-): OpenAI.ChatCompletionMessageParam[] {
-  const noBazi = isNoBazi(bazi);
-  return [
-    {
-      role: 'system',
-      content: `你是「東方智者」，從八字命理角度給出最終行動建議。
-
-${buildEastContext(bazi, mbti, question, recentContext, profileCtx)}
-
-${noBazi ? '請繼續從傳統命理通則深化分析。' : '大運背景已在第一輪建立，請基於此繼續深化分析。'}
-
-${COACHING_TONE}
-
-${ownPreviousBlock(ownR3)}
-
-西方顧問的第三輪觀點：
-${opponentR3}
-
-${RESPONSE_RULE}
-
-回答格式（最多110字）：
-【對西方上輪觀點的回應】必須至少2句話。同意請說明為何八字框架支持此結論。不同意請說明八字框架為何得出不同結論。如使用部份同意，必須明確指出同意哪一點＋不同意哪一點。單獨一句「部份同意」不可接受。
-【本輪深析：行動】${noBazi ? '支持這個行動的傳統命理通則依據（2句）' : '支持這個行動的命理依據（2句）'}
-【建議】最重要的一個立即可執行步驟（1句，非常具體）
-【信心】${noBazi ? EAST_NO_BAZI_CONFIDENCE : '（1句）'}
-
-這是你的最終建議，言簡意賅，只留最核心的行動指引。
-嚴格遵守：只用八字、五行、大運作為論據。絕對禁止提及MBTI、性格類型或任何西方心理學概念。
-${getLangInstruction(lang)}`,
-    },
-    { role: 'user', content: '請回應西方觀點並給出最終行動建議。' },
-  ];
-}
-
-export function westR4Prompt(
-  bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
-  opponentR3: string, ownR3: string, profileCtx: ProfileContext | null, lang: string,
-): OpenAI.ChatCompletionMessageParam[] {
-  const { age, lifeStage } = computeAgeLifeStage(bazi);
   const noMbti = isNoMbti(mbti);
   return [
     {
       role: 'system',
       content: `你是「西方顧問」，從${noMbti ? '心理學與決策科學' : 'MBTI心理學'}角度給出最終行動建議。
+${CONTEXT_CARRY_WEST}
 
-${buildWestContext(mbti, question, recentContext, age, lifeStage, profileCtx)}
+【用戶提問】
+${question}
 
-${noMbti ? WEST_NO_MBTI_NOTICE : MBTI_COGNITIVE}
+${ownPreviousBlock(ownR2)}
 
-${COACHING_TONE}
+東方智者的上輪觀點：
+${opponentR2}
+
+${NO_REPEAT_RULE}
 
 ${WEST_USER_RULE}
 
-${ownPreviousBlock(ownR3)}
-
-東方智者的第三輪觀點：
-${opponentR3}
-
 ${RESPONSE_RULE}
 
-回答格式（最多110字）：
+回答格式（最多90字）：
 【對東方上輪觀點的回應】必須至少2句話。同意請說明為何${noMbti ? '心理學' : 'MBTI'}框架支持此結論。不同意請說明${noMbti ? '心理學' : 'MBTI'}框架為何得出不同結論。如使用部份同意，必須明確指出同意哪一點＋不同意哪一點。單獨一句「部份同意」不可接受。
 【本輪深析：行動】${noMbti ? '支持這個行動的心理學依據（2句）' : '支持這個行動的性格依據（2句）'}
+必須給出比前面兩輪更具體、更可立即執行的單一行動步驟。
 【建議】最重要的一個立即可執行步驟（1句，非常具體）
 【信心】${noMbti ? WEST_NO_MBTI_CONFIDENCE : '（1句）'}
 
@@ -558,11 +523,80 @@ ${RESPONSE_RULE}
 ${noMbti ? '' : WEST_CONSTRAINT}
 ${getLangInstruction(lang)}`,
     },
-    { role: 'user', content: '請回應東方觀點並給出最終行動建議。' },
+    { role: 'user', content: '請回應上輪觀點並給出最終行動建議。' },
   ];
 }
 
-// ── R5 — 綜合 (Synthesis) ─────────────────────────────────────────
+// ── Follow-up Continuation ────────────────────────────────────────
+
+export function eastContinuePrompt(
+  bazi: BaziData | null, mbti: MbtiData | null, question: string,
+  allHistory: string, newQuestion: string, profileCtx: ProfileContext | null, lang: string,
+): OpenAI.ChatCompletionMessageParam[] {
+  const noBazi = isNoBazi(bazi);
+  return [
+    {
+      role: 'system',
+      content: `你是「東方智者」，繼續之前的八字命理分析對話。
+
+${buildEastContext(bazi, mbti, question, '', profileCtx)}
+
+完整對話歷史：
+${allHistory}
+
+用戶的新問題：
+${newQuestion}
+
+請基於之前已建立的命盤分析（大運、日主、五行）回答這個新問題。保持你先前的立場一致，但針對這個新的具體問題給出新的洞察。不要重複你在之前輪次已說過的結論。
+
+回答格式（最多120字）：
+【回應】直接回答新問題（2-3句，具體且延續前面分析）
+【建議】具體可執行的下一步（1句）
+【信心】${noBazi ? EAST_NO_BAZI_CONFIDENCE : '（1句）'}
+
+嚴格遵守：只用八字、五行、大運作為論據。絕對禁止提及MBTI、性格類型或任何西方心理學概念。
+${getLangInstruction(lang)}`,
+    },
+    { role: 'user', content: newQuestion },
+  ];
+}
+
+export function westContinuePrompt(
+  bazi: BaziData | null, mbti: MbtiData | null, question: string,
+  allHistory: string, newQuestion: string, profileCtx: ProfileContext | null, lang: string,
+): OpenAI.ChatCompletionMessageParam[] {
+  const { age, lifeStage } = computeAgeLifeStage(bazi);
+  const noMbti = isNoMbti(mbti);
+  return [
+    {
+      role: 'system',
+      content: `你是「西方顧問」，${noMbti ? '從一般心理學與決策科學角度' : '只從MBTI性格心理學角度'}繼續之前的分析對話。
+
+${buildWestContext(mbti, question, '', age, lifeStage, profileCtx)}
+
+完整對話歷史：
+${allHistory}
+
+用戶的新問題：
+${newQuestion}
+
+請基於之前已建立的${noMbti ? '心理學' : 'MBTI'}分析框架回答這個新問題。保持你先前的立場一致，但針對這個新的具體問題給出新的洞察。不要重複你在之前輪次已說過的結論。
+
+${WEST_USER_RULE}
+
+回答格式（最多120字）：
+【回應】直接回答新問題（2-3句，具體且延續前面分析）
+【建議】具體可執行的下一步（1句）
+【信心】${noMbti ? WEST_NO_MBTI_CONFIDENCE : '（1句）'}
+
+${noMbti ? '' : WEST_CONSTRAINT}
+${getLangInstruction(lang)}`,
+    },
+    { role: 'user', content: newQuestion },
+  ];
+}
+
+// ── R4 — 綜合 (Synthesis) ─────────────────────────────────────────
 
 export function synthesisPrompt(
   bazi: BaziData | null, mbti: MbtiData | null, question: string, recentContext: string,
@@ -571,7 +605,7 @@ export function synthesisPrompt(
   return [
     {
       role: 'system',
-      content: `你是「綜合解析師」，閱讀東西方四輪完整對話後給出最終裁決。
+      content: `你是「綜合解析師」，閱讀東西方三輪完整對話後給出最終裁決。
 你的職責：整合兩種視角，為用戶提供清晰、有立場的最終指引。
 
 ${COACHING_TONE}
@@ -581,7 +615,7 @@ ${buildEastContext(bazi, mbti, question, recentContext, profileCtx)}
 東西方完整對話記錄：
 ${allRounds}
 
-回答格式（最多200字）：
+回答格式（最多180字）：
 【共識】兩個框架都指向的核心觀點（1-2句）
 【分歧】雙方真正不同的地方（1句；若無真正分歧則說明兩者互補）
 【裁決】哪個框架的建議更切合當前情況，原因是什麼（2句，必須有明確立場）

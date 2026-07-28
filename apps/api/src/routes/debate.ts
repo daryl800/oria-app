@@ -8,8 +8,8 @@ import {
   eastR1Prompt, westR1Prompt,
   eastR2Prompt, westR2Prompt,
   eastR3Prompt, westR3Prompt,
-  eastR4Prompt, westR4Prompt,
   synthesisPrompt,
+  eastContinuePrompt, westContinuePrompt,
 } from '../lib/debatePrompts';
 
 const router = Router();
@@ -107,10 +107,10 @@ async function loadRecentContext(userId: string): Promise<string> {
   }
 }
 
-// Full round history for R5 synthesis
+// Full round history for R4 synthesis
 function formatAllRounds(rounds: any[]): string {
   return rounds.map((r) => {
-    if (r.synthesis) return `【第五輪·綜合】\n${r.synthesis}`;
+    if (r.synthesis) return `【第四輪·綜合】\n${r.synthesis}`;
     return `【第${r.round}輪】\n🏮 東方智者：\n${r.east}\n\n🧠 西方顧問：\n${r.west}`;
   }).join('\n\n---\n\n');
 }
@@ -242,8 +242,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
     const rounds: any[] = session.rounds ?? [];
     const currentRound = rounds.length;
 
-    if (currentRound >= 5) {
-      return res.status(400).json({ error: 'Analysis is already at round 5' });
+    if (currentRound >= 4) {
+      return res.status(400).json({ error: 'Analysis is already at round 4' });
     }
 
     const { question, lang = 'zh-TW' } = session;
@@ -287,21 +287,11 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
       newRoundData = { round: 3, east: eastR3, eastProvider, eastModel: eastModelName, west: westR3, westProvider, westModel: westModelName };
 
     } else if (nextRound === 4) {
-      const [
-        { text: eastR4, provider: eastProvider, model: eastModelName },
-        { text: westR4, provider: westProvider, model: westModelName },
-      ] = await Promise.all([
-        completeTracked(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, rounds[2].east, profileCtx, lang), getEastChain(eastModel)),
-        completeTracked(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, rounds[2].west, profileCtx, lang), getWestChain(westModel)),
-      ]);
-      newRoundData = { round: 4, east: eastR4, eastProvider, eastModel: eastModelName, west: westR4, westProvider, westModel: westModelName };
-
-    } else if (nextRound === 5) {
       const { text: synthesis, provider: synthesisProvider, model: synthesisModelName } = await completeTracked(
         synthesisPrompt(bazi, mbtiProfile, question, recentContext, formatAllRounds(rounds), profileCtx, lang),
         'debate_synthesis',
       );
-      newRoundData = { round: 5, synthesis, synthesisProvider, synthesisModel: synthesisModelName };
+      newRoundData = { round: 4, synthesis, synthesisProvider, synthesisModel: synthesisModelName };
       isComplete = true;
     }
 
@@ -320,6 +310,106 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
       round: nextRound,
       ...newRoundData,
       complete: isComplete,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// ── POST /debate/:debateId/continue ──────────────────────────────
+
+router.post('/:debateId/continue', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { debateId } = req.params;
+    const { newQuestion, eastModel = 'hunyuan', westModel = 'openai' } = req.body;
+
+    if (!newQuestion?.trim()) {
+      return res.status(400).json({ error: 'newQuestion is required' });
+    }
+
+    const { data: session, error: fetchErr } = await supabase
+      .from('debate_sessions')
+      .select('*')
+      .eq('id', debateId)
+      .eq('user_id', userId)
+      .single();
+
+    if (fetchErr || !session) {
+      return res.status(404).json({ error: 'Analysis session not found' });
+    }
+    if (session.status !== 'complete') {
+      return res.status(400).json({ error: 'Continuation is only allowed after the debate is complete' });
+    }
+
+    const cost = calculateDebateCost(eastModel, westModel);
+    const creditResult = await checkAndDeductCredits(userId, cost);
+    if (!creditResult.ok) {
+      return res.status(403).json({
+        error: 'insufficient_credits',
+        plan: (req as any).userPlan ?? 'free',
+        credits_remaining: creditResult.balance,
+        message: (req as any).userPlan === 'plus'
+          ? '本月積分已用完，下月自動重置'
+          : '免費積分已用完，升級Plus每月獲得60積分',
+      });
+    }
+
+    const { question, lang = 'zh-TW' } = session;
+    const rounds: any[] = session.rounds ?? [];
+
+    const [{ bazi, mbtiProfile, profileSummary, contextFocus }] = await Promise.all([
+      loadUserProfiles(userId),
+    ]);
+
+    const profileCtx = (profileSummary || contextFocus?.length) ? {
+      summary: profileSummary?.summary,
+      life_pattern: profileSummary?.life_pattern,
+      friction_point: profileSummary?.friction_point,
+      context_focus: contextFocus ?? [],
+    } : null;
+
+    const allHistory = formatAllRounds(rounds);
+
+    const [
+      { text: eastReply, provider: eastProvider, model: eastModelName },
+      { text: westReply, provider: westProvider, model: westModelName },
+    ] = await Promise.all([
+      completeTracked(eastContinuePrompt(bazi, mbtiProfile, question, allHistory, newQuestion.trim(), profileCtx, lang), getEastChain(eastModel)),
+      completeTracked(westContinuePrompt(bazi, mbtiProfile, question, allHistory, newQuestion.trim(), profileCtx, lang), getWestChain(westModel)),
+    ]);
+
+    const newRound = {
+      round: rounds.length + 1,
+      east: eastReply,
+      eastProvider,
+      eastModel: eastModelName,
+      west: westReply,
+      westProvider,
+      westModel: westModelName,
+      isFollowUp: true,
+      followUpQuestion: newQuestion.trim(),
+    };
+
+    const updatedRounds = [...rounds, newRound];
+    await supabase
+      .from('debate_sessions')
+      .update({ rounds: updatedRounds, updated_at: new Date().toISOString() })
+      .eq('id', debateId);
+
+    return res.json({
+      debateId,
+      round: newRound.round,
+      east: eastReply,
+      eastProvider,
+      eastModel: eastModelName,
+      west: westReply,
+      westProvider,
+      westModel: westModelName,
+      isFollowUp: true,
+      complete: true,
+      credits_used: cost,
+      credits_remaining: creditResult.balance,
     });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });

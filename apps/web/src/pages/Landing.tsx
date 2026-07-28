@@ -117,6 +117,42 @@ export default function Landing() {
             </p>
           </div>
         </section>
+        <section style={{ textAlign: 'center', padding: '32px 24px 8px', width: 'min(480px, 100%)', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: 'clamp(15px, 4vw, 18px)',
+            fontWeight: 700,
+            color: 'rgba(201,168,76,0.85)',
+            letterSpacing: '0.04em',
+            marginBottom: 16,
+            marginTop: 0,
+          }}>
+            {t('landing.why_title')}
+          </h2>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+            {([
+              { emoji: '☯', labelKey: 'why_bazi_label', textKey: 'why_bazi_text' },
+              { emoji: '🧠', labelKey: 'why_mbti_label', textKey: 'why_mbti_text' },
+            ] as const).map(({ emoji, labelKey, textKey }) => (
+              <div key={labelKey} className="oria-landing-usecase-card" style={{ textAlign: 'left' }}>
+                <div style={{ fontSize: 20, marginBottom: 8 }}>{emoji}</div>
+                <div className="oria-landing-usecase-title">{t(`landing.${labelKey}`)}</div>
+                <div className="oria-landing-usecase-desc">{t(`landing.${textKey}`)}</div>
+              </div>
+            ))}
+          </div>
+
+          <p style={{
+            fontSize: 13,
+            color: 'rgba(255,255,255,0.5)',
+            lineHeight: 1.75,
+            margin: 0,
+            fontStyle: 'italic',
+          }}>
+            {t('landing.why_together')}
+          </p>
+        </section>
+
         <section className="oria-landing-usecases">
           <div className="oria-landing-usecase-grid">
             {(['career', 'relationship', 'balance', 'next'] as const).map(key => (

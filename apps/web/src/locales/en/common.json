@@ -271,7 +271,13 @@
     "usecase_next_body": "When you're ready for a new phase but don't know where to begin",
     "disclaimer": "This app combines BaZi and MBTI-based personality analysis as a reference tool for self-understanding and decision reflection. Content is for inspiration and reference only, and does not constitute psychological, medical, legal, financial, or other professional advice.",
     "privacy_tagline": "No ads. No tracking. No data selling.",
-    "privacy_body": "Oria only uses your information to personalise your experience — nothing else."
+    "privacy_body": "Oria only uses your information to personalise your experience — nothing else.",
+    "why_title": "Why BaZi × MBTI?",
+    "why_bazi_label": "BaZi",
+    "why_bazi_text": "Rooted in 4,000 years of Chinese wisdom, it captures the cosmic energy signature of the moment you were born — over 510,000 possible combinations, only one of which is yours.",
+    "why_mbti_label": "MBTI",
+    "why_mbti_text": "A modern psychological framework that maps how you think, feel, and decide — one of 16 types.",
+    "why_together": "Together, one reveals your innate nature, the other how you operate — giving you a more complete picture of yourself."
   },
   "login": {
     "title_signin": "Welcome back",
@@ -695,7 +701,8 @@
       "saving": "Reading your stars...",
       "submit": "Reveal my full reading →",
       "location_helper": "Search your birth city (e.g. Hong Kong, Tokyo)",
-      "location_required": "Please select your birth city from the list."
+      "location_required": "Please select your birth city from the list.",
+      "signature_hint": "Next, we need your birth details — this is your unique BaZi signature, one of over 510,000 possible combinations."
     },
     "result": {
       "step": "Step 3 of 4",
@@ -1089,24 +1096,27 @@
     "responseLabel": "Response to Previous Round",
     "nextRound": "Enter {{label}} →",
     "synthesisRound": "Enter Synthesis →",
-    "resetButton": "New Analysis",
+    "resetButton": "Next topic",
     "abandonButton": "Abandon",
     "hunyuan": "Hunyuan",
     "rounds": {
-      "1": "Round 1 · First View",
-      "2": "Round 2 · Timing",
-      "3": "Round 3 · Risk",
-      "4": "Round 4 · Action",
-      "5": "Round 5 · Synthesis"
+      "1": "Round 1 · Initial Read",
+      "2": "Round 2 · Timing & Risk",
+      "3": "Round 3 · Action",
+      "4": "Round 4 · Synthesis"
     },
     "row2": {
-      "2": "Timing",
-      "3": "Risk",
-      "4": "Action"
+      "2": "Timing & Risk",
+      "3": "Action"
     },
     "questionLabel": "Your question",
     "showReason": "Show reasoning",
-    "hideReason": "Hide reasoning"
+    "hideReason": "Hide reasoning",
+    "followUpTitle": "Any follow-up questions?",
+    "followUpPlaceholder": "Ask a follow-up...",
+    "followUpCost": "This follow-up costs {{cost}} credits",
+    "followUpButton": "Submit follow-up →",
+    "followUpRoundLabel": "Follow-up · Round {{n}}"
   },
   "topbar": {
     "creditsBadge": "{{balance}} pts",

@@ -6,7 +6,6 @@ import {
   eastR1Prompt, westR1Prompt,
   eastR2Prompt, westR2Prompt,
   eastR3Prompt, westR3Prompt,
-  eastR4Prompt, westR4Prompt,
   synthesisPrompt,
 } from '../lib/debatePrompts';
 
@@ -17,7 +16,7 @@ function getWestChain() { return 'debate_west_openai'; }
 
 function formatAllRounds(rounds: any[]): string {
   return rounds.map((r) => {
-    if (r.synthesis) return `【第五輪·綜合】\n${r.synthesis}`;
+    if (r.synthesis) return `【第四輪·綜合】\n${r.synthesis}`;
     return `【第${r.round}輪】\n🏮 東方智者：\n${r.east}\n\n🧠 西方顧問：\n${r.west}`;
   }).join('\n\n---\n\n');
 }
@@ -62,7 +61,7 @@ router.post('/next', async (req: Request, res: Response) => {
     const currentRound = rounds.length;
     const nextRound = currentRound + 1;
 
-    if (nextRound < 2 || nextRound > 5) {
+    if (nextRound < 2 || nextRound > 4) {
       return res.status(400).json({ error: `Invalid next round: ${nextRound}` });
     }
 
@@ -90,21 +89,11 @@ router.post('/next', async (req: Request, res: Response) => {
       newRoundData = { round: 3, east: eastR3, eastModel: eastModelName, west: westR3, westModel: westModelName };
 
     } else if (nextRound === 4) {
-      const [
-        { text: eastR4, model: eastModelName },
-        { text: westR4, model: westModelName },
-      ] = await Promise.all([
-        completeTracked(eastR4Prompt(null, null, question, '', rounds[2].west, rounds[2].east, null, lang), getEastChain()),
-        completeTracked(westR4Prompt(null, null, question, '', rounds[2].east, rounds[2].west, null, lang), getWestChain()),
-      ]);
-      newRoundData = { round: 4, east: eastR4, eastModel: eastModelName, west: westR4, westModel: westModelName };
-
-    } else if (nextRound === 5) {
       const { text: synthesis, model: synthesisModelName } = await completeTracked(
         synthesisPrompt(null, null, question, '', formatAllRounds(rounds), null, lang),
         'debate_synthesis',
       );
-      newRoundData = { round: 5, synthesis, synthesisModel: synthesisModelName };
+      newRoundData = { round: 4, synthesis, synthesisModel: synthesisModelName };
       isComplete = true;
     }
 
@@ -116,6 +105,11 @@ router.post('/next', async (req: Request, res: Response) => {
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
+});
+
+// Continuation is not available in demo mode
+router.post('/:debateId/continue', (_req: Request, res: Response) => {
+  return res.status(403).json({ error: 'Continuation requires a full account. Please sign up to continue.' });
 });
 
 export default router;

@@ -52,7 +52,7 @@ const DEBATE_STYLES = `
   }
 `;
 
-const ROUND_SHORT = ['初觀', '時機', '風險', '行動', '綜合'];
+const ROUND_SHORT = ['初觀', '時機與風險', '行動', '綜合'];
 
 function RoundProgress({ activeStep }: { activeStep: number }) {
   return (
@@ -101,7 +101,7 @@ function RoundProgress({ activeStep }: { activeStep: number }) {
                 {label}
               </div>
             </div>
-            {i < 4 && (
+            {i < 3 && (
               <div style={{
                 flex: 1,
                 maxWidth: 28,
@@ -373,6 +373,8 @@ interface DebateRound {
   synthesis?: string;
   synthesisProvider?: string;
   synthesisModel?: string;
+  isFollowUp?: boolean;
+  followUpQuestion?: string;
 }
 
 export default function Debate({ user = null, creditBalance = null, onCreditsUpdated }: {
@@ -396,6 +398,8 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [followUpQuestion, setFollowUpQuestion] = useState('');
+  const [followUpLoading, setFollowUpLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const thinkingStartRef = useRef<number>(0);
 
@@ -404,6 +408,12 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [rounds.length, thinkingRound]);
+
+  useEffect(() => {
+    if (followUpLoading) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [followUpLoading]);
 
   async function getAuthHeader(): Promise<Record<string, string>> {
     const { data: { session } } = await supabase.auth.getSession();
@@ -548,6 +558,42 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
     }
   }
 
+  async function continueDebate() {
+    if (!debateId || !followUpQuestion.trim() || followUpLoading) return;
+    setError(null);
+    setFollowUpLoading(true);
+    try {
+      const headers = await getAuthHeader();
+      const res = await fetch(`${API_URL}/api/debate/${debateId}/continue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify({ newQuestion: followUpQuestion.trim(), eastModel, westModel }),
+      });
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.message ?? body.error ?? 'Failed to continue debate');
+      }
+      const data = await res.json();
+      setRounds(prev => [...prev, {
+        round: data.round,
+        east: data.east,
+        eastProvider: data.eastProvider,
+        eastModel: data.eastModel,
+        west: data.west,
+        westProvider: data.westProvider,
+        westModel: data.westModel,
+        isFollowUp: true,
+        followUpQuestion: followUpQuestion.trim(),
+      }]);
+      setFollowUpQuestion('');
+      if (data.credits_remaining !== undefined) onCreditsUpdated?.(data.credits_remaining);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setFollowUpLoading(false);
+    }
+  }
+
   function resetDebate() {
     setDebateId(null);
     setRounds([]);
@@ -558,8 +604,8 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   }
 
   const currentRound = rounds.length;
-  const canAdvance = debateId && !complete && !loading && currentRound > 0 && currentRound < 5;
-  const isSynthesisThinking = thinkingRound === 5;
+  const canAdvance = debateId && !complete && !loading && currentRound > 0 && currentRound < 4;
+  const isSynthesisThinking = thinkingRound === 4;
 
   // Demo already used — show registration gate instead
   if (isDemo && demoUsed) {
@@ -778,16 +824,52 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
       {rounds.map((r) => (
         <div key={r.round} className="debate-card-animate" style={{ marginBottom: 24, animation: 'debate-fadein 0.22s ease both' }}>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, marginTop: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: r.isFollowUp ? 10 : 16, marginTop: 4 }}>
             <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
             <div style={{ fontSize: 15, fontWeight: 700, color: '#E8C56A', letterSpacing: '0.1em' }}>
-              {t(`debate.rounds.${r.round}`)}
+              {r.isFollowUp
+                ? t('debate.followUpRoundLabel', { n: r.round - 4 })
+                : t(`debate.rounds.${r.round}`)}
             </div>
             <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
           </div>
 
-          {r.synthesis ? (
-            /* R5 — full-width synthesis */
+          {r.isFollowUp && r.followUpQuestion && (
+            <div style={{
+              background: 'rgba(201,168,76,0.05)',
+              border: `1px solid ${GOLD}33`,
+              borderRadius: 10,
+              padding: '10px 14px',
+              marginBottom: 14,
+              fontSize: 14,
+              color: '#ddd0b0',
+              lineHeight: 1.6,
+            }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}88`, letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>
+                {t('debate.followUpTitle')}
+              </span>
+              {r.followUpQuestion}
+            </div>
+          )}
+
+          {r.isFollowUp ? (
+            /* Follow-up round — simple two-column, no synthesis, no row2 split */
+            <div className="debate-card-grid">
+              <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
+                  🏮 {t('debate.eastAdvisor')}{r.eastModel && <span style={{ fontWeight: 400, color: '#a06060', marginLeft: 4 }}>（{r.eastModel}）</span>}
+                </div>
+                <TypewriterText text={r.east ?? ''} renderDone={str => <DebateCardContent text={str} />} />
+              </div>
+              <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
+                  🧠 {t('debate.westAdvisor')}{r.westModel && <span style={{ fontWeight: 400, color: '#6080a0', marginLeft: 4 }}>（{r.westModel}）</span>}
+                </div>
+                <TypewriterText text={r.west ?? ''} renderDone={str => <DebateCardContent text={str} />} />
+              </div>
+            </div>
+          ) : r.synthesis ? (
+            /* R4 — full-width synthesis */
             <div className="oria-card debate-card-animate" style={{
               border: `1px solid ${GOLD}66`,
               background: 'rgba(201,168,76,0.07)',
@@ -930,26 +1012,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
               cursor: 'pointer',
             }}
           >
-            {currentRound === 4 ? t('debate.synthesisRound') : t('debate.nextRound', { label: t(`debate.rounds.${currentRound + 1}`) })}
-          </button>
-        )}
-
-        {complete && (
-          <button
-            onClick={resetDebate}
-            style={{
-              flex: 1,
-              padding: '14px',
-              background: 'rgba(255,255,255,0.06)',
-              color: '#aaa',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 999,
-              fontWeight: 700,
-              fontSize: 16,
-              cursor: 'pointer',
-            }}
-          >
-            {t('debate.resetButton')}
+            {currentRound === 3 ? t('debate.synthesisRound') : t('debate.nextRound', { label: t(`debate.rounds.${currentRound + 1}`) })}
           </button>
         )}
 
@@ -970,6 +1033,116 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
           </button>
         )}
       </div>
+
+      {/* Follow-up thinking state */}
+      {followUpLoading && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, marginTop: 4 }}>
+            <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#E8C56A', letterSpacing: '0.1em' }}>
+              {t('debate.followUpRoundLabel', { n: rounds.filter(r => r.isFollowUp).length + 1 })}
+            </div>
+            <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
+          </div>
+          <div className="debate-card-grid">
+            <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
+                🏮 {t('debate.eastAdvisorFull')}
+              </div>
+              <ThinkingPanel icon="🏮" accentColor="#c87070" />
+            </div>
+            <div className="oria-card" style={{ borderTop: `3px solid ${WEST_COLOR}`, padding: '14px' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
+                🧠 {t('debate.westAdvisorFull')}
+              </div>
+              <ThinkingPanel icon="🧠" accentColor="#7090c8" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Follow-up input — shown after synthesis for authenticated users */}
+      {complete && !isDemo && debateId && debateId !== 'demo' && (
+        <div className="oria-card" style={{ marginTop: 24, border: `1px solid ${GOLD}33`, background: 'rgba(201,168,76,0.04)' }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#e8dcc8', marginBottom: 12 }}>
+            {t('debate.followUpTitle')}
+          </div>
+          {(() => {
+            const followUpCost = (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
+            return (
+              <>
+                <textarea
+                  value={followUpQuestion}
+                  onChange={e => setFollowUpQuestion(e.target.value)}
+                  placeholder={t('debate.followUpPlaceholder')}
+                  rows={2}
+                  disabled={followUpLoading}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: `1px solid rgba(255,255,255,0.15)`,
+                    borderRadius: 10,
+                    color: '#e8dcc8',
+                    padding: '10px 12px',
+                    fontSize: 15,
+                    resize: 'none',
+                    boxSizing: 'border-box',
+                    outline: 'none',
+                    fontFamily: 'inherit',
+                    opacity: followUpLoading ? 0.5 : 1,
+                  }}
+                  onKeyDown={e => { if (e.key === 'Enter' && e.metaKey) continueDebate(); }}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, gap: 10 }}>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                    {t('debate.followUpCost', { cost: followUpCost })}
+                  </div>
+                  <button
+                    onClick={continueDebate}
+                    disabled={!followUpQuestion.trim() || followUpLoading}
+                    style={{
+                      padding: '10px 20px',
+                      background: followUpQuestion.trim() && !followUpLoading ? GOLD : 'rgba(255,255,255,0.08)',
+                      color: followUpQuestion.trim() && !followUpLoading ? '#1a1410' : '#666',
+                      border: 'none',
+                      borderRadius: 999,
+                      fontWeight: 700,
+                      fontSize: 14,
+                      cursor: followUpQuestion.trim() && !followUpLoading ? 'pointer' : 'not-allowed',
+                      transition: 'all 0.15s',
+                      fontFamily: 'inherit',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {followUpLoading ? '...' : t('debate.followUpButton')}
+                  </button>
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* Reset button — after follow-up input */}
+      {complete && (
+        <button
+          onClick={resetDebate}
+          style={{
+            width: '100%',
+            marginTop: 16,
+            padding: '14px',
+            background: 'rgba(255,255,255,0.06)',
+            color: '#aaa',
+            border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 999,
+            fontWeight: 700,
+            fontSize: 16,
+            cursor: 'pointer',
+          }}
+        >
+          {t('debate.resetButton')}
+        </button>
+      )}
 
       {/* Post-completion CTA — demo only */}
       {complete && isDemo && (

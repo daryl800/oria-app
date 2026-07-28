@@ -271,7 +271,13 @@
     "usecase_next_body": "當你準備進入新的階段，卻還沒有方向",
     "disclaimer": "本 app 結合八字命理與 MBTI 性格分析，作為自我理解與決策反思的參考工具。內容僅供啟發與參考，並不構成心理、醫療、法律、財務或其他專業建議。",
     "privacy_tagline": "無廣告。無追蹤。不出售數據。",
-    "privacy_body": "Oria 只使用您的資料來個人化您的體驗——僅此而已。"
+    "privacy_body": "Oria 只使用您的資料來個人化您的體驗——僅此而已。",
+    "why_title": "為什麼是八字 × MBTI？",
+    "why_bazi_label": "八字",
+    "why_bazi_text": "源自中國四千年智慧，記錄你出生時刻的宇宙能量印記——超過51萬種組合，只有一種屬於你。",
+    "why_mbti_label": "MBTI",
+    "why_mbti_text": "現代心理學工具，描繪你如何思考、感受、做決定——16種類型之一。",
+    "why_together": "兩者結合，一個看見你的先天底色，一個看見你的運作方式，讓你更完整地認識自己。"
   },
   "login": {
     "title_signin": "歡迎回來",
@@ -646,7 +652,8 @@
       "saving": "正在解析命盤...",
       "submit": "查看完整解讀 →",
       "location_helper": "請搜尋你的出生城市（例如：香港、東京）",
-      "location_required": "請從清單中選擇你的出生城市。"
+      "location_required": "請從清單中選擇你的出生城市。",
+      "signature_hint": "接下來，我們需要你的出生時刻——這是你獨一無二的八字印記，超過51萬種組合中的其中一種。"
     },
     "result": {
       "step": "第 3 步，共 4 步",
@@ -1040,24 +1047,27 @@
     "responseLabel": "回應上輪觀點",
     "nextRound": "進入{{label}} →",
     "synthesisRound": "進入綜合解析 →",
-    "resetButton": "重新解析",
+    "resetButton": "下一個題目",
     "abandonButton": "放棄",
     "hunyuan": "混元",
     "rounds": {
       "1": "第一輪·初觀",
-      "2": "第二輪·時機",
-      "3": "第三輪·風險",
-      "4": "第四輪·行動",
-      "5": "第五輪·綜合"
+      "2": "第二輪·時機與風險",
+      "3": "第三輪·行動",
+      "4": "第四輪·綜合"
     },
     "row2": {
-      "2": "時機",
-      "3": "風險",
-      "4": "行動"
+      "2": "時機與風險",
+      "3": "行動"
     },
     "questionLabel": "本次問題",
     "showReason": "展開理由",
-    "hideReason": "收起理由"
+    "hideReason": "收起理由",
+    "followUpTitle": "還有其他想追問的嗎？",
+    "followUpPlaceholder": "繼續提問...",
+    "followUpCost": "此次追問需要 {{cost}} 積分",
+    "followUpButton": "送出追問 →",
+    "followUpRoundLabel": "追問・第 {{n}} 輪"
   },
   "topbar": {
     "creditsBadge": "{{balance}} 積分",

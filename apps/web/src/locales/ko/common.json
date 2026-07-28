@@ -239,7 +239,13 @@
     "usecase_next_body": "새로운 단계에 들어설 준비가 됐지만 방향이 보이지 않을 때",
     "disclaimer": "이 앱은 사주 명리와 MBTI 성격 분석을 결합하여 자기 이해와 의사결정 성찰을 위한 참고 도구로 제공됩니다. 모든 내용은 영감과 참고용이며, 심리, 의료, 법률, 재정 또는 기타 전문적인 조언에 해당하지 않습니다.",
     "privacy_tagline": "광고 없음. 추적 없음. 데이터 판매 없음.",
-    "privacy_body": "Oria는 귀하의 경험을 개인화하기 위해서만 정보를 사용합니다 — 그 이상은 없습니다."
+    "privacy_body": "Oria는 귀하의 경험을 개인화하기 위해서만 정보를 사용합니다 — 그 이상은 없습니다.",
+    "why_title": "왜 사주 × MBTI인가？",
+    "why_bazi_label": "사주",
+    "why_bazi_text": "중국 4천 년의 지혜에 뿌리를 두고, 당신이 태어난 순간의 우주 에너지 각인을 기록——51만 가지 이상의 조합 중 오직 하나만이 당신의 것.",
+    "why_mbti_label": "MBTI",
+    "why_mbti_text": "현대 심리학 도구로, 당신이 어떻게 생각하고 느끼고 결정하는지를 그려냅니다——16가지 유형 중 하나.",
+    "why_together": "두 가지를 결합하면 타고난 본질과 작동 방식을 모두 볼 수 있어, 자신을 더 온전히 이해하게 됩니다."
   },
   "login": {
     "title_signin": "다시 오신 것을 환영합니다",
@@ -614,7 +620,8 @@
       "saving": "별을 읽는 중...",
       "submit": "전체 리딩 보기 →",
       "location_helper": "출생 도시를 검색하세요 (예: 홍콩, 도쿄)",
-      "location_required": "목록에서 출생 도시를 선택해 주세요."
+      "location_required": "목록에서 출생 도시를 선택해 주세요.",
+      "signature_hint": "다음으로, 태어난 시각이 필요합니다——이것은 51만 가지 이상의 조합 중 하나인, 당신만의 사주 각인입니다."
     },
     "result": {
       "step": "3/4단계",
@@ -1008,24 +1015,27 @@
     "responseLabel": "이전 라운드에 대한 답변",
     "nextRound": "{{label}}으로 진행 →",
     "synthesisRound": "종합 분석으로 진행 →",
-    "resetButton": "새 분석",
+    "resetButton": "다음 주제",
     "abandonButton": "포기",
     "hunyuan": "훈위안",
     "rounds": {
-      "1": "1라운드 · 첫 번째 관점",
-      "2": "2라운드 · 타이밍",
-      "3": "3라운드 · 리스크",
-      "4": "4라운드 · 행동",
-      "5": "5라운드 · 종합"
+      "1": "1라운드 · 초기 분석",
+      "2": "2라운드 · 시기와 위험",
+      "3": "3라운드 · 행동",
+      "4": "4라운드 · 종합"
     },
     "row2": {
-      "2": "타이밍",
-      "3": "리스크",
-      "4": "행동"
+      "2": "시기와 위험",
+      "3": "행동"
     },
     "questionLabel": "질문 내용",
     "showReason": "이유 보기",
-    "hideReason": "이유 닫기"
+    "hideReason": "이유 닫기",
+    "followUpTitle": "추가 질문이 있으신가요？",
+    "followUpPlaceholder": "추가 질문을 입력하세요...",
+    "followUpCost": "이 추가 질문에는 {{cost}} 크레딧이 필요합니다",
+    "followUpButton": "추가 질문 제출 →",
+    "followUpRoundLabel": "추가 · {{n}}라운드"
   },
   "topbar": {
     "creditsBadge": "{{balance}} pt",
