@@ -1008,7 +1008,7 @@
     "responseLabel": "前ラウンドへの回答",
     "nextRound": "{{label}}へ進む →",
     "synthesisRound": "総合解析へ進む →",
-    "resetButton": "新しい解析",
+    "resetButton": "次のテーマへ",
     "abandonButton": "中止",
     "hunyuan": "混元",
     "rounds": {

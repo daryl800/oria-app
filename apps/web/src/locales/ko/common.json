@@ -1008,7 +1008,7 @@
     "responseLabel": "이전 라운드에 대한 답변",
     "nextRound": "{{label}}으로 진행 →",
     "synthesisRound": "종합 분석으로 진행 →",
-    "resetButton": "새 분석",
+    "resetButton": "다음 주제",
     "abandonButton": "포기",
     "hunyuan": "훈위안",
     "rounds": {

@@ -1089,7 +1089,7 @@
     "responseLabel": "Response to Previous Round",
     "nextRound": "Enter {{label}} →",
     "synthesisRound": "Enter Synthesis →",
-    "resetButton": "New Analysis",
+    "resetButton": "Next topic",
     "abandonButton": "Abandon",
     "hunyuan": "Hunyuan",
     "rounds": {

@@ -1008,7 +1008,7 @@
     "responseLabel": "Svar på föregående runda",
     "nextRound": "Gå till {{label}} →",
     "synthesisRound": "Gå till syntes →",
-    "resetButton": "Ny analys",
+    "resetButton": "Nästa ämne",
     "abandonButton": "Avbryt",
     "hunyuan": "Hunyuan",
     "rounds": {

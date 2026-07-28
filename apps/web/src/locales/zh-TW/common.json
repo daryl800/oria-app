@@ -1040,7 +1040,7 @@
     "responseLabel": "回應上輪觀點",
     "nextRound": "進入{{label}} →",
     "synthesisRound": "進入綜合解析 →",
-    "resetButton": "重新解析",
+    "resetButton": "下一個題目",
     "abandonButton": "放棄",
     "hunyuan": "混元",
     "rounds": {
