@@ -117,6 +117,27 @@ export default function Landing() {
             </p>
           </div>
         </section>
+        <section style={{ textAlign: 'center', padding: '32px 24px 8px', maxWidth: 560, margin: '0 auto', width: '100%' }}>
+          <h2 style={{
+            fontSize: 'clamp(15px, 4vw, 18px)',
+            fontWeight: 700,
+            color: 'rgba(201,168,76,0.85)',
+            letterSpacing: '0.04em',
+            marginBottom: 14,
+            marginTop: 0,
+          }}>
+            {t('landing.why_title')}
+          </h2>
+          <p style={{
+            fontSize: 'clamp(13px, 3vw, 14px)',
+            color: 'rgba(255,255,255,0.58)',
+            lineHeight: 1.85,
+            margin: 0,
+          }}>
+            {t('landing.why_body')}
+          </p>
+        </section>
+
         <section className="oria-landing-usecases">
           <div className="oria-landing-usecase-grid">
             {(['career', 'relationship', 'balance', 'next'] as const).map(key => (

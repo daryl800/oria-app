@@ -239,7 +239,9 @@
     "usecase_next_body": "När du är redo för en ny fas men inte vet var du ska börja",
     "disclaimer": "Denna app kombinerar BaZi och MBTI-baserad personlighetsanalys som ett referensverktyg för självförståelse och reflektion kring beslut. Innehållet är endast avsett för inspiration och vägledning och utgör inte psykologisk, medicinsk, juridisk, finansiell eller annan professionell rådgivning.",
     "privacy_tagline": "Inga annonser. Ingen spårning. Ingen dataförsäljning.",
-    "privacy_body": "Oria använder bara din information för att personalisera din upplevelse — inget annat."
+    "privacy_body": "Oria använder bara din information för att personalisera din upplevelse — inget annat.",
+    "why_title": "Varför BaZi × MBTI?",
+    "why_body": "BaZi, rotad i 4 000 år av kinesisk visdom, fångar den kosmiska energisignaturen från ögonblicket du föddes — över 510 000 möjliga kombinationer, varav bara en är din. MBTI, ett modernt psykologiskt ramverk, kartlägger hur du tänker, känner och fattar beslut — en av 16 typer. Tillsammans avslöjar den ena din medfödda natur, den andra hur du fungerar — och ger dig en mer komplett bild av dig själv."
   },
   "login": {
     "title_signin": "Välkommen tillbaka",
@@ -614,7 +616,8 @@
       "saving": "Läser dina stjärnor...",
       "submit": "Visa min fulla läsning →",
       "location_helper": "Sök din födelsestad (t.ex. Hongkong, Tokyo)",
-      "location_required": "Välj din födelsestad från listan."
+      "location_required": "Välj din födelsestad från listan.",
+      "signature_hint": "Härnäst behöver vi dina födelsedetaljer — detta är din unika BaZi-signatur, en av över 510 000 möjliga kombinationer."
     },
     "result": {
       "step": "Steg 3 av 4",
