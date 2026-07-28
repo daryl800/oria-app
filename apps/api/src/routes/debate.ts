@@ -8,7 +8,6 @@ import {
   eastR1Prompt, westR1Prompt,
   eastR2Prompt, westR2Prompt,
   eastR3Prompt, westR3Prompt,
-  eastR4Prompt, westR4Prompt,
   synthesisPrompt,
 } from '../lib/debatePrompts';
 
@@ -107,10 +106,10 @@ async function loadRecentContext(userId: string): Promise<string> {
   }
 }
 
-// Full round history for R5 synthesis
+// Full round history for R4 synthesis
 function formatAllRounds(rounds: any[]): string {
   return rounds.map((r) => {
-    if (r.synthesis) return `【第五輪·綜合】\n${r.synthesis}`;
+    if (r.synthesis) return `【第四輪·綜合】\n${r.synthesis}`;
     return `【第${r.round}輪】\n🏮 東方智者：\n${r.east}\n\n🧠 西方顧問：\n${r.west}`;
   }).join('\n\n---\n\n');
 }
@@ -242,8 +241,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
     const rounds: any[] = session.rounds ?? [];
     const currentRound = rounds.length;
 
-    if (currentRound >= 5) {
-      return res.status(400).json({ error: 'Analysis is already at round 5' });
+    if (currentRound >= 4) {
+      return res.status(400).json({ error: 'Analysis is already at round 4' });
     }
 
     const { question, lang = 'zh-TW' } = session;
@@ -287,21 +286,11 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
       newRoundData = { round: 3, east: eastR3, eastProvider, eastModel: eastModelName, west: westR3, westProvider, westModel: westModelName };
 
     } else if (nextRound === 4) {
-      const [
-        { text: eastR4, provider: eastProvider, model: eastModelName },
-        { text: westR4, provider: westProvider, model: westModelName },
-      ] = await Promise.all([
-        completeTracked(eastR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].west, rounds[2].east, profileCtx, lang), getEastChain(eastModel)),
-        completeTracked(westR4Prompt(bazi, mbtiProfile, question, recentContext, rounds[2].east, rounds[2].west, profileCtx, lang), getWestChain(westModel)),
-      ]);
-      newRoundData = { round: 4, east: eastR4, eastProvider, eastModel: eastModelName, west: westR4, westProvider, westModel: westModelName };
-
-    } else if (nextRound === 5) {
       const { text: synthesis, provider: synthesisProvider, model: synthesisModelName } = await completeTracked(
         synthesisPrompt(bazi, mbtiProfile, question, recentContext, formatAllRounds(rounds), profileCtx, lang),
         'debate_synthesis',
       );
-      newRoundData = { round: 5, synthesis, synthesisProvider, synthesisModel: synthesisModelName };
+      newRoundData = { round: 4, synthesis, synthesisProvider, synthesisModel: synthesisModelName };
       isComplete = true;
     }
 

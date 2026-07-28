@@ -52,7 +52,7 @@ const DEBATE_STYLES = `
   }
 `;
 
-const ROUND_SHORT = ['初觀', '時機', '風險', '行動', '綜合'];
+const ROUND_SHORT = ['初觀', '時機與風險', '行動', '綜合'];
 
 function RoundProgress({ activeStep }: { activeStep: number }) {
   return (
@@ -101,7 +101,7 @@ function RoundProgress({ activeStep }: { activeStep: number }) {
                 {label}
               </div>
             </div>
-            {i < 4 && (
+            {i < 3 && (
               <div style={{
                 flex: 1,
                 maxWidth: 28,
@@ -558,8 +558,8 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   }
 
   const currentRound = rounds.length;
-  const canAdvance = debateId && !complete && !loading && currentRound > 0 && currentRound < 5;
-  const isSynthesisThinking = thinkingRound === 5;
+  const canAdvance = debateId && !complete && !loading && currentRound > 0 && currentRound < 4;
+  const isSynthesisThinking = thinkingRound === 4;
 
   // Demo already used — show registration gate instead
   if (isDemo && demoUsed) {
@@ -930,7 +930,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
               cursor: 'pointer',
             }}
           >
-            {currentRound === 4 ? t('debate.synthesisRound') : t('debate.nextRound', { label: t(`debate.rounds.${currentRound + 1}`) })}
+            {currentRound === 3 ? t('debate.synthesisRound') : t('debate.nextRound', { label: t(`debate.rounds.${currentRound + 1}`) })}
           </button>
         )}
 

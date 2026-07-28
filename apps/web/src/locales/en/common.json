@@ -1093,16 +1093,14 @@
     "abandonButton": "Abandon",
     "hunyuan": "Hunyuan",
     "rounds": {
-      "1": "Round 1 · First View",
-      "2": "Round 2 · Timing",
-      "3": "Round 3 · Risk",
-      "4": "Round 4 · Action",
-      "5": "Round 5 · Synthesis"
+      "1": "Round 1 · Initial Read",
+      "2": "Round 2 · Timing & Risk",
+      "3": "Round 3 · Action",
+      "4": "Round 4 · Synthesis"
     },
     "row2": {
-      "2": "Timing",
-      "3": "Risk",
-      "4": "Action"
+      "2": "Timing & Risk",
+      "3": "Action"
     },
     "questionLabel": "Your question",
     "showReason": "Show reasoning",

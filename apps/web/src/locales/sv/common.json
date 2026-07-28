@@ -1012,16 +1012,14 @@
     "abandonButton": "Avbryt",
     "hunyuan": "Hunyuan",
     "rounds": {
-      "1": "Runda 1 · Första syn",
-      "2": "Runda 2 · Timing",
-      "3": "Runda 3 · Risk",
-      "4": "Runda 4 · Handling",
-      "5": "Runda 5 · Syntes"
+      "1": "Runda 1 · Initial analys",
+      "2": "Runda 2 · Timing & Risk",
+      "3": "Runda 3 · Handling",
+      "4": "Runda 4 · Syntes"
     },
     "row2": {
-      "2": "Timing",
-      "3": "Risk",
-      "4": "Handling"
+      "2": "Timing & Risk",
+      "3": "Handling"
     },
     "questionLabel": "Din fråga",
     "showReason": "Visa resonemang",
