@@ -1016,25 +1016,6 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
           </button>
         )}
 
-        {complete && (
-          <button
-            onClick={resetDebate}
-            style={{
-              flex: 1,
-              padding: '14px',
-              background: 'rgba(255,255,255,0.06)',
-              color: '#aaa',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 999,
-              fontWeight: 700,
-              fontSize: 16,
-              cursor: 'pointer',
-            }}
-          >
-            {t('debate.resetButton')}
-          </button>
-        )}
-
         {debateId && !complete && !loading && (
           <button
             onClick={resetDebate}
@@ -1140,6 +1121,27 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
             );
           })()}
         </div>
+      )}
+
+      {/* Reset button — after follow-up input */}
+      {complete && (
+        <button
+          onClick={resetDebate}
+          style={{
+            width: '100%',
+            marginTop: 16,
+            padding: '14px',
+            background: 'rgba(255,255,255,0.06)',
+            color: '#aaa',
+            border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 999,
+            fontWeight: 700,
+            fontSize: 16,
+            cursor: 'pointer',
+          }}
+        >
+          {t('debate.resetButton')}
+        </button>
       )}
 
       {/* Post-completion CTA — demo only */}
