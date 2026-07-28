@@ -273,7 +273,11 @@
     "privacy_tagline": "No ads. No tracking. No data selling.",
     "privacy_body": "Oria only uses your information to personalise your experience — nothing else.",
     "why_title": "Why BaZi × MBTI?",
-    "why_body": "BaZi, rooted in 4,000 years of Chinese wisdom, captures the cosmic energy signature of the moment you were born — over 510,000 possible combinations, only one of which is yours. MBTI, a modern psychological framework, maps how you think, feel, and decide — one of 16 types. Together, one reveals your innate nature, the other how you operate — giving you a more complete picture of yourself."
+    "why_bazi_label": "BaZi",
+    "why_bazi_text": "Rooted in 4,000 years of Chinese wisdom, it captures the cosmic energy signature of the moment you were born — over 510,000 possible combinations, only one of which is yours.",
+    "why_mbti_label": "MBTI",
+    "why_mbti_text": "A modern psychological framework that maps how you think, feel, and decide — one of 16 types.",
+    "why_together": "Together, one reveals your innate nature, the other how you operate — giving you a more complete picture of yourself."
   },
   "login": {
     "title_signin": "Welcome back",
