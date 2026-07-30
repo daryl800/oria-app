@@ -3,15 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 const STORAGE_KEY = 'oria_context_focus';
+const OTHER_KEY = 'other';
 
 const CONTEXT_OPTIONS = [
-  { key: 'career_change', icon: '💼' },
-  { key: 'move_city_country', icon: '✈️' },
-  { key: 'relationship_direction', icon: '❤️' },
-  { key: 'work_life_balance', icon: '⚖️' },
-  { key: 'retirement_next_chapter', icon: '🌅' },
-  { key: 'personal_reinvention', icon: '🦋' },
-  { key: 'better_daily_decisions', icon: '📝' },
+  { key: 'career_growth_or_job_change', icon: '💼' },
+  { key: 'burnout_or_high_stress',      icon: '🔥' },
+  { key: 'love_and_relationships',       icon: '❤️' },
+  { key: 'relocating',                   icon: '✈️' },
+  { key: 'new_parent',                   icon: '👶' },
+  { key: 'caring_for_parents',           icon: '🤲' },
+  { key: 'health_challenges',            icon: '🌿' },
+  { key: 'money_and_finances',           icon: '💰' },
+  { key: 'entrepreneurship',             icon: '🚀' },
+  { key: 'personal_growth',              icon: '🦋' },
 ];
 
 export default function OnboardingContextFocus() {
@@ -25,8 +29,12 @@ export default function OnboardingContextFocus() {
       return [];
     }
   });
+  const [otherText, setOtherText] = useState(() => {
+    return localStorage.getItem('oria_context_focus_other') ?? '';
+  });
 
   const selectedSet = useMemo(() => new Set(selected), [selected]);
+  const otherSelected = selectedSet.has(OTHER_KEY);
   const canContinue = selected.length > 0;
 
   function toggle(key: string) {
@@ -38,8 +46,10 @@ export default function OnboardingContextFocus() {
   }
 
   function goNext(values: string[]) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
-    navigate('/onboarding/mbti');
+    const focus = values.filter(k => k !== OTHER_KEY);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(focus));
+    localStorage.setItem('oria_context_focus_other', otherText.trim());
+    navigate('/onboarding/mbti-gate');
   }
 
   return (
@@ -143,6 +153,11 @@ export default function OnboardingContextFocus() {
           box-shadow: 0 0 0 1px rgba(216, 180, 254, 0.16), 0 20px 54px rgba(126, 34, 206, 0.28);
         }
 
+        .oria-context-card.other-card {
+          grid-column: 1 / -1;
+          min-height: 72px;
+        }
+
         .oria-context-icon {
           width: 50px;
           height: 50px;
@@ -182,6 +197,32 @@ export default function OnboardingContextFocus() {
           border-color: rgba(255, 241, 201, 0.92);
           background: linear-gradient(135deg, #F3C88B, #FFF1C9);
           box-shadow: 0 0 20px rgba(243, 200, 139, 0.25);
+        }
+
+        .oria-context-other-textarea {
+          width: 100%;
+          margin-top: 14px;
+          padding: 14px 16px;
+          border-radius: 14px;
+          border: 1px solid rgba(216, 180, 254, 0.28);
+          background: rgba(21, 9, 39, 0.72);
+          color: #EFE7FF;
+          font-family: var(--oria-font);
+          font-size: 15px;
+          line-height: 1.6;
+          resize: vertical;
+          min-height: 88px;
+          outline: none;
+          box-sizing: border-box;
+          transition: border-color 160ms ease;
+        }
+
+        .oria-context-other-textarea:focus {
+          border-color: rgba(216, 180, 254, 0.60);
+        }
+
+        .oria-context-other-textarea::placeholder {
+          color: rgba(216, 180, 254, 0.38);
         }
 
         .oria-context-actions {
@@ -259,6 +300,9 @@ export default function OnboardingContextFocus() {
             padding: 16px 18px;
             border-radius: 20px;
           }
+          .oria-context-card.other-card {
+            grid-column: unset;
+          }
           .oria-context-icon {
             width: 46px;
             height: 46px;
@@ -280,7 +324,6 @@ export default function OnboardingContextFocus() {
           <p className="oria-context-subtitle">
             {t('onboarding.context.subtitle')}
           </p>
-          <div className="oria-context-instruction">{t('onboarding.context.instruction')}</div>
         </header>
 
         <section className="oria-context-grid" aria-label="Current life context">
@@ -300,7 +343,29 @@ export default function OnboardingContextFocus() {
               </button>
             );
           })}
+
+          {/* Other — spans full row */}
+          <button
+            type="button"
+            className={`oria-context-card other-card${otherSelected ? ' selected' : ''}`}
+            onClick={() => toggle(OTHER_KEY)}
+            aria-pressed={otherSelected}
+          >
+            <span className="oria-context-icon" aria-hidden="true">✍️</span>
+            <span className="oria-context-label">{t('onboarding.context.options.other')}</span>
+            <span className="oria-context-check" aria-hidden="true">{otherSelected ? '✓' : ''}</span>
+          </button>
         </section>
+
+        {otherSelected && (
+          <textarea
+            className="oria-context-other-textarea"
+            value={otherText}
+            onChange={e => setOtherText(e.target.value)}
+            placeholder={t('onboarding.context.other_placeholder')}
+            rows={3}
+          />
+        )}
 
         <div className="oria-context-actions">
           <button

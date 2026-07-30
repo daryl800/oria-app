@@ -9,6 +9,7 @@ import Chart from './pages/Chart';
 import Landing from './pages/Landing';
 import OnboardingMbti from './pages/OnboardingMbti';
 import OnboardingContextFocus from './pages/OnboardingContextFocus';
+import OnboardingMbtiGate from './pages/OnboardingMbtiGate';
 import OnboardingTransition from './pages/OnboardingTransition';
 import OnboardingSignup from './pages/OnboardingSignup';
 import OnboardingMbtiSummary from './pages/OnboardingMbtiSummary';
@@ -53,7 +54,7 @@ function AppShell({ user, isPlus, planInterval, creditBalance, creditResetDate, 
 }) {
   const location = useLocation();
   const isLoggedIn = !!user;
-  const onboardingPaths = ['/onboarding/bazi', '/onboarding/bazi-preview', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/transition', '/onboarding/context', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup'];
+  const onboardingPaths = ['/onboarding/bazi', '/onboarding/bazi-preview', '/onboarding/mbti-summary', '/onboarding/start', '/onboarding/transition', '/onboarding/context', '/onboarding/mbti-gate', '/onboarding/mbti', '/onboarding/result', '/onboarding/signup'];
   const showBottomNav = isLoggedIn && !onboardingPaths.includes(location.pathname);
   return (
     <div className="oria-shell">
@@ -207,6 +208,7 @@ export default function App() {
           <Route path="/onboarding/context" element={<OnboardingContextFocus />} />
           <Route path="/onboarding/signup" element={<OnboardingSignup />} />
           <Route path="/onboarding/mbti-summary" element={<OnboardingMbtiSummary user={user!} />} />
+          <Route path="/onboarding/mbti-gate" element={<OnboardingMbtiGate />} />
           <Route path="/onboarding/mbti" element={<OnboardingMbti />} />
           <Route path="/onboarding/result" element={<OnboardingResult />} />
           <Route path="/onboarding/bazi" element={<OnboardingBazi />} />

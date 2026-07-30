@@ -636,8 +636,8 @@
     },
     "context": {
       "step": "1/4단계",
-      "title": "지금 무엇을 헤쳐 나가고 있나요?",
-      "subtitle": "oria가 지금 당신이 다루는 일을 이해하는 데 도움이 됩니다.",
+      "title": "Oria를 찾게 된 계기가 무엇인가요？",
+      "subtitle": "현재 생활 상태를 알려주세요. Oria가 더 맞춤화된 안내를 제공합니다. 복수 선택 가능.",
       "instruction": "해당되는 것을 모두 선택",
       "continue": "계속 →",
       "skip": "지금은 건너뛰기",
@@ -649,8 +649,31 @@
         "work_life_balance": "일과 삶의 균형",
         "retirement_next_chapter": "은퇴 / 다음 장",
         "personal_reinvention": "개인적 재정의",
-        "better_daily_decisions": "더 나은 일상 결정"
-      }
+        "better_daily_decisions": "더 나은 일상 결정",
+        "career_growth_or_job_change": "커리어 성장 또는 이직",
+        "burnout_or_high_stress": "번아웃 또는 고스트레스",
+        "love_and_relationships": "사랑과 인간관계",
+        "relocating": "새로운 도시나 국가로 이주",
+        "new_parent": "부모가 된 지 얼마 안 됨",
+        "caring_for_parents": "노부모 돌봄",
+        "health_challenges": "건강 문제",
+        "money_and_finances": "돈과 재무 목표",
+        "entrepreneurship": "창업 또는 사업 확장",
+        "personal_growth": "자기 성장",
+        "other": "기타…"
+      },
+      "other_placeholder": "더 말씀하고 싶으신가요？（선택 사항）"
+    },
+    "mbtiGate": {
+      "title": "이미 자신의 MBTI 유형을 알고 있나요？",
+      "subtitle": "두 가지 방법 모두 맞춤 분석으로 이어집니다. 가장 적합한 방식을 선택하세요.",
+      "option_known": "네, MBTI를 알고 있어요",
+      "known_desc": "유형을 선택하고 바로 시작하기",
+      "option_assess": "MBTI 검사 받기",
+      "assess_desc": "약 2분, 더 정밀한 분석을 위해",
+      "select_type": "MBTI 유형 선택",
+      "confirm": "확인 →",
+      "back": "뒤로"
     }
   },
   "language_modal": {

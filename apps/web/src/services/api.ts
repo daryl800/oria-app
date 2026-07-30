@@ -218,7 +218,7 @@ export async function getBaziPreview(token: string) {
 export async function saveTempOnboarding(
   mbtiData: any,
   baziData: any,
-  options: { context_focus?: string[]; lang?: string } = {},
+  options: { context_focus?: string[]; lang?: string; context_focus_other?: string | null; mbti_source?: string } = {},
 ) {
   const res = await fetch(`${API_URL}/api/profile/temp-save`, {
     method: 'POST',
@@ -227,6 +227,8 @@ export async function saveTempOnboarding(
       mbti_data: mbtiData,
       bazi_data: baziData,
       context_focus: options.context_focus ?? [],
+      context_focus_other: options.context_focus_other ?? null,
+      mbti_source: options.mbti_source ?? 'assessment',
       lang: options.lang,
     }),
   });

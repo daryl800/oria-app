@@ -249,15 +249,17 @@ router.get('/today', async (req: Request, res: Response) => {
     // 5. Load MBTI profile
     let mbtiProfile = null;
     let contextFocus: string[] = [];
+    let contextFocusOther: string | null = null;
     if (userProfile.current_mbti_version_id) {
       const { data: mbtiVersion } = await supabase
         .from('mbti_profile_versions')
-        .select('mbti_type, context_focus')
+        .select('mbti_type, context_focus, context_focus_other')
         .eq('id', userProfile.current_mbti_version_id)
         .single();
       if (mbtiVersion) {
         mbtiProfile = await getMbtiProfile(mbtiVersion.mbti_type, lang);
         contextFocus = (mbtiVersion as any).context_focus ?? [];
+        contextFocusOther = (mbtiVersion as any).context_focus_other ?? null;
       }
     }
 
@@ -311,6 +313,7 @@ router.get('/today', async (req: Request, res: Response) => {
       zodiac,
       contextFocus,
       recentChatContext,
+      contextFocusOther,
     );
     const chain = (isPlus && Math.random() < 0.3) ? 'daily_premium' : 'daily';
     const raw = await complete(messages, chain);

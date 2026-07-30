@@ -252,6 +252,7 @@ router.post('/send', async (req: Request, res: Response) => {
       mbti.context_focus ?? [],
       zodiac,
       previousConversationsContext,
+      mbti.context_focus_other ?? null,
     );
 
     const response = await complete(messages, 'chat');

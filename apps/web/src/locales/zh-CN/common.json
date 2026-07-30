@@ -668,8 +668,8 @@
     },
     "context": {
       "step": "第 1 步，共 4 步",
-      "title": "你现在正在面对什么？",
-      "subtitle": "这能帮助 oria 理解你现在正在处理的事情。",
+      "title": "是什么让你想到 Oria？",
+      "subtitle": "说说你目前的生活状态，帮助 Oria 给你更贴切的指引。可多选。",
       "instruction": "可多选",
       "continue": "继续 →",
       "skip": "暂时跳过",
@@ -681,8 +681,31 @@
         "work_life_balance": "工作与生活平衡",
         "retirement_next_chapter": "退休／下一章",
         "personal_reinvention": "重新塑造自己",
-        "better_daily_decisions": "更好的每日决定"
-      }
+        "better_daily_decisions": "更好的每日决定",
+        "career_growth_or_job_change": "职涯成长或转职",
+        "burnout_or_high_stress": "职业倦怠或高压",
+        "love_and_relationships": "感情关系",
+        "relocating": "移居新城市或国家",
+        "new_parent": "刚成为父母",
+        "caring_for_parents": "照顾年迈父母",
+        "health_challenges": "健康挑战",
+        "money_and_finances": "金钱与财务目标",
+        "entrepreneurship": "创业或拓展事业",
+        "personal_growth": "个人成长",
+        "other": "其他…"
+      },
+      "other_placeholder": "想多说一点吗？（选填）"
+    },
+    "mbtiGate": {
+      "title": "你已经知道自己的MBTI了吗？",
+      "subtitle": "两条路都通向个性化分析，选择最适合你的方式。",
+      "option_known": "我已经知道我的MBTI",
+      "known_desc": "直接选择你的类型，立即开始",
+      "option_assess": "进行MBTI测验",
+      "assess_desc": "约 2 分钟，获得更精准的分析",
+      "select_type": "选择你的MBTI类型",
+      "confirm": "确认 →",
+      "back": "返回"
     }
   },
   "language_modal": {

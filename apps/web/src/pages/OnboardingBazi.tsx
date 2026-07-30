@@ -15,6 +15,14 @@ function readContextFocus() {
   }
 }
 
+function readContextFocusOther() {
+  return localStorage.getItem('oria_context_focus_other') ?? null;
+}
+
+function readMbtiSource() {
+  return localStorage.getItem('oria_mbti_source') ?? 'assessment';
+}
+
 export default function OnboardingBazi() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -62,9 +70,13 @@ export default function OnboardingBazi() {
         is_male: isMale ?? true,
       };
       const contextFocus = readContextFocus();
+      const contextFocusOther = readContextFocusOther();
+      const mbtiSource = readMbtiSource();
       localStorage.setItem('oria_bazi_input', JSON.stringify(baziData));
       const data = await saveTempOnboarding(mbtiData, baziData, {
         context_focus: contextFocus,
+        context_focus_other: contextFocusOther,
+        mbti_source: mbtiSource,
         lang: i18n.language,
       });
       // Store token for callback

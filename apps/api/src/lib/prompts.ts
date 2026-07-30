@@ -1,6 +1,7 @@
 /* eslint-disable */
 // prompts.ts
 import type OpenAI from 'openai';
+import { labelContextFocus } from './contextFocusLabels';
 
 type Messages = OpenAI.ChatCompletionMessageParam[];
 
@@ -200,9 +201,11 @@ function getLangGuard(lang: string): string {
   return '🌐 LANGUAGE RULE (highest priority): Every text value in your JSON response MUST be written in English. The instructions below are in Chinese for reference only — do NOT respond in Chinese.\n\n';
 }
 
-function getContextFocusSection(context_focus: string[] = [], lang: string = 'en'): string {
-  if (!context_focus?.length) return '';
-  const labels: Record<string, string> = {
+function getContextFocusSection(context_focus: string[] = [], lang: string = 'en', context_focus_other?: string | null): string {
+  const hasItems = context_focus?.length > 0;
+  const hasOther = !!context_focus_other?.trim();
+  if (!hasItems && !hasOther) return '';
+  const sectionLabels: Record<string, string> = {
     'zh-TW': '用戶關注重點',
     'zh-CN': '用户关注重点',
     'ja': 'ユーザーの関心領域',
@@ -212,9 +215,16 @@ function getContextFocusSection(context_focus: string[] = [], lang: string = 'en
     'es': 'Áreas de enfoque del usuario',
     'fr': "Domaines d'intérêt de l'utilisateur",
   };
-  const label = labels[lang] ?? 'User focus areas';
-  const separator = ['zh-TW', 'zh-CN', 'ja'].includes(lang) ? '、' : ', ';
-  return `${label}: ${context_focus.join(separator)}`;
+  const isZhJa = ['zh-TW', 'zh-CN', 'ja'].includes(lang);
+  const label = sectionLabels[lang] ?? 'User focus areas';
+  const separator = isZhJa ? '、' : ', ';
+  const mapped = labelContextFocus(context_focus, lang);
+  let result = hasItems ? `${label}: ${mapped.join(separator)}` : '';
+  if (hasOther) {
+    const otherLabel = isZhJa ? '補充背景' : 'Additional context';
+    result += (result ? '\n' : '') + `${otherLabel}: ${context_focus_other!.trim()}`;
+  }
+  return result;
 }
 
 const STEM_ELEMENT: Record<string, string> = {
@@ -247,14 +257,14 @@ const STEM_TONE: Record<string, { en: string; zh: string }> = {
 // 我剋 (day master drains) → RECOVERY
 // Neutral / mixed → REFLECTION
 
-export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = [], zodiac: any = null): Messages {
+export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = [], zodiac: any = null, context_focus_other?: string | null): Messages {
   const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
   const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
   const langGuard = getLangGuard(lang);
-  const contextFocusSection = getContextFocusSection(context_focus, lang);
+  const contextFocusSection = getContextFocusSection(context_focus, lang, context_focus_other);
   const currentYear = new Date().getFullYear();
 
   return [
@@ -402,6 +412,7 @@ export function dailyGuidancePrompt(
   zodiac: any = null,
   context_focus: string[] = [],
   recentChatContext: string = '',
+  context_focus_other?: string | null,
 ): Messages {
   const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
@@ -490,6 +501,7 @@ export function chatPrompt(
   context_focus: string[] = [],
   zodiac: any = null,
   previousConversationsContext: string = '',
+  context_focus_other?: string | null,
 ): Messages {
   const { gregorian, dayOfWeek } = getDateContext();
   const name = userName || '用戶';
@@ -498,7 +510,7 @@ export function chatPrompt(
   const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
   const langGuard = getLangGuard(lang);
-  const contextFocusSection = getContextFocusSection(context_focus, lang);
+  const contextFocusSection = getContextFocusSection(context_focus, lang, context_focus_other);
 
   const systemContent = `${langGuard}你是 Oria，一位結合八字命理與 MBTI 性格分析的個人引導助手。
 
