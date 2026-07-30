@@ -89,16 +89,9 @@ export default function Landing() {
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 letterSpacing: '0.01em',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 3,
               }}
             >
-              <span>{t('landing.demo_cta')}</span>
-              <span style={{ fontSize: 11, fontWeight: 400, opacity: 0.65, letterSpacing: '0.01em' }}>
-                {t('landing.demo_cta_sub')}
-              </span>
+              {t('landing.demo_cta')}
             </button>
 
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.62)', textAlign: 'center', margin: 0, lineHeight: 1.6, textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}>
