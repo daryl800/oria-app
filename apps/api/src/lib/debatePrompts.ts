@@ -1,5 +1,6 @@
 // debatePrompts.ts — Prompt builders for East vs West analysis feature
 import type OpenAI from 'openai';
+import { labelContextFocus } from './contextFocusLabels';
 
 interface Pillar { gan?: string; zhi?: string; }
 interface FiveElementsStrength { Wood?: number; Fire?: number; Earth?: number; Metal?: number; Water?: number; }
@@ -47,6 +48,7 @@ export interface ProfileContext {
   life_pattern?: string;
   friction_point?: string;
   context_focus?: string[];
+  context_focus_other?: string | null;
 }
 
 function getBaziContext(bazi: BaziData | null): string {
@@ -164,7 +166,11 @@ function buildProfileContext(ctx: ProfileContext | null, includeSummary = true):
   if (includeSummary && ctx.summary) parts.push(`整體側寫：${ctx.summary}`);
   if (ctx.life_pattern) parts.push(`行為規律：${ctx.life_pattern}`);
   if (ctx.friction_point) parts.push(`人生卡點：${ctx.friction_point}`);
-  if (ctx.context_focus?.length) parts.push(`當前關注：${ctx.context_focus.join('、')}`);
+  if (ctx.context_focus?.length) {
+    const mapped = labelContextFocus(ctx.context_focus, 'zh-TW');
+    parts.push(`當前關注：${mapped.join('、')}`);
+  }
+  if (ctx.context_focus_other?.trim()) parts.push(`補充背景：${ctx.context_focus_other.trim()}`);
   if (!parts.length) return '';
   return `【人物側寫】\n${parts.join('\n')}`;
 }

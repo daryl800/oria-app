@@ -36,7 +36,7 @@ async function loadUserProfiles(userId: string) {
     userProfile.current_mbti_version_id
       ? supabase
           .from('mbti_profile_versions')
-          .select('mbti_type, context_focus, questionnaire_responses')
+          .select('mbti_type, context_focus, context_focus_other, source, questionnaire_responses')
           .eq('id', userProfile.current_mbti_version_id)
           .single()
       : Promise.resolve({ data: null }),
@@ -65,6 +65,7 @@ async function loadUserProfiles(userId: string) {
     mbtiProfile,
     profileSummary: userProfile.profile_summary ?? null,
     contextFocus: mbtiVersion?.context_focus ?? [],
+    contextFocusOther: (mbtiVersion as any)?.context_focus_other ?? null,
   };
 }
 
@@ -161,17 +162,18 @@ router.post('/start', async (req: Request, res: Response) => {
       });
     }
 
-    const [{ bazi, mbtiProfile, profileSummary, contextFocus }, recentContext] = await Promise.all([
+    const [{ bazi, mbtiProfile, profileSummary, contextFocus, contextFocusOther }, recentContext] = await Promise.all([
       loadUserProfiles(userId),
       loadRecentContext(userId),
     ]);
     console.log('[DEBUG recentContext length]', recentContext?.length ?? 0);
 
-    const profileCtx = (profileSummary || contextFocus?.length) ? {
+    const profileCtx = (profileSummary || contextFocus?.length || contextFocusOther) ? {
       summary: profileSummary?.summary,
       life_pattern: profileSummary?.life_pattern,
       friction_point: profileSummary?.friction_point,
       context_focus: contextFocus ?? [],
+      context_focus_other: contextFocusOther ?? null,
     } : null;
 
     // R1: both AIs analyse independently — no opponent view yet
@@ -250,17 +252,18 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
     const { eastModel = 'hunyuan', westModel = 'openai' } = req.body;
     const nextRound = currentRound + 1;
 
-    const [{ bazi, mbtiProfile, profileSummary, contextFocus }, recentContext] = await Promise.all([
+    const [{ bazi, mbtiProfile, profileSummary, contextFocus, contextFocusOther }, recentContext] = await Promise.all([
       loadUserProfiles(userId),
       loadRecentContext(userId),
     ]);
     console.log('[DEBUG recentContext length]', recentContext?.length ?? 0);
 
-    const profileCtx = (profileSummary || contextFocus?.length) ? {
+    const profileCtx = (profileSummary || contextFocus?.length || contextFocusOther) ? {
       summary: profileSummary?.summary,
       life_pattern: profileSummary?.life_pattern,
       friction_point: profileSummary?.friction_point,
       context_focus: contextFocus ?? [],
+      context_focus_other: contextFocusOther ?? null,
     } : null;
 
     let newRoundData: any;
@@ -358,15 +361,16 @@ router.post('/:debateId/continue', async (req: Request, res: Response) => {
     const { question, lang = 'zh-TW' } = session;
     const rounds: any[] = session.rounds ?? [];
 
-    const [{ bazi, mbtiProfile, profileSummary, contextFocus }] = await Promise.all([
+    const [{ bazi, mbtiProfile, profileSummary, contextFocus, contextFocusOther }] = await Promise.all([
       loadUserProfiles(userId),
     ]);
 
-    const profileCtx = (profileSummary || contextFocus?.length) ? {
+    const profileCtx = (profileSummary || contextFocus?.length || contextFocusOther) ? {
       summary: profileSummary?.summary,
       life_pattern: profileSummary?.life_pattern,
       friction_point: profileSummary?.friction_point,
       context_focus: contextFocus ?? [],
+      context_focus_other: contextFocusOther ?? null,
     } : null;
 
     const allHistory = formatAllRounds(rounds);
