@@ -636,8 +636,8 @@
     },
     "context": {
       "step": "STEG 1 AV 4",
-      "title": "Vad navigerar du just nu?",
-      "subtitle": "Det hjälper oria att förstå vad du hanterar just nu.",
+      "title": "Vad förde dig till Oria?",
+      "subtitle": "Berätta om din nuvarande livssituation — det hjälper Oria att ge dig mer träffsäker vägledning. Välj alla som stämmer.",
       "instruction": "Välj allt som stämmer",
       "continue": "Fortsätt →",
       "skip": "Hoppa över nu",
@@ -649,8 +649,31 @@
         "work_life_balance": "Balans mellan arbete och liv",
         "retirement_next_chapter": "Pension / nästa kapitel",
         "personal_reinvention": "Personlig nystart",
-        "better_daily_decisions": "Bättre dagliga beslut"
-      }
+        "better_daily_decisions": "Bättre dagliga beslut",
+        "career_growth_or_job_change": "Karriärutveckling eller jobbbyte",
+        "burnout_or_high_stress": "Utbrändhet eller hög stress",
+        "love_and_relationships": "Kärlek och relationer",
+        "relocating": "Flytt till ny stad eller nytt land",
+        "new_parent": "Nybliven förälder",
+        "caring_for_parents": "Vård av åldrande föräldrar",
+        "health_challenges": "Hälsoutmaningar",
+        "money_and_finances": "Pengar och finansiella mål",
+        "entrepreneurship": "Starta eller växa ett företag",
+        "personal_growth": "Personlig utveckling",
+        "other": "Annat…"
+      },
+      "other_placeholder": "Vill du säga mer? (valfritt)"
+    },
+    "mbtiGate": {
+      "title": "Känner du redan till din MBTI-typ?",
+      "subtitle": "Båda vägarna leder till personlig analys — välj det som passar dig bäst.",
+      "option_known": "Ja, jag känner till min MBTI",
+      "known_desc": "Välj din typ och kom igång direkt",
+      "option_assess": "Gör MBTI-bedömningen",
+      "assess_desc": "Ungefär 2 minuter, för en mer precis analys",
+      "select_type": "Välj din MBTI-typ",
+      "confirm": "Bekräfta →",
+      "back": "Tillbaka"
     }
   },
   "language_modal": {

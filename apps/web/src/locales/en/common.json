@@ -717,8 +717,8 @@
     },
     "context": {
       "step": "STEP 1 OF 4",
-      "title": "What are you navigating right now?",
-      "subtitle": "This helps oria understand what you’re dealing with right now.",
+      "title": "What brought you to Oria?",
+      "subtitle": "Share what's on your mind right now — it helps Oria guide you more precisely. Pick all that apply.",
       "instruction": "Select all that apply",
       "continue": "Continue →",
       "skip": "Skip for now",
@@ -730,8 +730,31 @@
         "work_life_balance": "Work-life balance",
         "retirement_next_chapter": "Retirement / next chapter",
         "personal_reinvention": "Personal reinvention",
-        "better_daily_decisions": "Better daily decisions"
-      }
+        "better_daily_decisions": "Better daily decisions",
+        "career_growth_or_job_change": "Career growth or job change",
+        "burnout_or_high_stress": "Burnout or high stress",
+        "love_and_relationships": "Love and relationships",
+        "relocating": "Relocating to a new city or country",
+        "new_parent": "Becoming a new parent",
+        "caring_for_parents": "Caring for aging parents",
+        "health_challenges": "Health challenges",
+        "money_and_finances": "Money and financial goals",
+        "entrepreneurship": "Starting or growing a business",
+        "personal_growth": "Personal growth",
+        "other": "Other…"
+      },
+      "other_placeholder": "Want to say more? (optional)"
+    },
+    "mbtiGate": {
+      "title": "Do you already know your MBTI type?",
+      "subtitle": "Both paths lead to personalised analysis — choose what works best for you.",
+      "option_known": "Yes, I know my MBTI",
+      "known_desc": "Select your type and get started right away",
+      "option_assess": "Take the MBTI assessment",
+      "assess_desc": "About 2 minutes, for a more precise reading",
+      "select_type": "Select your MBTI type",
+      "confirm": "Confirm →",
+      "back": "Back"
     }
   },
   "language_modal": {
