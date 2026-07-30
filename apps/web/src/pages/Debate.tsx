@@ -786,8 +786,8 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
             onKeyDown={e => { if (e.key === 'Enter' && e.metaKey && !demoUsed) startDebate(); }}
           />
 
-          {/* Question suggestions — hidden for demoUsed (textarea disabled) */}
-          {!demoUsed && (
+          {/* Question suggestions — always shown while input card is visible */}
+          {(
             <div style={{ marginTop: 16 }}>
               <div className="oria-card-label" style={{ marginBottom: 10 }}>
                 {t('debate.suggestionsLabel')}
