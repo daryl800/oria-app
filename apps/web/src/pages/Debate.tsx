@@ -10,7 +10,7 @@ const API_URL = import.meta.env.VITE_API_URL ?? '';
 const GOLD = '#C9A84C';
 
 const MODEL_CREDITS: Record<string, number> = {
-  hunyuan: 1, deepseek: 1, gemini_lite: 1, openai: 2, claude: 3,
+  hunyuan: 1, deepseek: 1, gemini_lite: 1, openai: 1, claude: 3,
 };
 const EAST_COLOR = '#8B2A2A';
 const WEST_COLOR = '#1A3A5C';
@@ -909,13 +909,12 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
           })()}
 
           {!isDemo && creditBalance !== null && (() => {
-            const cost = (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
+            const perRound = (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
+            const cost = perRound * 3 + 1;
             const insufficient = creditBalance < cost;
             return (
-              <div style={{ fontSize: 14, color: '#999', marginBottom: 12, textAlign: 'right' }}>
-                {t('debate.creditBefore')}{' '}
-                <span style={{ color: GOLD, fontWeight: 600 }}>{cost}</span>{' '}{t('debate.creditAfter')}{' '}
-                <span style={{ color: insufficient ? '#e88' : GOLD, fontWeight: 600 }}>{creditBalance}</span>{' '}{t('debate.creditEnd')}
+              <div style={{ fontSize: 13, color: insufficient ? '#e88' : 'rgba(255,255,255,0.38)', marginBottom: 12, textAlign: 'right', lineHeight: 1.5 }}>
+                {t('debate.creditEstimate', { cost, balance: creditBalance })}
               </div>
             );
           })()}
@@ -1307,9 +1306,17 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
             </div>
           ) : (
             <>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', marginBottom: 16, textAlign: 'center', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', marginBottom: 8, textAlign: 'center', lineHeight: 1.6 }}>
                 {t('debate.lastWord.prompt')}
               </div>
+              {creditBalance !== null && (() => {
+                const lwCost = (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
+                return (
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center', marginBottom: 14 }}>
+                    {t('debate.followUpCost', { cost: lwCost, balance: creditBalance })}
+                  </div>
+                );
+              })()}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <button
                   onClick={() => { setLastWordChoice('east'); triggerLastWord('east'); }}
@@ -1427,6 +1434,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
           </div>
           {(() => {
             const followUpCost = (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
+            const followUpBalance = creditBalance ?? 0;
             return (
               <>
                 <textarea
@@ -1453,7 +1461,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
                 />
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, gap: 10 }}>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                    {t('debate.followUpCost', { cost: followUpCost })}
+                    {t('debate.followUpCost', { cost: followUpCost, balance: followUpBalance })}
                   </div>
                   <button
                     onClick={continueDebate}

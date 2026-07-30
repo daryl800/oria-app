@@ -3,7 +3,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
 import { completeTracked } from '../lib/llm';
-import { calculateDebateCost, checkAndDeductCredits } from '../lib/credits';
+import { calculateDebateCost, calculateDebateFullCost, checkAndDeductCredits } from '../lib/credits';
 import {
   eastR1Prompt, westR1Prompt,
   eastR2Prompt, westR2Prompt,
@@ -156,7 +156,7 @@ router.post('/start', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'question is required' });
     }
 
-    const cost = calculateDebateCost(eastModel, westModel);
+    const cost = calculateDebateFullCost(eastModel, westModel);
     const creditResult = await checkAndDeductCredits(userId, cost);
     if (!creditResult.ok) {
       return res.status(403).json({
