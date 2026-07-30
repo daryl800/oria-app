@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { QUESTION_SUGGESTIONS } from '../data/questionSuggestions';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '';
 const GOLD = '#C9A84C';
@@ -49,6 +50,44 @@ const DEBATE_STYLES = `
       transform: none !important;
       transition: opacity 0.15s ease !important;
     }
+  }
+  .debate-suggestion-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 2px;
+    flex-wrap: nowrap;
+  }
+  .debate-suggestion-tabs::-webkit-scrollbar { display: none; }
+  .debate-suggestion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  @media (max-width: 600px) {
+    .debate-suggestion-grid { grid-template-columns: 1fr; }
+  }
+  .debate-suggestion-card {
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.09);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.75);
+    font-size: 14px;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    line-height: 1.45;
+    transition: border-color 140ms ease, background 140ms ease, transform 140ms ease, color 140ms ease;
+  }
+  .debate-suggestion-card:hover {
+    border-color: rgba(201,168,76,0.45);
+    background: rgba(201,168,76,0.07);
+    color: rgba(255,255,255,0.92);
+    transform: translateY(-1px);
   }
 `;
 
@@ -400,7 +439,9 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   const [error, setError] = useState<string | null>(null);
   const [followUpQuestion, setFollowUpQuestion] = useState('');
   const [followUpLoading, setFollowUpLoading] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('hot');
   const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const thinkingStartRef = useRef<number>(0);
 
   useEffect(() => {
@@ -607,27 +648,6 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   const canAdvance = debateId && !complete && !loading && currentRound > 0 && currentRound < 4;
   const isSynthesisThinking = thinkingRound === 4;
 
-  // Demo already used — show registration gate instead
-  if (isDemo && demoUsed) {
-    return (
-      <div className="oria-page oria-container" style={{ padding: '20px 16px 32px' }}>
-        <style>{DEBATE_STYLES}</style>
-        <div className="oria-card" style={{ textAlign: 'center', padding: '36px 24px', maxWidth: 420, margin: '32px auto 0' }}>
-          <div style={{ fontSize: 36, marginBottom: 14 }}>✦</div>
-          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#e8dcc8', margin: '0 0 10px' }}>
-            {t('debateDemo.usedTitle')}
-          </h2>
-          <p style={{ fontSize: 15, color: '#888', margin: '0 0 24px', lineHeight: 1.6 }}>
-            {t('debateDemo.usedBody')}
-          </p>
-          <button className="oria-btn-primary" style={{ width: '100%' }} onClick={() => navigate('/onboarding/start')}>
-            {t('debateDemo.usedButton')}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="oria-page oria-container" style={{ padding: '20px 16px 32px' }}>
       <style>{DEBATE_STYLES}</style>
@@ -639,46 +659,26 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
         <p className="oria-page-subtitle">{t('debate.tagline')}</p>
       </div>
 
-      {/* Demo banner — shown when not yet started and not complete */}
-      {isDemo && !debateId && !loading && (
-        <div style={{
-          background: 'rgba(201,168,76,0.06)',
-          border: `1px solid ${GOLD}33`,
-          borderRadius: 12,
-          padding: '14px 16px',
-          marginBottom: 16,
-        }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: GOLD, marginBottom: 6 }}>
-            {t('debateDemo.bannerTitle')}
-          </div>
-          <div style={{ fontSize: 13, color: '#999', lineHeight: 1.6, marginBottom: 10 }}>
-            {t('debateDemo.bannerBody')}
-          </div>
-          <button
-            onClick={() => navigate('/onboarding/start')}
-            style={{
-              background: 'none',
-              border: `1px solid ${GOLD}55`,
-              borderRadius: 999,
-              color: GOLD,
-              fontSize: 13,
-              fontWeight: 600,
-              padding: '6px 14px',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
-          >
-            {t('debateDemo.bannerCta')}
-          </button>
-        </div>
-      )}
 
       {/* Question input — hidden once loading or debate is active */}
       {!debateId && !loading && (
         <div className="oria-card" style={{ marginBottom: 20 }}>
-          <p className="oria-page-subtitle" style={{ textAlign: 'center', marginBottom: 20, marginTop: 0, color: 'rgba(255,255,255,0.85)' }}>
-            {t('debate.subtitle')}
-          </p>
+          <div style={{ marginBottom: 20, fontSize: 14, color: 'rgba(255,255,255,0.60)', lineHeight: 1.7 }}>
+            <p style={{ margin: '0 0 14px', textAlign: 'center' }}>{t('debate.explainerIntro')}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 9, paddingLeft: 2, marginBottom: 14 }}>
+              {[
+                { icon: '🏮', key: 'explainerEast' },
+                { icon: '🧠', key: 'explainerWest' },
+                { icon: '⚖️', key: 'explainerRounds' },
+              ].map(({ icon, key }) => (
+                <div key={key} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+                  <span style={{ flexShrink: 0, fontSize: 15 }}>{icon}</span>
+                  <span>{t(`debate.${key}`)}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ margin: 0, textAlign: 'center', color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>{t('debate.explainerConclusion')}</p>
+          </div>
 
           {/* Model selector */}
           {(() => {
@@ -762,10 +762,12 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
             {t('debate.questionLabel')}
           </div>
           <textarea
+            ref={textareaRef}
             value={question}
-            onChange={e => setQuestion(e.target.value)}
+            onChange={e => { if (!demoUsed) setQuestion(e.target.value); }}
             placeholder={t('debate.placeholder')}
             rows={3}
+            disabled={demoUsed}
             style={{
               width: '100%',
               background: 'rgba(255,255,255,0.05)',
@@ -778,22 +780,112 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
               boxSizing: 'border-box',
               outline: 'none',
               fontFamily: 'inherit',
+              opacity: demoUsed ? 0.38 : 1,
+              cursor: demoUsed ? 'not-allowed' : 'text',
             }}
-            onKeyDown={e => { if (e.key === 'Enter' && e.metaKey) startDebate(); }}
+            onKeyDown={e => { if (e.key === 'Enter' && e.metaKey && !demoUsed) startDebate(); }}
           />
-          <button
-            onClick={startDebate}
-            disabled={!question.trim()}
-            className="oria-btn-primary"
-            style={{
-              marginTop: 12,
-              width: '100%',
-              opacity: !question.trim() ? 0.4 : 1,
-              cursor: !question.trim() ? 'not-allowed' : 'pointer',
-            }}
-          >
-            {t('debate.startButton')}
-          </button>
+
+          {/* Question suggestions — hidden for demoUsed (textarea disabled) */}
+          {!demoUsed && (
+            <div style={{ marginTop: 16 }}>
+              <div className="oria-card-label" style={{ marginBottom: 10 }}>
+                {t('debate.suggestionsLabel')}
+              </div>
+              <div className="debate-suggestion-tabs">
+                {QUESTION_SUGGESTIONS.map(cat => (
+                  <button
+                    key={cat.category}
+                    onClick={() => setActiveCategory(cat.category)}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: 999,
+                      border: `1px solid ${activeCategory === cat.category ? `${GOLD}88` : 'rgba(255,255,255,0.10)'}`,
+                      background: activeCategory === cat.category ? `${GOLD}18` : 'transparent',
+                      color: activeCategory === cat.category ? GOLD : 'rgba(255,255,255,0.45)',
+                      fontSize: 13,
+                      fontWeight: activeCategory === cat.category ? 700 : 400,
+                      fontFamily: 'inherit',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.14s ease',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {cat.icon} {t(cat.labelKey)}
+                  </button>
+                ))}
+              </div>
+              <div className="debate-suggestion-grid">
+                {QUESTION_SUGGESTIONS.find(c => c.category === activeCategory)?.questions.map(q => (
+                  <button
+                    key={q.key}
+                    className="debate-suggestion-card"
+                    onClick={() => {
+                      setQuestion(t(q.textKey));
+                      setTimeout(() => textareaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+                    }}
+                  >
+                    {t(q.textKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Demo disclaimer — sits between suggestions and action button */}
+          {isDemo && (
+            <div style={{
+              marginTop: 14,
+              background: 'rgba(201,168,76,0.06)',
+              border: `1px solid ${GOLD}33`,
+              borderRadius: 10,
+              padding: '12px 14px',
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: GOLD, marginBottom: 6 }}>
+                {t('debateDemo.bannerTitle')}
+              </div>
+              <div style={{ fontSize: 13, color: '#888', lineHeight: 1.65, marginBottom: 10 }}>
+                {t('debateDemo.bannerBody')}
+              </div>
+              <button
+                onClick={() => navigate('/onboarding/start')}
+                style={{
+                  background: 'none',
+                  border: `1px solid ${GOLD}55`,
+                  borderRadius: 999,
+                  color: GOLD,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  padding: '6px 14px',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                {t('debateDemo.bannerCta')}
+              </button>
+            </div>
+          )}
+
+          {demoUsed ? (
+            <div style={{ fontSize: 13, color: '#666', textAlign: 'center', marginTop: 12, lineHeight: 1.6 }}>
+              {t('debateDemo.usedTitle')} — {t('debateDemo.usedBody')}
+            </div>
+          ) : (
+            <button
+              onClick={startDebate}
+              disabled={!question.trim()}
+              className="oria-btn-primary"
+              style={{
+                marginTop: 12,
+                width: '100%',
+                opacity: !question.trim() ? 0.4 : 1,
+                cursor: !question.trim() ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {t('debate.startButton')}
+            </button>
+          )}
         </div>
       )}
 
