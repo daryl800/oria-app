@@ -602,6 +602,114 @@ ${getLangInstruction(lang)}`,
   ];
 }
 
+// ── Last Word (最後追問) ──────────────────────────────────────────
+
+export function lastWordQuestionPrompt(
+  questioner: 'east' | 'west',
+  bazi: BaziData | null, mbti: MbtiData | null,
+  question: string, allRounds: string, lang: string,
+): OpenAI.ChatCompletionMessageParam[] {
+  const isEastAsking = questioner === 'east';
+  const noMbti = isNoMbti(mbti);
+  const advisorName = isEastAsking ? '東方智者' : '西方顧問';
+  const framework = isEastAsking ? '八字命理' : (noMbti ? '心理學' : 'MBTI');
+  const opponentFramework = isEastAsking ? (noMbti ? '心理學' : 'MBTI') : '八字命理';
+  const constraintLine = isEastAsking
+    ? '嚴格遵守：只用八字、五行、大運作為論據。絕對禁止提及MBTI、性格類型或任何西方心理學概念。'
+    : (noMbti ? '' : WEST_CONSTRAINT);
+
+  return [
+    {
+      role: 'system',
+      content: `你是「${advisorName}」，從${framework}角度出發。
+
+【用戶提問】
+${question}
+
+完整辯論歷史：
+${allRounds}
+
+任務：向對方（${opponentFramework}顧問）提出你認為最關鍵、最值得追問的一個問題。
+- 必須基於你的框架（${framework}），切中雙方真正的分歧點
+- 問題要犀利有力，指向對方框架的盲點或最薄弱的論點
+- 最多80字，只輸出問題本身，不要加任何標題或解釋
+
+${constraintLine}
+${getLangInstruction(lang)}`,
+    },
+    { role: 'user', content: '請提出你的追問。' },
+  ];
+}
+
+export function lastWordAnswerPrompt(
+  questioner: 'east' | 'west',
+  questionAsked: string,
+  bazi: BaziData | null, mbti: MbtiData | null,
+  question: string, allRounds: string, lang: string,
+): OpenAI.ChatCompletionMessageParam[] {
+  const isEastAnswering = questioner === 'west';
+  const noMbti = isNoMbti(mbti);
+  const advisorName = isEastAnswering ? '東方智者' : '西方顧問';
+  const framework = isEastAnswering ? '八字命理' : (noMbti ? '心理學' : 'MBTI');
+  const constraintLine = isEastAnswering
+    ? '嚴格遵守：只用八字、五行、大運作為論據。絕對禁止提及MBTI、性格類型或任何西方心理學概念。'
+    : (noMbti ? '' : WEST_CONSTRAINT);
+
+  return [
+    {
+      role: 'system',
+      content: `你是「${advisorName}」，從${framework}角度出發。
+
+【用戶提問】
+${question}
+
+完整辯論歷史：
+${allRounds}
+
+對方向你提出以下問題：
+「${questionAsked}」
+
+請基於你的框架（${framework}）誠實回應。可以維持立場，也可以承認對方觀點有理。回應要真誠有力，不迴避，不敷衍。最多100字，只輸出回應本身，不要加任何標題。
+
+${constraintLine}
+${getLangInstruction(lang)}`,
+    },
+    { role: 'user', content: '請回應對方的追問。' },
+  ];
+}
+
+// ── One-line Takeaway (一句話) ────────────────────────────────────
+
+export function takeawayPrompt(
+  question: string, allRounds: string, lang: string,
+): OpenAI.ChatCompletionMessageParam[] {
+  return [
+    {
+      role: 'system',
+      content: `根據以下完整辯論，分別以東方智者（八字命理視角）和西方顧問（MBTI心理學視角）身份，各給用戶一句話建議。
+
+【用戶提問】
+${question}
+
+完整辯論歷史：
+${allRounds}
+
+要求：
+- 每句話只能有一句，不超過20字
+- 要有力、好記，像格言一樣，直接說出最核心的洞見或行動
+- 不要解釋，不要鋪墊，只要那一句話
+- 兩句話風格要有明顯差異（一個更哲學/命理，一個更心理/行動）
+
+輸出格式（嚴格遵守，不要加其他任何內容）：
+【東方】<東方一句話>
+【西方】<西方一句話>
+
+${getLangInstruction(lang)}`,
+    },
+    { role: 'user', content: '請分別給出東方與西方各一句話建議。' },
+  ];
+}
+
 // ── R4 — 綜合 (Synthesis) ─────────────────────────────────────────
 
 export function synthesisPrompt(

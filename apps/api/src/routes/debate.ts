@@ -10,6 +10,8 @@ import {
   eastR3Prompt, westR3Prompt,
   synthesisPrompt,
   eastContinuePrompt, westContinuePrompt,
+  lastWordQuestionPrompt, lastWordAnswerPrompt,
+  takeawayPrompt,
 } from '../lib/debatePrompts';
 
 const router = Router();
@@ -108,9 +110,14 @@ async function loadRecentContext(userId: string): Promise<string> {
   }
 }
 
-// Full round history for R4 synthesis
+// Full round history for synthesis and prompts
 function formatAllRounds(rounds: any[]): string {
   return rounds.map((r) => {
+    if (r.isLastWord) {
+      const askerName = r.questioner === 'east' ? '🏮 東方智者' : '🧠 西方顧問';
+      const answererName = r.questioner === 'east' ? '🧠 西方顧問' : '🏮 東方智者';
+      return `【最後追問】\n${askerName} 問：\n${r.questionAsked}\n\n${answererName} 回應：\n${r.answer}`;
+    }
     if (r.synthesis) return `【第四輪·綜合】\n${r.synthesis}`;
     return `【第${r.round}輪】\n🏮 東方智者：\n${r.east}\n\n🧠 西方顧問：\n${r.west}`;
   }).join('\n\n---\n\n');
@@ -242,7 +249,7 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
     }
 
     const rounds: any[] = session.rounds ?? [];
-    const currentRound = rounds.length;
+    const currentRound = rounds.filter((r: any) => !r.isLastWord).length;
 
     if (currentRound >= 4) {
       return res.status(400).json({ error: 'Analysis is already at round 4' });
@@ -290,11 +297,17 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
       newRoundData = { round: 3, east: eastR3, eastProvider, eastModel: eastModelName, west: westR3, westProvider, westModel: westModelName };
 
     } else if (nextRound === 4) {
-      const { text: synthesis, provider: synthesisProvider, model: synthesisModelName } = await completeTracked(
-        synthesisPrompt(bazi, mbtiProfile, question, recentContext, formatAllRounds(rounds), profileCtx, lang),
-        'debate_synthesis',
-      );
-      newRoundData = { round: 4, synthesis, synthesisProvider, synthesisModel: synthesisModelName };
+      const allRoundsText = formatAllRounds(rounds);
+      const [
+        { text: synthesis, provider: synthesisProvider, model: synthesisModelName },
+        { text: takeawayRaw },
+      ] = await Promise.all([
+        completeTracked(synthesisPrompt(bazi, mbtiProfile, question, recentContext, allRoundsText, profileCtx, lang), 'debate_synthesis'),
+        completeTracked(takeawayPrompt(question, allRoundsText, lang), 'debate_synthesis'),
+      ]);
+      const eastTakeaway = takeawayRaw.match(/【東方】([^\n【]+)/)?.[1]?.trim() ?? '';
+      const westTakeaway = takeawayRaw.match(/【西方】([^\n【]+)/)?.[1]?.trim() ?? '';
+      newRoundData = { round: 4, synthesis, synthesisProvider, synthesisModel: synthesisModelName, eastTakeaway, westTakeaway };
       isComplete = true;
     }
 
@@ -412,6 +425,103 @@ router.post('/:debateId/continue', async (req: Request, res: Response) => {
       westModel: westModelName,
       isFollowUp: true,
       complete: true,
+      credits_used: cost,
+      credits_remaining: creditResult.balance,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// ── POST /debate/:debateId/lastword ──────────────────────────────
+
+router.post('/:debateId/lastword', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { debateId } = req.params;
+    const { questioner, eastModel = 'hunyuan', westModel = 'openai' } = req.body;
+
+    if (!questioner || !['east', 'west'].includes(questioner)) {
+      return res.status(400).json({ error: 'questioner must be "east" or "west"' });
+    }
+
+    const { data: session, error: fetchErr } = await supabase
+      .from('debate_sessions')
+      .select('*')
+      .eq('id', debateId)
+      .eq('user_id', userId)
+      .single();
+
+    if (fetchErr || !session) {
+      return res.status(404).json({ error: 'Analysis session not found' });
+    }
+    if (session.status !== 'active') {
+      return res.status(400).json({ error: 'Last word exchange requires an active session' });
+    }
+
+    const rounds: any[] = session.rounds ?? [];
+    const nonLastWordRounds = rounds.filter((r: any) => !r.isLastWord);
+    const alreadyHasLastWord = rounds.some((r: any) => r.isLastWord);
+
+    if (nonLastWordRounds.length !== 3) {
+      return res.status(400).json({ error: 'Last word exchange requires exactly 3 completed rounds' });
+    }
+    if (alreadyHasLastWord) {
+      return res.status(400).json({ error: 'Last word exchange already exists for this session' });
+    }
+
+    const cost = calculateDebateCost(eastModel, westModel);
+    const creditResult = await checkAndDeductCredits(userId, cost);
+    if (!creditResult.ok) {
+      return res.status(403).json({
+        error: 'insufficient_credits',
+        plan: (req as any).userPlan ?? 'free',
+        credits_remaining: creditResult.balance,
+        message: (req as any).userPlan === 'plus'
+          ? '本月積分已用完，下月自動重置'
+          : '免費積分已用完，升級Plus每月獲得60積分',
+      });
+    }
+
+    const { question, lang = 'zh-TW' } = session;
+    const allRoundsText = formatAllRounds(rounds);
+    const [{ bazi, mbtiProfile }] = await Promise.all([loadUserProfiles(userId)]);
+
+    const askingChain = questioner === 'east' ? getEastChain(eastModel) : getWestChain(westModel);
+    const { text: questionAsked, provider: questionProvider, model: questionModelName } = await completeTracked(
+      lastWordQuestionPrompt(questioner, bazi, mbtiProfile, question, allRoundsText, lang),
+      askingChain,
+    );
+
+    const respondingChain = questioner === 'east' ? getWestChain(westModel) : getEastChain(eastModel);
+    const { text: answer, provider: answerProvider, model: answerModelName } = await completeTracked(
+      lastWordAnswerPrompt(questioner, questionAsked.trim(), bazi, mbtiProfile, question, allRoundsText, lang),
+      respondingChain,
+    );
+
+    const lastWordEntry = {
+      isLastWord: true,
+      questioner,
+      questionAsked: questionAsked.trim(),
+      questionProvider,
+      questionModel: questionModelName,
+      answer: answer.trim(),
+      answerProvider,
+      answerModel: answerModelName,
+    };
+
+    const updatedRounds = [...rounds, lastWordEntry];
+    await supabase
+      .from('debate_sessions')
+      .update({ rounds: updatedRounds, updated_at: new Date().toISOString() })
+      .eq('id', debateId);
+
+    return res.json({
+      questioner,
+      questionAsked: questionAsked.trim(),
+      questionModel: questionModelName,
+      answer: answer.trim(),
+      answerModel: answerModelName,
       credits_used: cost,
       credits_remaining: creditResult.balance,
     });

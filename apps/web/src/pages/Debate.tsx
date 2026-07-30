@@ -402,7 +402,7 @@ function splitRoundContent(content: string): { response: string; analysis: strin
 
 
 interface DebateRound {
-  round: number;
+  round?: number;
   east?: string;
   eastProvider?: string;
   eastModel?: string;
@@ -412,8 +412,120 @@ interface DebateRound {
   synthesis?: string;
   synthesisProvider?: string;
   synthesisModel?: string;
+  eastTakeaway?: string;
+  westTakeaway?: string;
   isFollowUp?: boolean;
   followUpQuestion?: string;
+  isLastWord?: boolean;
+  questioner?: 'east' | 'west';
+  questionAsked?: string;
+  answer?: string;
+  questionModel?: string;
+  answerModel?: string;
+  questionProvider?: string;
+  answerProvider?: string;
+}
+
+function LastWordCard({ r }: { r: DebateRound }) {
+  const { t } = useTranslation();
+  const isEastAsking = r.questioner === 'east';
+  const askerColor = isEastAsking ? '#c87070' : '#7090c8';
+  const answererColor = isEastAsking ? '#7090c8' : '#c87070';
+  const askerLabel = isEastAsking ? `🏮 ${t('debate.eastAdvisor')}` : `🧠 ${t('debate.westAdvisor')}`;
+  const answererLabel = isEastAsking ? `🧠 ${t('debate.westAdvisor')}` : `🏮 ${t('debate.eastAdvisor')}`;
+
+  return (
+    <div style={{
+      padding: '16px 18px',
+      borderRadius: 14,
+      border: '1px dashed rgba(255,255,255,0.14)',
+      background: 'rgba(255,255,255,0.02)',
+    }}>
+      <div style={{
+        fontSize: 10,
+        fontWeight: 700,
+        color: 'rgba(255,255,255,0.22)',
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase' as const,
+        marginBottom: 14,
+        textAlign: 'center' as const,
+      }}>
+        {t('debate.lastWord.cardTitle')}
+      </div>
+
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: askerColor, letterSpacing: '0.04em', marginBottom: 6 }}>
+          {askerLabel} {t('debate.lastWord.asks')} →
+        </div>
+        <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', lineHeight: 1.6, fontStyle: 'italic', paddingLeft: 4 }}>
+          「{r.questionAsked}」
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '10px 0', color: 'rgba(255,255,255,0.18)', fontSize: 13 }}>
+        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+        <span>↓</span>
+        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+      </div>
+
+      <div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: answererColor, letterSpacing: '0.04em', marginBottom: 6 }}>
+          {answererLabel} {t('debate.lastWord.answers')}
+        </div>
+        <TypewriterText
+          text={r.answer ?? ''}
+          renderDone={str => (
+            <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', lineHeight: 1.65 }}>{str}</div>
+          )}
+        />
+      </div>
+    </div>
+  );
+}
+
+function TakeawayCard({ east, west }: { east: string; west: string }) {
+  const { t } = useTranslation();
+  return (
+    <div style={{
+      marginTop: 14,
+      borderRadius: 16,
+      border: `1px solid ${GOLD}44`,
+      background: `linear-gradient(160deg, rgba(201,168,76,0.07) 0%, rgba(20,10,35,0.85) 100%)`,
+      padding: '28px 20px',
+      textAlign: 'center' as const,
+      animation: 'debate-fadein 0.4s ease 0.6s both',
+    }}>
+      <div style={{
+        fontSize: 12,
+        fontWeight: 700,
+        color: `${GOLD}77`,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase' as const,
+        marginBottom: 24,
+      }}>
+        {t('debate.takeaway.title')}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#c87070', letterSpacing: '0.06em', marginBottom: 10 }}>
+            🟠 {t('debate.takeaway.eastLabel')}
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#f0e4cc', lineHeight: 1.45, letterSpacing: '0.02em' }}>
+            「{east}」
+          </div>
+        </div>
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '0 15%' }} />
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#7090c8', letterSpacing: '0.06em', marginBottom: 10 }}>
+            🔵 {t('debate.takeaway.westLabel')}
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#cce0f5', lineHeight: 1.45, letterSpacing: '0.02em' }}>
+            「{west}」
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function Debate({ user = null, creditBalance = null, onCreditsUpdated }: {
@@ -439,6 +551,8 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   const [error, setError] = useState<string | null>(null);
   const [followUpQuestion, setFollowUpQuestion] = useState('');
   const [followUpLoading, setFollowUpLoading] = useState(false);
+  const [lastWordChoice, setLastWordChoice] = useState<'east' | 'west' | 'skip' | null>(null);
+  const [lastWordLoading, setLastWordLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState('hot');
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -531,7 +645,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
     if (!debateId || complete) return;
     setError(null);
     setLoading(true);
-    const nextRoundNum = rounds.length + 1;
+    const nextRoundNum = rounds.filter(r => !r.isLastWord).length + 1;
     setThinkingRound(nextRoundNum);
     thinkingStartRef.current = Date.now();
 
@@ -588,6 +702,8 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
           synthesis: data.synthesis,
           synthesisProvider: data.synthesisProvider,
           synthesisModel: data.synthesisModel,
+          eastTakeaway: data.eastTakeaway,
+          westTakeaway: data.westTakeaway,
         }]);
         setComplete(data.complete);
       }
@@ -642,11 +758,57 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
     setComplete(false);
     setError(null);
     setThinkingRound(null);
+    setLastWordChoice(null);
   }
 
-  const currentRound = rounds.length;
+  const currentRound = rounds.filter(r => !r.isLastWord).length;
+  const hasLastWord = rounds.some(r => r.isLastWord);
   const canAdvance = debateId && !complete && !loading && currentRound > 0 && currentRound < 4;
+  const showLastWordPanel =
+    !isDemo &&
+    debateId !== null &&
+    debateId !== 'demo' &&
+    !complete &&
+    !loading &&
+    currentRound === 3 &&
+    !hasLastWord &&
+    (lastWordChoice === null || lastWordLoading);
+  const showSynthesisButton =
+    canAdvance && !lastWordLoading && (currentRound < 3 || isDemo || hasLastWord || lastWordChoice === 'skip');
   const isSynthesisThinking = thinkingRound === 4;
+
+  async function triggerLastWord(questioner: 'east' | 'west') {
+    if (!debateId || lastWordLoading) return;
+    setError(null);
+    setLastWordLoading(true);
+    try {
+      const headers = await getAuthHeader();
+      const res = await fetch(`${API_URL}/api/debate/${debateId}/lastword`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify({ questioner, eastModel, westModel }),
+      });
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.message ?? body.error ?? 'Failed to generate last word exchange');
+      }
+      const data = await res.json();
+      setRounds(prev => [...prev, {
+        isLastWord: true,
+        questioner: data.questioner,
+        questionAsked: data.questionAsked,
+        questionModel: data.questionModel,
+        answer: data.answer,
+        answerModel: data.answerModel,
+      }]);
+      if (data.credits_remaining !== undefined) onCreditsUpdated?.(data.credits_remaining);
+    } catch (err: any) {
+      setError(err.message);
+      setLastWordChoice(null);
+    } finally {
+      setLastWordLoading(false);
+    }
+  }
 
   return (
     <div className="oria-page oria-container" style={{ padding: '20px 16px 32px' }}>
@@ -941,20 +1103,22 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
       )}
 
       {/* Completed rounds */}
-      {rounds.map((r) => (
-        <div key={r.round} className="debate-card-animate" style={{ marginBottom: 24, animation: 'debate-fadein 0.22s ease both' }}>
+      {rounds.map((r, i) => (
+        <div key={i} className="debate-card-animate" style={{ marginBottom: 24, animation: 'debate-fadein 0.22s ease both' }}>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: r.isFollowUp ? 10 : 16, marginTop: 4 }}>
-            <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#E8C56A', letterSpacing: '0.1em' }}>
-              {r.isFollowUp
-                ? t('debate.followUpRoundLabel', { n: r.round - 4 })
-                : t(`debate.rounds.${r.round}`)}
+          {!r.isLastWord && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: r.isFollowUp ? 10 : 16, marginTop: 4 }}>
+              <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#E8C56A', letterSpacing: '0.1em' }}>
+                {r.isFollowUp
+                  ? t('debate.followUpRoundLabel', { n: (r.round ?? 5) - 4 })
+                  : t(`debate.rounds.${r.round}`)}
+              </div>
+              <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
             </div>
-            <div style={{ flex: 1, height: 1, background: `${GOLD}44` }} />
-          </div>
+          )}
 
-          {r.isFollowUp && r.followUpQuestion && (
+          {!r.isLastWord && r.isFollowUp && r.followUpQuestion && (
             <div style={{
               background: 'rgba(201,168,76,0.05)',
               border: `1px solid ${GOLD}33`,
@@ -972,7 +1136,9 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
             </div>
           )}
 
-          {r.isFollowUp ? (
+          {r.isLastWord ? (
+            <LastWordCard r={r} />
+          ) : r.isFollowUp ? (
             /* Follow-up round — simple two-column, no synthesis, no row2 split */
             <div className="debate-card-grid">
               <div className="oria-card" style={{ borderTop: `3px solid ${EAST_COLOR}`, padding: '14px' }}>
@@ -989,18 +1155,23 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
               </div>
             </div>
           ) : r.synthesis ? (
-            /* R4 — full-width synthesis */
-            <div className="oria-card debate-card-animate" style={{
-              border: `1px solid ${GOLD}66`,
-              background: 'rgba(201,168,76,0.07)',
-              animation: 'debate-fadein 0.26s ease both',
-            }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: GOLD, letterSpacing: '0.06em', marginBottom: 14 }}>
-                ⚖️ {t('debate.synthesis')}{r.synthesisModel && <span style={{ fontWeight: 400, color: '#a09060', marginLeft: 4 }}>（{r.synthesisModel}）</span>}
+            /* R4 — full-width synthesis + takeaway */
+            <>
+              <div className="oria-card debate-card-animate" style={{
+                border: `1px solid ${GOLD}66`,
+                background: 'rgba(201,168,76,0.07)',
+                animation: 'debate-fadein 0.26s ease both',
+              }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: GOLD, letterSpacing: '0.06em', marginBottom: 14 }}>
+                  ⚖️ {t('debate.synthesis')}{r.synthesisModel && <span style={{ fontWeight: 400, color: '#a09060', marginLeft: 4 }}>（{r.synthesisModel}）</span>}
+                </div>
+                <TypewriterText text={r.synthesis} renderDone={str => <DebateCardContent text={str} />} />
               </div>
-              <TypewriterText text={r.synthesis} renderDone={str => <DebateCardContent text={str} />} />
-            </div>
-          ) : r.round >= 2 ? (
+              {(r.eastTakeaway || r.westTakeaway) && (
+                <TakeawayCard east={r.eastTakeaway ?? ''} west={r.westTakeaway ?? ''} />
+              )}
+            </>
+          ) : (r.round ?? 0) >= 2 ? (
             /* R2-R4 — two rows: response row + new-topic row */
             <>
               {/* Row 1: Response to previous round */}
@@ -1115,9 +1286,73 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
         </div>
       )}
 
+      {/* Last Word choice panel — appears after R3, before synthesis */}
+      {showLastWordPanel && (
+        <div style={{
+          marginBottom: 16,
+          padding: '20px',
+          borderRadius: 14,
+          border: '1px solid rgba(255,255,255,0.1)',
+          background: 'rgba(255,255,255,0.025)',
+        }}>
+          {lastWordLoading ? (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>
+                {t('debate.lastWord.generating')}
+              </div>
+              <ThinkingPanel
+                icon={lastWordChoice === 'east' ? '🏮' : '🧠'}
+                accentColor={lastWordChoice === 'east' ? '#c87070' : '#7090c8'}
+              />
+            </div>
+          ) : (
+            <>
+              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', marginBottom: 16, textAlign: 'center', lineHeight: 1.6 }}>
+                {t('debate.lastWord.prompt')}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <button
+                  onClick={() => { setLastWordChoice('east'); triggerLastWord('east'); }}
+                  style={{
+                    padding: '13px 16px', borderRadius: 10, textAlign: 'left',
+                    border: '1px solid rgba(200,112,112,0.3)', background: 'rgba(200,112,112,0.08)',
+                    color: '#e0b0b0', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                    transition: 'all 0.14s ease',
+                  }}
+                >
+                  🟠 {t('debate.lastWord.eastAsks')}
+                </button>
+                <button
+                  onClick={() => { setLastWordChoice('west'); triggerLastWord('west'); }}
+                  style={{
+                    padding: '13px 16px', borderRadius: 10, textAlign: 'left',
+                    border: '1px solid rgba(112,144,200,0.3)', background: 'rgba(112,144,200,0.08)',
+                    color: '#b0c8e8', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                    transition: 'all 0.14s ease',
+                  }}
+                >
+                  🔵 {t('debate.lastWord.westAsks')}
+                </button>
+                <button
+                  onClick={() => setLastWordChoice('skip')}
+                  style={{
+                    padding: '11px 16px', borderRadius: 10, textAlign: 'center',
+                    border: '1px solid rgba(255,255,255,0.08)', background: 'transparent',
+                    color: 'rgba(255,255,255,0.38)', fontFamily: 'inherit', fontSize: 13, cursor: 'pointer',
+                    transition: 'all 0.14s ease',
+                  }}
+                >
+                  ⚪ {t('debate.lastWord.skip')}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Controls */}
       <div style={{ display: 'flex', gap: 10, marginTop: 8 }} ref={bottomRef}>
-        {canAdvance && (
+        {showSynthesisButton && (
           <button
             onClick={nextRound}
             style={{

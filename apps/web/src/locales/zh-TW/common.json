@@ -1070,6 +1070,21 @@
     "responseLabel": "回應上輪觀點",
     "nextRound": "進入{{label}} →",
     "synthesisRound": "進入綜合解析 →",
+    "lastWord": {
+      "prompt": "東方與西方仍有不同觀點。你想如何繼續？",
+      "eastAsks": "讓東方顧問進一步追問西方顧問",
+      "westAsks": "讓西方顧問進一步追問東方顧問",
+      "skip": "直接整合結論",
+      "cardTitle": "最後追問",
+      "asks": "追問",
+      "answers": "回應",
+      "generating": "正在生成追問交流..."
+    },
+    "takeaway": {
+      "title": "如果只能給一句建議，你會說什麼？",
+      "eastLabel": "東方一句話",
+      "westLabel": "西方一句話"
+    },
     "resetButton": "下一個題目",
     "abandonButton": "放棄",
     "hunyuan": "混元",

@@ -1070,6 +1070,21 @@
     "responseLabel": "回应上轮观点",
     "nextRound": "进入{{label}} →",
     "synthesisRound": "进入综合解析 →",
+    "lastWord": {
+      "prompt": "东方与西方仍有不同观点。你想如何继续？",
+      "eastAsks": "让东方顾问进一步追问西方顾问",
+      "westAsks": "让西方顾问进一步追问东方顾问",
+      "skip": "直接整合结论",
+      "cardTitle": "最后追问",
+      "asks": "追问",
+      "answers": "回应",
+      "generating": "正在生成追问交流..."
+    },
+    "takeaway": {
+      "title": "如果只能给一句建议，你会说什么？",
+      "eastLabel": "东方一句话",
+      "westLabel": "西方一句话"
+    },
     "resetButton": "下一个题目",
     "abandonButton": "放弃",
     "hunyuan": "混元",

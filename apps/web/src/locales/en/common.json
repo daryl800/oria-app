@@ -1119,6 +1119,21 @@
     "responseLabel": "Response to Previous Round",
     "nextRound": "Enter {{label}} →",
     "synthesisRound": "Enter Synthesis →",
+    "lastWord": {
+      "prompt": "East and West still see things differently. How would you like to continue?",
+      "eastAsks": "Let the Eastern Advisor challenge the Western Advisor",
+      "westAsks": "Let the Western Advisor challenge the Eastern Advisor",
+      "skip": "Go straight to synthesis",
+      "cardTitle": "Final Challenge",
+      "asks": "asks",
+      "answers": "responds",
+      "generating": "Generating exchange..."
+    },
+    "takeaway": {
+      "title": "If you could only give one piece of advice, what would it be?",
+      "eastLabel": "Eastern one-liner",
+      "westLabel": "Western one-liner"
+    },
     "resetButton": "Next topic",
     "abandonButton": "Abandon",
     "hunyuan": "Hunyuan",
