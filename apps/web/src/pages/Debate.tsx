@@ -425,7 +425,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   const { i18n, t } = useTranslation();
   const lang = i18n.language ?? 'zh-TW';
   const isDemo = !user;
-  const [demoUsed] = useState(() => localStorage.getItem('oria_demo_used') === 'true');
+  const [demoUsed] = useState(() => isDemo && localStorage.getItem('oria_demo_used') === 'true');
 
   const prefill = (location.state as any)?.prefill ?? '';
   const [question, setQuestion] = useState(prefill);
@@ -761,30 +761,58 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
           <div className="oria-card-label" style={{ marginBottom: 8 }}>
             {t('debate.questionLabel')}
           </div>
-          <textarea
-            ref={textareaRef}
-            value={question}
-            onChange={e => { if (!demoUsed) setQuestion(e.target.value); }}
-            placeholder={t('debate.placeholder')}
-            rows={3}
-            disabled={demoUsed}
-            style={{
-              width: '100%',
-              background: 'rgba(255,255,255,0.05)',
-              border: `1px solid rgba(255,255,255,0.15)`,
-              borderRadius: 10,
-              color: '#e8dcc8',
-              padding: '12px 14px',
-              fontSize: 16,
-              resize: 'none',
-              boxSizing: 'border-box',
-              outline: 'none',
-              fontFamily: 'inherit',
-              opacity: demoUsed ? 0.38 : 1,
-              cursor: demoUsed ? 'not-allowed' : 'text',
-            }}
-            onKeyDown={e => { if (e.key === 'Enter' && e.metaKey && !demoUsed) startDebate(); }}
-          />
+          <div style={{ position: 'relative' }}>
+            <textarea
+              ref={textareaRef}
+              value={question}
+              onChange={e => { if (!demoUsed) setQuestion(e.target.value); }}
+              placeholder={t('debate.placeholder')}
+              rows={3}
+              disabled={demoUsed}
+              style={{
+                width: '100%',
+                background: 'rgba(255,255,255,0.05)',
+                border: `1px solid rgba(255,255,255,0.15)`,
+                borderRadius: 10,
+                color: '#e8dcc8',
+                padding: question && !demoUsed ? '12px 36px 12px 14px' : '12px 14px',
+                fontSize: 16,
+                resize: 'none',
+                boxSizing: 'border-box',
+                outline: 'none',
+                fontFamily: 'inherit',
+                opacity: demoUsed ? 0.38 : 1,
+                cursor: demoUsed ? 'not-allowed' : 'text',
+              }}
+              onKeyDown={e => { if (e.key === 'Enter' && e.metaKey && !demoUsed) startDebate(); }}
+            />
+            {question && !demoUsed && (
+              <button
+                onClick={() => { setQuestion(''); textareaRef.current?.focus(); }}
+                aria-label="Clear question"
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  right: 10,
+                  background: 'rgba(255,255,255,0.08)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 20,
+                  height: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'rgba(255,255,255,0.45)',
+                  fontSize: 11,
+                  cursor: 'pointer',
+                  lineHeight: 1,
+                  padding: 0,
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
 
           {/* Question suggestions — always shown while input card is visible */}
           {(
