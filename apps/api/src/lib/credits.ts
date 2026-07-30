@@ -6,18 +6,24 @@ export const MODEL_CREDITS: Record<string, number> = {
   hunyuan:     1,
   deepseek:    1,
   gemini_lite: 1,
-  openai:      2,
+  openai:      1,
   claude:      3,
 };
 
+// Single-round cost — used for follow-ups and last-word exchanges
 export function calculateDebateCost(eastModel: string, westModel: string): number {
   return (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
+}
+
+// Full debate cost: 3 dialogue rounds + flat synthesis surcharge
+export function calculateDebateFullCost(eastModel: string, westModel: string): number {
+  return calculateDebateCost(eastModel, westModel) * 3 + 1;
 }
 
 export async function initializeCredits(userId: string, isPlus: boolean): Promise<void> {
   const today = new Date().toISOString().split('T')[0];
   const { error } = await supabase.from('users').update({
-    credit_balance: isPlus ? 60 : 6,
+    credit_balance: isPlus ? 60 : 8,
     credit_reset_date: today,
     credit_initialized: true,
   }).eq('id', userId);
