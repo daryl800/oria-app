@@ -1130,7 +1130,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
               lineHeight: 1.6,
             }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}88`, letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>
-                {t('debate.followUpTitle')}
+                {t('debate.followUpQuestionLabel')}
               </span>
               {r.followUpQuestion}
             </div>
@@ -1419,8 +1419,11 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
       {/* Follow-up input — shown after synthesis for authenticated users */}
       {complete && !isDemo && debateId && debateId !== 'demo' && (
         <div className="oria-card" style={{ marginTop: 24, border: `1px solid ${GOLD}33`, background: 'rgba(201,168,76,0.04)' }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#e8dcc8', marginBottom: 12 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#e8dcc8', marginBottom: 4 }}>
             {t('debate.followUpTitle')}
+          </div>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.42)', lineHeight: 1.6, marginBottom: 14 }}>
+            {t('debate.followUpSubtitle')}
           </div>
           {(() => {
             const followUpCost = (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
