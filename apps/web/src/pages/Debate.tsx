@@ -228,12 +228,12 @@ function DebateCardContent({ text }: { text: string }) {
 
         if (isConfidence) return (
           <div key={i} style={{
-            display: 'inline-flex', alignItems: 'flex-start', gap: 6,
-            padding: '5px 10px', borderRadius: 999,
+            display: 'flex', alignItems: 'flex-start', gap: 6,
+            padding: '6px 10px', borderRadius: 10,
             background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-            fontSize: 12, color: 'rgba(255,255,255,0.38)', alignSelf: 'flex-start', lineHeight: 1.5,
+            fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5,
           }}>
-            <span style={{ color: `${GOLD}66`, fontSize: 10, marginTop: 2, flexShrink: 0 }}>◆</span>
+            <span style={{ color: `${GOLD}99`, fontSize: 13, marginTop: 2, flexShrink: 0 }}>◆</span>
             <span>{content}</span>
           </div>
         );
@@ -243,7 +243,7 @@ function DebateCardContent({ text }: { text: string }) {
             <button
               onClick={() => setReasonExpanded(e => !e)}
               style={{
-                background: 'none', border: 'none', color: `${GOLD}77`, fontSize: 12,
+                background: 'none', border: 'none', color: `${GOLD}77`, fontSize: 15,
                 cursor: 'pointer', padding: '2px 0', fontFamily: 'inherit',
                 display: 'flex', alignItems: 'center', gap: 5,
               }}
@@ -264,7 +264,7 @@ function DebateCardContent({ text }: { text: string }) {
 
         if (isAction) return (
           <div key={i} style={{ borderLeft: `2px solid ${GOLD}77`, paddingLeft: 10 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}88`, letterSpacing: '0.06em', marginBottom: 3 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: `${GOLD}88`, letterSpacing: '0.06em', marginBottom: 3 }}>
               {label}
             </div>
             <div style={{ fontSize: 14, lineHeight: 1.65, color: '#ddd0b0' }}>
@@ -290,7 +290,7 @@ function DebateCardContent({ text }: { text: string }) {
         return (
           <div key={i}>
             {label && (
-              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.28)', letterSpacing: '0.06em', marginBottom: 5 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.06em', marginBottom: 5 }}>
                 {label}
               </div>
             )}
@@ -1087,7 +1087,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
           padding: '12px 16px',
           marginBottom: 20,
         }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}99`, letterSpacing: '0.08em', marginBottom: 5 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: `${GOLD}99`, letterSpacing: '0.08em', marginBottom: 5 }}>
             {t('debate.questionLabel')}
           </div>
           <div style={{ fontSize: 15, color: '#ddd0b0', lineHeight: 1.6 }}>
