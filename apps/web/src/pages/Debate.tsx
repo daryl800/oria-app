@@ -543,6 +543,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   const [question, setQuestion] = useState(prefill);
   const [eastModel, setEastModel] = useState('hunyuan');
   const [westModel, setWestModel] = useState('openai');
+  const [synthesisModel, setSynthesisModel] = useState('deepseek');
   const [debateId, setDebateId] = useState<string | null>(null);
   const [rounds, setRounds] = useState<DebateRound[]>([]);
   const [thinkingRound, setThinkingRound] = useState<number | null>(null);
@@ -616,7 +617,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
         const res = await fetch(`${API_URL}/api/debate/start`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...headers },
-          body: JSON.stringify({ question: question.trim(), lang, eastModel, westModel }),
+          body: JSON.stringify({ question: question.trim(), lang, eastModel, westModel, synthesisModel }),
         });
         if (!res.ok) {
           const body = await res.json();
@@ -682,7 +683,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
         const res = await fetch(`${API_URL}/api/debate/${debateId}/next`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...headers },
-          body: JSON.stringify({ eastModel, westModel }),
+          body: JSON.stringify({ eastModel, westModel, synthesisModel }),
         });
         if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to advance debate');
         const data = await res.json();
@@ -866,6 +867,13 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
               ['gemini_lite', 'Gemini'],
               ['claude',      'Claude'],
             ];
+            const SYNTHESIS_OPTIONS: [string, string][] = [
+              ['deepseek',    'DeepSeek'],
+              ['hunyuan',     t('debate.hunyuan')],
+              ['gemini_lite', 'Gemini'],
+              ['openai',      'OpenAI'],
+              ['claude',      'Claude'],
+            ];
             const renderRow = (
               options: [string, string][],
               active: string,
@@ -898,7 +906,13 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
                 <div className="oria-card-label" style={{ marginBottom: 8 }}>
                   {t('debate.westLabel')}
                 </div>
-                {renderRow(WEST_OPTIONS, westModel, setWestModel, 'openai')}
+                <div style={{ marginBottom: 14 }}>
+                  {renderRow(WEST_OPTIONS, westModel, setWestModel, 'openai')}
+                </div>
+                <div className="oria-card-label" style={{ marginBottom: 8 }}>
+                  {t('debate.synthesisLabel')}
+                </div>
+                {renderRow(SYNTHESIS_OPTIONS, synthesisModel, setSynthesisModel, 'deepseek')}
                 {isDemo && (
                   <div style={{ fontSize: 12, color: '#666', marginTop: 8, fontStyle: 'italic' }}>
                     {t('debateDemo.modelLock')}
@@ -910,7 +924,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
 
           {!isDemo && creditBalance !== null && (() => {
             const perRound = (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
-            const cost = perRound * 3 + 1;
+            const cost = perRound * 3 + (MODEL_CREDITS[synthesisModel] ?? 1);
             const insufficient = creditBalance < cost;
             return (
               <div style={{ fontSize: 13, color: insufficient ? '#e88' : 'rgba(255,255,255,0.38)', marginBottom: 12, textAlign: 'right', lineHeight: 1.5 }}>

@@ -19,7 +19,7 @@
     "compare": "兼容性分析",
     "home": "首頁",
     "people": "关系解析",
-    "debate": "东西解析"
+    "debate": "东西交锋"
   },
   "daily": {
     "title": "每日指引",
@@ -230,7 +230,7 @@
       "subtitle": ""
     },
     "debate": {
-      "label": "东西解析",
+      "label": "东西交锋",
       "title": "东方命理与西方心理，双视角解读你的问题。",
       "subtitle": "",
       "cta": "开始解析"
@@ -255,7 +255,7 @@
     "result": "约 60 秒完成 • 无需承诺",
     "primary_cta": "开始 1 分钟洞察",
     "signin": "已有帐号？登录",
-    "demo_cta": "免费体验东西解析 →",
+    "demo_cta": "免费体验东西交锋 →",
     "demo_or": "或",
     "demo_hint": "无需账号 · 通用试用版 · 完整个性化版本需要注册",
     "lead": "决定你下一步的\n不是其中一个",
@@ -850,7 +850,7 @@
         "dailyPreview": "每日指引预览",
         "chartPreview": "个人命盘预览",
         "relationshipPreview": "关系洞察预览",
-        "credits": "6 积分试用（对话与东西解析共用）"
+        "credits": "6 积分试用（对话与东西交锋共用）"
       },
       "button": "免费开始"
     },
@@ -865,7 +865,7 @@
         "relationshipFull": "完整关系洞察",
         "monthlyFocus": "每月焦点更新",
         "history": "已保存的指引记录",
-        "credits": "每月 60 积分（对话与东西解析共用）"
+        "credits": "每月 60 积分（对话与东西交锋共用）"
       },
       "button": "解锁 Oria Plus"
     },
@@ -883,7 +883,7 @@
         "relationshipFull": "完整关系洞察",
         "monthlyFocus": "每月焦点更新",
         "history": "已保存的指引记录",
-        "credits": "每月 60 积分（对话与东西解析共用）"
+        "credits": "每月 60 积分（对话与东西交锋共用）"
       },
       "button": "优惠年费方案"
     },
@@ -1050,12 +1050,13 @@
     "disclaimer": "免责声明"
   },
   "debate": {
-    "title": "东西解析",
+    "title": "东西交锋",
     "headline": "有让你困惑的问题？",
     "tagline": "不用完美，说出来就对了",
     "subtitle": "输入你的问题，选择你的东方与西方顾问模型。你选择的东方模型，作为具备深厚东方命理知识的顾问，将根据你的八字资料，分析你的性格特质、人生方向与时机；你选择的西方模型，作为具备心理分析专业知识的顾问，将根据你的MBTI结果，探索你的心理模式与行动方式。双方将展开四轮深度交流：洞察、时机、风险、行动，最后由 Oria 智能分析整合双方观点，提供个人化洞察与建议。",
     "eastLabel": "选择东方顾问（八字）",
     "westLabel": "选择西方顾问（MBTI）",
+    "synthesisLabel": "选择综合模型（AI裁决）",
     "creditBefore": "此次解析需要",
     "creditAfter": "积分（剩余",
     "creditEnd": "积分）",
@@ -1126,7 +1127,7 @@
     }
   },
   "debateMini": {
-    "signupTitle": "30秒注册，立即开始东西解析",
+    "signupTitle": "30秒注册，立即开始东西交锋",
     "signupSubtitle": "创建你的命盘，解锁东西方顾问",
     "emailPlaceholder": "电子邮件",
     "passwordPlaceholder": "密码（至少6位）",
@@ -1170,7 +1171,7 @@
     "errorMbti": "请回答全部四个问题"
   },
   "debateDemo": {
-    "bannerTitle": "⚡ 试用版东西解析",
+    "bannerTitle": "⚡ 试用版东西交锋",
     "bannerBody": "先体验东方与西方顾问如何围绕你的问题展开深度对话。此版本未使用你的八字与MBTI资料，因此提供的是通用角度分析。注册后，加入你的个人资料，将获得更贴近你的个人化洞察。",
     "bannerCta": "完整个人化解析｜免费注册账号 →",
     "modelLock": "完整版可自选顾问组合",

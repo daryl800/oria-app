@@ -35,6 +35,48 @@ const ELEMENT_EMOJI: Record<string, string> = {
   Water: '💧', 水: '💧',
 };
 
+const ELEM_ZH: Record<string, string> = {
+  Wood: '木', Fire: '火', Earth: '土', Metal: '金', Water: '水',
+};
+
+const STRONG_LEVELS = new Set(['身強', '極強']);
+
+const TEN_GOD_DESC: Record<string, { zh: string; en: string }> = {
+  '日主': { zh: '你本人，命盤的核心', en: 'You — the core of your chart' },
+  '比肩': { zh: '同類能量的支撐，帶來自立與主見的底氣', en: 'Peer energy — brings the confidence of independence' },
+  '劫財': { zh: '競爭能量的刺激，帶來挑戰與前進的張力', en: 'Rival energy — brings challenge and forward tension' },
+  '食神': { zh: '表達與享受的出口，讓才華與創造力得以流動', en: 'Expression energy — an outlet for talent and creativity' },
+  '傷官': { zh: '突破規範的驅力，激發強烈的非常規創造力', en: 'Unconventional energy — sparks intense, rule-breaking creativity' },
+  '偏財': { zh: '靈活流動的資源能量，帶來機遇與變化', en: 'Flexible resource energy — brings opportunity and change' },
+  '正財': { zh: '穩定積累的資源能量，提供踏實的物質基礎', en: 'Steady resource energy — provides a grounded material foundation' },
+  '七殺': { zh: '強力的外部壓力，推動你面對挑戰與突破', en: 'Intense external pressure — pushes you to face challenges and break through' },
+  '正官': { zh: '規則與秩序的要求，持續設定標準與期待', en: 'Rules & order energy — sets persistent standards and expectations' },
+  '偏印': { zh: '直覺與非常規思維的資源，帶來獨立的支持', en: 'Intuitive resource energy — brings independent, unconventional support' },
+  '正印': { zh: '學習與滋養的資源，帶來持續的支持與指引', en: 'Nurturing resource energy — brings ongoing support and guidance' },
+};
+
+const STEM_LIFE_AREA: Record<string, { zh: string; en: string }> = {
+  year:  { zh: '你的成長環境與社會期待', en: 'your upbringing & social expectations' },
+  month: { zh: '你的職業發展與工作環境', en: 'your career development & work environment' },
+  day:   { zh: '你的自我認同與親密關係', en: 'your sense of self & close relationships' },
+  hour:  { zh: '你的晚年方向與內在志向', en: 'your later life direction & inner aspirations' },
+};
+
+const BRANCH_LIFE_AREA: Record<string, { zh: string; en: string }> = {
+  year:  { zh: '成長環境的深層底色', en: 'the deep undercurrent of your upbringing' },
+  month: { zh: '職場環境中的潛在動力', en: 'latent drives in your work environment' },
+  day:   { zh: '親密關係中的隱性傾向', en: 'hidden tendencies in your close relationships' },
+  hour:  { zh: '內在深處的潛意識驅動', en: 'subconscious drives in your inner world' },
+};
+
+const BODY_STRENGTH_DESC: Record<string, { zh: string; en: string }> = {
+  極強: { zh: '日主能量極旺，自主性強，行動力充沛，但需留意過剛易折。', en: 'Very strong day master — highly self-driven and assertive. Guard against being too rigid.' },
+  身強: { zh: '日主能量旺盛，自立自強，擅長主導局面。', en: 'Strong day master — self-reliant and capable of taking charge.' },
+  均衡: { zh: '日主強弱適中，適應力強，能在不同環境中靈活應對。', en: 'Balanced day master — adaptable and flexible across different environments.' },
+  身弱: { zh: '日主能量偏弱，易受環境影響，借助外力能發揮更大潛能。', en: 'Weaker day master — environment-sensitive; support from others amplifies your potential.' },
+  極弱: { zh: '日主能量極弱，對外界刺激敏感，適合在穩定環境中培育根基。', en: 'Very weak day master — highly sensitive; a stable, supportive environment is key.' },
+};
+
 // Derived dimension strengths — based on typical MBTI research averages
 const MBTI_DIMENSIONS: Record<string, Record<string, number>> = {
   INTJ: { E: 25, I: 75, S: 30, N: 70, T: 75, F: 25, J: 70, P: 30 },
@@ -70,6 +112,7 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
   const [showDeepInsight, setShowDeepInsight] = useState(false);
   const [showMbtiDetails, setShowMbtiDetails] = useState(false);
   const [showBaziDetails, setShowBaziDetails] = useState(false);
+  const [showTenGodsDetail, setShowTenGodsDetail] = useState(false);
 
   async function fetchSummaryWithTimeout(lang: string) {
     const timeout = new Promise<null>(resolve => setTimeout(() => resolve(null), 90_000));
@@ -77,6 +120,7 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
   }
 
   useEffect(() => {
+    let active = true;
     const generationLanguage = normalizeLanguage(i18n.language);
     const cacheKey = `oria_chart_${user.id}`;
 
@@ -95,10 +139,12 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
         }
         // No summary yet, or language changed — regenerate summary
         if (data.bazi && data.mbti) {
+          if (!active) return;
           setSummaryLoading(true);
           setSummaryFailed(false);
           try {
             const s = await fetchSummaryWithTimeout(generationLanguage);
+            if (!active) return;
             if (s) {
               const generatedLanguage = getGeneratedLanguage(s.summary, s.content_language || generationLanguage);
               const summaryWithLanguage = { ...s.summary, content_language: generatedLanguage };
@@ -108,9 +154,9 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
               setSummaryFailed(true);
             }
           } catch (e) {
-            setSummaryFailed(true);
+            if (active) setSummaryFailed(true);
           } finally {
-            setSummaryLoading(false);
+            if (active) setSummaryLoading(false);
           }
         }
         return;
@@ -149,10 +195,12 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
         setMbti(data.mbti);
         setLoading(false);
         if (data.bazi && data.mbti) {
+          if (!active) return;
           setSummaryLoading(true);
           setSummaryFailed(false);
           try {
             const s = await fetchSummaryWithTimeout(generationLanguage);
+            if (!active) return;
             if (s) {
               const generatedLanguage = getGeneratedLanguage(s.summary, s.content_language || generationLanguage);
               const summaryWithLanguage = { ...s.summary, content_language: generatedLanguage };
@@ -162,19 +210,20 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
               setSummaryFailed(true);
             }
           } catch (e) {
-            setSummaryFailed(true);
+            if (active) setSummaryFailed(true);
           } finally {
-            setSummaryLoading(false);
+            if (active) setSummaryLoading(false);
           }
         } else {
           sessionStorage.setItem(cacheKey, JSON.stringify(data));
         }
       } catch (e) {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     }
 
     load();
+    return () => { active = false; };
   }, [user.id]);
 
   if (loading || (summaryLoading && !summary)) return (
@@ -494,6 +543,90 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
               </div>
             </div>
           </div>
+
+          {/* 身強/身弱 + 用神/忌神 */}
+          {(bazi.body_strength || bazi.favorable_elements) && (
+            <div style={{ marginBottom: 16, padding: '14px 16px', borderRadius: 14, ...chartPanelStyle }}>
+              {bazi.body_strength && (
+                <div style={{ marginBottom: bazi.favorable_elements ? 18 : 0 }}>
+                  <div style={{ ...chartLabelStyle, marginBottom: 8 }}>
+                    ◉ {isZH ? '日主強弱' : 'Day Master Strength'}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                    <span style={{
+                      padding: '4px 12px', borderRadius: 999, fontSize: 14, fontWeight: 700, flexShrink: 0,
+                      background: STRONG_LEVELS.has(bazi.body_strength) ? 'rgba(201,168,76,0.18)' : bazi.body_strength === '均衡' ? 'rgba(167,139,250,0.18)' : 'rgba(96,165,250,0.18)',
+                      color: STRONG_LEVELS.has(bazi.body_strength) ? '#C9A84C' : bazi.body_strength === '均衡' ? '#a78bfa' : '#60a5fa',
+                      border: `1px solid ${STRONG_LEVELS.has(bazi.body_strength) ? 'rgba(201,168,76,0.3)' : bazi.body_strength === '均衡' ? 'rgba(167,139,250,0.3)' : 'rgba(96,165,250,0.3)'}`,
+                    }}>
+                      {bazi.body_strength}
+                    </span>
+                    {BODY_STRENGTH_DESC[bazi.body_strength] && (
+                      <div style={{ ...chartBodyStyle, color: 'rgba(255,255,255,0.65)' }}>
+                        {isZH ? BODY_STRENGTH_DESC[bazi.body_strength].zh : BODY_STRENGTH_DESC[bazi.body_strength].en}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              {bazi.favorable_elements && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  {bazi.favorable_elements.yong_shen?.length > 0 && (
+                    <div>
+                      <div style={{ ...chartLabelStyle, marginBottom: 8 }}>
+                        ✦ {isZH ? '用神' : 'Favorable Elements'}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' as const, flexShrink: 0 }}>
+                          {bazi.favorable_elements.yong_shen.map((el: string) => (
+                            <span key={el} style={{
+                              padding: '5px 12px', borderRadius: 20, fontSize: 14, fontWeight: 600,
+                              color: ELEMENT_COLORS[el] || '#fff',
+                              background: `${ELEMENT_COLORS[el] || '#fff'}1a`,
+                              border: `1px solid ${ELEMENT_COLORS[el] || '#fff'}44`,
+                            }}>
+                              {ELEMENT_EMOJI[el]} {isZH ? ELEM_ZH[el] : el}
+                            </span>
+                          ))}
+                        </div>
+                        <div style={{ ...chartBodyStyle, color: 'rgba(255,255,255,0.58)' }}>
+                          {isZH
+                            ? '對你有利的五行元素。多接觸相關的顏色、環境與活動，有助於補足能量。'
+                            : 'Elements that support your day master. Colours, spaces, and activities connected to these work in your favour.'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {bazi.favorable_elements.ji_shen?.length > 0 && (
+                    <div>
+                      <div style={{ ...chartLabelStyle, marginBottom: 8 }}>
+                        ◇ {isZH ? '忌神' : 'Unfavorable Elements'}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' as const, flexShrink: 0 }}>
+                          {bazi.favorable_elements.ji_shen.map((el: string) => (
+                            <span key={el} style={{
+                              padding: '5px 12px', borderRadius: 20, fontSize: 14, fontWeight: 600,
+                              color: 'rgba(255,255,255,0.5)',
+                              background: 'rgba(255,255,255,0.05)',
+                              border: '1px solid rgba(255,255,255,0.12)',
+                            }}>
+                              {ELEMENT_EMOJI[el]} {isZH ? ELEM_ZH[el] : el}
+                            </span>
+                          ))}
+                        </div>
+                        <div style={{ ...chartBodyStyle, color: 'rgba(255,255,255,0.58)' }}>
+                          {isZH
+                            ? '對你較有壓力或消耗的五行元素。不必刻意迴避，但留意過多時的影響。'
+                            : 'Elements that pressure or drain your day master. No need to avoid entirely — just be mindful of overexposure.'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           <button
             className="oria-btn-primary"
@@ -1303,18 +1436,6 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
               </div>
 
               <button
-                className="oria-btn-primary"
-                onClick={() => navigate('/chat', {
-                  state: {
-                    prefill: t('chatEntry.chart.prompt')
-                  }
-                })}
-                style={{ marginBottom: 14 }}
-              >
-                💬 {t('chatEntry.chart.button')}
-              </button>
-
-              <button
                 type="button"
                 className="oria-btn-outline oria-deep-toggle"
                 onClick={() => setShowDeepInsight(value => !value)}
@@ -1357,14 +1478,164 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
                         </Section>
                       )}
 
-                      {summary.ten_gods && Object.keys(summary.ten_gods).length > 0 && (
+                      {(summary.ten_gods || bazi?.ten_gods?.by_position) && (
                         <Section title={t('chart.insight.ten_gods')}>
-                          {Object.entries(summary.ten_gods).map(([god, desc]: [string, any]) => (
-                            <div key={god} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
-                              <span style={{ color: '#C9A84C', fontWeight: 700, whiteSpace: 'nowrap' }}>{god}</span>
-                              <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, lineHeight: 1.6 }}>{desc}</span>
+                          {/* LLM-written descriptions for deterministically-chosen gods */}
+                          {summary.ten_gods && Object.keys(summary.ten_gods).length > 0 && (
+                            <div style={{ marginBottom: 14 }}>
+                              {Object.entries(summary.ten_gods).map(([god, desc]: [string, any]) => (
+                                <div key={god} style={{ marginBottom: 10, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                                  <span style={{ color: '#C9A84C', fontWeight: 700, whiteSpace: 'nowrap', fontSize: 15, minWidth: 32 }}>{god}</span>
+                                  <span style={{ ...chartBodyStyle, color: 'rgba(255,255,255,0.78)' }}>{desc}</span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          )}
+
+                          {/* Synthesis: 這對你來說，具體代表什麼？ */}
+                          {summary.ten_gods_synthesis && (
+                            <div style={{
+                              marginTop: 18, marginBottom: 14,
+                              padding: '14px 16px', borderRadius: 12,
+                              background: 'rgba(255,255,255,0.03)',
+                              border: '1px solid rgba(255,255,255,0.08)',
+                            }}>
+                              <div style={{ ...chartLabelStyle, marginBottom: 10 }}>
+                                {isZH ? '這對你來說，具體代表什麼？' : 'What does this mean for you?'}
+                              </div>
+                              {summary.ten_gods_synthesis.pattern_name && (
+                                <p style={{ ...chartBodyStyle, color: 'rgba(255,255,255,0.78)', margin: '0 0 12px' }}>
+                                  {summary.ten_gods_synthesis.pattern_name}
+                                </p>
+                              )}
+                              {Array.isArray(summary.ten_gods_synthesis.behavioral_predictions) && summary.ten_gods_synthesis.behavioral_predictions.length > 0 && (
+                                <ul style={{ padding: 0, margin: '0 0 12px', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                  {summary.ten_gods_synthesis.behavioral_predictions.map((pred: string, i: number) => (
+                                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                                      <span style={{ color: '#C9A84C', flexShrink: 0, marginTop: 1, fontSize: 14 }}>•</span>
+                                      <span style={{ ...chartBodyStyle, color: 'rgba(255,255,255,0.72)' }}>{pred}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                              {summary.ten_gods_synthesis.reflection_question && (
+                                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', fontStyle: 'italic', margin: 0, lineHeight: 1.6 }}>
+                                  {summary.ten_gods_synthesis.reflection_question}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Full deterministic breakdown — collapsible */}
+                          {bazi?.ten_gods?.by_position && (
+                            <div>
+                              <button
+                                type="button"
+                                onClick={() => setShowTenGodsDetail(v => !v)}
+                                style={{
+                                  background: 'none', border: '1px solid rgba(201,168,76,0.25)',
+                                  borderRadius: 999, padding: '5px 14px', fontSize: 13,
+                                  color: 'rgba(201,168,76,0.7)', cursor: 'pointer',
+                                  fontFamily: 'inherit', marginBottom: showTenGodsDetail ? 14 : 0,
+                                }}
+                              >
+                                {showTenGodsDetail
+                                  ? (isZH ? '收起完整十神' : 'Collapse')
+                                  : (isZH ? '展開完整十神分析' : 'Full Ten Gods Breakdown')}
+                              </button>
+
+                              {showTenGodsDetail && (
+                                <div className="animate-fade-in">
+                                  {/* By-position table */}
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
+                                    {(['year', 'month', 'day', 'hour'] as const).map(pos => {
+                                      const entry = bazi.ten_gods.by_position[pos];
+                                      if (!entry) return null;
+                                      const posLabel = isZH
+                                        ? { year: '年干', month: '月干', day: '日干', hour: '時干' }[pos]
+                                        : { year: 'Year', month: 'Month', day: 'Day', hour: 'Hour' }[pos];
+                                      return (
+                                        <div key={pos} style={{
+                                          display: 'flex', alignItems: 'center', gap: 10,
+                                          padding: '8px 12px', borderRadius: 10,
+                                          background: 'rgba(255,255,255,0.03)',
+                                          border: '1px solid rgba(255,255,255,0.07)',
+                                        }}>
+                                          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', width: 36, flexShrink: 0 }}>{posLabel}</span>
+                                          <span style={{ fontSize: 15, color: '#F5F0FA', fontWeight: 600, width: 20, flexShrink: 0 }}>
+                                            {isZH ? (GAN_CN[entry.stem] || entry.stem) : entry.stem}
+                                          </span>
+                                          <span style={{ fontSize: 14, color: entry.ten_god === '日主' ? '#D8B4FE' : '#C9A84C', fontWeight: 700, width: 40, flexShrink: 0 }}>
+                                            {entry.ten_god}
+                                          </span>
+                                          {TEN_GOD_DESC[entry.ten_god] && (
+                                            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>
+                                              {isZH ? TEN_GOD_DESC[entry.ten_god].zh : TEN_GOD_DESC[entry.ten_god].en}
+                                              {entry.ten_god !== '日主' && STEM_LIFE_AREA[pos] && (
+                                                <span style={{ color: 'rgba(255,255,255,0.22)', marginLeft: 4 }}>
+                                                  {'— '}
+                                                  {isZH ? STEM_LIFE_AREA[pos].zh : STEM_LIFE_AREA[pos].en}
+                                                </span>
+                                              )}
+                                            </span>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+
+                                  {/* Hidden stems per branch */}
+                                  {bazi.ten_gods.hidden && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', letterSpacing: 1.2, fontWeight: 700, textTransform: 'uppercase' as const, marginBottom: 2 }}>
+                                        {isZH ? '藏干' : 'Hidden Stems'}
+                                      </div>
+                                      {(['year', 'month', 'day', 'hour'] as const).map(pos => {
+                                        const h = bazi.ten_gods.hidden[pos];
+                                        if (!h?.hidden_stems?.length) return null;
+                                        const posLabel = isZH
+                                          ? { year: '年支', month: '月支', day: '日支', hour: '時支' }[pos]
+                                          : { year: 'Year Branch', month: 'Month Branch', day: 'Day Branch', hour: 'Hour Branch' }[pos];
+                                        return (
+                                          <div key={pos} style={{
+                                            padding: '8px 12px', borderRadius: 10,
+                                            background: 'rgba(255,255,255,0.02)',
+                                            border: '1px solid rgba(255,255,255,0.05)',
+                                          }}>
+                                            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>{posLabel}</div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                              {h.hidden_stems.map((hs: any, i: number) => (
+                                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                  <span style={{ fontSize: 15, color: '#D8B4FE', fontWeight: 600, width: 20, flexShrink: 0 }}>
+                                                    {isZH ? (GAN_CN[hs.stem] || hs.stem) : hs.stem}
+                                                  </span>
+                                                  <span style={{ fontSize: 14, color: '#C9A84C', fontWeight: 700, width: 40, flexShrink: 0 }}>{hs.ten_god}</span>
+                                                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', width: 32, flexShrink: 0 }}>
+                                                    {Math.round(hs.weight * 100)}%
+                                                  </span>
+                                                  {TEN_GOD_DESC[hs.ten_god] && (
+                                                    <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>
+                                                      {isZH ? TEN_GOD_DESC[hs.ten_god].zh : TEN_GOD_DESC[hs.ten_god].en}
+                                                      {BRANCH_LIFE_AREA[pos] && (
+                                                        <span style={{ color: 'rgba(255,255,255,0.22)', marginLeft: 4 }}>
+                                                          {'— '}
+                                                          {isZH ? `隱藏於${BRANCH_LIFE_AREA[pos].zh}` : `hidden in ${BRANCH_LIFE_AREA[pos].en}`}
+                                                        </span>
+                                                      )}
+                                                    </span>
+                                                  )}
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </Section>
                       )}
 
@@ -1428,12 +1699,6 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
                       {summary.mbti_bazi_resonance && (
                         <Section title={t('chart.insight.mbti_resonance')}>
                           {lineBreakText(summary.mbti_bazi_resonance)}
-                        </Section>
-                      )}
-
-                      {summary.zodiac_resonance && (
-                        <Section title={t('chart.insight.zodiac_resonance')}>
-                          {lineBreakText(summary.zodiac_resonance)}
                         </Section>
                       )}
 
@@ -1522,6 +1787,18 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
                   )}
                 </div>
               )}
+
+              <button
+                className="oria-btn-primary"
+                onClick={() => navigate('/chat', {
+                  state: {
+                    prefill: t('chatEntry.chart.prompt')
+                  }
+                })}
+                style={{ marginTop: 18 }}
+              >
+                💬 {t('chatEntry.chart.button')}
+              </button>
             </div>
           )}
         </div>

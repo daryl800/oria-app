@@ -120,7 +120,7 @@ const hunyuan       = openaiProvider('hunyuan',          tencentClient, process.
 const geminiFlashLite = openaiProvider('gemini-flash-lite', geminiClient,  process.env.GEMINI_LLM_MODEL_3_1_flash_lite || 'gemini-3.1-flash-lite', 30_000);
 
 const chatgpt   = openaiProvider('chatgpt',     chatgptClient, process.env.OPENAI_LLM_MODEL   || 'gpt-4.1',       30_000);
-const deepseek  = openaiProvider('deepseek',    new OpenAI({ apiKey: process.env.DEEPSEEK_API_KEY!, baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com' }),                          process.env.DEEPSEEK_LLM_MODEL || 'deepseek-v4-flash', 60_000);
+const deepseek  = openaiProvider('deepseek',    new OpenAI({ apiKey: process.env.DEEPSEEK_API_KEY!, baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com' }),                          process.env.DEEPSEEK_LLM_MODEL || 'deepseek-v4-flash', 40_000);
 const chatgptMini = openaiProvider('chatgpt-mini', chatgptClient, 'gpt-4.1-mini', 30_000);
 const gpt4o     = openaiProvider('gpt-4o',      chatgptClient, 'gpt-4o',        30_000);
 const gpt4oMini = openaiProvider('gpt-4o-mini', chatgptClient, process.env.DEBATE_WEST_OPENAI_MODEL || 'gpt-4o-mini', 30_000);
@@ -138,10 +138,11 @@ export type LLMChain =
   | 'debate_east_hunyuan' | 'debate_east_openai' | 'debate_east_gemini_lite' | 'debate_east_deepseek'
   | 'debate_west_openai'  | 'debate_west_hunyuan' | 'debate_west_gemini_lite' | 'debate_west_claude'
   | 'debate_synthesis'
+  | 'debate_synthesis_hunyuan' | 'debate_synthesis_gemini_lite' | 'debate_synthesis_openai' | 'debate_synthesis_claude'
   | 'motto_test_hunyuan';
 
 const CHAINS: Record<LLMChain, readonly Provider[]> = {
-  profile:               [deepseek, chatgpt, hunyuan],
+  profile:               [chatgpt, deepseek, hunyuan],
   daily:                 [deepseek, chatgptMini],
   daily_premium:         [chatgpt, deepseek, chatgptMini],
   chat:                  [chatgpt, deepseek],
@@ -153,7 +154,11 @@ const CHAINS: Record<LLMChain, readonly Provider[]> = {
   debate_west_hunyuan:      [hunyuan,          gpt4oMini],
   debate_west_gemini_lite:  [geminiFlashLite,  gpt4oMini],
   debate_west_claude:       [claude,           gpt4oMini],
-  debate_synthesis:      [deepseek, gpt4o, chatgpt],
+  debate_synthesis:              [deepseek, gpt4o, chatgpt],
+  debate_synthesis_hunyuan:     [hunyuan,         deepseek],
+  debate_synthesis_gemini_lite: [geminiFlashLite,  deepseek],
+  debate_synthesis_openai:      [gpt4oMini,        deepseek],
+  debate_synthesis_claude:      [claude,           gpt4o],
   motto_test_hunyuan:  [hunyuan],
 };
 

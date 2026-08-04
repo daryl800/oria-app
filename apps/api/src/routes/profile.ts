@@ -3,7 +3,6 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
 import { complete, sanitizeLlmJson } from '../lib/llm';
-import { calculateZodiac } from '../lib/zodiac';
 import { profileSummaryPrompt } from '../lib/prompts';
 
 const router = Router();
@@ -12,6 +11,10 @@ const PYTHON_TIMEOUT_MS = 30_000;
 
 // MBTI profile output is identical for a given (type, lang) pair — cache indefinitely.
 const mbtiProfileCache = new Map<string, any>();
+
+// Per-user summary generation lock — prevents two concurrent LLM calls for the same user
+// (e.g. React Strict Mode double-fire or tab duplication).
+const summaryInFlight = new Map<string, Promise<{ summary: any; cached: boolean }>>();
 
 async function getMbtiProfile(mbtiType: string, lang: string): Promise<any | null> {
   const key = `${mbtiType}:${lang}`;
@@ -113,7 +116,7 @@ router.post('/bazi', async (req: Request, res: Response) => {
     });
 
     if (!analysisRes.ok) throw new Error('BaZi calculation failed');
-    const { bazi, dayun } = await analysisRes.json();
+    const { bazi, analysis, dayun, advanced } = await analysisRes.json();
 
     const { data: newVersion, error: insertError } = await supabase
       .from('bazi_profile_versions')
@@ -130,6 +133,11 @@ router.post('/bazi', async (req: Request, res: Response) => {
         day_master: bazi.day_master,
         is_male: is_male ?? true,
         dayun: dayun ?? null,
+        ten_gods: advanced?.ten_gods ?? null,
+        body_strength: advanced?.body_strength?.classification ?? null,
+        favorable_elements: advanced?.yong_ji_shen ?? null,
+        void_branches: advanced?.kong_wang ?? null,
+        bazi_analysis: analysis ?? null,
       })
       .select()
       .single();
@@ -210,54 +218,70 @@ router.post('/summary', async (req: Request, res: Response) => {
       return res.json({ summary: profile.profile_summary, cached: true });
     }
 
-    console.log(`[summary] generating for user ${userId} lang=${lang}`);
-    const t0 = Date.now();
+    // Deduplicate concurrent generation requests for the same user
+    const inflightKey = `${userId}:${lang}`;
+    const existing = summaryInFlight.get(inflightKey);
+    if (existing) {
+      console.log(`[summary] dedup — waiting for in-flight generation for user ${userId}`);
+      const result = await existing;
+      return res.json(result);
+    }
 
-    const { data: bazi } = await supabase
-      .from('bazi_profile_versions')
-      .select('*')
-      .eq('id', profile.current_bazi_version_id)
-      .single();
+    const generationPromise = (async (): Promise<{ summary: any; cached: boolean }> => {
+      console.log(`[summary] generating for user ${userId} lang=${lang}`);
+      const t0 = Date.now();
 
-    const { data: mbti } = await supabase
-      .from('mbti_profile_versions')
-      .select('*')
-      .eq('id', profile.current_mbti_version_id)
-      .single();
+      const { data: bazi } = await supabase
+        .from('bazi_profile_versions')
+        .select('*')
+        .eq('id', profile.current_bazi_version_id)
+        .single();
 
-    console.log(`[summary] fetching MBTI profile type=${mbti.mbti_type}`);
-    const t1 = Date.now();
-    const mbtiProfile = await getMbtiProfile(mbti.mbti_type, lang);
-    console.log(`[summary] MBTI profile done in ${Date.now() - t1}ms (cached=${mbtiProfile !== null && mbtiProfileCache.has(`${mbti.mbti_type}:${lang}`)})`);
+      const { data: mbti } = await supabase
+        .from('mbti_profile_versions')
+        .select('*')
+        .eq('id', profile.current_mbti_version_id)
+        .single();
 
-    const zodiac = bazi.birth_date ? calculateZodiac(bazi.birth_date) : null;
-    const messages = profileSummaryPrompt(
-      { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength, year_pillar: bazi.year_pillar, month_pillar: bazi.month_pillar, day_pillar: bazi.day_pillar, hour_pillar: bazi.hour_pillar, birth_date: bazi.birth_date, dayun: bazi.dayun },
-      mbtiProfile,
-      lang,
-      mbti.context_focus ?? [],
-      zodiac,
-    );
-    console.log(`[summary] calling LLM`);
-    const t2 = Date.now();
-    const raw = await complete(messages, 'profile');
-    console.log(`[summary] LLM done in ${Date.now() - t2}ms, total=${Date.now() - t0}ms`);
-    const clean = sanitizeLlmJson(raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim());
-    console.log(`[summary] raw response (${clean.length} chars): ${clean.slice(0, 300)}…`);
-    const summary = JSON.parse(clean);
+      console.log(`[summary] fetching MBTI profile type=${mbti.mbti_type}`);
+      const t1 = Date.now();
+      const mbtiProfile = await getMbtiProfile(mbti.mbti_type, lang);
+      console.log(`[summary] MBTI profile done in ${Date.now() - t1}ms (cached=${mbtiProfile !== null && mbtiProfileCache.has(`${mbti.mbti_type}:${lang}`)})`);
 
-    // cache the summary with lang
-    await supabase
-      .from('user_profiles')
-      .update({
-        profile_summary: summary,
-        summary_bazi_version_id: profile.current_bazi_version_id,
-        summary_mbti_version_id: profile.current_mbti_version_id,
-        summary_lang: lang,
-      })
-      .eq('user_id', userId);
+      const messages = profileSummaryPrompt(
+        { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength, year_pillar: bazi.year_pillar, month_pillar: bazi.month_pillar, day_pillar: bazi.day_pillar, hour_pillar: bazi.hour_pillar, birth_date: bazi.birth_date, dayun: bazi.dayun, ten_gods: bazi.ten_gods ?? null, body_strength: bazi.body_strength ?? null, favorable_elements: bazi.favorable_elements ?? null },
+        mbtiProfile,
+        lang,
+        mbti.context_focus ?? [],
+      );
+      console.log(`[summary] calling LLM`);
+      const t2 = Date.now();
+      const raw = await complete(messages, 'profile');
+      console.log(`[summary] LLM done in ${Date.now() - t2}ms, total=${Date.now() - t0}ms`);
+      const clean = sanitizeLlmJson(raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim());
+      console.log(`[summary] raw response (${clean.length} chars): ${clean.slice(0, 300)}…`);
+      const summary = JSON.parse(clean);
 
-    return res.json({ summary, cached: false });
+      await supabase
+        .from('user_profiles')
+        .update({
+          profile_summary: summary,
+          summary_bazi_version_id: profile.current_bazi_version_id,
+          summary_mbti_version_id: profile.current_mbti_version_id,
+          summary_lang: lang,
+        })
+        .eq('user_id', userId);
+
+      return { summary, cached: false };
+    })();
+
+    summaryInFlight.set(inflightKey, generationPromise);
+    try {
+      const result = await generationPromise;
+      return res.json(result);
+    } finally {
+      summaryInFlight.delete(inflightKey);
+    }
   } catch (err: any) {
     console.error(`[summary] error:`, err.message);
     return res.status(500).json({ error: err.message });
@@ -303,7 +327,7 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
     });
 
     if (!analysisRes.ok) throw new Error('BaZi calculation failed');
-    const { bazi, dayun } = await analysisRes.json();
+    const { bazi, analysis, dayun, advanced } = await analysisRes.json();
 
     const { data: newVersion, error: insertError } = await supabase
       .from('bazi_profile_versions')
@@ -320,6 +344,11 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
         day_master: bazi.day_master,
         is_male: is_male ?? true,
         dayun: dayun ?? null,
+        ten_gods: advanced?.ten_gods ?? null,
+        body_strength: advanced?.body_strength?.classification ?? null,
+        favorable_elements: advanced?.yong_ji_shen ?? null,
+        void_branches: advanced?.kong_wang ?? null,
+        bazi_analysis: analysis ?? null,
       })
       .select()
       .single();
@@ -480,7 +509,7 @@ router.post('/transfer', async (req: Request, res: Response) => {
       body: JSON.stringify({ ...bazi, lang: 'en', is_male: bazi.is_male ?? true }),
     });
     if (!analysisRes.ok) throw new Error('BaZi calculation failed');
-    const { bazi: baziResult, dayun } = await analysisRes.json();
+    const { bazi: baziResult, analysis: baziAnalysis, dayun, advanced } = await analysisRes.json();
 
     const { data: baziVersion, error: baziError } = await supabase
       .from('bazi_profile_versions')
@@ -497,6 +526,11 @@ router.post('/transfer', async (req: Request, res: Response) => {
         day_master: baziResult.day_master,
         is_male: bazi.is_male ?? true,
         dayun: dayun ?? null,
+        ten_gods: advanced?.ten_gods ?? null,
+        body_strength: advanced?.body_strength?.classification ?? null,
+        favorable_elements: advanced?.yong_ji_shen ?? null,
+        void_branches: advanced?.kong_wang ?? null,
+        bazi_analysis: baziAnalysis ?? null,
       })
       .select()
       .single();
