@@ -202,8 +202,9 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
   const [mottoTest, setMottoTest] = useState<MottoTestData | null>(null);
   const [mottoTestLoading, setMottoTestLoading] = useState(false);
 
-  // 盲盒 — daily choice keyed by calendar date, resets automatically at midnight
-  const todayStr = new Date().toISOString().slice(0, 10);
+  // 盲盒 — daily choice keyed by LOCAL calendar date, resets at local midnight
+  const _d = new Date();
+  const todayStr = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}-${String(_d.getDate()).padStart(2, '0')}`;
   const mottoChoiceKey = `oria_motto_choice_${todayStr}`;
   const [choice, setChoice] = useState<'east' | 'west' | null>(
     () => localStorage.getItem(mottoChoiceKey) as 'east' | 'west' | null,

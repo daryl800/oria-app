@@ -145,18 +145,29 @@ function getWestChain(model: string) {
   return map[model] ?? 'debate_west_openai';
 }
 
+function getSynthesisChain(model: string) {
+  const map: Record<string, string> = {
+    deepseek:    'debate_synthesis',
+    hunyuan:     'debate_synthesis_hunyuan',
+    gemini_lite: 'debate_synthesis_gemini_lite',
+    openai:      'debate_synthesis_openai',
+    claude:      'debate_synthesis_claude',
+  };
+  return map[model] ?? 'debate_synthesis';
+}
+
 // ── POST /debate/start ────────────────────────────────────────────
 
 router.post('/start', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
-    const { question, lang = 'zh-TW', eastModel = 'hunyuan', westModel = 'openai' } = req.body;
+    const { question, lang = 'zh-TW', eastModel = 'hunyuan', westModel = 'openai', synthesisModel = 'deepseek' } = req.body;
 
     if (!question?.trim()) {
       return res.status(400).json({ error: 'question is required' });
     }
 
-    const cost = calculateDebateFullCost(eastModel, westModel);
+    const cost = calculateDebateFullCost(eastModel, westModel, synthesisModel);
     const creditResult = await checkAndDeductCredits(userId, cost);
     if (!creditResult.ok) {
       return res.status(403).json({
@@ -202,7 +213,7 @@ router.post('/start', async (req: Request, res: Response) => {
         lang,
         rounds,
         status: 'active',
-        models_used: [eastModel, westModel],
+        models_used: [eastModel, westModel, synthesisModel],
       })
       .select('id')
       .single();
@@ -255,8 +266,8 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Analysis is already at round 4' });
     }
 
-    const { question, lang = 'zh-TW' } = session;
-    const { eastModel = 'hunyuan', westModel = 'openai' } = req.body;
+    const { question, lang = 'zh-TW', models_used: sessionModels } = session;
+    const { eastModel = 'hunyuan', westModel = 'openai', synthesisModel = (sessionModels?.[2] ?? 'deepseek') } = req.body;
     const nextRound = currentRound + 1;
 
     const [{ bazi, mbtiProfile, profileSummary, contextFocus, contextFocusOther }, recentContext] = await Promise.all([
@@ -302,7 +313,7 @@ router.post('/:debateId/next', async (req: Request, res: Response) => {
         { text: synthesis, provider: synthesisProvider, model: synthesisModelName },
         { text: takeawayRaw },
       ] = await Promise.all([
-        completeTracked(synthesisPrompt(bazi, mbtiProfile, question, recentContext, allRoundsText, profileCtx, lang), 'debate_synthesis'),
+        completeTracked(synthesisPrompt(bazi, mbtiProfile, question, recentContext, allRoundsText, profileCtx, lang), getSynthesisChain(synthesisModel) as any),
         completeTracked(takeawayPrompt(question, allRoundsText, lang), 'debate_synthesis'),
       ]);
       const eastTakeaway = takeawayRaw.match(/【東方】([^\n【]+)/)?.[1]?.trim() ?? '';

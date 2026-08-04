@@ -15,9 +15,9 @@ export function calculateDebateCost(eastModel: string, westModel: string): numbe
   return (MODEL_CREDITS[eastModel] ?? 1) + (MODEL_CREDITS[westModel] ?? 1);
 }
 
-// Full debate cost: 3 dialogue rounds + flat synthesis surcharge
-export function calculateDebateFullCost(eastModel: string, westModel: string): number {
-  return calculateDebateCost(eastModel, westModel) * 3 + 1;
+// Full debate cost: 3 dialogue rounds + synthesis model surcharge
+export function calculateDebateFullCost(eastModel: string, westModel: string, synthesisModel = 'deepseek'): number {
+  return calculateDebateCost(eastModel, westModel) * 3 + (MODEL_CREDITS[synthesisModel] ?? 1);
 }
 
 export async function initializeCredits(userId: string, isPlus: boolean): Promise<void> {

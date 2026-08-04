@@ -146,6 +146,34 @@ function getBaziContext(bazi: any): string {
       .join(' | ');
   }
 
+  // Deterministic ten gods — authoritative, LLM must not override
+  let tenGodsCtx = '';
+  if (bazi.ten_gods?.by_position) {
+    const pos = bazi.ten_gods.by_position;
+    const posLine = ['year', 'month', 'hour']
+      .filter(p => pos[p] && pos[p].ten_god !== '日主')
+      .map(p => `${pos[p].label}${pos[p].ten_god}`)
+      .join(' | ');
+    tenGodsCtx = `十神配置（命盤確認，不得修改）：${posLine}`;
+    const summary = bazi.ten_gods.summary as Record<string, number> | undefined;
+    if (summary && Object.keys(summary).length > 0) {
+      const top = Object.entries(summary).sort(([, a], [, b]) => b - a).slice(0, 3).map(([g]) => g).join('、');
+      tenGodsCtx += `\n核心十神（按出現頻率）：${top}`;
+    }
+  }
+
+  let yongJiCtx = '';
+  if (bazi.body_strength || bazi.favorable_elements) {
+    const ELEM_TO_ZH: Record<string, string> = { Wood: '木', Fire: '火', Earth: '土', Metal: '金', Water: '水' };
+    const yong = (bazi.favorable_elements?.yong_shen as string[] ?? [])
+      .map((e: string) => ELEM_TO_ZH[e] ?? e).join('、');
+    const ji = (bazi.favorable_elements?.ji_shen as string[] ?? [])
+      .map((e: string) => ELEM_TO_ZH[e] ?? e).join('、');
+    yongJiCtx = `身強身弱：${bazi.body_strength ?? '未知'}`
+      + (yong ? ` | 用神（有利五行）：${yong}` : '')
+      + (ji   ? ` | 忌神（不利五行）：${ji}`   : '');
+  }
+
   return `${birthDate}
 八字四柱：
 - 年柱：${formatPillar(bazi.year_pillar)}
@@ -154,9 +182,23 @@ function getBaziContext(bazi: any): string {
 - 時柱：${formatPillar(bazi.hour_pillar)}
 五行力量：木${bazi.five_elements_strength?.Wood ?? 0} 火${bazi.five_elements_strength?.Fire ?? 0} 土${bazi.five_elements_strength?.Earth ?? 0} 金${bazi.five_elements_strength?.Metal ?? 0} 水${bazi.five_elements_strength?.Water ?? 0}
 主導五行：${dominantElement}
-${dayunContext}
+${tenGodsCtx ? tenGodsCtx + '\n' : ''}${yongJiCtx ? yongJiCtx + '\n' : ''}${dayunContext}
 ${allDayun}
 ${getLiunianContext(6)}`;
+}
+
+function buildTenGodsSchemaBlock(bazi: any): string {
+  const summary = bazi?.ten_gods?.summary as Record<string, number> | undefined;
+  if (!summary || Object.keys(summary).length === 0) {
+    return `"ten_gods": {
+    "<最具影響力十神1>": "一句基於命局結構的現實層面解釋（行為或決策模式）",
+    "<最具影響力十神2>": "一句體現實際作用方式的解釋",
+    "<最具影響力十神3>": "一句說明對人生格局的影響"
+  },`;
+  }
+  const topGods = Object.entries(summary).sort(([, a], [, b]) => b - a).slice(0, 3).map(([g]) => g);
+  const lines = topGods.map(god => `    "${god}": "一句基於命局結構的現實層面解釋（行為層面，針對此十神的具體作用）"`).join(',\n');
+  return `"ten_gods": {\n${lines}\n  },`;
 }
 
 function getMbtiContext(mbti: any): string {
@@ -257,15 +299,15 @@ const STEM_TONE: Record<string, { en: string; zh: string }> = {
 // 我剋 (day master drains) → RECOVERY
 // Neutral / mixed → REFLECTION
 
-export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = [], zodiac: any = null, context_focus_other?: string | null): Messages {
+export function profileSummaryPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = [], context_focus_other?: string | null): Messages {
   const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
-  const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
   const langGuard = getLangGuard(lang);
   const contextFocusSection = getContextFocusSection(context_focus, lang, context_focus_other);
   const currentYear = new Date().getFullYear();
+  const tenGodsSchemaBlock = buildTenGodsSchemaBlock(bazi);
 
   return [
     {
@@ -307,9 +349,6 @@ Oria 聽起來像：一位冷靜的觀察者、有洞察力的朋友、務實的
 不好的寫法：「你有強烈防禦性」
 
 語氣：有洞察力、直接、溫暖，不說教，不做絕對預測。
-星座只作為輔助人格語氣層，不得凌駕八字與 MBTI。
-八字負責深層結構與時運節奏；MBTI 負責行為與決策模式；星座負責情緒表達、社交氣質與用戶容易共鳴的描述。
-若三者衝突，以八字與 MBTI 為主，星座只作補充說明。
 今天日期：${gregorian}
 ${SAFETY_CLAUSE}`,
     },
@@ -319,22 +358,29 @@ ${SAFETY_CLAUSE}`,
 
 ${baziCtx}
 ${mbtiCtx}
-${zodiacCtx}
 ${contextFocusSection ? `\n${contextFocusSection}` : ''}
 
 分析要求（嚴格執行）：
-1. 以五行數值為基礎判斷日主強弱
-2. 找出最具影響力的三個十神，說明其行為層面的實際影響
-3. 從水/金/土推導決策風格（不從火推導）
+1. day_master_analysis 必須明確點出命盤計算所得的身強身弱分類（見上方「身強身弱」欄位，例如「身弱」「均衡」），並以此為基礎說明其對性格的具體影響，不得僅從五行數值泛泛推導
+2. 使用上方「十神配置（命盤確認）」中列明的十神，說明其行為層面的實際影響（不得自行選擇或更改十神名稱）
+3. 決策風格必須從水/金/土推導（不從火推導），且必須結合身強身弱分類說明決策節奏的根本原因
 4. 結合MBTI印證性格特質
 5. ${currentYear}流年分析
 6. 具體事業方向（有利/不利行業）
-7. 吉祥元素建議必須轉化為「行為或習慣」，不得只停留在物件
-8. 吉祥物推薦（基於用神五行）
+7. 吉祥元素（顏色/方位/數字/物件）必須直接從上方「用神（有利五行）」欄位的實際元素推導，明確說明是哪個用神五行對應哪個顏色/方位，不可自行決定用神或使用泛化建議
+8. 吉祥物推薦必須對應命盤的用神五行（見上方「用神」欄位），並說明此物件的五行屬性如何補充命盤的具體不足
 9. 每個優勢必須同時揭示其「情境性限制」：描述在什麼情況下這個優勢會消耗能量或產生慣性盲點（聚焦在行為模式，不聚焦在痛苦或壓力）
 10. 必須提供一個「具體且有畫面感的人生卡點」，讓用戶能聯想到真實經歷
 11. 必須提供一句「人生反覆出現的模式」，讓人有被看穿的感覺
 12. 至少一段內容需讓用戶感到：「這很像我，但我從未這樣整理過。」（共鳴感優先於衝擊感）
+13. ten_gods_synthesis：根據命盤實際出現的十神組合，生成「這對你來說，具體代表什麼？」的三段式解釋：
+    (1) pattern_name：1-2句統整組合的整體運作模式，不重複個別十神定義，說明「這個組合的人通常怎麼運作」
+    (2) behavioral_predictions：2-3個具體可驗證的行為描述，每一點嚴格遵守以下三條規則：
+        規則A（必須）：每一點都必須明確指出源自哪個十神，使用「因為[十神名稱]…，所以你…」的因果句式——讓用戶能追溯回命盤中的具體元素，而不是泛泛描述性格
+        規則B（至少一點必須）：用「在[某種環境]下你會…，但在[相反環境]下你可能會感到[具體困難]」的對比句式，呈現同一特質的兩面，不可只寫正面
+        規則C（至少一點必須）：把可能聽起來像缺點的特質（如依賴外部結構、需要認可、行動緩慢）重新框定為「這不是弱點，是你的運作模式」——任何可能讓用戶自我批判的預測，必須主動加以重框
+    (3) reflection_question：一個邀請用戶回想自己人生以驗證這個模式的問題
+    語氣：如朋友解釋，不用「這股力量」「約束並塑造」等抽象詞彙，改用直接對應生活場景的說法
 
 重要：必須輸出完整JSON，包含所有欄位（特別是 lucky_elements、amulet、life_pattern、friction_point、chat_teasers、final_advice）。每個欄位保持簡潔（1-2句），陣列每項一句話。目標總長度5000字元以內，但完整性優先於字數限制。
 
@@ -352,13 +398,18 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
 {
   "headline": "一句話點出命盤核心本質（15字以內，必須包含日主特性）",
   "summary": "3-4句深度描述，結合日主強弱、十神配置與MBTI",
-  "day_master_analysis": "2-3句說明日主特性與強弱，以及對性格的具體影響",
-  "ten_gods": {
-    "<最具影響力十神1>": "一句基於命局結構的現實層面解釋（行為或決策模式）",
-    "<最具影響力十神2>": "一句體現實際作用方式的解釋",
-    "<最具影響力十神3>": "一句說明對人生格局的影響"
+  "day_master_analysis": "2-3句說明日主特性與強弱——必須明確點出身強身弱分類（如「此命盤屬身弱」），並說明此分類對性格與行為模式的具體影響",
+  ${tenGodsSchemaBlock}
+  "ten_gods_synthesis": {
+    "pattern_name": "1-2句統整這些十神組合的整體運作模式（不重複個別定義，說明「這個組合的人通常怎麼運作」）",
+    "behavioral_predictions": [
+      "因為[十神名稱]…，所以你…（必須點名十神來源，至少一點須包含環境對比：在…環境下你會…，但在…環境下你可能會…）",
+      "因為[十神名稱]…，所以你…（若此特質可能聽起來像缺點，必須加「這不是弱點，是你的運作模式」）",
+      "因為[十神名稱]…，所以你…（可選第三點）"
+    ],
+    "reflection_question": "一個邀請用戶回想人生經驗以驗證這個模式的問題"
   },
-  "decision_style": "從水/金/土五行推導的決策風格（2句，精確描述節奏、風險處理、內在過程）",
+  "decision_style": "從水/金/土五行推導的決策風格（2句）——必須結合身強身弱分類說明決策節奏的根本原因，精確描述風險處理與內在過程",
   "key_strengths": [
     "優勢1（說明來自哪個十神或五行）",
     "優勢2",
@@ -369,20 +420,19 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
   "relationship_pattern": "1-2句基於日支與感情宮的感情模式分析",
   "current_year": "${currentYear}年流年——2句說明今年天干地支對日主的影響及建議",
   "lucky_elements": {
-    "colors": ["顏色1（說明五行關係）", "顏色2"],
-    "directions": ["方位1", "方位2"],
+    "colors": ["顏色1（說明源自哪個用神五行）", "顏色2"],
+    "directions": ["方位1（說明用神五行依據）", "方位2"],
     "numbers": ["數字1", "數字2"],
-    "items": ["吉祥物件1（說明原因）", "吉祥物件2"]
+    "items": ["吉祥物件1（說明其五行屬性及如何補充命盤）", "吉祥物件2"]
   },
   "amulet": {
     "item": "推薦佩戴或擺放的吉祥物件",
-    "reason": "為何此物件能平衡此命盤（基於用神五行）"
+    "reason": "此物件的五行屬性（明確點出是哪個五行）如何補充此命盤的具體不足"
   },
   "life_pattern": "一句讓人有被看穿感的長期行為模式（反覆出現的傾向，客觀但帶衝擊感）",
   "friction_point": "一個具體且帶情緒的人生卡點場景（描述用戶在什麼具體情況下容易猶豫或停滯，要有畫面感）",
   "mbti_bazi_resonance": "一句話精準說明八字與MBTI如何相互印證",
   "gentle_nudge": "一句溫和而有力的鼓勵",
-  "zodiac_resonance": "1句說明星座如何補充八字與 MBTI 的人格描述，只能作輔助，不可作主結論",
   "chat_teasers": [
     "留給對話探索的問題1（必須用第一人稱）",
     "留給對話探索的問題2（第一人稱）",
@@ -908,23 +958,22 @@ export function monthlyChartFocusPrompt(
   mbti: any,
   monthKey: string,
   lang: string = 'en',
-  zodiac: any = null,
   monthStem: string = '',
   monthBranch: string = '',
 ): Messages {
   const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
-  const zodiacCtx = getZodiacContext(zodiac);
   const respondIn = getRespondIn(lang);
   const langGuard = getLangGuard(lang);
 
-  const [year, month] = monthKey.split('-').map(Number);
+  const [year] = monthKey.split('-').map(Number);
   const yearPillar = ANNUAL_PILLARS[year];
   const yearContext = yearPillar ? `流年：${yearPillar.zh}（${yearPillar.element}）` : '';
   const monthContext = monthStem && monthBranch
     ? `流月：${monthStem}${monthBranch}\n${yearContext}`
     : yearContext || `月份：${monthKey}`;
+  const yearLabel = yearPillar?.zh ?? `${year}年`;
 
   return [
     {
@@ -947,26 +996,30 @@ ${SAFETY_CLAUSE}
 【用戶命盤】
 ${baziCtx}
 ${mbtiCtx}
-${zodiacCtx}
 
 【當月背景】
 ${monthContext}
 
+【判斷要求】
+本月適合/本月避免的判斷，必須基於：
+1. 流月（${monthStem}${monthBranch}）與流年（${yearLabel}）的五行屬性
+2. 用戶命盤的用神忌神（見上方「身強身弱」與「用神/忌神」欄位）
+3. 明確說明是哪個五行的生克關係在影響這個月，而非泛泛而談
+
 請生成結構化JSON，包含以下欄位：
 {
   "month_key": "${monthKey}",
-  "month_label": "用語言對應的月份標籤，例如2026年6月或June 2026",
+  "month_label": "用語言對應的月份標籤，例如2026年8月或August 2026",
   "title": "10字以內的本月核心主題，有洞察感，不是通用建議",
   "summary": "2-4句說明本月命盤節奏與用戶應留意的核心方向，結合八字流月與MBTI",
-  "suitable": "一句具體可行的本月適合方向",
-  "avoid": "一句具體的本月應避免事項",
+  "suitable": "一句具體可行的本月適合方向（說明是哪個五行在發揮作用）",
+  "avoid": "一句具體的本月應避免事項（說明是哪個五行在干擾）",
   "reflection_question": "一個讓用戶反思的問題，與本月主題相關",
   "suggested_prompts": [
     "與本月焦點相關的對話問題1",
     "與本月焦點相關的對話問題2"
   ],
-  "zodiac_tone": "1句：用星座補充本月的情緒節奏或社交氣質；若星座未知請留空字串",
-  "next_update_label": "下次更新日期標籤，例如下次更新：2026年7月1日"
+  "next_update_label": "下次更新日期標籤，例如下次更新：2026年9月1日"
 }
 只回傳JSON。${respondIn}`,
     },

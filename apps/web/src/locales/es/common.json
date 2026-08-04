@@ -1039,6 +1039,7 @@
     "subtitle": "Ingresa tu pregunta para un análisis profundo por un asesor oriental del destino y un consultor de psicología occidental",
     "eastLabel": "Elegir asesor oriental (BaZi)",
     "westLabel": "Elegir asesor occidental (MBTI)",
+    "synthesisLabel": "Elegir modelo de síntesis (veredicto IA)",
     "creditBefore": "Este análisis cuesta",
     "creditAfter": "créditos (restantes:",
     "creditEnd": "créditos)",

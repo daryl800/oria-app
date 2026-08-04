@@ -1039,6 +1039,7 @@
     "subtitle": "Entrez votre question pour une analyse approfondie par un conseiller oriental du destin et un consultant en psychologie occidentale",
     "eastLabel": "Choisir conseiller oriental (BaZi)",
     "westLabel": "Choisir conseiller occidental (MBTI)",
+    "synthesisLabel": "Choisir le modèle de synthèse (verdict IA)",
     "creditBefore": "Cette analyse coûte",
     "creditAfter": "crédits (restants :",
     "creditEnd": "crédits)",

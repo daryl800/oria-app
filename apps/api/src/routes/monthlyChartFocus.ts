@@ -5,12 +5,13 @@ import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { supabase } from '../lib/supabase';
 import { complete, sanitizeLlmJson } from '../lib/llm';
-import { calculateZodiac } from '../lib/zodiac';
 import { monthlyChartFocusPrompt } from '../lib/prompts';
 
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
 const PYTHON_TIMEOUT_MS = 30_000;
+
+const monthlyInFlight = new Map<string, Promise<any>>();
 
 // Month stem/branch is identical for all users — cache it for the server lifetime.
 // Key: YYYY-MM e.g. "2026-05"
@@ -101,22 +102,37 @@ router.get('/current', authMiddleware, async (req: Request, res: Response) => {
     }
 
     const [yearNum, monthNum] = monthKey.split('-').map(Number);
-    const { stem: monthStem, branch: monthBranch } = await getMonthStemBranch(yearNum, monthNum);
-    const zodiac = baziVersion.birth_date ? calculateZodiac(baziVersion.birth_date) : null;
-    const messages = monthlyChartFocusPrompt(baziVersion, mbtiProfile, monthKey, lang, zodiac, monthStem, monthBranch);
-    const raw = await complete(messages, 'profile');
-    const clean = sanitizeLlmJson(raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim());
-    const focus = JSON.parse(clean);
 
-    await supabase.from('monthly_chart_focus').upsert({
-      user_id: userId,
-      month_key: monthKey,
-      lang,
-      focus_json: focus,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'user_id,month_key,lang' });
+    const inflightKey = `${userId}:${monthKey}:${lang}`;
+    const existing = monthlyInFlight.get(inflightKey);
+    if (existing) {
+      const focus = await existing;
+      return res.status(200).json({ locked: false, month_key: monthKey, focus, cached: false });
+    }
 
-    return res.status(200).json({ locked: false, month_key: monthKey, focus, cached: false });
+    const generationPromise = (async () => {
+      const { stem: monthStem, branch: monthBranch } = await getMonthStemBranch(yearNum, monthNum);
+      const messages = monthlyChartFocusPrompt(baziVersion, mbtiProfile, monthKey, lang, monthStem, monthBranch);
+      const raw = await complete(messages, 'profile');
+      const clean = sanitizeLlmJson(raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim());
+      const focus = JSON.parse(clean);
+      await supabase.from('monthly_chart_focus').upsert({
+        user_id: userId,
+        month_key: monthKey,
+        lang,
+        focus_json: focus,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,month_key,lang' });
+      return focus;
+    })();
+
+    monthlyInFlight.set(inflightKey, generationPromise);
+    try {
+      const focus = await generationPromise;
+      return res.status(200).json({ locked: false, month_key: monthKey, focus, cached: false });
+    } finally {
+      monthlyInFlight.delete(inflightKey);
+    }
 
   } catch (err: any) {
     console.error('Monthly chart focus error:', err);
