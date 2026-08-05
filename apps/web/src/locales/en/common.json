@@ -91,7 +91,7 @@
     "empty_title": "Ask oria anything",
     "empty_subtitle": "Your BaZi and MBTI are your guide",
     "try_asking": "✦ Try asking",
-    "placeholder": "Write what is on your mind…",
+    "placeholder": "Try asking: How strong is my natural money-making ability?",
     "thinking": "Thinking...",
     "history": "History",
     "new": "Start new conversation",
@@ -108,28 +108,28 @@
     "paywall_cta": "Upgrade to oria Plus ✦",
     "quick_starts": [
       {
-        "label": "Feeling stuck",
-        "value": "I have been feeling stuck and I am not sure what to do next"
+        "label": "Money talent",
+        "value": "How can I make the most of my money-making talent?"
       },
       {
-        "label": "Next step",
-        "value": "I want to look at what next step fits this moment"
+        "label": "Use my talent",
+        "value": "How can I make the most effective use of my talent?"
       },
       {
-        "label": "One thing",
-        "value": "There is one thing on my mind and I want to sort it out"
+        "label": "Healthy living",
+        "value": "How can I best take care of my health?"
       },
       {
-        "label": "Understand myself",
-        "value": "I want to understand myself a little more right now"
+        "label": "Stuck in a rough patch",
+        "value": "I've hit a rough patch lately and don't know how to get through it"
       },
       {
-        "label": "A bit tired",
-        "value": "I feel a bit tired and not very sure about my direction"
+        "label": "Work issues",
+        "value": "Work hasn't been going well lately and I want to know what's going on"
       },
       {
-        "label": "Ask something",
-        "value": "I want to ask something, but I am not sure how to phrase it yet"
+        "label": "People issues",
+        "value": "I've been having friction with someone lately and want to know how to handle it"
       }
     ]
   },
@@ -165,7 +165,7 @@
     "loading": "Loading profile...",
     "error_date": "Please enter your birth date.",
     "error_mbti": "Please select your MBTI type.",
-    "reset_warning_title": "Update Birth Data?",
+    "reset_warning_title": "⚠️ This can't be undone",
     "reset_warning_body": "Updating your birth data will clear all your conversation history and daily guidance. This ensures your future guidance truly reflects your chart.",
     "reset_cancel": "Cancel",
     "reset_confirm": "Yes, update"
@@ -762,9 +762,16 @@
     "title_zh": "選擇你的語言",
     "body": "This sets the language for all your guidance and insights. You can change it later in Profile."
   },
+  "welcome_credits": {
+    "title": "A little something to start",
+    "body": "You've got 60 credits this month to explore everything Oria offers — guidance, chat, and more.",
+    "cta": "Got it"
+  },
   "profile_extra": {
     "title": "Your Personal Profile",
-    "reset_body": "Updating BaZi will refresh your insights and reset related history.",
+    "reset_body": "Resetting your birthday will permanently clear all of your Oria history:\n\n• All chats and conversation memory\n• Cached Daily Guidance and Monthly Focus content\n• Cached profile analysis (including your Wealth Pattern)\n\nMake sure this is really what you want to do.",
+    "reset_credit_note": "This action costs 20 credits.",
+    "reset_insufficient_credits": "Not enough credits (you have {{balance}} left) — resetting your birthday costs 20 credits.",
     "saved": "Profile saved",
     "year_placeholder": "Year",
     "month_placeholder": "Month",
@@ -877,6 +884,7 @@
     "next_update": "Next update",
     "suitable": "Suitable this month",
     "avoid": "Avoid this month",
+    "breakthrough_action": "This month's breakthrough move",
     "reflection": "Reflection",
     "zodiac_tone": "Zodiac tone",
     "prompts_label": "Explore further",
@@ -1241,12 +1249,12 @@
     "family": "Family"
   },
   "questionSuggestion": {
-    "q_hot_1": "Am I suited for a career change?",
-    "q_hot_2": "Should I start a business or find a job?",
-    "q_hot_3": "What is my biggest blind spot?",
-    "q_hot_4": "Where is my biggest opportunity this year?",
-    "q_hot_5": "What decision should I be making right now?",
-    "q_hot_6": "Should I continue this relationship?",
+    "q_hot_1": "Should I develop my strongest skill, or push into an area I'm weak in?",
+    "q_hot_2": "Should I actively chase a wealth opportunity, or stay with what's stable now?",
+    "q_hot_3": "Should I prioritize my health, or push hard on my career right now?",
+    "q_hot_4": "Should I stay in a familiar environment, or move somewhere that suits me better?",
+    "q_hot_5": "What is my biggest blind spot?",
+    "q_hot_6": "What kind of living environment suits me?",
     "q_career_1": "What kind of work suits me best?",
     "q_career_2": "Is now the right time to change jobs?",
     "q_career_3": "Am I suited for a management role?",
@@ -1267,6 +1275,7 @@
     "q_fin_3": "What is my biggest financial risk right now?",
     "q_fin_4": "Should I be conservative or more aggressive with money?",
     "q_fin_5": "What is the best way for me to earn more?",
+    "q_fin_6": "How strong is my natural money-making ability?",
     "q_life_1": "Am I heading in the right direction in life?",
     "q_life_2": "Where should I focus my energy right now?",
     "q_life_3": "What is my most important challenge this year?",

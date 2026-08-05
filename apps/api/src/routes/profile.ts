@@ -4,10 +4,15 @@ import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
 import { complete, sanitizeLlmJson } from '../lib/llm';
 import { profileSummaryPrompt } from '../lib/prompts';
+import { checkAndDeductCredits } from '../lib/credits';
 
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
 const PYTHON_TIMEOUT_MS = 30_000;
+
+// Resetting DOB wipes all chat history + cached readings (see /bazi/reset below),
+// so it's priced like a heavier action rather than a free edit.
+const RESET_BAZI_CREDIT_COST = 20;
 
 // MBTI profile output is identical for a given (type, lang) pair — cache indefinitely.
 const mbtiProfileCache = new Map<string, any>();
@@ -137,6 +142,7 @@ router.post('/bazi', async (req: Request, res: Response) => {
         body_strength: advanced?.body_strength?.classification ?? null,
         favorable_elements: advanced?.yong_ji_shen ?? null,
         void_branches: advanced?.kong_wang ?? null,
+        wealth_vault: advanced?.wealth_vault ?? null,
         bazi_analysis: analysis ?? null,
       })
       .select()
@@ -294,6 +300,20 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
     const userId = (req as any).userId;
     const { year, month, day, hour, minute, tz_name, location, time_known, is_male } = req.body;
 
+    // Resetting DOB wipes all chat/history/cache data below — charge for it
+    // up front, before anything destructive happens, same pattern as chat.ts.
+    const creditResult = await checkAndDeductCredits(userId, RESET_BAZI_CREDIT_COST);
+    if (!creditResult.ok) {
+      return res.status(403).json({
+        error: 'insufficient_credits',
+        credits_remaining: creditResult.balance,
+        plan: (req as any).userPlan ?? 'free',
+        message: (req as any).userPlan === 'plus'
+          ? `積分不足，重新輸入生日需要 ${RESET_BAZI_CREDIT_COST} 點積分，下月自動重置`
+          : `積分不足，重新輸入生日需要 ${RESET_BAZI_CREDIT_COST} 點積分，升級Plus每月獲得60積分`,
+      });
+    }
+
     // clear all history for this user
     const { data: convs } = await supabase
       .from('conversations')
@@ -348,6 +368,7 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
         body_strength: advanced?.body_strength?.classification ?? null,
         favorable_elements: advanced?.yong_ji_shen ?? null,
         void_branches: advanced?.kong_wang ?? null,
+        wealth_vault: advanced?.wealth_vault ?? null,
         bazi_analysis: analysis ?? null,
       })
       .select()
@@ -362,7 +383,7 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
 
     if (updateError) throw new Error(`Profile update failed: ${updateError.message}`);
 
-    return res.json({ bazi: newVersion, history_cleared: true });
+    return res.json({ bazi: newVersion, history_cleared: true, credits_remaining: creditResult.balance });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
@@ -530,6 +551,7 @@ router.post('/transfer', async (req: Request, res: Response) => {
         body_strength: advanced?.body_strength?.classification ?? null,
         favorable_elements: advanced?.yong_ji_shen ?? null,
         void_branches: advanced?.kong_wang ?? null,
+        wealth_vault: advanced?.wealth_vault ?? null,
         bazi_analysis: baziAnalysis ?? null,
       })
       .select()

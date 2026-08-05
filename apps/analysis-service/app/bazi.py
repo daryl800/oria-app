@@ -26,6 +26,67 @@ ZHI_MAP = {
 }
 
 # =====================================================
+# Element & Polarity Constants (module-level, shared by advanced calculations)
+# =====================================================
+
+# Heavenly stem → Five Element
+GAN_ELEMENT: Dict[str, str] = {
+    "Jia": "Wood", "Yi":   "Wood",
+    "Bing": "Fire", "Ding": "Fire",
+    "Wu":  "Earth", "Ji":  "Earth",
+    "Geng": "Metal", "Xin": "Metal",
+    "Ren": "Water", "Gui": "Water",
+}
+
+# Heavenly stem → polarity (index 0,2,4,6,8 = yang; 1,3,5,7,9 = yin)
+GAN_POLARITY: Dict[str, str] = {
+    "Jia": "yang", "Yi":   "yin",
+    "Bing": "yang", "Ding": "yin",
+    "Wu":  "yang", "Ji":  "yin",
+    "Geng": "yang", "Xin": "yin",
+    "Ren": "yang", "Gui": "yin",
+}
+
+# Generation cycle: key → generates → value
+ELEM_GENERATES: Dict[str, str] = {
+    "Wood": "Fire", "Fire": "Earth", "Earth": "Metal",
+    "Metal": "Water", "Water": "Wood",
+}
+
+# Control cycle: key → controls → value
+ELEM_CONTROLS: Dict[str, str] = {
+    "Wood": "Earth", "Earth": "Water", "Water": "Fire",
+    "Fire": "Metal", "Metal": "Wood",
+}
+
+# Month branch dominant qi (主氣/司令) — determines seasonal strength
+MONTH_BRANCH_QI: Dict[str, str] = {
+    "Zi": "Water", "Chou": "Earth",
+    "Yin": "Wood",  "Mao": "Wood",
+    "Chen": "Earth", "Si": "Fire",
+    "Wu":  "Fire",  "Wei": "Earth",
+    "Shen": "Metal", "You": "Metal",
+    "Xu":  "Earth",  "Hai": "Water",
+}
+
+# Hidden stems per earthly branch with strength weights (module-level for reuse)
+# Defined locally in the calculation functions too — kept in sync intentionally
+ZHI_HIDDEN: Dict[str, List[Tuple[str, float]]] = {
+    "Zi":   [("Ren", 1.0)],
+    "Chou": [("Ji", 0.6), ("Gui", 0.3), ("Xin", 0.1)],
+    "Yin":  [("Jia", 0.6), ("Bing", 0.3), ("Wu", 0.1)],
+    "Mao":  [("Yi", 1.0)],
+    "Chen": [("Wu", 0.6), ("Yi", 0.3), ("Gui", 0.1)],
+    "Si":   [("Bing", 0.6), ("Wu", 0.3), ("Geng", 0.1)],
+    "Wu":   [("Ding", 0.6), ("Ji", 0.4)],
+    "Wei":  [("Ji", 0.6), ("Yi", 0.3), ("Ding", 0.1)],
+    "Shen": [("Geng", 0.6), ("Ren", 0.3), ("Wu", 0.1)],
+    "You":  [("Xin", 1.0)],
+    "Xu":   [("Wu", 0.6), ("Xin", 0.3), ("Ding", 0.1)],
+    "Hai":  [("Ren", 0.6), ("Jia", 0.4)],
+}
+
+# =====================================================
 # Longitude Strategy
 # =====================================================
 LOCATION_LON_TABLE = {
@@ -966,3 +1027,997 @@ def calculate_dayun(birth_year: int, birth_month: int, birth_day: int, is_male: 
         }
     except Exception as e:
         return None
+
+
+# =====================================================
+# ADVANCED CALCULATIONS
+# 1. 十神 (Ten Gods)
+# 2. 身强/身弱 (Day Master Strength)
+# 3. 用神/忌神 (Favorable / Unfavorable Elements)
+# 4. 空亡 (Void Branches)
+# =====================================================
+
+# ── 1. 十神 (Ten Gods) ────────────────────────────────────────────────
+
+def get_ten_god(day_master: str, stem: str) -> str:
+    """
+    Return the 十神 of `stem` relative to `day_master`.
+
+    Rules (element relationship × yin/yang polarity):
+      Same element, same  polarity  → 比肩
+      Same element, diff  polarity  → 劫財
+      DM generates stem,  same pol  → 食神
+      DM generates stem,  diff pol  → 傷官
+      DM controls  stem,  diff pol  → 正財
+      DM controls  stem,  same pol  → 偏財
+      Stem controls  DM,  diff pol  → 正官
+      Stem controls  DM,  same pol  → 七殺
+      Stem generates DM,  diff pol  → 正印
+      Stem generates DM,  same pol  → 偏印
+    """
+    dm_elem = GAN_ELEMENT[day_master]
+    dm_pol  = GAN_POLARITY[day_master]
+    x_elem  = GAN_ELEMENT[stem]
+    x_pol   = GAN_POLARITY[stem]
+    same    = (dm_pol == x_pol)
+
+    if x_elem == dm_elem:
+        return "比肩" if same else "劫財"
+    if ELEM_GENERATES[dm_elem] == x_elem:   # DM → X
+        return "食神" if same else "傷官"
+    if ELEM_CONTROLS[dm_elem] == x_elem:    # DM controls X
+        return "偏財" if same else "正財"
+    if ELEM_GENERATES[x_elem] == dm_elem:   # X → DM
+        return "偏印" if same else "正印"
+    if ELEM_CONTROLS[x_elem] == dm_elem:    # X controls DM
+        return "七殺" if same else "正官"
+    raise ValueError(f"No ten-god relationship between {day_master} and {stem}")
+
+
+def calculate_ten_gods(pillars: Dict) -> Dict:
+    """
+    Calculate 十神 for every stem in the chart (heavenly stems + branch hidden stems).
+
+    Returns:
+      by_position  – ten god for year/month/day/hour heavenly stems
+                     (day stem always 日主, not calculated against itself)
+      hidden       – ten gods for branch hidden stems at each position
+      summary      – count of each ten-god type (heavenly stems only)
+    """
+    day_master = pillars["day"]["gan"]
+    by_position: Dict = {}
+    hidden: Dict = {}
+    counts: Dict = {}
+
+    position_labels = {
+        "year": "年干", "month": "月干", "day": "日干", "hour": "時干"
+    }
+
+    for pos, pillar in pillars.items():
+        stem = pillar["gan"]
+        if pos == "day":
+            tg = "日主"
+        else:
+            tg = get_ten_god(day_master, stem)
+            counts[tg] = counts.get(tg, 0) + 1
+
+        by_position[pos] = {
+            "stem": stem,
+            "ten_god": tg,
+            "label": position_labels.get(pos, pos),
+        }
+
+        # Hidden stems in earthly branch
+        zhi = pillar["zhi"]
+        hidden[pos] = {
+            "branch": zhi,
+            "hidden_stems": [
+                {"stem": hs, "ten_god": get_ten_god(day_master, hs), "weight": w}
+                for hs, w in ZHI_HIDDEN[zhi]
+            ],
+        }
+
+    return {"by_position": by_position, "hidden": hidden, "summary": counts}
+
+
+# ── 2. 身强/身弱 (Day Master Strength) ───────────────────────────────
+
+def classify_body_strength(pillars: Dict) -> Dict:
+    """
+    Classify day master strength via 得令 + 得地 + 得勢.
+
+    得令 – seasonal support from month branch main qi:
+        旺 (peak, score 3.0): month branch qi IS the DM element
+        相 (secondary, 1.5): month branch qi GENERATES the DM element
+        失令 (0.0): neither
+
+    得地 – DM element rooted in branch hidden stems:
+        Sum weighted contributions across all four branches.
+        得地 = True when total root score ≥ 0.6
+
+    得勢 – net support from year/month/hour heavenly stems:
+        比劫 (same element)   +1.0
+        印   (generates DM)   +0.8
+        食傷 (DM generates)   −0.3
+        財   (DM controls)    −0.2
+        官殺 (controls DM)    −0.8
+        得勢 = True when support_score > 0
+
+    Classification table (8 boolean combinations → 5 levels):
+      T T T → 極強    T T F → 身強    T F T → 身強
+      F T T → 均衡    T F F → 均衡    F T F → 身弱
+      F F T → 身弱    F F F → 極弱
+    """
+    day_master = pillars["day"]["gan"]
+    dm_elem    = GAN_ELEMENT[day_master]
+
+    # ── 得令 ──
+    m_branch = pillars["month"]["zhi"]
+    m_qi     = MONTH_BRANCH_QI[m_branch]
+
+    if m_qi == dm_elem:
+        de_ling, de_ling_type, de_ling_score = True,  "旺",  3.0
+    elif ELEM_GENERATES[m_qi] == dm_elem:
+        de_ling, de_ling_type, de_ling_score = True,  "相",  1.5
+    else:
+        de_ling, de_ling_type, de_ling_score = False, "失令", 0.0
+
+    # ── 得地 ──
+    root_score = 0.0
+    root_by_pos: Dict = {}
+    for pos, pillar in pillars.items():
+        zhi = pillar["zhi"]
+        pos_root = sum(
+            w for hs, w in ZHI_HIDDEN[zhi] if GAN_ELEMENT[hs] == dm_elem
+        )
+        root_by_pos[pos] = round(pos_root, 2)
+        root_score += pos_root
+
+    de_di = root_score >= 0.6
+
+    # ── 得勢 ──
+    STEM_CONTRIBUTION = {
+        "compare":   1.0,   # 比劫 — same element
+        "resource":  0.8,   # 印   — generates DM
+        "output":   -0.3,   # 食傷 — DM generates
+        "wealth":   -0.2,   # 財   — DM controls
+        "officer":  -0.8,   # 官殺 — controls DM
+    }
+    support_score = 0.0
+    stem_detail: Dict = {}
+
+    for pos in ("year", "month", "hour"):
+        if pos not in pillars:
+            continue
+        stem   = pillars[pos]["gan"]
+        s_elem = GAN_ELEMENT[stem]
+
+        if s_elem == dm_elem:
+            rel, contrib = "比劫", STEM_CONTRIBUTION["compare"]
+        elif ELEM_GENERATES[s_elem] == dm_elem:
+            rel, contrib = "印",   STEM_CONTRIBUTION["resource"]
+        elif ELEM_GENERATES[dm_elem] == s_elem:
+            rel, contrib = "食傷", STEM_CONTRIBUTION["output"]
+        elif ELEM_CONTROLS[dm_elem] == s_elem:
+            rel, contrib = "財",   STEM_CONTRIBUTION["wealth"]
+        else:  # ELEM_CONTROLS[s_elem] == dm_elem
+            rel, contrib = "官殺", STEM_CONTRIBUTION["officer"]
+
+        support_score += contrib
+        stem_detail[pos] = {"stem": stem, "relation": rel, "contribution": contrib}
+
+    de_shi = support_score > 0
+
+    # ── Classification ──
+    table = {
+        (True,  True,  True):  "極強",
+        (True,  True,  False): "身強",
+        (True,  False, True):  "身強",
+        (False, True,  True):  "均衡",
+        (True,  False, False): "均衡",
+        (False, True,  False): "身弱",
+        (False, False, True):  "身弱",
+        (False, False, False): "極弱",
+    }
+    classification = table[(de_ling, de_di, de_shi)]
+
+    return {
+        "classification": classification,
+        "de_ling": {
+            "result": de_ling, "type": de_ling_type,
+            "month_branch": m_branch, "month_qi": m_qi,
+            "score": de_ling_score,
+        },
+        "de_di": {
+            "result": de_di,
+            "root_score": round(root_score, 2),
+            "by_branch": root_by_pos,
+        },
+        "de_shi": {
+            "result": de_shi,
+            "support_score": round(support_score, 2),
+            "by_stem": stem_detail,
+        },
+    }
+
+
+# ── 3. 用神/忌神 (Favorable / Unfavorable Elements) ───────────────────
+
+def calculate_yong_ji_shen(dm_element: str, body_strength: str,
+                           five_elements_strength: Dict) -> Dict:
+    """
+    Determine 用神 (yòng shén, favorable) and 忌神 (jì shén, unfavorable) elements.
+
+    Methodology: 扶抑 (Supplement-Suppress) School — the dominant classical approach.
+    ─────────────────────────────────────────────────────────────────────
+    Principle: restore balance to the chart by helping or restraining the Day Master.
+
+    • 身弱/極弱  → DM needs support
+        用神 = element that GENERATES DM (印) + same element as DM (比劫)
+        忌神 = element that CONTROLS DM (官殺)
+
+    • 身強/極強  → DM needs draining
+        用神 = element DM GENERATES (食傷) + element DM CONTROLS (財)
+                + element that CONTROLS DM (官殺, for 極強)
+        忌神 = element that GENERATES DM (印) + same element as DM (比劫)
+
+    • 均衡       → target the weakest element for support, suppress the strongest
+        用神 = element that generates the weakest element in chart
+        忌神 = dominant element (if not DM)
+
+    Note: 調候 (climate adjustment) and 通關 (mediating link) considerations are
+    deliberately excluded to keep the calculation deterministic and consistent.
+    ─────────────────────────────────────────────────────────────────────
+    """
+    dm_gen   = ELEM_GENERATES[dm_element]              # what DM generates  (食傷)
+    dm_ctrl  = ELEM_CONTROLS[dm_element]               # what DM controls   (財)
+    gen_dm   = next(e for e, g in ELEM_GENERATES.items() if g == dm_element)  # 印
+    ctrl_dm  = next(e for e, c in ELEM_CONTROLS.items() if c == dm_element)   # 官殺
+
+    if body_strength in ("極弱", "身弱"):
+        yong = [gen_dm, dm_element]                 # 印 + 比劫
+        ji   = [ctrl_dm]                            # 官殺 primary
+        note = f"日主{body_strength}，以{gen_dm}（印）及{dm_element}（比劫）扶身為用神；{ctrl_dm}（官殺）為忌神"
+
+    elif body_strength in ("極強", "身強"):
+        yong = [dm_gen, dm_ctrl]                    # 食傷 + 財
+        if body_strength == "極強":
+            yong.append(ctrl_dm)                    # add 官殺 when extremely strong
+        ji   = [gen_dm, dm_element]                 # 印 + 比劫 become unfavorable
+        note = f"日主{body_strength}，以{dm_gen}（食傷）、{dm_ctrl}（財）洩秀耗身為用神；{gen_dm}（印）及{dm_element}（比劫）為忌神"
+
+    else:  # 均衡
+        sorted_elems = sorted(five_elements_strength.items(), key=lambda x: x[1])
+        weakest  = sorted_elems[0][0]
+        strongest = sorted_elems[-1][0]
+        gen_weakest  = next(e for e, g in ELEM_GENERATES.items() if g == weakest)
+        ctrl_strongest = next(e for e, c in ELEM_CONTROLS.items() if c == strongest)
+        yong = list({gen_weakest, weakest, ctrl_strongest} - {dm_element})
+        ji   = [strongest] if strongest != dm_element else []
+        note = f"日主均衡，補最弱（{weakest}）、抑最強（{strongest}）"
+
+    # Remove duplicates while preserving order
+    seen: set = set()
+    yong_dedup = [e for e in yong if not (e in seen or seen.add(e))]  # type: ignore
+    seen = set()
+    ji_dedup   = [e for e in ji   if not (e in seen or seen.add(e))]  # type: ignore
+
+    return {
+        "yong_shen":   yong_dedup,
+        "ji_shen":     ji_dedup,
+        "methodology": "扶抑 (Supplement-Suppress)",
+        "reasoning":   note,
+    }
+
+
+# ── 4. 空亡 (Void Branches) ──────────────────────────────────────────
+
+def calculate_kong_wang(pillars: Dict) -> Dict:
+    """
+    Calculate 空亡 (旬空, void/empty branches) from the Day Pillar's position
+    in the 60-甲子 cycle.
+
+    Algorithm:
+      The 60-cycle is divided into 6 旬 (groups of 10). Each 旬 starts on a
+      甲-stem day and uses 10 of the 12 earthly branches sequentially, leaving
+      2 branches unused — those are the 空亡 branches.
+
+      旬 starting branch index = (day_zhi_index − day_gan_index) mod 12
+      Void branch indices      = (start + 10) mod 12  and  (start + 11) mod 12
+
+    Verification table:
+      甲子旬 (start=Zi=0)  → void Xu(10), Hai(11)
+      甲戌旬 (start=Xu=10) → void Shen(8), You(9)
+      甲申旬 (start=Shen=8)→ void Wu(6),  Wei(7)
+      甲午旬 (start=Wu=6)  → void Chen(4), Si(5)
+      甲辰旬 (start=Chen=4)→ void Yin(2),  Mao(3)
+      甲寅旬 (start=Yin=2) → void Zi(0),   Chou(1)
+    """
+    day_gan = pillars["day"]["gan"]
+    day_zhi = pillars["day"]["zhi"]
+    gan_idx = GAN.index(day_gan)
+    zhi_idx = ZHI.index(day_zhi)
+
+    xun_start = (zhi_idx - gan_idx) % 12
+    v1 = (xun_start + 10) % 12
+    v2 = (xun_start + 11) % 12
+
+    void_en = [ZHI[v1], ZHI[v2]]
+    void_cn = [ZHI_CN[v1], ZHI_CN[v2]]
+
+    # Check which chart positions contain a void branch
+    present: List[str] = []
+    for pos, pillar in pillars.items():
+        if pillar["zhi"] in void_en:
+            present.append(f"{pos}({pillar['zhi']})")
+
+    return {
+        "void_branches":    void_en,
+        "void_branches_cn": void_cn,
+        "xun_start":        ZHI[xun_start],
+        "xun_start_cn":     ZHI_CN[xun_start],
+        "present_in_chart": present,   # positions where void branch appears
+    }
+
+
+# ── 5. 流年 (Annual Pillar) ──────────────────────────────────────────
+
+def calculate_liunian(year: Optional[int] = None) -> Dict:
+    """
+    Calculate 流年 (the ganzhi pillar for a given calendar year, default: current year).
+    Reuses the same sxtwl year-ganzhi lookup already used for birth-year calculation,
+    which internally accounts for the 立春 year boundary.
+    """
+    target_year = year if year is not None else datetime.now().year
+    # June 1 is safely inside the 立春-to-立春 window for the target year,
+    # away from the Jan/Feb boundary edge case.
+    lunar = sxtwl.fromSolar(target_year, 6, 1)
+    gz = lunar.getYearGZ()
+    gan, zhi = GAN[gz.tg], ZHI[gz.dz]
+    return {
+        "year": target_year,
+        "gan": gan,
+        "zhi": zhi,
+        "gan_cn": GAN_CN[GAN.index(gan)],
+        "zhi_cn": ZHI_CN[ZHI.index(zhi)],
+        "pillar_cn": GAN_CN[GAN.index(gan)] + ZHI_CN[ZHI.index(zhi)],
+    }
+
+
+# ── 6. 財庫 (Element Vaults) ─────────────────────────────────────────
+
+# The four Earth branches, each the classical 墓/庫 (storage) position for one element.
+FOUR_VAULTS: Dict[str, str] = {
+    "Chen": "Water",
+    "Xu":   "Fire",
+    "Chou": "Metal",
+    "Wei":  "Wood",
+}
+
+# 地支六沖 (Six Branch Clashes) — full table, though vault-triggering only uses
+# the Chen/Xu and Chou/Wei pairs.
+SIX_CLASH: Dict[str, str] = {
+    "Zi": "Wu", "Wu": "Zi",
+    "Chou": "Wei", "Wei": "Chou",
+    "Yin": "Shen", "Shen": "Yin",
+    "Mao": "You", "You": "Mao",
+    "Chen": "Xu", "Xu": "Chen",
+    "Si": "Hai", "Hai": "Si",
+}
+
+_VAULT_RELATION_LABEL: Dict[str, str] = {
+    "compare":  "比劫庫",   # same element as DM
+    "resource": "印庫",     # generates DM
+    "output":   "食傷庫",   # DM generates
+    "wealth":   "財庫",     # DM controls
+    "officer":  "官殺庫",   # controls DM
+}
+
+
+def _vault_relation(dm_elem: str, stored_elem: str) -> str:
+    """Classify a stored element's relationship to the Day Master's element."""
+    if stored_elem == dm_elem:
+        return "compare"
+    if ELEM_GENERATES[dm_elem] == stored_elem:
+        return "output"
+    if ELEM_CONTROLS[dm_elem] == stored_elem:
+        return "wealth"
+    if ELEM_GENERATES[stored_elem] == dm_elem:
+        return "resource"
+    # ELEM_CONTROLS[stored_elem] == dm_elem
+    return "officer"
+
+
+def _vault_hidden_stems(
+    day_master: str, dm_elem: str, zhi: str, vault_element: str,
+    all_gans: set, month_qi: Optional[str],
+) -> Tuple[List[Dict], bool]:
+    """
+    Detail every hidden stem (藏干) inside a 墓庫 branch, each converted to its
+    precise 十神 relative to the Day Master via the existing get_ten_god() /
+    ZHI_HIDDEN table (module-level, shared with calculate_ten_gods() and
+    classify_body_strength() — not duplicated here).
+
+    Returns (detail, mixed):
+      detail — one entry per hidden stem, primary (the branch's traditional
+        墓庫 element) sorted first, then by relevance (透干 > in-season > weight).
+      mixed  — True when a non-primary hidden stem carries non-trivial weight
+        (>=0.2) AND maps to a different 十神 relation category than the
+        traditional element — i.e. this branch should NOT be reduced to one
+        label without qualification.
+    """
+    vault_relation = _vault_relation(dm_elem, vault_element)
+    detail: List[Dict] = []
+    mixed = False
+
+    for hs, weight in ZHI_HIDDEN[zhi]:
+        hs_elem = GAN_ELEMENT[hs]
+        hs_relation = _vault_relation(dm_elem, hs_elem)
+        is_vault_element = (hs_elem == vault_element)
+        if not is_vault_element and weight >= 0.2 and hs_relation != vault_relation:
+            mixed = True
+        detail.append({
+            "stem":            hs,
+            "stem_cn":         GAN_CN[GAN.index(hs)],
+            "element":         hs_elem,
+            "weight":          weight,
+            "ten_god":         get_ten_god(day_master, hs),
+            "relation":        hs_relation,
+            "is_vault_element": is_vault_element,
+            "is_toutian":      hs in all_gans,
+            "in_season":       bool(month_qi) and hs_elem == month_qi,
+        })
+
+    def _sort_key(d: Dict):
+        relevance = d["weight"] + (0.5 if d["is_toutian"] else 0) + (0.3 if d["in_season"] else 0)
+        return (0 if d["is_vault_element"] else 1, -relevance)
+
+    detail.sort(key=_sort_key)
+    return detail, mixed
+
+
+def _vault_activation_relations(
+    zhi: str, other_branches: Dict[str, str],
+    current_dayun_branch: Optional[str], current_liunian_branch: Optional[str],
+) -> List[Dict]:
+    """
+    Structural activation facts only — no judgment about whether activation is
+    good or bad. Currently only 地支六沖 (clash) is implemented; 合/刑/害/破 are
+    not yet detected anywhere in this module, so `type` is always 'clash' today.
+    The shape supports adding them later without changing this function's
+    callers (see _vault_status_from_relations for how status is derived).
+    """
+    clash_partner = SIX_CLASH[zhi]
+    relations: List[Dict] = []
+
+    for other_pos, other_zhi in other_branches.items():
+        if other_zhi == clash_partner:
+            relations.append({
+                "type": "clash", "source_branch": zhi, "target_branch": clash_partner,
+                "source": "natal", "source_position": other_pos,
+            })
+    if current_dayun_branch == clash_partner:
+        relations.append({"type": "clash", "source_branch": zhi, "target_branch": clash_partner, "source": "dayun"})
+    if current_liunian_branch == clash_partner:
+        relations.append({"type": "clash", "source_branch": zhi, "target_branch": clash_partner, "source": "liunian"})
+
+    return relations
+
+
+def _vault_status_from_relations(relations: List[Dict]) -> str:
+    """
+    'closed'    – no activation relation detected.
+    'activated' – a single, structurally unambiguous relation type is present
+                  (today: only 沖/clash).
+    'disturbed' – reserved for multiple conflicting relation types (e.g. clash
+                  + harm pulling in different directions). Not reachable yet —
+                  合/刑/害/破 detection doesn't exist in this module.
+    'uncertain' – reserved for relation types with inherently ambiguous outcome
+                  (e.g. 合 can change the branch's effective element entirely).
+                  Not reachable yet, same reason as above.
+    Extending with 合/刑/害/破 later only requires branching here — the rest of
+    calculate_wealth_vault() and its callers are agnostic to relation type.
+    """
+    if not relations:
+        return "closed"
+    return "activated"
+
+
+def _vault_favorability(stored_elem: str, yong_shen: Optional[List[str]], ji_shen: Optional[List[str]]) -> str:
+    """
+    'unknown' when both yong_shen and ji_shen are omitted (None) — i.e. no
+    reliable 用神/忌神 result was available to the caller. Do not default this
+    to 'neutral': neutral is itself a judgment ("checked and it doesn't
+    matter"), which is different from "wasn't checked".
+    """
+    if yong_shen is None and ji_shen is None:
+        return "unknown"
+    if stored_elem in (yong_shen or []):
+        return "favorable"
+    if stored_elem in (ji_shen or []):
+        return "unfavorable"
+    return "neutral"
+
+
+def _vault_confidence(favorability: str, mixed_hidden_stems: bool, status: str) -> str:
+    if favorability == "unknown":
+        return "low"
+    if mixed_hidden_stems or status in ("disturbed", "uncertain"):
+        return "medium"
+    return "high"
+
+
+def _vault_notes(favorability: str, mixed_hidden_stems: bool) -> List[str]:
+    """Methodological caveats, not narrative interpretation — kept factual/hedged."""
+    notes = [
+        "庫位僅反映特定五行的收藏與引動狀態，不能單獨決定整體命局吉凶，仍需配合日主旺衰、用神忌神及大運流年整體判斷。",
+    ]
+    if mixed_hidden_stems:
+        notes.append("此庫位內藏有多個屬性不同的天干，無法只歸類為單一十神主題，實際重點需視日主旺衰而定。")
+    if favorability == "unknown":
+        notes.append("尚未取得可靠的用神／忌神判斷資料，此庫位傾向於有利或不利暫時無法判斷。")
+    return notes
+
+
+def _wealth_relation_status(vaults: List[Dict]) -> str:
+    """
+    Top-level summary used to distinguish the 財庫 conclusion cases explicitly
+    requested by product copy:
+      'none'               – no 辰戌丑未 in the chart at all.
+      'no_wealth_vault'     – 墓庫 branches exist, but none classify as 財 (財星相關庫位).
+      'wealth_vault_inactive' – a 財星相關庫位 exists but none are activated.
+      'wealth_vault_activated' – at least one 財星相關庫位 is activated.
+    """
+    if not vaults:
+        return "none"
+    wealth_vaults = [v for v in vaults if v["is_wealth_vault"]]
+    if not wealth_vaults:
+        return "no_wealth_vault"
+    if any(v["status"] == "activated" for v in wealth_vaults):
+        return "wealth_vault_activated"
+    return "wealth_vault_inactive"
+
+
+def calculate_wealth_vault(
+    pillars: Dict,
+    yong_shen: Optional[List[str]] = None,
+    ji_shen: Optional[List[str]] = None,
+    current_dayun_branch: Optional[str] = None,
+    current_liunian_branch: Optional[str] = None,
+) -> Dict:
+    """
+    Detect 墓庫 positions (辰/戌/丑/未) in the chart and return structured facts
+    about each — separately from any interpretive judgment about whether that's
+    good or bad for the person.
+
+    Factual layer (always computed, does not depend on 用神/忌神):
+      - which branch, which traditional storage element (FOUR_VAULTS — a fixed
+        十二長生 墓 assignment, independent of this branch's actual hidden-stem
+        weights)
+      - the branch's real 藏干 composition, each converted to its precise 十神
+        (see _vault_hidden_stems) — a branch is NOT reduced to one label when
+        multiple hidden stems carry meaningfully different 十神 categories
+      - activation_relations: structural 沖 (clash) facts only, tagged by
+        source (natal / dayun / liunian) and kept separate — see
+        _vault_activation_relations. 合/刑/害/破 are not implemented (this
+        module has no existing logic for them); the relation `type` field and
+        `_vault_status_from_relations` are already shaped to add them later.
+      - status ('closed' | 'activated' | 'disturbed' | 'uncertain') is a
+        structural fact about whether/how the branch is being triggered — it
+        is NOT a judgment about outcome.
+
+    Interpretive layer (only when 用神/忌神 data is supplied):
+      - favorability ('favorable' | 'unfavorable' | 'neutral' | 'unknown') —
+        'unknown' when yong_shen/ji_shen are both omitted, rather than
+        silently defaulting to 'neutral'.
+      - confidence ('high' | 'medium' | 'low') — lowered when favorability is
+        unknown or the branch's hidden stems are mixed.
+
+    Callers/UI must not assume 'activated' == good news or 'closed' == safe;
+    that always depends on `favorability`, which may itself be 'unknown'.
+    """
+    day_master = pillars["day"]["gan"]
+    dm_elem = GAN_ELEMENT[day_master]
+    branches = {pos: p["zhi"] for pos, p in pillars.items()}
+    all_gans = {p["gan"] for p in pillars.values()}
+    month_branch = pillars.get("month", {}).get("zhi")
+    month_qi = MONTH_BRANCH_QI.get(month_branch) if month_branch else None
+
+    vaults: List[Dict] = []
+
+    for pos, zhi in branches.items():
+        if zhi not in FOUR_VAULTS:
+            continue
+
+        stored_elem = FOUR_VAULTS[zhi]
+        relation = _vault_relation(dm_elem, stored_elem)
+        other_branches = {p: z for p, z in branches.items() if p != pos}
+
+        relations = _vault_activation_relations(zhi, other_branches, current_dayun_branch, current_liunian_branch)
+        status = _vault_status_from_relations(relations)
+        natal_status = _vault_status_from_relations([r for r in relations if r["source"] == "natal"])
+
+        # Preserve legacy priority ordering (natal, dayun, liunian) rather than
+        # an arbitrary set order, since existing callers compare this list.
+        present_sources = {r["source"] for r in relations}
+        triggers = [t for t in ("natal", "dayun", "liunian") if t in present_sources]
+
+        hidden_stems, mixed = _vault_hidden_stems(day_master, dm_elem, zhi, stored_elem, all_gans, month_qi)
+
+        favorability = _vault_favorability(stored_elem, yong_shen, ji_shen)
+        confidence = _vault_confidence(favorability, mixed, status)
+        notes = _vault_notes(favorability, mixed)
+
+        # Legacy convenience field for any pre-existing consumer expecting the
+        # old 5-way label. Derived, not authoritative — new code should read
+        # `favorability` + `status` directly instead.
+        if favorability in ("favorable", "unfavorable"):
+            legacy_reading = f"{favorability}_{'open' if status != 'closed' else 'closed'}"
+        else:
+            legacy_reading = "neutral"
+
+        vaults.append({
+            "position":        pos,
+            "branch":          zhi,
+            "branch_cn":       ZHI_CN[ZHI.index(zhi)],
+            "stored_element":  stored_elem,
+            "relation":        relation,
+            "relation_label":  _VAULT_RELATION_LABEL[relation],
+            "is_wealth_vault": relation == "wealth",
+
+            "hidden_stems":        hidden_stems,
+            "mixed_hidden_stems":  mixed,
+
+            "activation_relations": relations,
+            "status":              status,
+            "natal_status":        natal_status,
+            "triggers":            triggers,
+
+            "favorability": favorability,
+            "confidence":   confidence,
+            "notes":        notes,
+            "reading":      legacy_reading,
+        })
+
+    return {
+        "vaults":                 vaults,
+        "has_vault":               len(vaults) > 0,
+        "has_wealth_vault":        any(v["is_wealth_vault"] for v in vaults),
+        "wealth_relation_status":  _wealth_relation_status(vaults),
+    }
+
+
+# ── Master function ──────────────────────────────────────────────────
+
+def calculate_advanced_bazi(
+    pillars: Dict,
+    five_elements_strength: Dict,
+    current_dayun_branch: Optional[str] = None,
+    current_liunian_branch: Optional[str] = None,
+) -> Dict:
+    """
+    Calculate all advanced BaZi attributes in one call.
+    Requires pillars dict with at least year/month/day keys.
+
+    current_dayun_branch: pass the person's current 大運 branch (e.g. from
+      calculate_dayun()['current_dayun']['branch_en']) to enable dayun-triggered
+      vault detection. Omit if gender/大運 is not available.
+    current_liunian_branch: defaults to the current calendar year's branch via
+      calculate_liunian() if not supplied.
+    """
+    day_master = pillars["day"]["gan"]
+    dm_element = GAN_ELEMENT[day_master]
+
+    ten_gods      = calculate_ten_gods(pillars)
+    strength_data = classify_body_strength(pillars)
+    body_strength = strength_data["classification"]
+    yong_ji       = calculate_yong_ji_shen(dm_element, body_strength,
+                                           five_elements_strength)
+    kong_wang     = calculate_kong_wang(pillars)
+
+    if current_liunian_branch is None:
+        current_liunian_branch = calculate_liunian()["zhi"]
+    wealth_vault = calculate_wealth_vault(
+        pillars, yong_ji["yong_shen"], yong_ji["ji_shen"],
+        current_dayun_branch, current_liunian_branch,
+    )
+
+    return {
+        "ten_gods":      ten_gods,
+        "body_strength": strength_data,
+        "yong_ji_shen":  yong_ji,
+        "kong_wang":     kong_wang,
+        "wealth_vault":  wealth_vault,
+    }
+
+
+# ── Self-test ────────────────────────────────────────────────────────
+
+def _run_advanced_tests():
+    """
+    Verify 十神, 身强/身弱, 用神/忌神, 空亡 against hand-calculated reference charts.
+    Prints PASS / FAIL for each assertion.
+    """
+    errors: List[str] = []
+
+    def check(label: str, got, expected):
+        if got != expected:
+            errors.append(f"FAIL  {label}: got={got!r} expected={expected!r}")
+        else:
+            print(f"  PASS  {label}")
+
+    print("\n" + "=" * 60)
+    print("ADVANCED BAZI TESTS")
+    print("=" * 60)
+
+    # ── Test A: 十神 table for Day Master 甲 (Jia, Yang Wood) ──
+    print("\n[A] 十神 — Day Master 甲 (Yang Wood)")
+    expected_tg = {
+        "乙": "劫財", "丙": "食神", "丁": "傷官",
+        "戊": "偏財", "己": "正財", "庚": "七殺",
+        "辛": "正官", "壬": "偏印", "癸": "正印",
+    }
+    cn_to_en = dict(zip(GAN_CN, GAN))
+    for cn, expected_god in expected_tg.items():
+        en_stem = cn_to_en[cn]
+        got = get_ten_god("Jia", en_stem)
+        check(f"甲 vs {cn}", got, expected_god)
+
+    # ── Test B: 十神 table for Day Master 癸 (Gui, Yin Water) ──
+    print("\n[B] 十神 — Day Master 癸 (Yin Water)")
+    expected_tg_gui = {
+        "壬": "劫財", "甲": "傷官", "乙": "食神",
+        "丙": "正財", "丁": "偏財", "戊": "正官",
+        "己": "七殺", "庚": "正印", "辛": "偏印",
+    }
+    for cn, expected_god in expected_tg_gui.items():
+        en_stem = cn_to_en[cn]
+        got = get_ten_god("Gui", en_stem)
+        check(f"癸 vs {cn}", got, expected_god)
+
+    # ── Test C: 空亡 verification against all 6 旬 ──
+    print("\n[C] 空亡 — 6 旬 verification")
+    xun_tests = [
+        # (day_gan, day_zhi, expected_void)
+        ("Jia", "Zi",   ["Xu", "Hai"]),   # 甲子旬
+        ("Jia", "Xu",   ["Shen", "You"]), # 甲戌旬
+        ("Jia", "Shen", ["Wu", "Wei"]),   # 甲申旬
+        ("Jia", "Wu",   ["Chen", "Si"]),  # 甲午旬
+        ("Jia", "Chen", ["Yin", "Mao"]),  # 甲辰旬
+        ("Jia", "Yin",  ["Zi", "Chou"]),  # 甲寅旬
+        # same 旬, different day
+        ("Yi",  "Chou", ["Xu", "Hai"]),   # 甲子旬 (乙丑)
+        ("Gui", "You",  ["Xu", "Hai"]),   # 甲子旬 (癸酉)
+        ("Bing","Zi",   ["Shen", "You"]), # 甲戌旬 (丙子)
+    ]
+    for gan, zhi, expected_void in xun_tests:
+        fake_pillars = {"day": {"gan": gan, "zhi": zhi},
+                        "year": {"gan": gan, "zhi": zhi},
+                        "month": {"gan": gan, "zhi": zhi}}
+        kw = calculate_kong_wang(fake_pillars)
+        check(f"空亡 {GAN_CN[GAN.index(gan)]}{ZHI_CN[ZHI.index(zhi)]}",
+              kw["void_branches"], expected_void)
+
+    # ── Test D: 得令 for all elements across all months ──
+    print("\n[D] 得令 — seasonal support")
+    # Wood DM should be 得令 in Yin/Mao (旺) and Hai (相)
+    for branch, expect_ling in [("Yin", True), ("Mao", True), ("Hai", True),
+                                 ("Si", False), ("You", False)]:
+        fake_pillars = {
+            "year":  {"gan": "Jia", "zhi": "Zi"},
+            "month": {"gan": "Jia", "zhi": branch},
+            "day":   {"gan": "Jia", "zhi": "Zi"},
+        }
+        result = classify_body_strength(fake_pillars)
+        check(f"Wood 得令 month={branch}", result["de_ling"]["result"], expect_ling)
+
+    # ── Test E: 用神/忌神 basic direction ──
+    print("\n[E] 用神/忌神 direction")
+    fe = {"Wood": 0.5, "Fire": 0.5, "Earth": 0.5, "Metal": 0.5, "Water": 0.5}
+    # Weak Wood DM → should favor Water (generates Wood) and Wood (same)
+    yj_weak = calculate_yong_ji_shen("Wood", "身弱", fe)
+    check("身弱 Wood yong includes Water", "Water" in yj_weak["yong_shen"], True)
+    check("身弱 Wood yong includes Wood",  "Wood"  in yj_weak["yong_shen"], True)
+    check("身弱 Wood ji includes Metal",   "Metal" in yj_weak["ji_shen"],   True)
+
+    # Strong Wood DM → should favor Fire (食傷) and Earth (財)
+    yj_strong = calculate_yong_ji_shen("Wood", "身強", fe)
+    check("身強 Wood yong includes Fire",  "Fire"  in yj_strong["yong_shen"], True)
+    check("身強 Wood yong includes Earth", "Earth" in yj_strong["yong_shen"], True)
+    check("身強 Wood ji includes Water",   "Water" in yj_strong["ji_shen"],   True)
+
+    # ── Test F: Full chart — 1966-10-09 07:00 HK (test chart from bazi.py) ──
+    print("\n[F] Full advanced calc — 1966-10-09 chart")
+    dt = datetime(1966, 10, 9, 7, 0)
+    chart = calc_bazi_fixed(dt, "Asia/Hong_Kong", 114.1095)
+    advanced = calculate_advanced_bazi(chart["pillars"], chart["five_elements_strength"])
+
+    # Day master should be deterministic
+    dm = chart["day_master"]
+    print(f"  Day Master: {dm} ({GAN_ELEMENT[dm]} {'yang' if GAN_POLARITY[dm]=='yang' else 'yin'})")
+    print(f"  Pillars: ", end="")
+    for pos in ("year", "month", "day", "hour"):
+        if pos in chart["pillars"]:
+            p = chart["pillars"][pos]
+            g_cn = GAN_CN[GAN.index(p["gan"])]
+            z_cn = ZHI_CN[ZHI.index(p["zhi"])]
+            print(f"{pos}={g_cn}{z_cn}", end=" ")
+    print()
+
+    tg = advanced["ten_gods"]["by_position"]
+    print(f"  十神 year={tg['year']['ten_god']} month={tg['month']['ten_god']} "
+          f"hour={tg['hour']['ten_god']}")
+    print(f"  身強弱: {advanced['body_strength']['classification']}")
+    print(f"  用神: {advanced['yong_ji_shen']['yong_shen']}")
+    print(f"  忌神: {advanced['yong_ji_shen']['ji_shen']}")
+    print(f"  空亡: {advanced['kong_wang']['void_branches_cn']} "
+          f"| in chart: {advanced['kong_wang']['present_in_chart']}")
+
+    # ── Test G: 流年 — known reference year ──
+    print("\n[G] 流年 — 2026 reference check")
+    ln = calculate_liunian(2026)
+    check("2026 流年 gan", ln["gan"], "Bing")
+    check("2026 流年 zhi", ln["zhi"], "Wu")  # 2026 = 丙午, Year of the Horse
+
+    # ── Test H: 財庫 — vault present but NOT the wealth god for this DM ──
+    print("\n[H] 財庫 — 戌 vault storing Fire, Fire-DM (should be 比劫庫, not 財庫)")
+    pillars_h = {
+        "year":  {"gan": "Bing", "zhi": "Xu"},
+        "month": {"gan": "Geng", "zhi": "Yin"},
+        "day":   {"gan": "Bing", "zhi": "Yin"},
+        "hour":  {"gan": "Geng", "zhi": "Yin"},
+    }
+    wv_h = calculate_wealth_vault(pillars_h, yong_shen=[], ji_shen=[])
+    check("H vault count", len(wv_h["vaults"]), 1)
+    check("H relation is compare (比劫庫)", wv_h["vaults"][0]["relation"], "compare")
+    check("H is NOT a wealth vault", wv_h["has_wealth_vault"], False)
+    check("H status closed (no clash partner present)", wv_h["vaults"][0]["status"], "closed")
+
+    # ── Test I: 財庫 — genuine wealth vault, favorable + closed ──
+    print("\n[I] 財庫 — 未 vault storing Wood, Metal-DM (genuine 財庫)")
+    pillars_i = {
+        "year":  {"gan": "Geng", "zhi": "Wei"},
+        "month": {"gan": "Jia",  "zhi": "Zi"},
+        "day":   {"gan": "Geng", "zhi": "Zi"},
+    }
+    wv_i = calculate_wealth_vault(pillars_i, yong_shen=["Wood"], ji_shen=[])
+    check("I relation is wealth (財庫)", wv_i["vaults"][0]["relation"], "wealth")
+    check("I IS a wealth vault", wv_i["has_wealth_vault"], True)
+    check("I status closed", wv_i["vaults"][0]["status"], "closed")
+    check("I reading favorable_closed", wv_i["vaults"][0]["reading"], "favorable_closed")
+
+    # ── Test J: natal clash — Chen + Xu co-present should mutually open ──
+    print("\n[J] 財庫 — natal clash (辰 + 戌 co-present)")
+    pillars_j = {
+        "year":  {"gan": "Bing", "zhi": "Chen"},
+        "month": {"gan": "Jia",  "zhi": "Zi"},
+        "day":   {"gan": "Geng", "zhi": "Xu"},
+    }
+    wv_j = calculate_wealth_vault(pillars_j, yong_shen=[], ji_shen=[])
+    check("J vault count (Chen + Xu both detected)", len(wv_j["vaults"]), 2)
+    check("J all vaults activated via natal clash",
+          all(v["status"] == "activated" and v["triggers"] == ["natal"] for v in wv_j["vaults"]), True)
+
+    # ── Test K: dayun-triggered vault (not natally clashed) ──
+    print("\n[K] 財庫 — 未 vault, closed natally, opened by current 大運")
+    pillars_k = {
+        "year":  {"gan": "Yi",  "zhi": "Wei"},
+        "month": {"gan": "Jia", "zhi": "Zi"},
+        "day":   {"gan": "Yi",  "zhi": "Si"},
+    }
+    wv_k_closed = calculate_wealth_vault(pillars_k, yong_shen=[], ji_shen=[])
+    check("K closed without dayun/liunian", wv_k_closed["vaults"][0]["status"], "closed")
+    wv_k_open = calculate_wealth_vault(pillars_k, yong_shen=[], ji_shen=[], current_dayun_branch="Chou")
+    check("K activated by matching 大運 branch (丑)", wv_k_open["vaults"][0]["status"], "activated")
+    check("K trigger source is dayun", wv_k_open["vaults"][0]["triggers"], ["dayun"])
+
+    # ── Test L: liunian-triggered vault ──
+    print("\n[L] 財庫 — same chart, activated by current 流年 instead")
+    wv_l_open = calculate_wealth_vault(pillars_k, yong_shen=[], ji_shen=[], current_liunian_branch="Chou")
+    check("L activated by matching 流年 branch (丑)", wv_l_open["vaults"][0]["status"], "activated")
+    check("L trigger source is liunian", wv_l_open["vaults"][0]["triggers"], ["liunian"])
+
+    # ── Test M: no vault in chart at all ──
+    print("\n[M] 財庫 — chart with no 辰戌丑未 at all")
+    pillars_m = {
+        "year":  {"gan": "Jia",  "zhi": "Zi"},
+        "month": {"gan": "Bing", "zhi": "Wu"},
+        "day":   {"gan": "Yi",   "zhi": "Mao"},
+        "hour":  {"gan": "Xin",  "zhi": "You"},
+    }
+    wv_m = calculate_wealth_vault(pillars_m, yong_shen=[], ji_shen=[])
+    check("M no vaults found", wv_m["has_vault"], False)
+
+    # ── Test N: end-to-end via calculate_advanced_bazi (liunian auto-filled) ──
+    print("\n[N] 財庫 — wired through calculate_advanced_bazi()")
+    advanced_n = calculate_advanced_bazi(pillars_h, {"Wood": 1, "Fire": 3, "Earth": 0.5, "Metal": 2, "Water": 0})
+    check("N wealth_vault key present", "wealth_vault" in advanced_n, True)
+    check("N still finds the 戌 vault", len(advanced_n["wealth_vault"]["vaults"]), 1)
+
+    # =====================================================================
+    # 庫位 (storage) interpretation-safety spec — Cases A-H
+    # =====================================================================
+
+    # ── Case A: closed favorable storage ──
+    print("\n[Case A] closed + favorable — 未 vault storing Wood, yong_shen includes Wood, no clash")
+    wv_a = calculate_wealth_vault(pillars_i, yong_shen=["Wood"], ji_shen=[])
+    v_a = wv_a["vaults"][0]
+    check("A status closed", v_a["status"], "closed")
+    check("A favorability favorable", v_a["favorability"], "favorable")
+    check("A confidence not low (favorability known, not mixed)", v_a["confidence"] in ("high", "medium"), True)
+
+    # ── Case B: closed unfavorable storage ──
+    print("\n[Case B] closed + unfavorable — 戌 vault storing Fire, ji_shen includes Fire, no clash")
+    wv_b = calculate_wealth_vault(pillars_h, yong_shen=[], ji_shen=["Fire"])
+    v_b = wv_b["vaults"][0]
+    check("B status closed", v_b["status"], "closed")
+    check("B favorability unfavorable", v_b["favorability"], "unfavorable")
+    # Must not claim total protection — confidence alone doesn't assert wording,
+    # but the structured status/favorability must stay separate so the copy
+    # layer can only ever say "less visible / contained", never "safe".
+    check("B status is not itself a safety claim (stays a plain enum)", v_b["status"] in ("closed", "activated", "disturbed", "uncertain"), True)
+
+    # ── Case C: activated favorable storage ──
+    print("\n[Case C] activated + favorable — 未(year) + 丑(hour) mutual clash, Wood favorable")
+    pillars_c = {
+        "year":  {"gan": "Geng", "zhi": "Wei"},
+        "month": {"gan": "Jia",  "zhi": "Zi"},
+        "day":   {"gan": "Geng", "zhi": "Zi"},
+        "hour":  {"gan": "Xin",  "zhi": "Chou"},
+    }
+    wv_c = calculate_wealth_vault(pillars_c, yong_shen=["Wood"], ji_shen=[])
+    v_c = next(v for v in wv_c["vaults"] if v["branch"] == "Wei")
+    check("C status activated", v_c["status"], "activated")
+    check("C favorability favorable", v_c["favorability"], "favorable")
+    check("C has a natal clash activation relation", any(r["type"] == "clash" and r["source"] == "natal" for r in v_c["activation_relations"]), True)
+
+    # ── Case D: activated unfavorable storage ──
+    print("\n[Case D] activated + unfavorable — same clash structure, Wood unfavorable instead")
+    wv_d = calculate_wealth_vault(pillars_c, yong_shen=[], ji_shen=["Wood"])
+    v_d = next(v for v in wv_d["vaults"] if v["branch"] == "Wei")
+    check("D status activated (or disturbed)", v_d["status"] in ("activated", "disturbed"), True)
+    check("D favorability unfavorable", v_d["favorability"], "unfavorable")
+
+    # ── Case E: favorability unknown ──
+    print("\n[Case E] favorability unknown — yong_shen/ji_shen not supplied")
+    wv_e = calculate_wealth_vault(pillars_i, yong_shen=None, ji_shen=None)
+    v_e = wv_e["vaults"][0]
+    check("E favorability unknown", v_e["favorability"], "unknown")
+    check("E confidence low", v_e["confidence"], "low")
+
+    # ── Case F: mixed hidden stems ──
+    print("\n[Case F] mixed hidden stems — 戌 vault (Bing/Fire DM): 戊土/辛金/丁火 map to different 十神")
+    wv_f = calculate_wealth_vault(pillars_h, yong_shen=[], ji_shen=[])
+    v_f = wv_f["vaults"][0]
+    check("F retains all 3 hidden stems", len(v_f["hidden_stems"]), 3)
+    check("F flagged as mixed", v_f["mixed_hidden_stems"], True)
+    hidden_relations = {hs["relation"] for hs in v_f["hidden_stems"]}
+    check("F hidden stems span >1 十神 relation category", len(hidden_relations) > 1, True)
+
+    # ── Case G: no strict 財庫 ──
+    print("\n[Case G] no 財星相關庫位 — same 戌/Fire-DM chart has a vault, but it's not wealth-related")
+    check("G has_wealth_vault False", wv_f["has_wealth_vault"], False)
+    check("G wealth_relation_status is no_wealth_vault", wv_f["wealth_relation_status"], "no_wealth_vault")
+
+    # ── Case H: external timing activation (natal branch, annual clash) ──
+    print("\n[Case H] natal 戌, annual (流年) 辰 — annual activation recorded separately from natal status")
+    wv_h_timing = calculate_wealth_vault(pillars_h, yong_shen=[], ji_shen=[], current_liunian_branch="Chen")
+    v_h_timing = wv_h_timing["vaults"][0]
+    check("H natal_status stays closed (chart itself has no 辰)", v_h_timing["natal_status"], "closed")
+    check("H overall status activated via liunian", v_h_timing["status"], "activated")
+    check("H activation_relations records liunian source", any(r["source"] == "liunian" and r["type"] == "clash" and r["target_branch"] == "Chen" for r in v_h_timing["activation_relations"]), True)
+    check("H triggers list is liunian only", v_h_timing["triggers"], ["liunian"])
+
+    if errors:
+        print(f"\n{'='*60}")
+        print(f"  {len(errors)} FAILURE(S):")
+        for e in errors:
+            print(f"  {e}")
+    else:
+        print(f"\n  All assertions PASSED")
+    print("=" * 60)
+    return len(errors) == 0
+
+
+if __name__ == "__main__":
+    _run_advanced_tests()

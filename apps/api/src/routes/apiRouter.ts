@@ -11,6 +11,7 @@ import debateDemoRouter from './debateDemo';
 import { authMiddleware } from '../middleware/auth';
 import { creditsMiddleware } from '../middleware/credits';
 import { supabase } from '../lib/supabase';
+import { isTrialActive } from '../lib/credits';
 import contactRouter from './contact';
 import billingRouter from './billing';
 
@@ -168,14 +169,34 @@ apiRouter.get('/credits/balance', authMiddleware, creditsMiddleware, async (req:
     const userId = (req as any).userId;
     const { data: user } = await supabase
       .from('users')
-      .select('credit_balance, credit_reset_date, plan')
+      .select('credit_balance, credit_reset_date, plan, trial_ends_at, trial_popup_seen')
       .eq('id', userId)
       .single();
+    const isPlus = user?.plan === 'plus';
+    const trialActive = !isPlus && isTrialActive(user?.trial_ends_at);
     return res.json({
       credit_balance: user?.credit_balance ?? 0,
       credit_reset_date: user?.credit_reset_date ?? null,
       plan: user?.plan ?? 'free',
+      trial_active: trialActive,
+      trial_ends_at: user?.trial_ends_at ?? null,
+      trial_popup_seen: user?.trial_popup_seen ?? false,
     });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// Marks the first-month welcome popup as dismissed so it doesn't reappear.
+apiRouter.post('/credits/trial-popup-seen', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { error } = await supabase
+      .from('users')
+      .update({ trial_popup_seen: true })
+      .eq('id', userId);
+    if (error) throw error;
+    return res.json({ ok: true });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }

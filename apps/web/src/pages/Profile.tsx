@@ -78,7 +78,35 @@ function isUpdatedToday(record: any) {
   return new Date(record.updated_at).toDateString() === new Date().toDateString();
 }
 
-export default function Profile({ user, isPlus = false }: { user: User; isPlus?: boolean }) {
+// One sustained low warning tone ("eeeeeee") played when the irreversible-reset
+// modal opens. Synthesized via Web Audio API — no audio asset needed. Fails
+// silently if the browser blocks autoplay audio; the visual warning still
+// stands on its own.
+function playResetAlertSound() {
+  try {
+    const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    const duration = 0.5;
+    const startTime = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square'; // alarm-like, low-pitched rather than piercing
+    osc.frequency.value = 110;
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.45, startTime + 0.05);
+    gain.gain.setValueAtTime(0.45, startTime + duration - 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.02);
+  } catch {
+    // audio not available — sound is a nice-to-have, not a requirement
+  }
+}
+
+export default function Profile({ user, isPlus = false, onCreditsUpdated }: { user: User; isPlus?: boolean; onCreditsUpdated?: (balance: number) => void }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
@@ -101,6 +129,10 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
   const [location, setLocation] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<StructuredLocation | null>(null);
   const [mbtiType, setMbtiType] = useState('');
+
+  useEffect(() => {
+    if (showResetWarning) playResetAlertSound();
+  }, [showResetWarning]);
 
   useEffect(() => {
     const cacheKey = `oria_profile_${user.id}`;
@@ -193,14 +225,20 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
         time_known: timeKnown,
       };
       if (isReset) {
-        await resetBazi(params);
+        const result = await resetBazi(params);
         sessionStorage.clear();
+        if (result?.credits_remaining !== undefined) onCreditsUpdated?.(result.credits_remaining);
       } else {
         await saveBazi(params);
       }
       setExistingBazi(true);
     } catch (err: any) {
-      setError(err.message);
+      if (err.code === 'insufficient_credits') {
+        if (err.creditsRemaining !== undefined) onCreditsUpdated?.(err.creditsRemaining);
+        setError(t('profile_extra.reset_insufficient_credits', { balance: err.creditsRemaining ?? 0 }));
+      } else {
+        setError(err.message);
+      }
     } finally {
       setSaving(false);
     }
@@ -296,12 +334,21 @@ export default function Profile({ user, isPlus = false }: { user: User; isPlus?:
           background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
         }}>
-          <div className="oria-card" style={{ maxWidth: 420, width: '100%', margin: 0 }}>
-            <div style={{ fontSize: 40, marginBottom: 16 }}>⚠️</div>
-            <h2 className="text-xl" style={{ marginBottom: 12 }}>{t('profile.reset_warning_title')}</h2>
-            <p style={{ color: '#FFFFFF', marginBottom: 24, lineHeight: 1.6 }}>
+          <div className="oria-card" style={{ maxWidth: 420, width: '100%', margin: 0, border: '1px solid rgba(239,68,68,0.4)' }}>
+            <h2 className="text-xl" style={{ marginBottom: 12, color: '#EF4444' }}>{t('profile.reset_warning_title')}</h2>
+            <p style={{ color: '#FFFFFF', marginBottom: 16, lineHeight: 1.6, whiteSpace: 'pre-line' as const }}>
               {t('profile_extra.reset_body')}
             </p>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.35)',
+              borderRadius: 10, padding: '10px 12px', marginBottom: 24,
+            }}>
+              <span style={{ fontSize: 16 }}>🪙</span>
+              <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 700 }}>
+                {t('profile_extra.reset_credit_note')}
+              </span>
+            </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <button onClick={() => setShowResetWarning(false)} className="oria-btn-outline" style={{ flex: 1 }}>{t('profile.reset_cancel')}</button>
               <button onClick={() => doSaveBazi(true)} className="oria-btn-primary" style={{ flex: 1, background: '#EF4444' }}>{t('profile.reset_confirm')}</button>

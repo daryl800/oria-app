@@ -68,7 +68,7 @@
     "empty_title": "Ask oria anything",
     "empty_subtitle": "Your BaZi and MBTI are your guide",
     "try_asking": "✦ Try asking",
-    "placeholder": "Skriv vad du tänker på...",
+    "placeholder": "Prova att fråga: Hur stark är min medfödda förmåga att tjäna pengar?",
     "thinking": "Tänker...",
     "history": "Historik",
     "new": "Starta nytt samtal",
@@ -85,28 +85,28 @@
     "paywall_cta": "Uppgradera till oria Plus ✦",
     "quick_starts": [
       {
-        "label": "Känner mig fast",
-        "value": "Jag känner mig fast och vet inte riktigt vad nästa steg är"
+        "label": "Pengabegåvning",
+        "value": "Hur kan jag bäst använda min ekonomiska talang?"
       },
       {
-        "label": "Nästa steg",
-        "value": "Jag vill se vilket nästa steg som passar just nu"
+        "label": "Använd min talang",
+        "value": "Hur kan jag använda min talang på bästa sätt?"
       },
       {
-        "label": "En sak",
-        "value": "Det finns en sak jag tänker på och vill reda ut"
+        "label": "Hälsosamt liv",
+        "value": "Hur tar jag bäst hand om min hälsa?"
       },
       {
-        "label": "Förstå mig själv",
-        "value": "Jag vill förstå mig själv lite bättre just nu"
+        "label": "Fastnat i motgång",
+        "value": "Jag har stött på motgångar på sistone och vet inte hur jag tar mig ur det"
       },
       {
-        "label": "Lite trött",
-        "value": "Jag känner mig lite trött och osäker på riktningen"
+        "label": "Jobbproblem",
+        "value": "Jobbet har inte gått bra på sistone och jag vill veta vad problemet är"
       },
       {
-        "label": "Fråga något",
-        "value": "Jag vill fråga något men vet inte riktigt hur jag ska formulera det"
+        "label": "Relationsproblem",
+        "value": "Jag har haft friktion med någon på sistone och vill veta hur jag ska hantera det"
       }
     ]
   },
@@ -142,7 +142,7 @@
     "loading": "Laddar profil...",
     "error_date": "Ange ditt födelsedatum.",
     "error_mbti": "Välj din MBTI-typ.",
-    "reset_warning_title": "Uppdatera födelsedata?",
+    "reset_warning_title": "⚠️ Det här kan inte ångras",
     "reset_warning_body": "Att uppdatera dina födelsedata rensar alla samtal och daglig vägledning. Det gör att framtida vägledning speglar ditt diagram korrekt.",
     "reset_cancel": "Avbryt",
     "reset_confirm": "Ja, uppdatera"
@@ -681,9 +681,16 @@
     "title_zh": "選擇你的語言",
     "body": "Detta anger språk för all vägledning och alla insikter. Du kan ändra det senare i Profil."
   },
+  "welcome_credits": {
+    "title": "En liten start-gåva",
+    "body": "Den här månaden har du 60 krediter för att utforska allt Oria erbjuder — dagliga insikter, chatt och mer.",
+    "cta": "Okej"
+  },
   "profile_extra": {
     "title": "Din personliga profil",
-    "reset_body": "När du uppdaterar BaZi uppdateras dina insikter och relaterad historik återställs.",
+    "reset_body": "Att återställa ditt födelsedatum raderar permanent all din historik i Oria:\n\n• Alla chattar och konversationsminnen\n• Cachat innehåll från Daily Guidance och Monthly Focus\n• Cachad profilanalys (inklusive ditt förmögenhetsmönster)\n\nSe till att det här verkligen är vad du vill göra.",
+    "reset_credit_note": "Denna åtgärd kostar 20 krediter.",
+    "reset_insufficient_credits": "Inte tillräckligt med krediter (du har {{balance}} kvar) — att återställa ditt födelsedatum kostar 20 krediter.",
     "saved": "Profil sparad",
     "year_placeholder": "År",
     "month_placeholder": "Månad",
@@ -796,6 +803,7 @@
     "next_update": "Nästa uppdatering",
     "suitable": "Lämpligt denna månad",
     "avoid": "Undvik denna månad",
+    "breakthrough_action": "Månadens genombrottssteg",
     "reflection": "Reflektion",
     "zodiac_tone": "Stjärntecken",
     "prompts_label": "Utforska vidare",
@@ -1142,12 +1150,12 @@
     "family": "Familj"
   },
   "questionSuggestion": {
-    "q_hot_1": "Passar ett jobbbyte för mig?",
-    "q_hot_2": "Ska jag starta eget eller söka jobb?",
-    "q_hot_3": "Vad är min största blinda fläck?",
-    "q_hot_4": "Var finns min största möjlighet i år?",
-    "q_hot_5": "Vilket beslut bör jag ta just nu?",
-    "q_hot_6": "Ska jag fortsätta det här förhållandet?",
+    "q_hot_1": "Ska jag utveckla min starkaste förmåga, eller utmana mig inom ett område jag är svag i?",
+    "q_hot_2": "Ska jag aktivt jaga en förmögenhetsmöjlighet, eller hålla mig till det som är stabilt nu?",
+    "q_hot_3": "Ska jag prioritera min hälsa, eller satsa fullt ut på karriären just nu?",
+    "q_hot_4": "Ska jag stanna i en bekant miljö, eller flytta någonstans som passar mig bättre?",
+    "q_hot_5": "Vad är min största blinda fläck?",
+    "q_hot_6": "Vilken livsmiljö passar mig bäst?",
     "q_career_1": "Vilket slags arbete passar mig bäst?",
     "q_career_2": "Är det rätt tid att byta jobb nu?",
     "q_career_3": "Passar jag för en chefs- eller ledarroll?",
@@ -1168,6 +1176,7 @@
     "q_fin_3": "Vad är min största ekonomiska risk just nu?",
     "q_fin_4": "Ska jag vara försiktig eller mer offensiv med pengarna?",
     "q_fin_5": "Vilket sätt att tjäna pengar passar mig bäst?",
+    "q_fin_6": "Hur stark är min medfödda förmåga att tjäna pengar?",
     "q_life_1": "Är jag på rätt väg i livet?",
     "q_life_2": "Var bör jag fokusera min energi just nu?",
     "q_life_3": "Vad är min viktigaste utmaning i år?",

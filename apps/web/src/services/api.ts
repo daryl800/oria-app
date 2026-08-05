@@ -119,11 +119,20 @@ export async function getCreditBalance(): Promise<{
   credit_balance: number;
   credit_reset_date: string | null;
   plan: string;
+  trial_active: boolean;
+  trial_ends_at: string | null;
+  trial_popup_seen: boolean;
 }> {
   const headers = await getHeaders();
   const res = await fetch(`${API_URL}/api/credits/balance`, { headers });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
+}
+
+export async function markTrialPopupSeen(): Promise<void> {
+  const headers = await getHeaders();
+  const res = await fetch(`${API_URL}/api/credits/trial-popup-seen`, { method: 'POST', headers });
+  if (!res.ok) throw new Error(await res.text());
 }
 
 export async function getChatHistory(conversationId: string) {
@@ -185,6 +194,14 @@ export async function resetBazi(data: {
     method: 'POST', headers,
     body: JSON.stringify(data),
   });
+  if (res.status === 403) {
+    const body = await res.json();
+    const err: any = new Error(body.message ?? 'insufficient_credits');
+    err.code = body.error;
+    err.creditsRemaining = body.credits_remaining ?? 0;
+    err.plan = body.plan ?? 'free';
+    throw err;
+  }
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }

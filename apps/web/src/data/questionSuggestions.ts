@@ -70,6 +70,7 @@ export const QUESTION_SUGGESTIONS: QuestionCategory[] = [
       { key: 'q_fin_3', textKey: 'questionSuggestion.q_fin_3' },
       { key: 'q_fin_4', textKey: 'questionSuggestion.q_fin_4' },
       { key: 'q_fin_5', textKey: 'questionSuggestion.q_fin_5' },
+      { key: 'q_fin_6', textKey: 'questionSuggestion.q_fin_6' },
     ],
   },
   {
