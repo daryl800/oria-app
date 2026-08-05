@@ -95,32 +95,34 @@ function formatPillar(pillar: any): string {
   return `${pillar.gan}${pillar.zhi}`;
 }
 
-// 流年干支 (Annual stems/branches) - fixed 60-year cycle
-const ANNUAL_PILLARS: Record<number, { stem: string; branch: string; element: string; zh: string }> = {
-  2020: { stem: 'Geng', branch: 'Zi', element: 'Metal', zh: '庚子' },
-  2021: { stem: 'Xin', branch: 'Chou', element: 'Metal', zh: '辛丑' },
-  2022: { stem: 'Ren', branch: 'Yin', element: 'Water', zh: '壬寅' },
-  2023: { stem: 'Gui', branch: 'Mao', element: 'Water', zh: '癸卯' },
-  2024: { stem: 'Jia', branch: 'Chen', element: 'Wood', zh: '甲辰' },
-  2025: { stem: 'Yi', branch: 'Si', element: 'Wood', zh: '乙巳' },
-  2026: { stem: 'Bing', branch: 'Wu', element: 'Fire', zh: '丙午' },
-  2027: { stem: 'Ding', branch: 'Wei', element: 'Fire', zh: '丁未' },
-  2028: { stem: 'Wu', branch: 'Shen', element: 'Earth', zh: '戊申' },
-  2029: { stem: 'Ji', branch: 'You', element: 'Earth', zh: '己酉' },
-  2030: { stem: 'Geng', branch: 'Xu', element: 'Metal', zh: '庚戌' },
-  2031: { stem: 'Xin', branch: 'Hai', element: 'Metal', zh: '辛亥' },
-  2032: { stem: 'Ren', branch: 'Zi', element: 'Water', zh: '壬子' },
-  2033: { stem: 'Gui', branch: 'Chou', element: 'Water', zh: '癸丑' },
-  2034: { stem: 'Jia', branch: 'Yin', element: 'Wood', zh: '甲寅' },
-  2035: { stem: 'Yi', branch: 'Mao', element: 'Wood', zh: '乙卯' },
-};
+// 流年干支 (Annual stems/branches) — computed algorithmically, not a fixed table.
+// Formula verified against the same sxtwl calculation used in bazi.py
+// (apps/analysis-service/app/bazi.py calculate_liunian) across the year range
+// 1900–2100 with zero mismatches: gan/zhi index = (year - 4) mod 10 / mod 12.
+// This works for any year, indefinitely — no expiry, unlike a hand-typed table.
+const GAN_EN = ['Jia', 'Yi', 'Bing', 'Ding', 'Wu', 'Ji', 'Geng', 'Xin', 'Ren', 'Gui'];
+const ZHI_EN = ['Zi', 'Chou', 'Yin', 'Mao', 'Chen', 'Si', 'Wu', 'Wei', 'Shen', 'You', 'Xu', 'Hai'];
+const GAN_ZH = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+const ZHI_ZH = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+const ELEMENT_BY_GAN_INDEX = ['Wood', 'Wood', 'Fire', 'Fire', 'Earth', 'Earth', 'Metal', 'Metal', 'Water', 'Water'];
+
+function getAnnualPillar(year: number): { stem: string; branch: string; element: string; zh: string } {
+  const ganIdx = ((year - 4) % 10 + 10) % 10;
+  const zhiIdx = ((year - 4) % 12 + 12) % 12;
+  return {
+    stem: GAN_EN[ganIdx],
+    branch: ZHI_EN[zhiIdx],
+    element: ELEMENT_BY_GAN_INDEX[ganIdx],
+    zh: GAN_ZH[ganIdx] + ZHI_ZH[zhiIdx],
+  };
+}
 
 function getLiunianContext(years: number = 5): string {
   const currentYear = new Date().getFullYear();
   const liunian = [];
   for (let y = currentYear; y < currentYear + years; y++) {
-    const p = ANNUAL_PILLARS[y];
-    if (p) liunian.push(`${y}年：${p.zh}（${p.element}）`);
+    const p = getAnnualPillar(y);
+    liunian.push(`${y}年：${p.zh}（${p.element}）`);
   }
   return `未來${years}年流年：${liunian.join(' | ')}`;
 }
@@ -174,6 +176,34 @@ function getBaziContext(bazi: any): string {
       + (ji   ? ` | 忌神（不利五行）：${ji}`   : '');
   }
 
+  // Deterministic wealth/element vault (財庫等) — authoritative structured facts.
+  // LLM must not invent a vault beyond what's listed here, and must not treat
+  // `status` (a structural fact about whether the branch is clash-triggered)
+  // as itself good or bad — only `favorability` carries that judgment, and it
+  // may be "unknown" if no reliable 用神/忌神 result exists for this chart.
+  let wealthVaultCtx = '';
+  if (bazi.wealth_vault?.vaults?.length > 0) {
+    const STATUS_ZH: Record<string, string> = {
+      closed: '未受沖動（暫時封存，結構事實，非吉凶判斷）',
+      activated: '已被沖動（結構上開始起作用，結構事實，非吉凶判斷）',
+      disturbed: '受到多重牽動，狀態不單純',
+      uncertain: '牽動關係不明確，強度難以判斷',
+    };
+    const FAVORABILITY_ZH: Record<string, string> = {
+      favorable: '屬用神／喜神（有利傾向）',
+      unfavorable: '屬忌神（不利傾向）',
+      neutral: '中性，非用神忌神範圍',
+      unknown: '尚無可靠用神忌神資料，無法判斷有利或不利——禁止對此庫位做出好壞論斷',
+    };
+    const lines = bazi.wealth_vault.vaults.map((v: any) => {
+      const hiddenDesc = (v.hidden_stems ?? [])
+        .map((hs: any) => `${hs.stem_cn}/${hs.ten_god}${hs.is_vault_element ? '(墓庫本氣)' : ''}${hs.is_toutian ? '(透干)' : ''}`)
+        .join('、');
+      return `${v.position}柱${v.branch_cn}｜傳統上常被視為${v.relation_label}（僅供參考，非唯一定性）｜藏干：${hiddenDesc}${v.mixed_hidden_stems ? '｜藏干十神不單一，不可只用一種類別歸類此庫位' : ''}｜狀態：${STATUS_ZH[v.status] ?? v.status}｜傾向：${FAVORABILITY_ZH[v.favorability] ?? v.favorability}｜信心度：${v.confidence}`;
+    });
+    wealthVaultCtx = `庫位（命盤確認的結構事實，不得修改，不得推測未列出的庫位或沖動狀態。狀態與傾向是兩件不同的事，不可混為一談；信心度為low或傾向為「無法判斷」時，禁止對該庫位做出好壞或財富多寡的論斷，只能說明結構事實）：\n${lines.join('\n')}`;
+  }
+
   return `${birthDate}
 八字四柱：
 - 年柱：${formatPillar(bazi.year_pillar)}
@@ -182,7 +212,7 @@ function getBaziContext(bazi: any): string {
 - 時柱：${formatPillar(bazi.hour_pillar)}
 五行力量：木${bazi.five_elements_strength?.Wood ?? 0} 火${bazi.five_elements_strength?.Fire ?? 0} 土${bazi.five_elements_strength?.Earth ?? 0} 金${bazi.five_elements_strength?.Metal ?? 0} 水${bazi.five_elements_strength?.Water ?? 0}
 主導五行：${dominantElement}
-${tenGodsCtx ? tenGodsCtx + '\n' : ''}${yongJiCtx ? yongJiCtx + '\n' : ''}${dayunContext}
+${tenGodsCtx ? tenGodsCtx + '\n' : ''}${yongJiCtx ? yongJiCtx + '\n' : ''}${wealthVaultCtx ? wealthVaultCtx + '\n' : ''}${dayunContext}
 ${allDayun}
 ${getLiunianContext(6)}`;
 }
@@ -381,6 +411,15 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
         規則C（至少一點必須）：把可能聽起來像缺點的特質（如依賴外部結構、需要認可、行動緩慢）重新框定為「這不是弱點，是你的運作模式」——任何可能讓用戶自我批判的預測，必須主動加以重框
     (3) reflection_question：一個邀請用戶回想自己人生以驗證這個模式的問題
     語氣：如朋友解釋，不用「這股力量」「約束並塑造」等抽象詞彙，改用直接對應生活場景的說法
+14. wealth_pattern（財富格局解讀——這是用戶最關心的欄位，必須具體、有畫面感，不可套用範本字句）：
+    根據命盤中財星（正財/偏財）或食傷（食神/傷官，生財之源）十神的有無與強弱、身強身弱分類、用神忌神是否落在財星或食傷上，以及上方「庫位」資料（若有列出），生成：
+    (1) title：8-14字的格局稱呼，必須根據此命盤實際結構命名（例如「身旺財旺，敢闖敢拼」「食傷生財，才華變現」「印重財輕，穩健優先」），不可套用範例字面，除非命盤剛好符合
+    (2) reasoning：2-3句，必須具體點名日主、身強身弱分類、命盤中實際出現的財星或食傷十神及其強弱，以及用神忌神是否落在財星／食傷上，解釋為何形成這個格局——不可泛談
+    (3) money_style：2-3條具體、可辨認的賺錢行為特質，不是「你很會賺錢」這種空話，須讓用戶能對照自己的實際行為
+    (4) risk_advice：1-2句，誠實指出這個財富格局的風險或短板（例如財來財去、衝動投資、過度依賴人脈、守財偏弱），並給行為層面的建議——不得提及具體投資產品、標的、金融操作或稅務安排
+    (5) verdict：1句，總結性、有信心但不絕對的結語，呼應title
+    重要例外：若命盤中完全沒有財星也沒有食傷十神，必須誠實說明「這個命盤的賺錢方式不靠正財偏財，而是靠[命盤中實際存在的十神]」，不可為了討好用戶硬套財富格局
+    語氣：像朋友當面向你解釋你的賺錢天賦，直接、具體、有畫面感；不使用「你註定會發財」「必定大富大貴」等宿命語言
 
 重要：必須輸出完整JSON，包含所有欄位（特別是 lucky_elements、amulet、life_pattern、friction_point、chat_teasers、final_advice）。每個欄位保持簡潔（1-2句），陣列每項一句話。目標總長度5000字元以內，但完整性優先於字數限制。
 
@@ -415,6 +454,17 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
     "優勢2",
     "優勢3"
   ],
+  "wealth_pattern": {
+    "title": "8-14字財富格局標題，必須根據此命盤真實結構命名，不可套用範例文字",
+    "reasoning": "2-3句，具體點名日主、身強身弱、財星或食傷十神及其強弱、用神忌神是否落在財星／食傷",
+    "money_style": [
+      "賺錢風格1（具體行為特質，不是空話）",
+      "賺錢風格2",
+      "賺錢風格3（可選）"
+    ],
+    "risk_advice": "1-2句：具體風險提醒＋行為層面建議，不得提及具體投資產品或金融操作",
+    "verdict": "1句：總結性、有信心但不絕對的結語，呼應title"
+  },
   "career_favorable": ["有利行業1", "有利行業2", "有利行業3"],
   "career_unfavorable": ["不利行業1", "不利行業2"],
   "relationship_pattern": "1-2句基於日支與感情宮的感情模式分析",
@@ -493,6 +543,14 @@ sections 共三段，每段1-2句，不可超過：
 第三段 "大運提醒"：
   - content: 當前大運如何疊加或改變今日能量，1-2句
 
+第四段 "今日致富行動"（必須嚴格遵守，這是最重要的一段）：
+  - 核心原則：使用者不需要被告知自己是什麼樣的人，需要被告知今天可以做什麼——重點是「賺錢」與「發揮潛能」，不是性格描述
+  - 判斷方向：今日${todayElement}若生助或同氣日主的財星/食傷 → 方向偏向「致富」；若生助印星/比劫 → 方向偏向「發揮潛能／累積實力」；若命盤提供庫位（財庫）資料且今日或當前大運流年觸動沖開 → 優先點出這一點
+  - content: 必須是一個具體、單一、今天就能執行的行動，朝「多賺一點」或「更好發揮潛能」前進，不可只是形容特質或說「保持觀察」「留意機會」
+  - 禁止空泛句子，例如「保持努力」「相信自己」「等待時機」
+  - 正確例子：「今天適合主動開口談一個你原本猶豫的合作或加薪，你的${bazi.day_master}日主在食傷生財的日子裡，表達比沉默更有利」
+  - 錯誤例子：「今天你可能會有一些機會，保持開放的心態」
+
 【今日提問 寫法規則——必須嚴格遵守】
 - 問題必須針對日主 ${bazi.day_master} 的具體特性設計
 - 驗證：換一個不同日主的用戶，問題是否仍成立？若成立→問題太通用，必須重寫
@@ -528,11 +586,15 @@ ${mbtiCtx}
       {
         "label": "大運提醒",
         "content": "1-2句，當前大運的疊加影響"
+      },
+      {
+        "label": "今日致富行動",
+        "content": "1個具體、今天就能做的行動，方向是致富或發揮潛能，不可只是形容特質"
       }
     ]
   },
   "daily_question": {
-    "question": "針對日主${bazi.day_master}特性設計的今日反思問題"
+    "question": "針對日主${bazi.day_master}特性設計的今日反思問題（可聚焦於賺錢方式或潛能發揮方向，但仍須是反思型問題，不是行動指令）"
   }
 }
 只回傳JSON。`,
@@ -766,40 +828,58 @@ B. 回答（分析）
 - 「抓住機會」
 - 「相信自己」
 
-6. 不做命運決定論：
-❌「你就是這樣」  
-❌「這是注定的」  
-✔ 說明傾向 + 可調整空間  
+7. 不做命運決定論：
+❌「你就是這樣」
+❌「這是注定的」
+✔ 說明傾向 + 可調整空間
 
-7. 重點給：
-- 理解  
-- 模式  
+8. 重點給：
+- 理解
+- 模式
 - 應對方式（不是命令）
+
+9. 描述優先於行動，是最容易讓用戶失去興趣的錯誤（禁止只停留在「形容」）：
+- 用戶不需要被告知自己是什麼樣的人——他大多已經知道（例：內向、保守、容易焦慮）。只重複他已知的事，等於沒有幫助
+- 每次分析都必須額外回答「那可以怎麼做」，尤其當問題與金錢、事業、才華發揮有關時
+- ❌「你比較保守，不容易冒險」（只形容，用戶已經知道）
+- ✔「你比較保守，但你的食傷生財格局，適合先用小規模、可控的方式測試賺錢的點子，而不是一次all-in」（形容 + 具體可執行的方向）
 
 —————————————————
 
 【問題類型處理】
 
-■ 性格 / 自我理解  
-- 日主 → MBTI  
-- 優勢 + 盲點 + 慣性  
+■ 性格 / 自我理解
+- 日主 → MBTI
+- 優勢 + 盲點 + 慣性
+- 不可只停在形容，必須說明這個特質「可以怎麼運用」
 
-■ 事業 / 選擇  
-- 十神 + 五行 + MBTI  
-- 說「適合怎樣發揮」  
+■ 事業 / 選擇
+- 十神 + 五行 + MBTI
+- 說「適合怎樣發揮」
 
-■ 關係  
-- 五行反應 + MBTI互動  
-- 說模式，不講吉凶  
+■ 財富 / 賺錢能力（重要——多數用戶最關心的問題）
+- 十神中的財星、食傷（生財）+ 用神忌神是否落在財星或食傷 + 財庫狀態（若命盤資料提供庫位）
+- 不可只說「你有賺錢天賦」或「你對錢比較保守」——必須說明具體適合哪一種賺錢方式（例：正財穩健型、偏財機會型、食傷創造型）
+- 必須給一個今天或這週就能開始的具體行動，方向是「多賺一點」，不能只是形容特質
+- 語氣要積極、鼓勵主動爭取，而非只是分析現狀
 
-■ 流年 / 未來  
-- 分析趨勢與節奏  
-- 可提年份  
-- 不做絕對預測  
+■ 潛能 / 天賦發揮
+- 十神中代表才華輸出的星（食神、傷官、正官、七殺等，依命盤而定）+ MBTI 認知功能傾向
+- 不可只描述「你是什麼樣的人」——必須指出一個目前還沒被充分使用、值得嘗試發揮的方向
+- 給一個本週可以嘗試的具體小行動
 
-■ 一般問題（壓力 / 內耗）  
-- 解釋原因  
-- 提供具體方向  
+■ 關係
+- 五行反應 + MBTI互動
+- 說模式，不講吉凶
+
+■ 流年 / 未來
+- 分析趨勢與節奏
+- 可提年份
+- 不做絕對預測
+
+■ 一般問題（壓力 / 內耗）
+- 解釋原因
+- 提供具體方向
 
 —————————————————
 
@@ -968,12 +1048,12 @@ export function monthlyChartFocusPrompt(
   const langGuard = getLangGuard(lang);
 
   const [year] = monthKey.split('-').map(Number);
-  const yearPillar = ANNUAL_PILLARS[year];
-  const yearContext = yearPillar ? `流年：${yearPillar.zh}（${yearPillar.element}）` : '';
+  const yearPillar = getAnnualPillar(year);
+  const yearContext = `流年：${yearPillar.zh}（${yearPillar.element}）`;
   const monthContext = monthStem && monthBranch
     ? `流月：${monthStem}${monthBranch}\n${yearContext}`
-    : yearContext || `月份：${monthKey}`;
-  const yearLabel = yearPillar?.zh ?? `${year}年`;
+    : yearContext;
+  const yearLabel = yearPillar.zh;
 
   return [
     {
@@ -986,6 +1066,7 @@ export function monthlyChartFocusPrompt(
 4. 優先使用：「適合留意」「可以先觀察」「這個月更適合」「你可能會發現」
 5. 內容必須基於八字與MBTI的實際資料，不得泛泛而談
 6. 每次生成必須與月份強相關，讓用戶感受到「這個月真的不同」
+7. 使用者最關心的是賺錢與發揮潛能，不是被形容個性——每次生成都必須包含 breakthrough_action 欄位（見下方），這是一個具體的、朝「多賺一點」或「更好發揮潛能」前進的行動，不是描述句
 ${SAFETY_CLAUSE}
 今天日期：${gregorian}`,
     },
@@ -1006,6 +1087,12 @@ ${monthContext}
 2. 用戶命盤的用神忌神（見上方「身強身弱」與「用神/忌神」欄位）
 3. 明確說明是哪個五行的生克關係在影響這個月，而非泛泛而談
 
+【breakthrough_action 判斷要求——必須嚴格遵守】
+- 使用者不需要被告知自己是什麼樣的人，而是需要被告知「這個月可以做什麼」，重點是致富與發揮潛能，不是性格描述
+- 判斷方向：若本月五行（流月/流年）生助或同氣財星/食傷 → 方向偏向「致富」（例：主動爭取、開口談、展現成果）；若生助印星/比劫 → 方向偏向「發揮潛能／累積實力」（例：學習、練習、建立作品）；若命盤提供庫位（財庫）資料且本月觸動沖開 → 優先點出這一點
+- 必須是一個具體、單一、本月內就能開始執行的行動，不可只是形容方向或說「可以留意機會」
+- 禁止空泛句子，例如「保持努力」「相信自己」「等待時機」「多加留意」
+
 請生成結構化JSON，包含以下欄位：
 {
   "month_key": "${monthKey}",
@@ -1014,6 +1101,7 @@ ${monthContext}
   "summary": "2-4句說明本月命盤節奏與用戶應留意的核心方向，結合八字流月與MBTI",
   "suitable": "一句具體可行的本月適合方向（說明是哪個五行在發揮作用）",
   "avoid": "一句具體的本月應避免事項（說明是哪個五行在干擾）",
+  "breakthrough_action": "一個具體、本月可執行的行動，方向是致富或發揮潛能，不可只是形容特質或方向",
   "reflection_question": "一個讓用戶反思的問題，與本月主題相關",
   "suggested_prompts": [
     "與本月焦點相關的對話問題1",

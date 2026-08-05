@@ -7,7 +7,7 @@ _tf = TimezoneFinder()
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
-from app.bazi import calculate_bazi, enrich_with_localized_pillars, analyze_three_pillars, calculate_dayun
+from app.bazi import calculate_bazi, enrich_with_localized_pillars, analyze_three_pillars, calculate_dayun, calculate_advanced_bazi
 from app.mbti import get_mbti_profile, get_mbti_bazi_combined_context
 
 app = FastAPI(title="oria-analysis-service")
@@ -53,7 +53,8 @@ def bazi_calculate(req: BaziRequest):
         dayun = None
         if req.is_male is not None:
             dayun = calculate_dayun(req.year, req.month, req.day, req.is_male)
-        return {"bazi": result, "analysis": analysis, "dayun": dayun}
+        advanced = calculate_advanced_bazi(result["pillars"], result["five_elements_strength"])
+        return {"bazi": result, "analysis": analysis, "dayun": dayun, "advanced": advanced}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

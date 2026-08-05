@@ -11,6 +11,7 @@ interface MonthlyFocus {
   summary: string;
   suitable: string;
   avoid: string;
+  breakthrough_action?: string;
   reflection_question?: string;
   suggested_prompts?: string[];
   next_update_label: string;
@@ -200,6 +201,21 @@ export default function MonthlyChartFocus({ isPlus, lang }: Props) {
           <p style={{ margin: 0, fontSize: 14, color: '#F0EDE8', lineHeight: 1.55 }}>{focus.avoid}</p>
         </div>
       </div>
+
+      {/* Breakthrough action — wealth / potential focus */}
+      {focus.breakthrough_action && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(201,168,76,0.16), rgba(201,168,76,0.05))',
+          border: '1px solid rgba(201,168,76,0.4)',
+          borderRadius: 12, padding: '14px 16px',
+          marginBottom: 16,
+        }}>
+          <div style={{ ...labelStyle, marginBottom: 4 }}>🚀 {t('monthly_focus.breakthrough_action')}</div>
+          <p style={{ margin: 0, fontSize: 14.5, color: '#FFE9B8', lineHeight: 1.6, fontWeight: 500 }}>
+            {focus.breakthrough_action}
+          </p>
+        </div>
+      )}
 
       {/* Reflection question */}
       {focus.reflection_question && (

@@ -23,6 +23,7 @@ import MbtiQuestionnaire from './pages/MbtiQuestionnaire';
 import Compare from './pages/Compare';
 import Debate from './pages/Debate';
 import LanguageModal from './components/LanguageModal';
+import WelcomeCreditsModal from './components/WelcomeCreditsModal';
 // Upgrade page removed — redirects to /pricing
 import AuthCallback from './pages/AuthCallback';
 import BottomNav from './components/BottomNav';
@@ -99,6 +100,7 @@ export default function App() {
   const [creditResetDate, setCreditResetDate] = useState<string | null>(null);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [langUserId, setLangUserId] = useState<string | null>(null);
+  const [showWelcomeCredits, setShowWelcomeCredits] = useState(false);
 
   async function checkOnboarding(userId: string, retries = 3) {
     const { data } = await supabase
@@ -176,7 +178,11 @@ export default function App() {
   useEffect(() => {
     if (!user) { setCreditBalance(null); setCreditResetDate(null); return; }
     getCreditBalance()
-      .then(d => { setCreditBalance(d.credit_balance); setCreditResetDate(d.credit_reset_date); })
+      .then(d => {
+        setCreditBalance(d.credit_balance);
+        setCreditResetDate(d.credit_reset_date);
+        if (d.trial_active && !d.trial_popup_seen) setShowWelcomeCredits(true);
+      })
       .catch(() => {});
   }, [user?.id]);
 
@@ -200,6 +206,9 @@ export default function App() {
           onDone={() => setShowLanguageModal(false)}
         />
       )}
+      {!showLanguageModal && showWelcomeCredits && (
+        <WelcomeCreditsModal onDone={() => setShowWelcomeCredits(false)} />
+      )}
       <AppShell user={user} isPlus={isPlus} planInterval={planInterval} creditBalance={creditBalance} creditResetDate={creditResetDate}>
         <Routes>
           <Route path="/" element={!user ? <Landing /> : <Navigate to="/chart" />} />
@@ -221,7 +230,7 @@ export default function App() {
           <Route path="/daily" element={!user ? <Navigate to="/" /> : <DailyGuidance user={user} isPlus={isPlus} isPlusLoaded={isPlusLoaded} />} />
           <Route path="/chat" element={!user ? <Navigate to="/" /> : <Chat user={user} isPlus={isPlus} planInterval={planInterval} creditBalance={creditBalance} onCreditsUpdated={b => setCreditBalance(b)} />} />
           <Route path="/debate" element={<Debate user={user ?? null} creditBalance={creditBalance} onCreditsUpdated={b => setCreditBalance(b)} />} />
-          <Route path="/profile" element={!user ? <Navigate to="/" /> : <Profile user={user} isPlus={isPlus} />} />
+          <Route path="/profile" element={!user ? <Navigate to="/" /> : <Profile user={user} isPlus={isPlus} onCreditsUpdated={b => setCreditBalance(b)} />} />
           <Route path="/settings" element={!user ? <Navigate to="/" /> : <Navigate to="/profile" replace />} />
           <Route path="/mbti-quiz" element={!user ? <Navigate to="/" /> : <MbtiQuestionnaire user={user} />} />
           <Route path="/relationship-insights" element={!user ? <Navigate to="/" /> : <RelationshipInsights />} />
