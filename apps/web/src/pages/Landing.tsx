@@ -82,16 +82,22 @@ export default function Landing() {
                 border: '1.5px solid #C9A84C',
                 borderRadius: 999,
                 color: '#C9A84C',
-                fontSize: 15,
-                fontWeight: 700,
-                padding: '13px 20px',
+                padding: '12px 20px',
                 minHeight: 50,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                letterSpacing: '0.01em',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2,
               }}
             >
-              {t('landing.demo_cta')}
+              <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.01em' }}>
+                {t('landing.demo_cta_headline')}
+              </span>
+              <span style={{ fontSize: 14, fontWeight: 500, opacity: 0.9, letterSpacing: '0.01em', lineHeight: 1.4 }}>
+                {t('landing.demo_cta')}
+              </span>
             </button>
 
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.62)', textAlign: 'center', margin: 0, lineHeight: 1.6, textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}>
