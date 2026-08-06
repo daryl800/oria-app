@@ -14,6 +14,17 @@ const MODEL_CREDITS: Record<string, number> = {
 };
 const EAST_COLOR = '#8B2A2A';
 const WEST_COLOR = '#1A3A5C';
+
+// Per-model accent colors for the advisor-selection pills, so each LLM reads
+// as its own "voice" at a glance rather than everything sharing the app's
+// gold accent.
+const MODEL_COLOR: Record<string, string> = {
+  hunyuan: '#4ECDC4',
+  deepseek: '#4D6BFE',
+  openai: '#F97066',
+  gemini_lite: '#A78BFA',
+  claude: '#D97757',
+};
 const MIN_THINK_MS = 9000;
 
 
@@ -845,12 +856,12 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
 
           {/* Model selector */}
           {(() => {
-            const pillStyle = (active: boolean, disabled: boolean = false): React.CSSProperties => ({
+            const pillStyle = (active: boolean, color: string, disabled: boolean = false): React.CSSProperties => ({
               padding: '8px 16px',
               borderRadius: 999,
-              border: `1px solid ${active ? GOLD : 'rgba(255,255,255,0.12)'}`,
-              background: active ? `${GOLD}22` : 'transparent',
-              color: active ? GOLD : '#888',
+              border: `1px solid ${active ? color : 'rgba(255,255,255,0.12)'}`,
+              background: active ? `${color}22` : 'transparent',
+              color: active ? color : '#888',
               cursor: disabled ? 'not-allowed' : 'pointer',
               transition: 'all 0.15s',
               textAlign: 'center',
@@ -883,10 +894,11 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {options.map(([val, label]) => {
                   const isLocked = isDemo && val !== lockedValue;
+                  const color = MODEL_COLOR[val] ?? GOLD;
                   return (
                     <button
                       key={val}
-                      style={pillStyle(active === val, isLocked)}
+                      style={pillStyle(active === val, color, isLocked)}
                       onClick={() => { if (!isLocked) setter(val); }}
                     >
                       <div style={{ fontSize: 15, fontWeight: active === val ? 700 : 600 }}>{label}</div>
@@ -933,7 +945,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
             );
           })()}
 
-          <div className="oria-card-label" style={{ marginBottom: 8 }}>
+          <div className="oria-card-label" style={{ fontSize: 16, letterSpacing: '0.02em', marginBottom: 10 }}>
             {t('debate.questionLabel')}
           </div>
           <div style={{ position: 'relative' }}>
