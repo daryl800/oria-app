@@ -1109,7 +1109,8 @@
   },
   "debate": {
     "title": "East-West Analysis",
-    "headline": "Got a question that's been on your mind?",
+    "headline": "Got a question that's puzzling you?",
+    "headlineHighlight": "puzzling",
     "tagline": "It doesn't have to be perfect — just say it",
     "subtitle": "Enter your question and choose your Eastern and Western advisor models. Your chosen Eastern model, acting as an advisor with deep knowledge of Eastern metaphysics, will analyse your character, life direction and timing based on your BaZi data. Your chosen Western model, acting as an advisor with expertise in psychological analysis, will explore your mental patterns and behavioural style based on your MBTI results. Both will engage in four rounds of deep exchange — Insight, Timing, Risk, and Action — before Oria's AI synthesises both perspectives to provide personalised insights and recommendations.",
     "eastLabel": "Choose Eastern Advisor (BaZi)",

@@ -829,7 +829,31 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
       {/* Header — centered, matches chat page style */}
       <div className="oria-page-header" style={{ marginBottom: 28 }}>
         <div className="oria-card-label">{t('debate.title')}</div>
-        <h1 className="oria-page-title">{t('debate.headline')}</h1>
+        <h1 className="oria-page-title">
+          {(() => {
+            const headline = t('debate.headline');
+            const highlight = t('debate.headlineHighlight');
+            const idx = highlight ? headline.indexOf(highlight) : -1;
+            if (idx === -1) return headline;
+            return (
+              <>
+                {headline.slice(0, idx)}
+                <span style={{
+                  fontStyle: 'italic',
+                  fontWeight: 800,
+                  background: 'linear-gradient(90deg, #F97066 0%, #A78BFA 55%, #4ECDC4 100%)',
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  color: 'transparent',
+                }}>
+                  {highlight}
+                </span>
+                {headline.slice(idx + highlight.length)}
+              </>
+            );
+          })()}
+        </h1>
         <p className="oria-page-subtitle">{t('debate.tagline')}</p>
       </div>
 
@@ -1347,35 +1371,35 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
                 <button
                   onClick={() => { setLastWordChoice('east'); triggerLastWord('east'); }}
                   style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
                     padding: '13px 16px', borderRadius: 10, textAlign: 'left',
                     border: '1px solid rgba(200,112,112,0.3)', background: 'rgba(200,112,112,0.08)',
                     color: '#e0b0b0', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
                     transition: 'all 0.14s ease',
                   }}
                 >
-                  🟠 {t('debate.lastWord.eastAsks')}
+                  <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>👉</span>
+                  {t('debate.lastWord.eastAsks')}
                 </button>
                 <button
                   onClick={() => { setLastWordChoice('west'); triggerLastWord('west'); }}
                   style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
                     padding: '13px 16px', borderRadius: 10, textAlign: 'left',
                     border: '1px solid rgba(112,144,200,0.3)', background: 'rgba(112,144,200,0.08)',
                     color: '#b0c8e8', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
                     transition: 'all 0.14s ease',
                   }}
                 >
-                  🔵 {t('debate.lastWord.westAsks')}
+                  <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>👉</span>
+                  {t('debate.lastWord.westAsks')}
                 </button>
                 <button
-                  onClick={() => setLastWordChoice('skip')}
-                  style={{
-                    padding: '11px 16px', borderRadius: 10, textAlign: 'center',
-                    border: '1px solid rgba(255,255,255,0.08)', background: 'transparent',
-                    color: 'rgba(255,255,255,0.38)', fontFamily: 'inherit', fontSize: 13, cursor: 'pointer',
-                    transition: 'all 0.14s ease',
-                  }}
+                  onClick={() => { setLastWordChoice('skip'); nextRound(); }}
+                  className="oria-btn-primary"
+                  style={{ marginTop: 6, minHeight: 48, fontSize: 15 }}
                 >
-                  ⚪ {t('debate.lastWord.skip')}
+                  {t('debate.lastWord.skip')}
                 </button>
               </div>
             </>

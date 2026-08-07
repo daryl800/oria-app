@@ -1,6 +1,7 @@
 // debatePrompts.ts — Prompt builders for East vs West analysis feature
 import type OpenAI from 'openai';
 import { labelContextFocus } from './contextFocusLabels';
+import { todayLine } from './dateContext';
 
 interface Pillar { gan?: string; zhi?: string; }
 interface FiveElementsStrength { Wood?: number; Fire?: number; Earth?: number; Metal?: number; Water?: number; }
@@ -316,6 +317,7 @@ export function eastR1Prompt(
     {
       role: 'system',
       content: `你是「東方智者」，從八字命理角度分析問題。
+${todayLine()}
 
 ${buildEastContext(bazi, mbti, question, recentContext, profileCtx)}
 
@@ -348,6 +350,7 @@ export function westR1Prompt(
     {
       role: 'system',
       content: `你是「西方顧問」，${noMbti ? '從一般心理學與決策科學角度分析問題' : '只從MBTI性格心理學角度分析問題'}。
+${todayLine()}
 
 ${buildWestContext(mbti, question, recentContext, age, lifeStage, profileCtx)}
 
@@ -384,6 +387,7 @@ export function eastR2Prompt(
     {
       role: 'system',
       content: `你是「東方智者」，從八字命理角度繼續分析。
+${todayLine()}
 ${CONTEXT_CARRY_EAST}
 
 ${buildLightEastContext(bazi, question)}
@@ -422,6 +426,7 @@ export function westR2Prompt(
     {
       role: 'system',
       content: `你是「西方顧問」，從${noMbti ? '心理學與決策科學' : 'MBTI心理學'}角度繼續分析。
+${todayLine()}
 ${CONTEXT_CARRY_WEST}
 
 【用戶提問】
@@ -465,6 +470,7 @@ export function eastR3Prompt(
     {
       role: 'system',
       content: `你是「東方智者」，從八字命理角度給出最終行動建議。
+${todayLine()}
 ${CONTEXT_CARRY_EAST}
 
 ${buildLightEastContext(bazi, question)}
@@ -502,6 +508,7 @@ export function westR3Prompt(
     {
       role: 'system',
       content: `你是「西方顧問」，從${noMbti ? '心理學與決策科學' : 'MBTI心理學'}角度給出最終行動建議。
+${todayLine()}
 ${CONTEXT_CARRY_WEST}
 
 【用戶提問】
@@ -544,6 +551,7 @@ export function eastContinuePrompt(
     {
       role: 'system',
       content: `你是「東方智者」，繼續之前的八字命理分析對話。
+${todayLine()}
 
 ${buildEastContext(bazi, mbti, question, '', profileCtx)}
 
@@ -577,6 +585,7 @@ export function westContinuePrompt(
     {
       role: 'system',
       content: `你是「西方顧問」，${noMbti ? '從一般心理學與決策科學角度' : '只從MBTI性格心理學角度'}繼續之前的分析對話。
+${todayLine()}
 
 ${buildWestContext(mbti, question, '', age, lifeStage, profileCtx)}
 
@@ -622,6 +631,7 @@ export function lastWordQuestionPrompt(
     {
       role: 'system',
       content: `你是「${advisorName}」，從${framework}角度出發。
+${todayLine()}
 
 【用戶提問】
 ${question}
@@ -659,6 +669,7 @@ export function lastWordAnswerPrompt(
     {
       role: 'system',
       content: `你是「${advisorName}」，從${framework}角度出發。
+${todayLine()}
 
 【用戶提問】
 ${question}
@@ -687,6 +698,7 @@ export function takeawayPrompt(
     {
       role: 'system',
       content: `根據以下完整辯論，分別以東方智者（八字命理視角）和西方顧問（MBTI心理學視角）身份，各給用戶一句話建議。
+${todayLine()}
 
 【用戶提問】
 ${question}
@@ -721,6 +733,7 @@ export function synthesisPrompt(
       role: 'system',
       content: `你是「綜合解析師」，閱讀東西方三輪完整對話後給出最終裁決。
 你的職責：整合兩種視角，為用戶提供清晰、有立場的最終指引。
+${todayLine()}
 
 ${COACHING_TONE}
 

@@ -2,6 +2,7 @@
 // prompts.ts
 import type OpenAI from 'openai';
 import { labelContextFocus } from './contextFocusLabels';
+import { getDateContext } from './dateContext';
 
 type Messages = OpenAI.ChatCompletionMessageParam[];
 
@@ -72,15 +73,6 @@ Oria 是一個自我理解與決策反思工具，可以協助用戶整理情緒
 重要原則：
 不要過度拒絕。如果用戶只是希望整理想法、理解情緒或反思選擇，而不是要求專業定論，Oria 應該繼續溫和、實用地協助。規則是：可以提供反思支持，不可以提供專業結論。
 `;
-
-function getDateContext(): { gregorian: string; dayOfWeek: string } {
-  const now = new Date();
-  const gregorian = now.toLocaleDateString('en-GB', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-  });
-  const dayOfWeek = now.toLocaleDateString('en-GB', { weekday: 'long' });
-  return { gregorian, dayOfWeek };
-}
 
 function getDominantElement(five_elements_strength: Record<string, number> | null | undefined): string {
   if (!five_elements_strength || Object.keys(five_elements_strength).length === 0) {
