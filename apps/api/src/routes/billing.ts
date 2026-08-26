@@ -3,6 +3,7 @@
 import { Router, Request, Response } from 'express';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { resetPlusCredits } from '../lib/credits';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
   apiVersion: '2026-04-22.dahlia',
@@ -64,6 +65,16 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
             .eq('id', uid);
           if (error) console.error(`[billing] plan upgrade failed for ${uid}:`, error.message);
           else console.log(`[billing] plan upgraded to plus for user ${uid}, expires=${planExpiresAt}, interval=${planInterval}`);
+
+          // New Plus subscribers should get their full 60 credits right away —
+          // otherwise they're stuck on whatever free-tier balance they had left
+          // until the next monthly rollover (which can be weeks away).
+          try {
+            await resetPlusCredits(uid);
+            console.log(`[billing] credits refreshed to 60 for newly upgraded user ${uid}`);
+          } catch (e: any) {
+            console.error(`[billing] credit refresh failed for ${uid}:`, e.message);
+          }
 
           if (customerId) {
             const { error: cidErr } = await supabaseAdmin

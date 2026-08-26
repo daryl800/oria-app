@@ -76,6 +76,7 @@
     "blindbox_generating": "Generating…",
     "blindbox_generating_motto": "Generating today’s motto…",
     "blindbox_tomorrow": "Try tomorrow 🌙",
+    "blindbox_error": "Couldn't generate today's wisdom — please try again shortly.",
     "locked_desc": "Upgrade to Plus to unlock personalised daily insights",
     "locked_button": "Upgrade to Plus →",
     "free_cta": "Chat with Oria about today",
