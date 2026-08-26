@@ -76,6 +76,7 @@
     "blindbox_generating": "正在生成…",
     "blindbox_generating_motto": "正在生成今日格言…",
     "blindbox_tomorrow": "明日再试 🌙",
+    "blindbox_error": "今日智慧生成失败，请稍后再试。",
     "locked_desc": "升级 Plus 解锁个性化每日解读",
     "locked_button": "升级 Plus →",
     "free_cta": "跟 Oria 聊聊今天的方向",

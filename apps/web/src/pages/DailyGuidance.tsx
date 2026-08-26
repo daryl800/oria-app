@@ -280,7 +280,10 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
         setMottoTest(data);
         sessionStorage.setItem(mottoKey, JSON.stringify(data));
       })
-      .catch((err: Error) => setMottoTest({ error: err.message }))
+      .catch((err: Error) => {
+        console.error('[motto-test] fetch failed:', err.message);
+        setMottoTest({ error: 'true' });
+      })
       .finally(() => setMottoTestLoading(false));
   }, [summary?.ganzhi, isPlus]);
 
@@ -540,7 +543,7 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
                     )}
                     {!mottoTestLoading && mottoTest?.error && (
                       <p style={{ fontSize: 14, color: 'rgba(255,100,100,0.7)', margin: 0 }}>
-                        ⚠️ {mottoTest.error}
+                        ⚠️ {t('daily.blindbox_error')}
                       </p>
                     )}
                     {!mottoTestLoading && q && (
