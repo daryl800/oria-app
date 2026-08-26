@@ -116,7 +116,7 @@ const chatgptClient = new OpenAI({
   baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
 });
 
-const hunyuan       = openaiProvider('hunyuan',          tencentClient, process.env.TENCENT_HY_LLM_MODEL           || 'Hy3',                  35_000);
+const hunyuan       = openaiProvider('hunyuan',          tencentClient, process.env.TENCENT_HY_LLM_MODEL           || 'Hy3',                  50_000);
 const geminiFlashLite = openaiProvider('gemini-flash-lite', geminiClient,  process.env.GEMINI_LLM_MODEL_3_1_flash_lite || 'gemini-3.1-flash-lite', 30_000);
 
 const chatgpt   = openaiProvider('chatgpt',     chatgptClient, process.env.OPENAI_LLM_MODEL   || 'gpt-4.1',       30_000);
@@ -159,7 +159,7 @@ const CHAINS: Record<LLMChain, readonly Provider[]> = {
   debate_synthesis_gemini_lite: [geminiFlashLite,  deepseek],
   debate_synthesis_openai:      [gpt4oMini,        deepseek],
   debate_synthesis_claude:      [claude,           gpt4o],
-  motto_test_hunyuan:  [hunyuan],
+  motto_test_hunyuan:  [hunyuan, deepseek, chatgptMini],
 };
 
 // ── Helpers ───────────────────────────────────────────────────────
