@@ -119,6 +119,54 @@ function getLiunianContext(years: number = 5): string {
   return `未來${years}年流年：${liunian.join(' | ')}`;
 }
 
+const ELEM_TO_ZH: Record<string, string> = { Wood: '木', Fire: '火', Earth: '土', Metal: '金', Water: '水' };
+const POS_LABEL_ZH: Record<string, string> = { year: '年', month: '月', day: '日', hour: '時' };
+
+// Renders the 得令/得地/得勢 derivation behind the 身強/身弱 classification, so
+// the LLM can narrate the actual reasoning chain (why this Day Master is
+// strong/weak) instead of just asserting the final label and improvising a
+// justification for it.
+function getBodyStrengthDerivation(detail: any): string {
+  if (!detail) return '';
+  const parts: string[] = [];
+
+  if (detail.de_ling) {
+    const dl = detail.de_ling;
+    const qiZh = ELEM_TO_ZH[dl.month_qi] ?? dl.month_qi ?? '';
+    parts.push(
+      `得令（月令）：月支${dl.month_branch ?? ''}，主氣${qiZh}，${dl.type ?? ''}` +
+      `（${dl.result ? '有得令之助' : '不得令'}）`
+    );
+  }
+
+  if (detail.de_di) {
+    const dd = detail.de_di;
+    const byBranch = Object.entries(dd.by_branch ?? {})
+      .filter(([, v]) => Number(v) > 0)
+      .map(([pos, v]) => `${POS_LABEL_ZH[pos] ?? pos}支${v}`)
+      .join('、');
+    parts.push(
+      `得地（根氣）：總分${dd.root_score ?? 0}${byBranch ? `（${byBranch}）` : '（無根）'}` +
+      `（${dd.result ? '有根' : '根氣不足'}）`
+    );
+  }
+
+  if (detail.de_shi) {
+    const ds = detail.de_shi;
+    const byStem = Object.entries(ds.by_stem ?? {})
+      .map(([pos, v]: [string, any]) => `${POS_LABEL_ZH[pos] ?? pos}干${v.stem}為${v.relation}`)
+      .join('、');
+    parts.push(
+      `得勢（天干助身）：總分${ds.support_score ?? 0}${byStem ? `（${byStem}）` : ''}` +
+      `（${ds.result ? '整體助身' : '整體不助身或耗身'}）`
+    );
+  }
+
+  return parts.length
+    ? `身強身弱推算依據（供解釋依據使用，結論見上方「身強身弱」欄位）：\n${parts.join('\n')}`
+    : '';
+}
+
 function getBaziContext(bazi: any): string {
   if (!bazi) return '八字資料未提供';
   const dominantElement = getDominantElement(bazi.five_elements_strength);
@@ -158,7 +206,6 @@ function getBaziContext(bazi: any): string {
 
   let yongJiCtx = '';
   if (bazi.body_strength || bazi.favorable_elements) {
-    const ELEM_TO_ZH: Record<string, string> = { Wood: '木', Fire: '火', Earth: '土', Metal: '金', Water: '水' };
     const yong = (bazi.favorable_elements?.yong_shen as string[] ?? [])
       .map((e: string) => ELEM_TO_ZH[e] ?? e).join('、');
     const ji = (bazi.favorable_elements?.ji_shen as string[] ?? [])
@@ -166,6 +213,8 @@ function getBaziContext(bazi: any): string {
     yongJiCtx = `身強身弱：${bazi.body_strength ?? '未知'}`
       + (yong ? ` | 用神（有利五行）：${yong}` : '')
       + (ji   ? ` | 忌神（不利五行）：${ji}`   : '');
+    const derivation = getBodyStrengthDerivation(bazi.body_strength_detail);
+    if (derivation) yongJiCtx += `\n${derivation}`;
   }
 
   // Deterministic wealth/element vault (財庫等) — authoritative structured facts.
@@ -383,7 +432,7 @@ ${mbtiCtx}
 ${contextFocusSection ? `\n${contextFocusSection}` : ''}
 
 分析要求（嚴格執行）：
-1. day_master_analysis 必須明確點出命盤計算所得的身強身弱分類（見上方「身強身弱」欄位，例如「身弱」「均衡」），並以此為基礎說明其對性格的具體影響，不得僅從五行數值泛泛推導
+1. day_master_analysis 必須明確點出命盤計算所得的身強身弱分類（見上方「身強身弱」欄位，例如「身弱」「均衡」），並以此為基礎說明其對性格的具體影響，不得僅從五行數值泛泛推導。若上方提供「身強身弱推算依據」（得令/得地/得勢），必須引用其中至少一項具體依據（例如月令是否當旺、根氣是否充足、天干生剋），讓結論有清楚的命理推導過程，而非只宣告結論；若無此依據資料，才可省略此要求
 2. 使用上方「十神配置（命盤確認）」中列明的十神，說明其行為層面的實際影響（不得自行選擇或更改十神名稱）
 3. 決策風格必須從水/金/土推導（不從火推導），且必須結合身強身弱分類說明決策節奏的根本原因
 4. 結合MBTI印證性格特質
