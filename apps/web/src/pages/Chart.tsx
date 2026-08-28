@@ -149,6 +149,47 @@ const VAULT_FAVORABILITY_TONE: Record<string, keyof typeof VAULT_TONE_COLOR> = {
   favorable: 'good', unfavorable: 'watch', neutral: 'neutral', unknown: 'unknown',
 };
 
+// ── 神煞 (Shen Sha) — deterministic facts from the engine (which star,
+// which pillar), with gentle, non-fatalistic framing kept entirely here in
+// the frontend. Deliberately a curated, mostly-supportive set (see
+// calculate_shen_sha() in bazi.py for the full rationale) — this is meant
+// to read as a handful of highlighted talents, not a fortune-telling verdict.
+const SHEN_SHA_INFO: Record<string, {
+  zh: string; en: string; emoji: string;
+  glossZh: string; glossEn: string;
+}> = {
+  tianyi_guiren: {
+    zh: '天乙貴人', en: 'Noble Helper', emoji: '🌟',
+    glossZh: '象徵在關鍵時刻出現的貴人、助力或轉機。不代表凡事有人幫你解決，而是提醒你：主動連結他人、保持開放，往往能帶來意想不到的支持。',
+    glossEn: "A sign that support, mentors, or unexpected turning points tend to show up at key moments. It doesn't mean everything gets solved for you — more that staying open and reaching out to others often pays off in ways you don't expect.",
+  },
+  wenchang: {
+    zh: '文昌', en: 'Scholar Star', emoji: '📖',
+    glossZh: '象徵學習力、表達力與思路清晰度。有這顆星的人，往往在讀書、寫作、溝通或需要邏輯思考的場合更容易發揮所長。',
+    glossEn: 'Linked to learning, expression, and clear thinking. People with this star often find it easier to shine in study, writing, communication, or anything that calls for sharp logic.',
+  },
+  yima: {
+    zh: '驛馬', en: 'Travel Horse', emoji: '🐎',
+    glossZh: '象徵變動、移動與行動力。這股能量容易讓人渴望改變環境、嘗試新方向，也可能反映在搬遷、旅行、換工作等人生轉折上。',
+    glossEn: 'Energy around movement, change, and momentum. It often shows up as a pull toward new environments or directions, and can line up with things like relocation, travel, or career shifts.',
+  },
+  taohua: {
+    zh: '桃花', en: 'Peach Blossom', emoji: '🌸',
+    glossZh: '象徵人際吸引力與魅力。不只關乎感情，也常表現在人緣好、容易被記住、擅長經營關係等特質上。',
+    glossEn: "Personal magnetism and charm. It's not just about romance — it often shows up as being easy to warm to, memorable, or naturally good at building relationships.",
+  },
+  huagai: {
+    zh: '華蓋', en: 'Canopy', emoji: '🎨',
+    glossZh: '象徵獨立思考、藝術感與精神深度。有這顆星的人常有較強的內省傾向，享受獨處，也可能對哲學、宗教、藝術或玄學特別有感覺。',
+    glossEn: 'Independent thinking, artistic sensitivity, and inner depth. People with this star often lean introspective, are comfortable with solitude, and may feel a particular pull toward philosophy, art, spirituality, or the esoteric.',
+  },
+  jiangxing: {
+    zh: '將星', en: 'General Star', emoji: '🎖️',
+    glossZh: '象徵領導力與掌控全局的氣場。有這顆星的人，往往在需要做決策、帶領團隊的場合展現出天生的權威感。',
+    glossEn: 'Leadership presence and a knack for taking charge. People with this star often carry a natural authority in situations that call for decision-making or leading others.',
+  },
+};
+
 // ── Part 2: "what's happening now" — everyday language, no BaZi jargon ─────
 function buildVaultState(v: any, isZH: boolean): string {
   const fav = v.favorability;
@@ -722,6 +763,58 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
     </div>
   ) : null;
 
+  const shenShaCard = bazi?.shen_sha ? (
+    <div style={{ marginBottom: 16, padding: '14px 16px', borderRadius: 14, ...chartPanelStyle }}>
+      <div style={{ ...chartLabelStyle, marginBottom: 8 }}>
+        ✨ {isZH ? '神煞' : 'Shen Sha'}
+      </div>
+      <div style={{ ...chartBodyStyle, fontSize: 13.5, color: 'rgba(255,255,255,0.5)', marginBottom: 14 }}>
+        {isZH
+          ? '神煞是命盤裡的一種傳統符號系統，用來標記某些特定的天賦傾向或人生主題。它們不是命運的判決，比較像是命盤裡被特別標註的幾個「亮點」——是否活用，仍取決於你自己。'
+          : "Shen Sha are a traditional layer of symbolic markers in a BaZi chart, each flagging a particular talent or life theme. They aren't a verdict on your fate — think of them more as a few highlighted spots on your chart. Whether you lean into them is still up to you."}
+      </div>
+
+      {bazi.shen_sha.stars?.length > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {bazi.shen_sha.stars.map((s: any, i: number) => {
+            const info = SHEN_SHA_INFO[s.key];
+            if (!info) return null;
+            const posLabels = (s.positions ?? []).map((p: string) =>
+              isZH
+                ? { year: '年柱', month: '月柱', day: '日柱', hour: '時柱' }[p]
+                : { year: 'Year', month: 'Month', day: 'Day', hour: 'Hour' }[p]
+            );
+            return (
+              <div key={i} style={{
+                padding: '12px 14px', borderRadius: 12,
+                background: 'rgba(201,168,76,0.06)',
+                border: '1px solid rgba(201,168,76,0.2)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' as const }}>
+                  <span style={{ fontSize: 15, fontWeight: 800, color: '#C9A84C' }}>
+                    {info.emoji} {isZH ? info.zh : info.en}
+                  </span>
+                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.35)' }}>
+                    {posLabels.join(isZH ? '、' : ', ')}
+                  </span>
+                </div>
+                <p style={{ ...chartBodyStyle, fontSize: 13.5, color: 'rgba(255,255,255,0.75)', lineHeight: 1.65, margin: 0 }}>
+                  {isZH ? info.glossZh : info.glossEn}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.42)', fontStyle: 'italic' as const, lineHeight: 1.65 }}>
+          {isZH
+            ? '這份命盤中沒有特別突出的神煞星。這完全不影響命盤本身的優劣——神煞只是眾多判讀角度之一，許多重要的特質與潛力，其實更多藏在八字本身的五行、十神與格局之中。'
+            : "No Shen Sha stars stood out in this particular chart — and that says nothing about the chart's overall strength. These stars are just one of many lenses for reading a chart; a lot of what matters most is already reflected in the elements, Ten Gods, and overall pattern of the chart itself."}
+        </div>
+      )}
+    </div>
+  ) : null;
+
   return (
     <div className="oria-page oria-container animate-fade-in">
       {/* Header */}
@@ -1003,6 +1096,8 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
 
           {/* 財庫 — Wealth Vault */}
           {wealthVaultCard}
+
+          {shenShaCard}
 
           <button
             type="button"
@@ -1882,6 +1977,8 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
 
               {/* 財庫 — deterministic detail behind the narrative above */}
               {wealthVaultCard}
+
+          {shenShaCard}
 
               <button
                 type="button"

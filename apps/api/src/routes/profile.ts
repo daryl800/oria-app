@@ -147,6 +147,7 @@ router.post('/bazi', async (req: Request, res: Response) => {
         favorable_elements: advanced?.yong_ji_shen ?? null,
         void_branches: advanced?.kong_wang ?? null,
         wealth_vault: advanced?.wealth_vault ?? null,
+        shen_sha: advanced?.shen_sha ?? null,
         bazi_analysis: analysis ?? null,
       })
       .select()
@@ -377,6 +378,7 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
         favorable_elements: advanced?.yong_ji_shen ?? null,
         void_branches: advanced?.kong_wang ?? null,
         wealth_vault: advanced?.wealth_vault ?? null,
+        shen_sha: advanced?.shen_sha ?? null,
         bazi_analysis: analysis ?? null,
       })
       .select()
@@ -564,6 +566,7 @@ router.post('/transfer', async (req: Request, res: Response) => {
         favorable_elements: advanced?.yong_ji_shen ?? null,
         void_branches: advanced?.kong_wang ?? null,
         wealth_vault: advanced?.wealth_vault ?? null,
+        shen_sha: advanced?.shen_sha ?? null,
         bazi_analysis: baziAnalysis ?? null,
       })
       .select()
