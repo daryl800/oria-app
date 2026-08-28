@@ -33,6 +33,7 @@ export default function OnboardingBazi() {
   const [hour, setHour] = useState('12');
   const [minute, setMinute] = useState('0');
   const [timeKnown, setTimeKnown] = useState(false);
+  const [ziHourConvention, setZiHourConvention] = useState<'advance' | 'split'>('advance');
   const [isMale, setIsMale] = useState<boolean | null>(null);
   const [location, setLocation] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<StructuredLocation | null>(null);
@@ -68,6 +69,7 @@ export default function OnboardingBazi() {
         location_data: selectedLocation,
         time_known: timeKnown,
         is_male: isMale ?? true,
+        zi_hour_convention: timeKnown && hour === '23' ? ziHourConvention : null,
       };
       const contextFocus = readContextFocus();
       const contextFocusOther = readContextFocusOther();
@@ -254,6 +256,39 @@ export default function OnboardingBazi() {
                   ))}
                 </select>
               </div>
+            </div>
+          )}
+
+          {timeKnown && hour === '23' && (
+            <div style={{
+              background: 'rgba(201,168,76,0.08)',
+              border: '1px solid rgba(201,168,76,0.25)',
+              borderRadius: 12, padding: '14px 16px', marginBottom: 16,
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#C9A84C', marginBottom: 4 }}>
+                {t('onboarding.bazi.zi_hour_title')}
+              </div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', marginBottom: 12, lineHeight: 1.5 }}>
+                {t('onboarding.bazi.zi_hour_intro')}
+              </div>
+              {(['advance', 'split'] as const).map(option => (
+                <label key={option} style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 10,
+                  padding: '8px 0', cursor: 'pointer',
+                }}>
+                  <input type="radio" name="zi_hour_convention" checked={ziHourConvention === option}
+                    onChange={() => setZiHourConvention(option)}
+                    style={{ width: 16, height: 16, marginTop: 2, accentColor: '#C9A84C', flexShrink: 0 }} />
+                  <span>
+                    <span style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#F0EDE8' }}>
+                      {t(`onboarding.bazi.zi_hour_${option}_label`)}
+                    </span>
+                    <span style={{ display: 'block', fontSize: 12.5, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>
+                      {t(`onboarding.bazi.zi_hour_${option}_desc`)}
+                    </span>
+                  </span>
+                </label>
+              ))}
             </div>
           )}
 

@@ -126,6 +126,7 @@ export default function Profile({ user, isPlus = false, onCreditsUpdated }: { us
   const [hour, setHour] = useState('12');
   const [minute, setMinute] = useState('0');
   const [timeKnown, setTimeKnown] = useState(false);
+  const [ziHourConvention, setZiHourConvention] = useState<'advance' | 'split'>('advance');
   const [location, setLocation] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<StructuredLocation | null>(null);
   const [mbtiType, setMbtiType] = useState('');
@@ -223,6 +224,7 @@ export default function Profile({ user, isPlus = false, onCreditsUpdated }: { us
         timezone: selectedLocation?.timezone,
         location_data: selectedLocation || undefined,
         time_known: timeKnown,
+        zi_hour_convention: timeKnown && parseInt(hour) === 23 ? ziHourConvention : null,
       };
       if (isReset) {
         const result = await resetBazi(params);
@@ -417,6 +419,39 @@ export default function Profile({ user, isPlus = false, onCreditsUpdated }: { us
               <label className="oria-card-label">{t('profile.minute')}</label>
               <input className="oria-input" placeholder="30" value={minute} onChange={e => setMinute(e.target.value)} />
             </div>
+          </div>
+        )}
+
+        {timeKnown && parseInt(hour) === 23 && (
+          <div style={{
+            background: 'rgba(201,168,76,0.08)',
+            border: '1px solid rgba(201,168,76,0.25)',
+            borderRadius: 12, padding: '14px 16px', marginBottom: 16,
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#C9A84C', marginBottom: 4 }}>
+              {t('onboarding.bazi.zi_hour_title')}
+            </div>
+            <div style={{ fontSize: 13, opacity: 0.65, marginBottom: 12, lineHeight: 1.5 }}>
+              {t('onboarding.bazi.zi_hour_intro')}
+            </div>
+            {(['advance', 'split'] as const).map(option => (
+              <label key={option} style={{
+                display: 'flex', alignItems: 'flex-start', gap: 10,
+                padding: '8px 0', cursor: 'pointer',
+              }}>
+                <input type="radio" name="zi_hour_convention" checked={ziHourConvention === option}
+                  onChange={() => setZiHourConvention(option)}
+                  style={{ width: 16, height: 16, marginTop: 2, accentColor: '#C9A84C', flexShrink: 0 }} />
+                <span>
+                  <span style={{ display: 'block', fontSize: 14, fontWeight: 600 }}>
+                    {t(`onboarding.bazi.zi_hour_${option}_label`)}
+                  </span>
+                  <span style={{ display: 'block', fontSize: 12.5, opacity: 0.55, marginTop: 2 }}>
+                    {t(`onboarding.bazi.zi_hour_${option}_desc`)}
+                  </span>
+                </span>
+              </label>
+            ))}
           </div>
         )}
 
