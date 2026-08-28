@@ -140,6 +140,7 @@ router.post('/bazi', async (req: Request, res: Response) => {
         dayun: dayun ?? null,
         ten_gods: advanced?.ten_gods ?? null,
         body_strength: advanced?.body_strength?.classification ?? null,
+        body_strength_detail: advanced?.body_strength ?? null,
         favorable_elements: advanced?.yong_ji_shen ?? null,
         void_branches: advanced?.kong_wang ?? null,
         wealth_vault: advanced?.wealth_vault ?? null,
@@ -255,7 +256,7 @@ router.post('/summary', async (req: Request, res: Response) => {
       console.log(`[summary] MBTI profile done in ${Date.now() - t1}ms (cached=${mbtiProfile !== null && mbtiProfileCache.has(`${mbti.mbti_type}:${lang}`)})`);
 
       const messages = profileSummaryPrompt(
-        { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength, year_pillar: bazi.year_pillar, month_pillar: bazi.month_pillar, day_pillar: bazi.day_pillar, hour_pillar: bazi.hour_pillar, birth_date: bazi.birth_date, dayun: bazi.dayun, ten_gods: bazi.ten_gods ?? null, body_strength: bazi.body_strength ?? null, favorable_elements: bazi.favorable_elements ?? null },
+        { day_master: bazi.day_master, five_elements_strength: bazi.five_elements_strength, year_pillar: bazi.year_pillar, month_pillar: bazi.month_pillar, day_pillar: bazi.day_pillar, hour_pillar: bazi.hour_pillar, birth_date: bazi.birth_date, dayun: bazi.dayun, ten_gods: bazi.ten_gods ?? null, body_strength: bazi.body_strength ?? null, body_strength_detail: bazi.body_strength_detail ?? null, favorable_elements: bazi.favorable_elements ?? null },
         mbtiProfile,
         lang,
         mbti.context_focus ?? [],
@@ -366,6 +367,7 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
         dayun: dayun ?? null,
         ten_gods: advanced?.ten_gods ?? null,
         body_strength: advanced?.body_strength?.classification ?? null,
+        body_strength_detail: advanced?.body_strength ?? null,
         favorable_elements: advanced?.yong_ji_shen ?? null,
         void_branches: advanced?.kong_wang ?? null,
         wealth_vault: advanced?.wealth_vault ?? null,
@@ -549,6 +551,7 @@ router.post('/transfer', async (req: Request, res: Response) => {
         dayun: dayun ?? null,
         ten_gods: advanced?.ten_gods ?? null,
         body_strength: advanced?.body_strength?.classification ?? null,
+        body_strength_detail: advanced?.body_strength ?? null,
         favorable_elements: advanced?.yong_ji_shen ?? null,
         void_branches: advanced?.kong_wang ?? null,
         wealth_vault: advanced?.wealth_vault ?? null,
