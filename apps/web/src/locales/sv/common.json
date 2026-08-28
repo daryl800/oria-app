@@ -1084,6 +1084,12 @@
       "3": "Handling"
     },
     "questionLabel": "Vad som bekymrar dig",
+    "groundedInTitle": "Baserat på ditt födelsediagram —",
+    "groundedInColon": ": ",
+    "groundedInDayMaster": "Dagsherre",
+    "groundedInBodyStrength": "Konstitution",
+    "groundedInFavorable": "Gynnsamma element",
+    "groundedInShenSha": "Anmärkningsvärda tecken",
     "showReason": "Visa resonemang",
     "hideReason": "Dölj resonemang",
     "followUpTitle": "Fler frågor att ställa?",

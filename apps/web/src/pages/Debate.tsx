@@ -15,6 +15,27 @@ const MODEL_CREDITS: Record<string, number> = {
 const EAST_COLOR = '#8B2A2A';
 const WEST_COLOR = '#1A3A5C';
 
+// Deterministic "grounded in" citation — the structural facts this debate's
+// prompts actually included, shown separately from the AI's own prose.
+interface GroundedIn {
+  day_master: string | null;
+  body_strength: string | null;
+  yong_shen: string[];
+  ji_shen: string[];
+  shen_sha: { key: string; positions: string[] }[];
+}
+const GROUNDED_GAN_CN: Record<string, string> = {
+  Jia: '甲', Yi: '乙', Bing: '丙', Ding: '丁', Wu: '戊',
+  Ji: '己', Geng: '庚', Xin: '辛', Ren: '壬', Gui: '癸',
+};
+const GROUNDED_ELEM_CN: Record<string, string> = {
+  Wood: '木', Fire: '火', Earth: '土', Metal: '金', Water: '水',
+};
+const GROUNDED_SHEN_SHA_CN: Record<string, string> = {
+  tianyi_guiren: '天乙貴人', wenchang: '文昌', yima: '驛馬',
+  taohua: '桃花', huagai: '華蓋', jiangxing: '將星',
+};
+
 // Per-model accent colors for the advisor-selection pills, so each LLM reads
 // as its own "voice" at a glance rather than everything sharing the app's
 // gold accent.
@@ -556,6 +577,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
   const [westModel, setWestModel] = useState('openai');
   const [synthesisModel, setSynthesisModel] = useState('deepseek');
   const [debateId, setDebateId] = useState<string | null>(null);
+  const [groundedIn, setGroundedIn] = useState<GroundedIn | null>(null);
   const [rounds, setRounds] = useState<DebateRound[]>([]);
   const [thinkingRound, setThinkingRound] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -595,6 +617,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
     setLoading(true);
     setRounds([]);
     setDebateId(null);
+    setGroundedIn(null);
     setComplete(false);
     setThinkingRound(1);
     thinkingStartRef.current = Date.now();
@@ -643,6 +666,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
         setDebateId(data.debateId);
         setRounds([{ round: 1, east: data.east, eastProvider: data.eastProvider, eastModel: data.eastModel, west: data.west, westProvider: data.westProvider, westModel: data.westModel }]);
         setComplete(data.complete);
+        setGroundedIn(data.grounded_in ?? null);
         if (data.credits_remaining !== undefined) onCreditsUpdated?.(data.credits_remaining);
       }
     } catch (err: any) {
@@ -765,6 +789,7 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
 
   function resetDebate() {
     setDebateId(null);
+    setGroundedIn(null);
     setRounds([]);
     setQuestion('');
     setComplete(false);
@@ -1143,6 +1168,28 @@ export default function Debate({ user = null, creditBalance = null, onCreditsUpd
           <div style={{ fontSize: 15, color: '#ddd0b0', lineHeight: 1.6 }}>
             {question}
           </div>
+        </div>
+      )}
+
+      {/* 依據 — deterministic "grounded in" citation, separate from the AI prose below */}
+      {groundedIn && (groundedIn.day_master || groundedIn.body_strength) && (
+        <div style={{
+          padding: '4px 16px', marginBottom: 16,
+          fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7,
+        }}>
+          📜 {t('debate.groundedInTitle')}{'　'}
+          {groundedIn.day_master && (
+            <>{t('debate.groundedInDayMaster')}{t('debate.groundedInColon')}{GROUNDED_GAN_CN[groundedIn.day_master] ?? groundedIn.day_master}{'　'}</>
+          )}
+          {groundedIn.body_strength && (
+            <>{t('debate.groundedInBodyStrength')}{t('debate.groundedInColon')}{groundedIn.body_strength}{'　'}</>
+          )}
+          {groundedIn.yong_shen.length > 0 && (
+            <>{t('debate.groundedInFavorable')}{t('debate.groundedInColon')}{groundedIn.yong_shen.map(e => GROUNDED_ELEM_CN[e] ?? e).join('、')}{'　'}</>
+          )}
+          {groundedIn.shen_sha.length > 0 && (
+            <>{t('debate.groundedInShenSha')}{t('debate.groundedInColon')}{groundedIn.shen_sha.map(s => GROUNDED_SHEN_SHA_CN[s.key] ?? s.key).join('、')}</>
+          )}
         </div>
       )}
 

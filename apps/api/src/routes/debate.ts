@@ -4,6 +4,7 @@ import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
 import { completeTracked } from '../lib/llm';
 import { calculateDebateCost, calculateDebateFullCost, checkAndDeductCredits } from '../lib/credits';
+import { buildGroundingFacts } from '../lib/prompts';
 import {
   eastR1Prompt, westR1Prompt,
   eastR2Prompt, westR2Prompt,
@@ -232,6 +233,7 @@ router.post('/start', async (req: Request, res: Response) => {
       complete: false,
       credits_used: cost,
       credits_remaining: creditResult.balance,
+      grounded_in: buildGroundingFacts(bazi),
     });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });

@@ -85,7 +85,13 @@
     "connection_error": "Connection issue",
     "connection_error_detail": "The service is warming up. Please try again in a moment.",
     "retry": "Try Again",
-    "retrying": "Retrying…"
+    "retrying": "Retrying…",
+    "grounded_in_title": "Grounded in your chart —",
+    "grounded_in_colon": ": ",
+    "grounded_in_day_master": "Day Master",
+    "grounded_in_body_strength": "Constitution",
+    "grounded_in_favorable": "Favorable elements",
+    "grounded_in_shen_sha": "Notable signs"
   },
   "chat": {
     "title": "What is on your mind?",
@@ -1167,6 +1173,12 @@
       "3": "Action"
     },
     "questionLabel": "What's on your mind?",
+    "groundedInTitle": "Grounded in your chart —",
+    "groundedInColon": ": ",
+    "groundedInDayMaster": "Day Master",
+    "groundedInBodyStrength": "Constitution",
+    "groundedInFavorable": "Favorable elements",
+    "groundedInShenSha": "Notable signs",
     "showReason": "Show reasoning",
     "hideReason": "Hide reasoning",
     "followUpTitle": "Anything else on your mind?",

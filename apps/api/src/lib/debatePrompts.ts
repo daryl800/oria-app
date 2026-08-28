@@ -2,6 +2,7 @@
 import type OpenAI from 'openai';
 import { labelContextFocus } from './contextFocusLabels';
 import { todayLine } from './dateContext';
+import { getBaziContext as getRichBaziContext } from './prompts';
 
 interface Pillar { gan?: string; zhi?: string; }
 interface FiveElementsStrength { Wood?: number; Fire?: number; Earth?: number; Metal?: number; Water?: number; }
@@ -52,51 +53,17 @@ export interface ProfileContext {
   context_focus_other?: string | null;
 }
 
+// Delegates to prompts.ts's getBaziContext(), which also includes ten_gods,
+// body_strength (+ 得令/得地/得勢 derivation), wealth_vault, and shen_sha —
+// none of which this file's own version used to include, even though the
+// full profile row (with all of that) was already being fetched by
+// debate.ts. Debate arguments were effectively working from less structural
+// data than Daily Guidance/Chat/Profile Summary; this closes that gap so a
+// "grounded in" citation panel in the UI can be trusted to reflect what the
+// LLM actually saw.
 function getBaziContext(bazi: BaziData | null): string {
   if (!bazi) return '八字資料未提供';
-
-  const pillars = [
-    `年柱：${bazi.year_pillar?.gan ?? ''}${bazi.year_pillar?.zhi ?? ''}`,
-    `月柱：${bazi.month_pillar?.gan ?? ''}${bazi.month_pillar?.zhi ?? ''}`,
-    `日柱：${bazi.day_pillar?.gan ?? ''}${bazi.day_pillar?.zhi ?? ''}（日主：${bazi.day_master ?? ''}）`,
-    `時柱：${bazi.hour_pillar?.gan ?? ''}${bazi.hour_pillar?.zhi ?? ''}`,
-  ].join('\n');
-
-  const fe = bazi.five_elements_strength ?? {};
-  const elements = `五行：木${fe.Wood ?? 0} 火${fe.Fire ?? 0} 土${fe.Earth ?? 0} 金${fe.Metal ?? 0} 水${fe.Water ?? 0}`;
-
-  let dayunSection = '';
-  const dayuns: Dayun[] = bazi.dayun?.dayuns ?? [];
-
-  if (dayuns.length > 0) {
-    let currentIdx = dayuns.findIndex((d) => d.is_current === true);
-    if (currentIdx === -1) {
-      const currentYear = new Date().getFullYear();
-      currentIdx = dayuns.findIndex((d) =>
-        d.start_year <= currentYear && d.end_year >= currentYear
-      );
-    }
-    if (currentIdx >= 0) {
-      const relevant = dayuns.slice(currentIdx, currentIdx + 3);
-      const lines = relevant.map((d, i) => {
-        const label = i === 0 ? '【當前】' : i === 1 ? '【下一個】' : '【之後】';
-        return `${label} ${d.pillar}（${Math.round(d.start_age)}-${Math.round(d.end_age)}歲 / ${d.start_year}-${d.end_year}年）`;
-      });
-      dayunSection = `
-大運時間表（嚴格依此推算，不可自行計算）：
-${lines.join('\n')}
-
-⚠️ 重要：所有涉及年齡或年份的預測，必須基於以上大運時間表。
-禁止使用表中未列出的大運名稱或年份。`;
-    }
-  } else if (bazi.dayun?.current_dayun) {
-    const cd = bazi.dayun.current_dayun;
-    dayunSection = `\n當前大運：${cd.pillar}（約${Math.round(cd.start_age)}-${Math.round(cd.end_age)}歲 / ${cd.start_year}-${cd.end_year}年）`;
-  }
-
-  return `八字四柱：
-${pillars}
-${elements}${dayunSection}`.trim();
+  return getRichBaziContext(bazi);
 }
 
 function isNoBazi(bazi: BaziData | null): boolean {

@@ -54,6 +54,14 @@ interface MottoTestData {
   error?: string;
 }
 
+interface GroundedIn {
+  day_master: string | null;
+  body_strength: string | null;
+  yong_shen: string[];
+  ji_shen: string[];
+  shen_sha: { key: string; positions: string[] }[];
+}
+
 interface DailySummary {
   ganzhi: string;
   stem_lesson: Lesson;
@@ -64,7 +72,25 @@ interface DailySummary {
   content_language?: string;
   generated_language?: string;
   source_language?: string;
+  grounded_in?: GroundedIn;
 }
+
+// Deterministic display maps — same values FateMaster-style "show your
+// work" citations need, kept local to this page (matches the existing
+// pattern where STEM_LESSONS/BRANCH_LESSONS content is also shown as raw
+// Chinese terms regardless of UI language, since these are the actual
+// traditional BaZi symbols, not translatable prose).
+const GROUNDED_GAN_CN: Record<string, string> = {
+  Jia: '甲', Yi: '乙', Bing: '丙', Ding: '丁', Wu: '戊',
+  Ji: '己', Geng: '庚', Xin: '辛', Ren: '壬', Gui: '癸',
+};
+const GROUNDED_ELEM_CN: Record<string, string> = {
+  Wood: '木', Fire: '火', Earth: '土', Metal: '金', Water: '水',
+};
+const GROUNDED_SHEN_SHA_CN: Record<string, string> = {
+  tianyi_guiren: '天乙貴人', wenchang: '文昌', yima: '驛馬',
+  taohua: '桃花', huagai: '華蓋', jiangxing: '將星',
+};
 
 function getElementIcon(element: string): string {
   if (element.includes('金')) return '🪙';
@@ -681,7 +707,31 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
             💬 {t('daily.chat_with_oria')}
           </button>
         </div>
-      ) : (
+      ) : null}
+
+      {/* 依據 — deterministic "grounded in" citation, separate from the AI prose above */}
+      {summary.grounded_in && (summary.grounded_in.day_master || summary.grounded_in.body_strength) && (
+        <div style={{
+          padding: '10px 16px', marginTop: -4, marginBottom: 16,
+          fontSize: 12.5, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7,
+        }}>
+          📜 {t('daily.grounded_in_title')}{'　'}
+          {summary.grounded_in.day_master && (
+            <>{t('daily.grounded_in_day_master')}{t('daily.grounded_in_colon')}{GROUNDED_GAN_CN[summary.grounded_in.day_master] ?? summary.grounded_in.day_master}{'　'}</>
+          )}
+          {summary.grounded_in.body_strength && (
+            <>{t('daily.grounded_in_body_strength')}{t('daily.grounded_in_colon')}{summary.grounded_in.body_strength}{'　'}</>
+          )}
+          {summary.grounded_in.yong_shen.length > 0 && (
+            <>{t('daily.grounded_in_favorable')}{t('daily.grounded_in_colon')}{summary.grounded_in.yong_shen.map(e => GROUNDED_ELEM_CN[e] ?? e).join('、')}{'　'}</>
+          )}
+          {summary.grounded_in.shen_sha.length > 0 && (
+            <>{t('daily.grounded_in_shen_sha')}{t('daily.grounded_in_colon')}{summary.grounded_in.shen_sha.map(s => GROUNDED_SHEN_SHA_CN[s.key] ?? s.key).join('、')}</>
+          )}
+        </div>
+      )}
+
+      {!summary.daily_question && (
         <LockedCard sectionLabel={t('daily.question_label')} lockedDesc={t('daily.locked_desc')} lockedButton={t('daily.locked_button')} onUpgrade={() => navigate('/upgrade')} />
       )}
 
