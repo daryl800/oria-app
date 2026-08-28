@@ -246,8 +246,18 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
   const todayKey = new Date().toDateString();
   const cacheKey = `oria_daily_${todayKey}`;
 
+  // 'Unexpected end of JSON input' (and its Firefox/Safari phrasings) happens
+  // when fetch() gets a response but the body arrives empty or truncated —
+  // e.g. iOS Safari aborting the in-flight request when the app is
+  // backgrounded or the network hands off between WiFi/cellular mid-request,
+  // which is common during the ~10-20s this endpoint can take to generate.
+  // That's a transient network condition, not a real "profile incomplete"
+  // error, so it must be retried the same way and never shown to the user
+  // as raw JSON.
   const isNetworkError = (msg: string) =>
-    msg === 'Failed to fetch' || msg === 'fetch failed' || msg === 'Network request failed' || msg === 'Load failed';
+    msg === 'Failed to fetch' || msg === 'fetch failed' || msg === 'Network request failed' || msg === 'Load failed'
+    || /unexpected end of (json input|data)/i.test(msg)
+    || /unexpected token .* in json/i.test(msg);
 
   const tryFetch = (attemptsLeft: number): Promise<void> =>
     fetchDailyGuidance(generationLanguage)

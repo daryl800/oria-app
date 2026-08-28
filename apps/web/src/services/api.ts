@@ -30,7 +30,17 @@ export async function fetchDailyGuidance(lang: string = 'en') {
     }
     throw new Error(await res.text());
   }
-  return res.json();
+  try {
+    return await res.json();
+  } catch {
+    // res.ok was true but the body arrived empty/truncated — happens on
+    // mobile when the connection is interrupted mid-response (e.g. iOS
+    // Safari aborting an in-flight fetch when the app is backgrounded,
+    // or a WiFi/cellular handoff), not a real "no profile" error. Normalize
+    // to the same retryable error the caller already knows how to handle,
+    // instead of letting a raw "Unexpected end of JSON input" reach the UI.
+    throw new Error('Failed to fetch');
+  }
 }
 
 export async function getProfile() {
