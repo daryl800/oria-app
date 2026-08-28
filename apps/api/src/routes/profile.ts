@@ -100,7 +100,7 @@ router.get('/me', async (req: Request, res: Response) => {
 router.post('/bazi', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
-    const { year, month, day, hour, minute, tz_name, location, time_known, is_male } = req.body;
+    const { year, month, day, hour, minute, tz_name, location, time_known, is_male, lat, lng } = req.body;
 
     // Ensure user exists in public.users (in case trigger hasn't fired yet)
     const { data: authUser } = await supabase.auth.admin.getUserById(userId);
@@ -117,7 +117,7 @@ router.post('/bazi', async (req: Request, res: Response) => {
     const analysisRes = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ year, month, day, hour, minute, tz_name, location, time_known, lang: 'en', is_male: is_male ?? true }),
+      body: JSON.stringify({ year, month, day, hour, minute, tz_name, location, time_known, lang: 'en', is_male: is_male ?? true, lat, lng }),
     });
 
     if (!analysisRes.ok) throw new Error('BaZi calculation failed');
@@ -130,6 +130,8 @@ router.post('/bazi', async (req: Request, res: Response) => {
         birth_date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
         birth_time: time_known ? `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}` : null,
         birth_location: location,
+        birth_lat: lat ?? null,
+        birth_lng: lng ?? null,
         year_pillar: bazi.pillars.year,
         month_pillar: bazi.pillars.month,
         day_pillar: bazi.pillars.day,
@@ -299,7 +301,7 @@ router.post('/summary', async (req: Request, res: Response) => {
 router.post('/bazi/reset', async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
-    const { year, month, day, hour, minute, tz_name, location, time_known, is_male } = req.body;
+    const { year, month, day, hour, minute, tz_name, location, time_known, is_male, lat, lng } = req.body;
 
     // Resetting DOB wipes all chat/history/cache data below — charge for it
     // up front, before anything destructive happens, same pattern as chat.ts.
@@ -344,7 +346,7 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
     const analysisRes = await fetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ year, month, day, hour, minute, tz_name, location, time_known, lang: 'en', is_male: is_male ?? true }),
+      body: JSON.stringify({ year, month, day, hour, minute, tz_name, location, time_known, lang: 'en', is_male: is_male ?? true, lat, lng }),
     });
 
     if (!analysisRes.ok) throw new Error('BaZi calculation failed');
@@ -357,6 +359,8 @@ router.post('/bazi/reset', async (req: Request, res: Response) => {
         birth_date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
         birth_time: time_known ? `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}` : null,
         birth_location: location,
+        birth_lat: lat ?? null,
+        birth_lng: lng ?? null,
         year_pillar: bazi.pillars.year,
         month_pillar: bazi.pillars.month,
         day_pillar: bazi.pillars.day,
@@ -541,6 +545,8 @@ router.post('/transfer', async (req: Request, res: Response) => {
         birth_date: `${bazi.year}-${String(bazi.month).padStart(2, '0')}-${String(bazi.day).padStart(2, '0')}`,
         birth_time: bazi.time_known ? `${String(bazi.hour).padStart(2, '0')}:${String(bazi.minute).padStart(2, '0')}` : null,
         birth_location: bazi.location,
+        birth_lat: bazi.lat ?? null,
+        birth_lng: bazi.lng ?? null,
         year_pillar: baziResult.pillars.year,
         month_pillar: baziResult.pillars.month,
         day_pillar: baziResult.pillars.day,

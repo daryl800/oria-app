@@ -23,6 +23,8 @@ class BaziRequest(BaseModel):
     time_known: Optional[bool] = None
     lang: str = "en"
     is_male: Optional[bool] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
 
 class MbtiRequest(BaseModel):
     mbti_type: str
@@ -47,6 +49,7 @@ def bazi_calculate(req: BaziRequest):
             tz_name=req.tz_name,
             location=req.location,
             time_known=req.time_known,
+            lng=req.lng,
         )
         enrich_with_localized_pillars(result, lang=req.lang)
         analysis = analyze_three_pillars(result, lang=req.lang)
