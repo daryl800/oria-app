@@ -59,6 +59,7 @@ export async function saveBazi(data: {
     timezone: string;
   };
   time_known: boolean;
+  zi_hour_convention?: 'advance' | 'split' | null;
 }) {
   const headers = await getHeaders();
   const res = await fetch(`${API_URL}/api/profile/bazi`, {
@@ -188,6 +189,7 @@ export async function resetBazi(data: {
   tz_name: string; location: string; time_known: boolean;
   city?: string; lat?: number; lng?: number; timezone?: string;
   location_data?: { city: string; lat: number; lng: number; timezone: string };
+  zi_hour_convention?: 'advance' | 'split' | null;
 }) {
   const headers = await getHeaders();
   const res = await fetch(`${API_URL}/api/profile/bazi/reset`, {

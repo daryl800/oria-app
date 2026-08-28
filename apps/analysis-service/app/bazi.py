@@ -213,9 +213,30 @@ def get_hour_zhi(hour: int) -> str:
 # =====================================================
 # Core Engine (Full 4 Pillars - When Time is Known)
 # =====================================================
-def calc_bazi_fixed(dt: datetime, tz_name: str, longitude: float):
-    """Calculate complete BaZi with all 4 pillars (requires accurate birth time)"""
-    
+def calc_bazi_fixed(dt: datetime, tz_name: str, longitude: float, zi_hour_convention: str = "advance"):
+    """
+    Calculate complete BaZi with all 4 pillars (requires accurate birth time)
+
+    zi_hour_convention controls how the 23:00-01:00 子時 (Zi hour) is
+    handled, which is a genuine, unsettled disagreement between BaZi
+    schools -- not a bug either way:
+
+    - "advance" (default, matches prior behavior): the whole 23:00-01:00
+      window belongs to the *next* day -- both the day pillar and the
+      hour-stem lookup use the next day. Sometimes called
+      "早晚子時不分" / "一律進位".
+    - "split": only 00:00-01:00 belongs to the next day. A birth in
+      23:00-23:59 ("夜子時"/"早子時") keeps the *current* day's day
+      pillar, and the hour stem is derived via the Five Rats (五鼠遁)
+      formula from that same current-day stem. Sometimes called
+      "早晚子時區分".
+
+    The two conventions can only disagree for births in the 23:00-23:59
+    true-solar-time window -- everyone agrees 00:00-01:00 is the next
+    day, and that already falls out naturally below since true_solar's
+    own date has already rolled over by then.
+    """
+
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=ZoneInfo(tz_name))
     else:
@@ -224,7 +245,7 @@ def calc_bazi_fixed(dt: datetime, tz_name: str, longitude: float):
     true_solar = calculate_true_solar_time(dt, longitude)
 
     solar_date = true_solar.date()
-    if true_solar.hour >= 23:
+    if true_solar.hour >= 23 and zi_hour_convention != "split":
         solar_date += timedelta(days=1)
 
     lunar = sxtwl.fromSolar(solar_date.year, solar_date.month, solar_date.day)
@@ -687,6 +708,7 @@ def calculate_bazi(
     location: Optional[str] = None,
     time_known: Optional[bool] = None,
     lng: Optional[float] = None,
+    zi_hour_convention: Optional[str] = None,
 ) -> Dict:
     """
     Main BaZi calculation function - auto-detects whether to use 3 or 4 pillars
@@ -703,6 +725,9 @@ def calculate_bazi(
             e.g. all of "china" resolves to 120.0E regardless of whether the
             birth city is Shanghai or Urumqi, a ~60 degree spread. Precise
             coordinates avoid that error in the true solar time correction.
+        zi_hour_convention: "advance" (default) or "split" -- see
+            calc_bazi_fixed() for what these mean. Only matters for births
+            in the 23:00-23:59 true-solar-time window.
 
     Returns:
         BaZi data with either 3 or 4 pillars
@@ -720,7 +745,7 @@ def calculate_bazi(
         # Use full 4-pillar calculation
         longitude = lng if lng is not None else resolve_longitude(location or tz_name)
         tz_resolved = tz_name if "/" in tz_name else "Asia/Hong_Kong"
-        return calc_bazi_fixed(birth_date, tz_resolved, longitude)
+        return calc_bazi_fixed(birth_date, tz_resolved, longitude, zi_hour_convention or "advance")
     else:
         # Use 3-pillar calculation (professional approach for unknown time)
         return calc_bazi_three_pillars(birth_date, tz_name, location)
@@ -2081,6 +2106,28 @@ def _run_advanced_tests():
     check_approx("2024-11-03 (near annual maximum)", _equation_of_time_minutes(datetime(2024, 11, 3, 12, tzinfo=timezone.utc)), 16.4, 0.6)
     # Sanity check that older birth years (pre-J2000) don't blow up or drift wildly
     check_approx("1968-02-11 (older date, same seasonal position)", _equation_of_time_minutes(datetime(1968, 2, 11, 12, tzinfo=timezone.utc)), -14.2, 1.0)
+
+    # ── Zi-hour convention split (Phase 3 of accuracy engine plan) ──
+    print("\n[ZI] 子時 convention — 'advance' (whole 23:00-01:00 -> next day) vs 'split' (23:00-23:59 stays same day)")
+
+    from zoneinfo import ZoneInfo as _ZI
+    # Use longitude=120.0 (matches tz_name's standard meridian) and a date/time
+    # far from any solar-term boundary so eot+longitude correction can't
+    # accidentally push the true-solar hour outside the 23:xx window.
+    zi_dt = datetime(1990, 6, 15, 23, 30, tzinfo=_ZI("Asia/Hong_Kong"))
+    r_advance = calc_bazi_fixed(zi_dt, "Asia/Hong_Kong", 120.0, "advance")
+    r_split = calc_bazi_fixed(zi_dt, "Asia/Hong_Kong", 120.0, "split")
+    check("both conventions agree on hour zhi (子)", (r_advance["pillars"]["hour"]["zhi"], r_split["pillars"]["hour"]["zhi"]), ("Zi", "Zi"))
+    check("'advance' day pillar differs from 'split' day pillar for a 23:30 birth", r_advance["pillars"]["day"] != r_split["pillars"]["day"], True)
+    check("'advance' hour stem differs from 'split' hour stem (different day-gan base)", r_advance["pillars"]["hour"]["gan"] != r_split["pillars"]["hour"]["gan"], True)
+    check("default (no convention passed) matches 'advance'", calc_bazi_fixed(zi_dt, "Asia/Hong_Kong", 120.0)["pillars"], r_advance["pillars"])
+
+    # 00:xx births are unambiguous -- both conventions must agree
+    zi_dt_00 = datetime(1990, 6, 16, 0, 30, tzinfo=_ZI("Asia/Hong_Kong"))
+    r00_advance = calc_bazi_fixed(zi_dt_00, "Asia/Hong_Kong", 120.0, "advance")
+    r00_split = calc_bazi_fixed(zi_dt_00, "Asia/Hong_Kong", 120.0, "split")
+    check("00:30 birth: both conventions agree on day pillar", r00_advance["pillars"]["day"], r00_split["pillars"]["day"])
+    check("00:30 birth: both conventions agree on hour pillar", r00_advance["pillars"]["hour"], r00_split["pillars"]["hour"])
 
     if errors:
         print(f"\n{'='*60}")
