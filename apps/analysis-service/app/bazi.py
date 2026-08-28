@@ -638,21 +638,29 @@ def calculate_bazi(
     birth_date: datetime,
     tz_name: str = "Hong_Kong",
     location: Optional[str] = None,
-    time_known: Optional[bool] = None
+    time_known: Optional[bool] = None,
+    lng: Optional[float] = None,
 ) -> Dict:
     """
     Main BaZi calculation function - auto-detects whether to use 3 or 4 pillars
-    
+
     Args:
         birth_date: Birth date and time (if known)
         tz_name: Timezone or location name
         location: Specific location for longitude
         time_known: Whether birth time is known (auto-detected if None)
-    
+        lng: Precise birth longitude in degrees, if known (e.g. from geocoded
+            birthplace autocomplete). Takes priority over the location-name
+            lookup table, which only covers a small hardcoded set of cities
+            and falls back to crude country-level centroids otherwise --
+            e.g. all of "china" resolves to 120.0E regardless of whether the
+            birth city is Shanghai or Urumqi, a ~60 degree spread. Precise
+            coordinates avoid that error in the true solar time correction.
+
     Returns:
         BaZi data with either 3 or 4 pillars
     """
-    
+
     # Auto-detect if time is known
     if time_known is None:
         # If hour is 0 and minute is 0, likely placeholder (unknown)
@@ -660,10 +668,10 @@ def calculate_bazi(
             time_known = False
         else:
             time_known = True
-    
+
     if time_known:
         # Use full 4-pillar calculation
-        longitude = resolve_longitude(location or tz_name)
+        longitude = lng if lng is not None else resolve_longitude(location or tz_name)
         tz_resolved = tz_name if "/" in tz_name else "Asia/Hong_Kong"
         return calc_bazi_fixed(birth_date, tz_resolved, longitude)
     else:
