@@ -242,6 +242,18 @@ def calc_bazi_fixed(dt: datetime, tz_name: str, longitude: float, zi_hour_conven
     else:
         dt = dt.astimezone(ZoneInfo(tz_name))
 
+    # Undo any active daylight-saving offset before applying the longitude
+    # correction. lon_offset below is calibrated against the timezone's
+    # *standard* meridian (e.g. 120E for China's UTC+8 standard time), so
+    # it must be applied to standard-time wall clock, not a DST-shifted
+    # clock. Skipping this step was a real bug: for any birth during a DST
+    # period (mainland China 1986-1991, most of the US/EU historically and
+    # today, etc.) the true solar time correction below silently ended up
+    # exactly one hour off, occasionally enough to shift the hour pillar.
+    dst_offset = dt.dst()
+    if dst_offset:
+        dt = dt - dst_offset
+
     true_solar = calculate_true_solar_time(dt, longitude)
 
     solar_date = true_solar.date()
@@ -2128,6 +2140,45 @@ def _run_advanced_tests():
     r00_split = calc_bazi_fixed(zi_dt_00, "Asia/Hong_Kong", 120.0, "split")
     check("00:30 birth: both conventions agree on day pillar", r00_advance["pillars"]["day"], r00_split["pillars"]["day"])
     check("00:30 birth: both conventions agree on hour pillar", r00_advance["pillars"]["hour"], r00_split["pillars"]["hour"])
+
+    # ── DST audit (Phase 4 of accuracy engine plan) ──
+    print("\n[DST] Daylight saving time handling")
+
+    # (1) IANA tzdata correctly encodes mainland China's real 1986-1991 DST
+    # experiment (many hobbyist implementations assume China "never had
+    # DST" and get this silently wrong for that whole window).
+    from zoneinfo import ZoneInfo as _ZI2
+    shanghai = _ZI2("Asia/Shanghai")
+    check("China DST: 1986-05-03 (pre-transition) is UTC+8", datetime(1986, 5, 3, 12, tzinfo=shanghai).utcoffset(), timedelta(hours=8))
+    check("China DST: 1986-05-05 (post-transition) is UTC+9", datetime(1986, 5, 5, 12, tzinfo=shanghai).utcoffset(), timedelta(hours=9))
+    check("China DST: 1986-09-16 (after DST ends) is back to UTC+8", datetime(1986, 9, 16, 12, tzinfo=shanghai).utcoffset(), timedelta(hours=8))
+    check("China DST: 2024 (long since abolished) is UTC+8 year-round", datetime(2024, 7, 1, 12, tzinfo=shanghai).utcoffset(), timedelta(hours=8))
+
+    # (2) The real bug this phase found and fixed: true solar time must be
+    # computed from *standard* time, not DST-shifted wall clock, because
+    # the longitude correction is calibrated against the zone's standard
+    # meridian. Two births exactly 1 real (UTC) hour apart, straddling
+    # Shanghai's 1986-05-04 02:00 spring-forward transition, must now
+    # land in the same 2-hour 時辰 (地支) once correctly normalized.
+    dst_before = calc_bazi_fixed(datetime(1986, 5, 4, 1, 30, tzinfo=shanghai), "Asia/Shanghai", 120.0)
+    dst_after = calc_bazi_fixed(datetime(1986, 5, 4, 3, 30, tzinfo=shanghai), "Asia/Shanghai", 120.0)
+    check("DST-normalized: births 1 real hour apart across spring-forward land in the same 時辰", dst_before["pillars"]["hour"]["zhi"], dst_after["pillars"]["hour"]["zhi"])
+    check("DST-normalized: same day pillar too (no spurious day-boundary cross)", dst_before["pillars"]["day"], dst_after["pillars"]["day"])
+
+    # (3) Nonexistent local time (the skipped 02:00-02:59 spring-forward
+    # gap) and ambiguous local time (the repeated 01:00-01:59 fall-back
+    # hour) must not crash -- Python's zoneinfo resolves them
+    # deterministically (PEP 495 fold=0 default) rather than raising.
+    try:
+        gap_result = calc_bazi_fixed(datetime(1986, 5, 4, 2, 30, tzinfo=shanghai), "Asia/Shanghai", 120.0)
+        check("nonexistent local time (spring-forward gap) does not crash", "pillars" in gap_result, True)
+    except Exception as e:
+        errors.append(f"FAIL  nonexistent local time (spring-forward gap) raised: {e!r}")
+    try:
+        ambiguous_result = calc_bazi_fixed(datetime(1986, 9, 14, 1, 30, tzinfo=shanghai), "Asia/Shanghai", 120.0)
+        check("ambiguous local time (fall-back repeated hour) does not crash", "pillars" in ambiguous_result, True)
+    except Exception as e:
+        errors.append(f"FAIL  ambiguous local time (fall-back repeated hour) raised: {e!r}")
 
     if errors:
         print(f"\n{'='*60}")
