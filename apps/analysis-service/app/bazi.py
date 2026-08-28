@@ -1,7 +1,7 @@
 # bazi.py
 
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 import sxtwl
 from typing import Optional, Dict, List, Tuple
@@ -148,15 +148,62 @@ def resolve_longitude(location: Optional[str]) -> float:
 # =====================================================
 # True Solar Time
 # =====================================================
+def _equation_of_time_minutes(dt: datetime) -> float:
+    """
+    Equation of time (in minutes), i.e. how far apparent (sundial) solar
+    time runs ahead of or behind mean solar time on a given date, caused
+    by Earth's axial tilt and orbital eccentricity.
+
+    Uses Meeus' low-precision solar position formulas (Astronomical
+    Algorithms, ch. 28) driven off Julian centuries since J2000.0, which
+    is accurate to roughly +/-0.1 minute across the whole 20th-21st
+    century range. The previous implementation used a fixed 3-term
+    trigonometric fit keyed only to day-of-year, which tracks the same
+    overall shape but drifts by up to ~1 minute at points in the year
+    (e.g. late Dec) -- rarely decisive on its own, but stacked with
+    other small timing edges (rounding, DST/tz boundaries) it's the kind
+    of gap worth closing near an hour-pillar boundary.
+
+    dt must be timezone-aware. Only the calendar date matters in
+    practice (the equation of time changes by well under a minute across
+    a single day), but we still resolve to UTC for a well-defined Julian
+    Day.
+    """
+    dt_utc = dt.astimezone(timezone.utc)
+
+    y, m = dt_utc.year, dt_utc.month
+    day_frac = dt_utc.day + (dt_utc.hour + dt_utc.minute / 60 + dt_utc.second / 3600) / 24
+    if m <= 2:
+        y -= 1
+        m += 12
+    a = y // 100
+    b = 2 - a + a // 4
+    jd = math.floor(365.25 * (y + 4716)) + math.floor(30.6001 * (m + 1)) + day_frac + b - 1524.5
+
+    T = (jd - 2451545.0) / 36525.0
+
+    l0 = math.radians((280.46646 + 36000.76983 * T + 0.0003032 * T ** 2) % 360)
+    M = math.radians((357.52911 + 35999.05029 * T - 0.0001537 * T ** 2) % 360)
+    e = 0.016708634 - 0.000042037 * T - 0.0000001267 * T ** 2
+    epsilon = math.radians(23.439291 - 0.0130042 * T - 0.00000016 * T ** 2)
+    y_ = math.tan(epsilon / 2) ** 2
+
+    E = (
+        y_ * math.sin(2 * l0)
+        - 2 * e * math.sin(M)
+        + 4 * e * y_ * math.sin(M) * math.cos(2 * l0)
+        - 0.5 * y_ ** 2 * math.sin(4 * l0)
+        - 1.25 * e ** 2 * math.sin(2 * M)
+    )
+
+    return math.degrees(E) * 4  # radians -> degrees -> minutes (1 deg of Earth's rotation = 4 min)
+
 def calculate_true_solar_time(local_dt: datetime, longitude: float) -> datetime:
     if local_dt.tzinfo is None:
         raise ValueError("Datetime must be timezone-aware")
 
     lon_offset = (longitude - 120.0) * 4.0
-
-    day_of_year = local_dt.timetuple().tm_yday
-    B = 2 * math.pi * (day_of_year - 81) / 365
-    eot = 9.87 * math.sin(2 * B) - 7.53 * math.cos(B) - 1.5 * math.sin(B)
+    eot = _equation_of_time_minutes(local_dt)
 
     return local_dt + timedelta(minutes=(lon_offset + eot))
 
@@ -2015,6 +2062,25 @@ def _run_advanced_tests():
     check("H overall status activated via liunian", v_h_timing["status"], "activated")
     check("H activation_relations records liunian source", any(r["source"] == "liunian" and r["type"] == "clash" and r["target_branch"] == "Chen" for r in v_h_timing["activation_relations"]), True)
     check("H triggers list is liunian only", v_h_timing["triggers"], ["liunian"])
+
+    # ── Equation of time precision (Phase 2 of accuracy engine plan) ──
+    print("\n[EOT] Equation of time — Meeus multi-term series vs. known reference dates")
+
+    def check_approx(label: str, got: float, expected: float, tol: float):
+        if abs(got - expected) > tol:
+            errors.append(f"FAIL  {label}: got={got!r} expected~={expected!r} (tol={tol})")
+        else:
+            print(f"  PASS  {label} (got={got:.2f} min, expected~={expected} min)")
+
+    # Reference extrema of the equation of time (widely published, e.g. NOAA /
+    # Meeus): early Feb minimum (~-14.2 min), mid-May local max (~+3.7 min),
+    # late-Jul local minimum (~-6.4 min), early Nov maximum (~+16.4 min).
+    check_approx("2024-02-11 (near annual minimum)", _equation_of_time_minutes(datetime(2024, 2, 11, 12, tzinfo=timezone.utc)), -14.2, 0.6)
+    check_approx("2024-05-14 (near local max)", _equation_of_time_minutes(datetime(2024, 5, 14, 12, tzinfo=timezone.utc)), 3.7, 0.6)
+    check_approx("2024-07-26 (near local minimum)", _equation_of_time_minutes(datetime(2024, 7, 26, 12, tzinfo=timezone.utc)), -6.4, 0.6)
+    check_approx("2024-11-03 (near annual maximum)", _equation_of_time_minutes(datetime(2024, 11, 3, 12, tzinfo=timezone.utc)), 16.4, 0.6)
+    # Sanity check that older birth years (pre-J2000) don't blow up or drift wildly
+    check_approx("1968-02-11 (older date, same seasonal position)", _equation_of_time_minutes(datetime(1968, 2, 11, 12, tzinfo=timezone.utc)), -14.2, 1.0)
 
     if errors:
         print(f"\n{'='*60}")
