@@ -1084,6 +1084,12 @@
       "3": "行動"
     },
     "questionLabel": "あなたの悩み",
+    "groundedInTitle": "命盤に基づく分析——",
+    "groundedInColon": "：",
+    "groundedInDayMaster": "日主",
+    "groundedInBodyStrength": "身強身弱",
+    "groundedInFavorable": "用神",
+    "groundedInShenSha": "神煞",
     "showReason": "理由を展開",
     "hideReason": "理由を閉じる",
     "followUpTitle": "他にも質問はありますか？",

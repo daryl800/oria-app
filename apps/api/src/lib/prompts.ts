@@ -121,6 +121,10 @@ function getLiunianContext(years: number = 5): string {
 
 const ELEM_TO_ZH: Record<string, string> = { Wood: '木', Fire: '火', Earth: '土', Metal: '金', Water: '水' };
 const POS_LABEL_ZH: Record<string, string> = { year: '年', month: '月', day: '日', hour: '時' };
+const SHEN_SHA_ZH: Record<string, string> = {
+  tianyi_guiren: '天乙貴人', wenchang: '文昌', yima: '驛馬',
+  taohua: '桃花', huagai: '華蓋', jiangxing: '將星',
+};
 
 // Renders the 得令/得地/得勢 derivation behind the 身強/身弱 classification, so
 // the LLM can narrate the actual reasoning chain (why this Day Master is
@@ -167,7 +171,7 @@ function getBodyStrengthDerivation(detail: any): string {
     : '';
 }
 
-function getBaziContext(bazi: any): string {
+export function getBaziContext(bazi: any): string {
   if (!bazi) return '八字資料未提供';
   const dominantElement = getDominantElement(bazi.five_elements_strength);
   const birthDate = bazi.birth_date ? `出生日期：${bazi.birth_date}` : '';
@@ -245,6 +249,20 @@ function getBaziContext(bazi: any): string {
     wealthVaultCtx = `庫位（命盤確認的結構事實，不得修改，不得推測未列出的庫位或沖動狀態。狀態與傾向是兩件不同的事，不可混為一談；信心度為low或傾向為「無法判斷」時，禁止對該庫位做出好壞或財富多寡的論斷，只能說明結構事實）：\n${lines.join('\n')}`;
   }
 
+  // Deterministic Shen Sha (神煞) — structural facts only, same authority
+  // level as ten_gods/wealth_vault above. See calculate_shen_sha() in
+  // bazi.py for the curated star list and why it's intentionally limited
+  // to well-known, mostly-supportive stars.
+  let shenShaCtx = '';
+  if (bazi.shen_sha?.stars?.length > 0) {
+    const lines = bazi.shen_sha.stars.map((s: any) => {
+      const name = SHEN_SHA_ZH[s.key] ?? s.key;
+      const positions = (s.positions ?? []).map((p: string) => POS_LABEL_ZH[p] ?? p).join('、');
+      return `${name}（見於${positions}柱）`;
+    });
+    shenShaCtx = `神煞（命盤確認的結構事實，不得修改，不得推測未列出的神煞；神煞僅供補充參考，不可作為論斷的主要依據，也不得用負面或宿命語氣描述）：${lines.join('、')}`;
+  }
+
   return `${birthDate}
 八字四柱：
 - 年柱：${formatPillar(bazi.year_pillar)}
@@ -253,9 +271,32 @@ function getBaziContext(bazi: any): string {
 - 時柱：${formatPillar(bazi.hour_pillar)}
 五行力量：木${bazi.five_elements_strength?.Wood ?? 0} 火${bazi.five_elements_strength?.Fire ?? 0} 土${bazi.five_elements_strength?.Earth ?? 0} 金${bazi.five_elements_strength?.Metal ?? 0} 水${bazi.five_elements_strength?.Water ?? 0}
 主導五行：${dominantElement}
-${tenGodsCtx ? tenGodsCtx + '\n' : ''}${yongJiCtx ? yongJiCtx + '\n' : ''}${wealthVaultCtx ? wealthVaultCtx + '\n' : ''}${dayunContext}
+${tenGodsCtx ? tenGodsCtx + '\n' : ''}${yongJiCtx ? yongJiCtx + '\n' : ''}${wealthVaultCtx ? wealthVaultCtx + '\n' : ''}${shenShaCtx ? shenShaCtx + '\n' : ''}${dayunContext}
 ${allDayun}
 ${getLiunianContext(6)}`;
+}
+
+// A compact, structural subset of the same facts getBaziContext() feeds the
+// LLM — meant to be rendered directly in the UI as a "grounded in" panel,
+// separate from and alongside the AI's generated prose, the same way a
+// citation sits next to a claim. Deliberately NOT prose: no interpretation,
+// no LLM involvement, just the deterministic facts a reading rests on, so
+// the frontend can render them in whatever language the user is in without
+// waiting on (or trusting) another generation step.
+export function buildGroundingFacts(bazi: any): {
+  day_master: string | null;
+  body_strength: string | null;
+  yong_shen: string[];
+  ji_shen: string[];
+  shen_sha: { key: string; positions: string[] }[];
+} {
+  return {
+    day_master: bazi?.day_master ?? null,
+    body_strength: bazi?.body_strength ?? null,
+    yong_shen: bazi?.favorable_elements?.yong_shen ?? [],
+    ji_shen: bazi?.favorable_elements?.ji_shen ?? [],
+    shen_sha: (bazi?.shen_sha?.stars ?? []).map((s: any) => ({ key: s.key, positions: s.positions ?? [] })),
+  };
 }
 
 function buildTenGodsSchemaBlock(bazi: any): string {

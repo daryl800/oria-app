@@ -85,7 +85,13 @@
     "connection_error": "連線異常",
     "connection_error_detail": "服務正在啟動中，請稍後再試。",
     "retry": "重試",
-    "retrying": "重試中…"
+    "retrying": "重試中…",
+    "grounded_in_title": "本次解讀依據——",
+    "grounded_in_colon": "：",
+    "grounded_in_day_master": "日主",
+    "grounded_in_body_strength": "身強身弱",
+    "grounded_in_favorable": "用神",
+    "grounded_in_shen_sha": "神煞"
   },
   "chat": {
     "title": "你現在在想什麼？",
@@ -1118,6 +1124,12 @@
       "3": "行動"
     },
     "questionLabel": "你的困惑",
+    "groundedInTitle": "本次分析依據——",
+    "groundedInColon": "：",
+    "groundedInDayMaster": "日主",
+    "groundedInBodyStrength": "身強身弱",
+    "groundedInFavorable": "用神",
+    "groundedInShenSha": "神煞",
     "showReason": "展開理由",
     "hideReason": "收起理由",
     "followUpTitle": "還有其他想法嗎？",

@@ -4,7 +4,7 @@ import { Router, Request, Response } from 'express';
 import { supabase } from '../lib/supabase';
 import { complete, sanitizeLlmJson } from '../lib/llm';
 import { calculateZodiac } from '../lib/zodiac';
-import { dailyGuidancePrompt } from '../lib/prompts';
+import { dailyGuidancePrompt, buildGroundingFacts } from '../lib/prompts';
 
 const router = Router();
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
@@ -341,6 +341,12 @@ router.get('/today', async (req: Request, res: Response) => {
     if (summary.daily_question?.question) {
       summary.daily_question.source = '根據你的八字與MBTI推算';
     }
+
+    // Deterministic "grounded in" facts — same authority as the fields
+    // above, exposed separately so the frontend can show what this reading
+    // actually rests on (day master, body strength, favorable/unfavorable
+    // elements, Shen Sha), independent of and alongside the LLM's prose.
+    summary.grounded_in = buildGroundingFacts(baziForPrompt);
 
     // 9. Cache full result in Supabase
     await supabase.from('daily_guidance').insert({

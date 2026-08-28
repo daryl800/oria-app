@@ -1084,6 +1084,12 @@
       "3": "행동"
     },
     "questionLabel": "당신의 고민",
+    "groundedInTitle": "명반에 근거한 분석——",
+    "groundedInColon": "：",
+    "groundedInDayMaster": "일주",
+    "groundedInBodyStrength": "신강신약",
+    "groundedInFavorable": "용신",
+    "groundedInShenSha": "신살",
     "showReason": "이유 보기",
     "hideReason": "이유 닫기",
     "followUpTitle": "추가 질문이 있으신가요？",
