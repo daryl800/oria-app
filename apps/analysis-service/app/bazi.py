@@ -1779,6 +1779,137 @@ def calculate_wealth_vault(
     }
 
 
+# =====================================================
+# 神煞 (Shen Sha) — Phase 5 of accuracy/depth engine plan
+# =====================================================
+#
+# Deterministic lookups against a chart's stems/branches, distinct from
+# 格局 (chart-pattern classification) which is genuinely contested between
+# BaZi schools and is intentionally NOT attempted here. Shen Sha lookup
+# tables themselves are also not perfectly universal, but the specific
+# formulas below (甲戊庚牛羊訣 for 天乙貴人, the standard 文昌貴人 table,
+# and the 三合局-based table for 驛馬/桃花/華蓋/將星) are the most widely
+# cited versions and agree across the overwhelming majority of sources.
+#
+# Scope decision (v1): a curated set of 6 well-known, broadly-recognized
+# stars, skewed toward supportive/neutral rather than the harsher-sounding
+# classical inauspicious stars (羊刃/劫煞/亡神/孤辰/寡宿) — consistent with
+# Oria's "gentle, reflective, not fatalistic" product philosophy. The
+# interpretive framing/copy lives entirely in the frontend; this function
+# only returns structural facts (which star, which pillar(s) it appears
+# in, and what it was computed from) so the UI and any future LLM context
+# can each frame it appropriately without the engine itself asserting
+# fortune-telling verdicts.
+#
+# 查法 (reference branch) note: 驛馬/桃花/華蓋/將星 are traditionally looked
+# up from either the year branch or the day branch depending on school;
+# this implementation uses the day branch (日支) throughout, the more
+# common modern convention and consistent with how 身強身弱 and other
+# already-implemented features anchor on the Day Master/day pillar as
+# "self". This is a school choice, not a universal fact — noted here the
+# same way the zi-hour convention choice is noted elsewhere in this file.
+
+_ZHI_TRIADS = {
+    "Shen": "shen_zi_chen", "Zi": "shen_zi_chen", "Chen": "shen_zi_chen",
+    "Hai": "hai_mao_wei", "Mao": "hai_mao_wei", "Wei": "hai_mao_wei",
+    "Yin": "yin_wu_xu", "Wu": "yin_wu_xu", "Xu": "yin_wu_xu",
+    "Si": "si_you_chou", "You": "si_you_chou", "Chou": "si_you_chou",
+}
+
+_YIMA_TABLE = {"shen_zi_chen": "Yin", "hai_mao_wei": "Si", "yin_wu_xu": "Shen", "si_you_chou": "Hai"}
+_TAOHUA_TABLE = {"shen_zi_chen": "You", "hai_mao_wei": "Zi", "yin_wu_xu": "Mao", "si_you_chou": "Wu"}
+_HUAGAI_TABLE = {"shen_zi_chen": "Chen", "hai_mao_wei": "Wei", "yin_wu_xu": "Xu", "si_you_chou": "Chou"}
+_JIANGXING_TABLE = {"shen_zi_chen": "Zi", "hai_mao_wei": "Mao", "yin_wu_xu": "Wu", "si_you_chou": "You"}
+
+# 天乙貴人 — 甲戊庚牛羊, 乙己鼠猴鄉, 丙丁豬雞位, 壬癸兔蛇藏, 六辛逢馬虎
+_TIANYI_GUIREN_TABLE = {
+    "Jia": ["Chou", "Wei"], "Wu": ["Chou", "Wei"], "Geng": ["Chou", "Wei"],
+    "Yi": ["Zi", "Shen"], "Ji": ["Zi", "Shen"],
+    "Bing": ["Hai", "You"], "Ding": ["Hai", "You"],
+    "Ren": ["Si", "Mao"], "Gui": ["Si", "Mao"],
+    "Xin": ["Wu", "Yin"],
+}
+
+# 文昌貴人 — 甲巳乙午報君知, 丙戊申宮丁己雞, 庚豬辛鼠壬逢虎, 癸人見卯入雲梯
+_WENCHANG_TABLE = {
+    "Jia": "Si", "Yi": "Wu", "Bing": "Shen", "Ding": "You", "Wu": "Shen",
+    "Ji": "You", "Geng": "Hai", "Xin": "Zi", "Ren": "Yin", "Gui": "Mao",
+}
+
+_PILLAR_ORDER = ["year", "month", "day", "hour"]
+
+def calculate_shen_sha(pillars: Dict) -> Dict:
+    """
+    Detect a curated set of Shen Sha (神煞) against the chart's stems and
+    branches. Returns structural facts only -- no interpretive verdict.
+
+    Each entry in "stars": { key, positions (pillar names where the target
+    branch was found, in year/month/day/hour order), basis ("day_stem" or
+    "day_branch"), target_branch }.
+    """
+    day_gan = pillars["day"]["gan"]
+    day_zhi = pillars["day"]["zhi"]
+
+    branch_by_pos = {
+        pos: pillars[pos]["zhi"]
+        for pos in _PILLAR_ORDER
+        if pillars.get(pos) and pillars[pos].get("zhi")
+    }
+
+    def find_positions(target_zhi: str) -> List[str]:
+        return [pos for pos in _PILLAR_ORDER if branch_by_pos.get(pos) == target_zhi]
+
+    stars: List[Dict] = []
+
+    # ── Day-stem-based stars ──
+    tianyi_targets = _TIANYI_GUIREN_TABLE.get(day_gan, [])
+    tianyi_positions: List[str] = []
+    for target in tianyi_targets:
+        tianyi_positions.extend(find_positions(target))
+    if tianyi_positions:
+        stars.append({
+            "key": "tianyi_guiren",
+            "positions": [p for p in _PILLAR_ORDER if p in tianyi_positions],
+            "basis": "day_stem",
+            "target_branch": tianyi_targets,
+        })
+
+    wenchang_target = _WENCHANG_TABLE.get(day_gan)
+    if wenchang_target:
+        positions = find_positions(wenchang_target)
+        if positions:
+            stars.append({
+                "key": "wenchang",
+                "positions": positions,
+                "basis": "day_stem",
+                "target_branch": wenchang_target,
+            })
+
+    # ── Day-branch (三合局 group) based stars ──
+    triad = _ZHI_TRIADS.get(day_zhi)
+    if triad:
+        for key, table in (
+            ("yima", _YIMA_TABLE),
+            ("taohua", _TAOHUA_TABLE),
+            ("huagai", _HUAGAI_TABLE),
+            ("jiangxing", _JIANGXING_TABLE),
+        ):
+            target = table[triad]
+            positions = find_positions(target)
+            if positions:
+                stars.append({
+                    "key": key,
+                    "positions": positions,
+                    "basis": "day_branch",
+                    "target_branch": target,
+                })
+
+    return {
+        "stars": stars,
+        "reference_basis": "day_branch",
+    }
+
+
 # ── Master function ──────────────────────────────────────────────────
 
 def calculate_advanced_bazi(
@@ -1813,6 +1944,7 @@ def calculate_advanced_bazi(
         pillars, yong_ji["yong_shen"], yong_ji["ji_shen"],
         current_dayun_branch, current_liunian_branch,
     )
+    shen_sha = calculate_shen_sha(pillars)
 
     return {
         "ten_gods":      ten_gods,
@@ -1820,6 +1952,7 @@ def calculate_advanced_bazi(
         "yong_ji_shen":  yong_ji,
         "kong_wang":     kong_wang,
         "wealth_vault":  wealth_vault,
+        "shen_sha":      shen_sha,
     }
 
 
@@ -2179,6 +2312,75 @@ def _run_advanced_tests():
         check("ambiguous local time (fall-back repeated hour) does not crash", "pillars" in ambiguous_result, True)
     except Exception as e:
         errors.append(f"FAIL  ambiguous local time (fall-back repeated hour) raised: {e!r}")
+
+    # ── Shen Sha (Phase 5 of accuracy/depth engine plan) ──
+    print("\n[SS] 神煞 — deterministic lookups against known reference charts")
+
+    def stars_by_key(result):
+        return {s["key"]: s for s in result["stars"]}
+
+    # Chart 1: day master 甲(Jia)/子(Zi) -> triad group shen_zi_chen
+    #   天乙貴人(甲->丑,未): 丑 present in year -> hit
+    #   文昌(甲->巳): 巳 absent -> no hit
+    #   驛馬(shen_zi_chen->寅): 寅 present in month -> hit
+    #   桃花(shen_zi_chen->酉): 酉 present in hour -> hit
+    #   華蓋(shen_zi_chen->辰): 辰 absent -> no hit
+    #   將星(shen_zi_chen->子): 子 present in day (day branch itself) -> hit
+    pillars_ss1 = {
+        "year":  {"gan": "Jia",  "zhi": "Chou"},
+        "month": {"gan": "Bing", "zhi": "Yin"},
+        "day":   {"gan": "Jia",  "zhi": "Zi"},
+        "hour":  {"gan": "Ji",   "zhi": "You"},
+    }
+    ss1 = stars_by_key(calculate_shen_sha(pillars_ss1))
+    check("1: 天乙貴人 found in year (丑)", ss1.get("tianyi_guiren", {}).get("positions"), ["year"])
+    check("1: 文昌 not present (巳 absent)", "wenchang" in ss1, False)
+    check("1: 驛馬 found in month (寅)", ss1.get("yima", {}).get("positions"), ["month"])
+    check("1: 桃花 found in hour (酉)", ss1.get("taohua", {}).get("positions"), ["hour"])
+    check("1: 華蓋 not present (辰 absent)", "huagai" in ss1, False)
+    check("1: 將星 found in day (子, the day branch itself)", ss1.get("jiangxing", {}).get("positions"), ["day"])
+
+    # Chart 2: day master 辛(Xin)/酉(You) -> triad group si_you_chou;
+    # exercises Xin's special-case 天乙貴人/文昌 targets (differ from the
+    # general pattern) and a different triad group's branch table.
+    #   天乙貴人(辛->午,寅): 午 present in year -> hit
+    #   文昌(辛->子): 子 present in hour -> hit
+    #   驛馬(si_you_chou->亥): 亥 present in month -> hit
+    #   桃花(si_you_chou->午): 午 present in year (same branch as 天乙貴人 above) -> hit
+    #   華蓋(si_you_chou->丑): 丑 absent -> no hit
+    #   將星(si_you_chou->酉): 酉 present in day (day branch itself) -> hit
+    pillars_ss2 = {
+        "year":  {"gan": "Xin",  "zhi": "Wu"},
+        "month": {"gan": "Gui",  "zhi": "Hai"},
+        "day":   {"gan": "Xin",  "zhi": "You"},
+        "hour":  {"gan": "Wu",   "zhi": "Zi"},
+    }
+    ss2 = stars_by_key(calculate_shen_sha(pillars_ss2))
+    check("2: 天乙貴人 found in year (午, Xin's special-case table)", ss2.get("tianyi_guiren", {}).get("positions"), ["year"])
+    check("2: 文昌 found in hour (子, Xin's special-case table)", ss2.get("wenchang", {}).get("positions"), ["hour"])
+    check("2: 驛馬 found in month (亥)", ss2.get("yima", {}).get("positions"), ["month"])
+    check("2: 桃花 found in year (午, one branch carrying two stars)", ss2.get("taohua", {}).get("positions"), ["year"])
+    check("2: 華蓋 not present (丑 absent)", "huagai" in ss2, False)
+    check("2: 將星 found in day (酉, the day branch itself)", ss2.get("jiangxing", {}).get("positions"), ["day"])
+
+    # A chart with none of the curated stars present should return an empty
+    # list, not error. Day master 丁(Ding)/寅(Yin) -- deliberately chosen so
+    # neither Ding's stem-based targets ({Hai,You} tianyi, You wenchang) nor
+    # Yin's own triad-group targets ({Shen,Mao,Xu,Wu}) appear anywhere, and
+    # Yin itself isn't one of the "self-hitting" 子午卯酉/辰戌丑未 branches.
+    pillars_ss3 = {
+        "year":  {"gan": "Bing", "zhi": "Zi"},
+        "month": {"gan": "Wu",   "zhi": "Chou"},
+        "day":   {"gan": "Ding", "zhi": "Yin"},
+        "hour":  {"gan": "Gui",  "zhi": "Chen"},
+    }
+    ss3 = calculate_shen_sha(pillars_ss3)
+    check("3: no matching stars returns empty list cleanly", ss3["stars"], [])
+
+    # Wired through calculate_advanced_bazi()
+    advanced_ss = calculate_advanced_bazi(pillars_ss1, {"Wood": 2, "Fire": 1, "Earth": 2, "Metal": 1, "Water": 2})
+    check("shen_sha key present via calculate_advanced_bazi()", "shen_sha" in advanced_ss, True)
+    check("still finds the same 驛馬 hit through the wired path", stars_by_key(advanced_ss["shen_sha"]).get("yima", {}).get("positions"), ["month"])
 
     if errors:
         print(f"\n{'='*60}")
