@@ -123,7 +123,7 @@ export default function Landing() {
             </p>
           </div>
         </section>
-        <section style={{ textAlign: 'center', padding: '32px 24px 8px', width: 'min(480px, 100%)', margin: '0 auto' }}>
+        <section className="oria-landing-why">
           <h2 style={{
             fontSize: 'clamp(15px, 4vw, 18px)',
             fontWeight: 700,
@@ -175,11 +175,7 @@ export default function Landing() {
         </p>
 
         {/* Footer */}
-        <footer style={{
-          borderTop: '1px solid rgba(255,255,255,0.08)',
-          marginTop: 16, padding: '20px 20px 24px',
-          width: '100%', maxWidth: 640, margin: '16px auto 0',
-        }}>
+        <footer className="oria-landing-footer">
           {/* Link columns — 3 col, left-aligned within each col */}
           <div style={{
             display: 'grid',
