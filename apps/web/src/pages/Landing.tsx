@@ -64,6 +64,14 @@ export default function Landing() {
             {t('landing.supporting')}
           </p>
 
+          <div className="oria-landing-quote">
+            <p className="oria-landing-quote-text">"{t('landing.quote_text')}"</p>
+            {t('landing.quote_original') && (
+              <p className="oria-landing-quote-original">{t('landing.quote_original')}</p>
+            )}
+            <p className="oria-landing-quote-author">{t('landing.quote_author')}</p>
+          </div>
+
           <div className="oria-landing-actions">
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, width: '100%' }}>
               <button className="oria-btn-premium oria-landing-primary" onClick={startOnboarding}>
