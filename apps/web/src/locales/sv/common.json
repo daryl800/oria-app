@@ -665,13 +665,16 @@
       "category_subtitle": "Välj det som stämmer bäst — Oria anpassar resten utifrån det.",
       "category_wealth": "Pengar",
       "category_relationship": "Relationer",
+      "category_pressure": "Press",
       "category_other": "Något annat",
       "wealth_title": "Varför försvinner pengarna alltid?",
       "wealth_subtitle": "Välj det som stämmer bäst.",
       "relationship_title": "Vad fastnar du mest i när det gäller relationer?",
       "relationship_subtitle": "Välj det som stämmer bäst.",
+      "pressure_title": "Vad tynger dig mest just nu?",
+      "pressure_subtitle": "Välj det som stämmer bäst.",
       "other_title": "Vad mer ska Oria känna till?",
-      "other_subtitle": "Välj allt som stämmer.",
+      "other_subtitle": "Berätta med egna ord — vi gör vårt bästa för att förstå.",
       "continue": "Fortsätt →",
       "skip": "Hoppa över nu",
       "back": "← Tillbaka",
@@ -684,6 +687,10 @@
         "repeating_wrong_type": "Dras alltid till fel typ av partner, samma mönster upprepas",
         "hard_to_voice_feelings": "Svårt att säga vad jag verkligen känner eller behöver i en relation",
         "unsure_stay_or_leave": "Osäker på om jag ska stanna kvar i eller lämna relationen",
+        "burnout_running_on_empty": "Har kämpat på länge och orkar snart inte mer",
+        "career_direction_unclear": "Osäker på om jag ska stanna kvar eller göra en förändring",
+        "caregiving_overload": "Fast mellan att ta hand om familjen och allt annat",
+        "high_stakes_decision_pressure": "Ett stort beslut tynger mig, och jag kan inte bestämma mig",
         "career_change": "Karriärbyte",
         "move_city_country": "Flytt till ny stad/land",
         "relationship_direction": "Relationsriktning",
@@ -703,7 +710,7 @@
         "personal_growth": "Personlig utveckling",
         "other": "Annat…"
       },
-      "other_placeholder": "Vill du säga mer? (valfritt)"
+      "other_placeholder": "Skriv här…"
     },
     "mbtiGate": {
       "title": "Känner du redan till din MBTI-typ?",

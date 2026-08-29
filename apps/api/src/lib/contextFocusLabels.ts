@@ -11,6 +11,11 @@ export const CONTEXT_FOCUS_LABELS: Record<string, { zh: string; en: string }> = 
   repeating_wrong_type:        { zh: '總是遇到不適合的人，一直重複同樣的模式', en: 'Keep attracting the wrong type, the same pattern repeats' },
   hard_to_voice_feelings:      { zh: '在關係裡很難說出真實的想法或需求', en: 'Hard to voice what I really feel or need in a relationship' },
   unsure_stay_or_leave:        { zh: '不確定該不該繼續這段感情', en: 'Not sure whether to stay or leave this relationship' },
+  // Current options — the 4 pressure-frustration entry points (onboarding step 1, pressure category)
+  burnout_running_on_empty:    { zh: '長期硬撐，感覺快撐不下去', en: "Running on empty, but can't afford to stop" },
+  career_direction_unclear:    { zh: '不確定該留下還是該轉換跑道', en: 'Not sure whether to stay or make a change' },
+  caregiving_overload:         { zh: '一邊照顧家人，一邊被工作和生活壓得喘不過氣', en: 'Caught between caring for family and everything else' },
+  high_stakes_decision_pressure: { zh: '有一個重大決定壓在心上，遲遲無法下定', en: "One big decision weighing on me, and I can't decide" },
   // Legacy keys (backward compat — existing users who onboarded before the
   // wealth-first pivot keep their stored context_focus resolving to a label)
   career_growth_or_job_change: { zh: '職涯成長或轉職',     en: 'Career growth or job change' },

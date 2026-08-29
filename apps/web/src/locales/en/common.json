@@ -738,13 +738,16 @@
       "category_subtitle": "Pick whichever's closest — Oria tailors what comes next around it.",
       "category_wealth": "Money",
       "category_relationship": "Relationships",
+      "category_pressure": "Pressure",
       "category_other": "Something else",
       "wealth_title": "Why does money never stick?",
       "wealth_subtitle": "Pick the one that hits closest.",
       "relationship_title": "What's got you stuck in relationships?",
       "relationship_subtitle": "Pick the one that hits closest.",
+      "pressure_title": "What's weighing on you right now?",
+      "pressure_subtitle": "Pick the one that hits closest.",
       "other_title": "What else should Oria know?",
-      "other_subtitle": "Pick all that apply.",
+      "other_subtitle": "In your own words — we'll do our best to understand.",
       "continue": "Continue →",
       "skip": "Skip for now",
       "back": "← Back",
@@ -757,6 +760,10 @@
         "repeating_wrong_type": "Keep attracting the wrong type, the same pattern repeats",
         "hard_to_voice_feelings": "Hard to voice what I really feel or need in a relationship",
         "unsure_stay_or_leave": "Not sure whether to stay or leave this relationship",
+        "burnout_running_on_empty": "Running on empty, but can't afford to stop",
+        "career_direction_unclear": "Not sure whether to stay or make a change",
+        "caregiving_overload": "Caught between caring for family and everything else",
+        "high_stakes_decision_pressure": "One big decision weighing on me, and I can't decide",
         "career_change": "Career change",
         "move_city_country": "Move to a new city/country",
         "relationship_direction": "Relationship direction",
@@ -776,7 +783,7 @@
         "personal_growth": "Personal growth",
         "other": "Other…"
       },
-      "other_placeholder": "Want to say more? (optional)"
+      "other_placeholder": "Type here…"
     },
     "mbtiGate": {
       "title": "Do you already know your MBTI type?",

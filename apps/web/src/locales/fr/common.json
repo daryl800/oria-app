@@ -686,13 +686,16 @@
       "category_subtitle": "Choisis celle qui te correspond le plus — Oria adapte la suite en fonction.",
       "category_wealth": "Argent",
       "category_relationship": "Relations",
+      "category_pressure": "Pression",
       "category_other": "Autre chose",
       "wealth_title": "Pourquoi l'argent ne reste-t-il jamais ?",
       "wealth_subtitle": "Choisis celle qui te correspond le plus.",
       "relationship_title": "Qu'est-ce qui te bloque le plus dans tes relations ?",
       "relationship_subtitle": "Choisis celle qui te correspond le plus.",
+      "pressure_title": "Qu'est-ce qui pèse le plus sur toi en ce moment ?",
+      "pressure_subtitle": "Choisis celle qui te correspond le plus.",
       "other_title": "Qu'est-ce qu'Oria devrait savoir d'autre ?",
-      "other_subtitle": "Sélectionne tout ce qui s'applique.",
+      "other_subtitle": "Dis-le avec tes propres mots — on fera de notre mieux pour comprendre.",
       "continue": "Continuer →",
       "skip": "Ignorer pour l'instant",
       "back": "← Retour",
@@ -711,8 +714,14 @@
         "work_life_balance": "Équilibre travail-vie personnelle",
         "retirement_next_chapter": "Retraite / prochain chapitre",
         "personal_reinvention": "Réinvention personnelle",
-        "better_daily_decisions": "Meilleures décisions quotidiennes"
-      }
+        "better_daily_decisions": "Meilleures décisions quotidiennes",
+        "burnout_running_on_empty": "Je tiens le coup depuis trop longtemps et je m'épuise",
+        "career_direction_unclear": "Je ne sais pas si je dois rester ou changer de voie",
+        "caregiving_overload": "Pris(e) entre m'occuper de ma famille et tout le reste",
+        "high_stakes_decision_pressure": "Une décision importante me pèse, et je n'arrive pas à trancher",
+        "other": "Autre chose…"
+      },
+      "other_placeholder": "Écris ici…"
     }
   },
   "language_modal": {

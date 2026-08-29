@@ -665,13 +665,16 @@
       "category_subtitle": "一番近いものを選んでください。Oria がその後の内容を調整します。",
       "category_wealth": "お金",
       "category_relationship": "恋愛・人間関係",
+      "category_pressure": "プレッシャー",
       "category_other": "その他",
       "wealth_title": "なぜお金が貯まらないのか？",
       "wealth_subtitle": "一番近いものを選んでください。",
       "relationship_title": "恋愛・人間関係で何に一番つまずいていますか？",
       "relationship_subtitle": "一番近いものを選んでください。",
+      "pressure_title": "今、何があなたを押しつぶしそうにしていますか？",
+      "pressure_subtitle": "一番近いものを選んでください。",
       "other_title": "他に Oria に知らせておきたいことは？",
-      "other_subtitle": "当てはまるものをすべて選択してください。",
+      "other_subtitle": "あなたの言葉で教えてください。できる限り理解します。",
       "continue": "続ける →",
       "skip": "今はスキップ",
       "back": "← 戻る",
@@ -684,6 +687,10 @@
         "repeating_wrong_type": "合わない相手ばかり惹かれてしまい、同じパターンを繰り返す",
         "hard_to_voice_feelings": "関係の中で本音や本当のニーズを伝えるのが難しい",
         "unsure_stay_or_leave": "この関係を続けるべきか別れるべきか分からない",
+        "burnout_running_on_empty": "ずっと無理をしていて、限界が近い",
+        "career_direction_unclear": "今の場所に留まるべきか、変えるべきか分からない",
+        "caregiving_overload": "家族の世話と仕事・生活の両方に押しつぶされそう",
+        "high_stakes_decision_pressure": "重大な決断がのしかかっていて、なかなか決められない",
         "career_change": "キャリアチェンジ",
         "move_city_country": "新しい都市／国への移動",
         "relationship_direction": "関係性の方向",
@@ -703,7 +710,7 @@
         "personal_growth": "自己成長",
         "other": "その他…"
       },
-      "other_placeholder": "詳しく教えてください（任意）"
+      "other_placeholder": "ここに入力してください…"
     },
     "mbtiGate": {
       "title": "すでにMBTIタイプを知っていますか？",

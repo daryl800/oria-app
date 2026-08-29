@@ -6,17 +6,18 @@ const STORAGE_KEY = 'oria_context_focus';
 const CATEGORY_KEY = 'oria_context_category';
 const OTHER_KEY = 'other';
 
-type CategoryKey = 'wealth' | 'relationship' | 'other';
+type CategoryKey = 'wealth' | 'relationship' | 'pressure' | 'other';
 
 const CATEGORIES: { key: CategoryKey; icon: string }[] = [
   { key: 'wealth', icon: '💰' },
   { key: 'relationship', icon: '❤️' },
+  { key: 'pressure', icon: '🌪️' },
   { key: 'other', icon: '🗂️' },
 ];
 
 // Categories whose detail options are "pick your single most pressing one" —
-// the others bucket stays multi-select since those concerns are more diffuse.
-const SINGLE_SELECT_CATEGORIES = new Set<CategoryKey>(['wealth', 'relationship']);
+// "other" has no preset options at all (free text only), so it's excluded.
+const SINGLE_SELECT_CATEGORIES = new Set<CategoryKey>(['wealth', 'relationship', 'pressure']);
 
 const DETAIL_OPTIONS: Record<CategoryKey, { key: string; icon: string }[]> = {
   wealth: [
@@ -31,15 +32,15 @@ const DETAIL_OPTIONS: Record<CategoryKey, { key: string; icon: string }[]> = {
     { key: 'hard_to_voice_feelings', icon: '🤐' },
     { key: 'unsure_stay_or_leave', icon: '❓' },
   ],
-  other: [
-    { key: 'burnout_or_high_stress', icon: '🔥' },
-    { key: 'relocating', icon: '✈️' },
-    { key: 'new_parent', icon: '👶' },
-    { key: 'caring_for_parents', icon: '🤲' },
-    { key: 'health_challenges', icon: '🌿' },
-    { key: 'entrepreneurship', icon: '🚀' },
-    { key: 'personal_growth', icon: '🦋' },
+  pressure: [
+    { key: 'burnout_running_on_empty', icon: '🔥' },
+    { key: 'career_direction_unclear', icon: '🧭' },
+    { key: 'caregiving_overload', icon: '🤲' },
+    { key: 'high_stakes_decision_pressure', icon: '⚖️' },
   ],
+  // "other" is free text only — no preset cards. There are simply too many
+  // possible situations to enumerate, so we let people describe it directly.
+  other: [],
 };
 
 export default function OnboardingContextFocus() {
@@ -67,7 +68,8 @@ export default function OnboardingContextFocus() {
 
   const selectedSet = useMemo(() => new Set(selected), [selected]);
   const otherSelected = selectedSet.has(OTHER_KEY);
-  const canContinue = selected.length > 0;
+  const isOtherCategory = category === 'other';
+  const canContinue = isOtherCategory ? otherText.trim().length > 0 : selected.length > 0;
   const isSingleSelect = category ? SINGLE_SELECT_CATEGORIES.has(category) : false;
 
   function chooseCategory(cat: CategoryKey) {
@@ -101,6 +103,11 @@ export default function OnboardingContextFocus() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(focus));
     localStorage.setItem('oria_context_focus_other', otherText.trim());
     navigate('/onboarding/mbti-gate');
+  }
+
+  function handleContinue() {
+    // The "other" category has no preset cards — its own free text IS the answer.
+    goNext(isOtherCategory ? [OTHER_KEY] : selected);
   }
 
   const detailOptions = category ? DETAIL_OPTIONS[category] : [];
@@ -167,7 +174,7 @@ export default function OnboardingContextFocus() {
 
         .oria-context-category-grid {
           display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 14px;
         }
 
@@ -460,45 +467,60 @@ export default function OnboardingContextFocus() {
               </p>
             </header>
 
-            <section className="oria-context-grid" aria-label="Current life context">
-              {detailOptions.map(option => {
-                const isSelected = selectedSet.has(option.key);
-                return (
-                  <button
-                    key={option.key}
-                    type="button"
-                    className={`oria-context-card${isSelected ? ' selected' : ''}`}
-                    onClick={() => toggle(option.key)}
-                    aria-pressed={isSelected}
-                  >
-                    <span className="oria-context-icon" aria-hidden="true">{option.icon}</span>
-                    <span className="oria-context-label">{t(`onboarding.context.options.${option.key}`)}</span>
-                    <span className="oria-context-check" aria-hidden="true">{isSelected ? '✓' : ''}</span>
-                  </button>
-                );
-              })}
-
-              {/* Other — spans full row */}
-              <button
-                type="button"
-                className={`oria-context-card other-card${otherSelected ? ' selected' : ''}`}
-                onClick={() => toggle(OTHER_KEY)}
-                aria-pressed={otherSelected}
-              >
-                <span className="oria-context-icon" aria-hidden="true">✍️</span>
-                <span className="oria-context-label">{t('onboarding.context.options.other')}</span>
-                <span className="oria-context-check" aria-hidden="true">{otherSelected ? '✓' : ''}</span>
-              </button>
-            </section>
-
-            {otherSelected && (
+            {isOtherCategory ? (
+              // No preset cards here — there are too many possible situations
+              // to list, so people just describe theirs directly.
               <textarea
                 className="oria-context-other-textarea"
                 value={otherText}
                 onChange={e => setOtherText(e.target.value)}
                 placeholder={t('onboarding.context.other_placeholder')}
-                rows={3}
+                rows={5}
+                autoFocus
               />
+            ) : (
+              <>
+                <section className="oria-context-grid" aria-label="Current life context">
+                  {detailOptions.map(option => {
+                    const isSelected = selectedSet.has(option.key);
+                    return (
+                      <button
+                        key={option.key}
+                        type="button"
+                        className={`oria-context-card${isSelected ? ' selected' : ''}`}
+                        onClick={() => toggle(option.key)}
+                        aria-pressed={isSelected}
+                      >
+                        <span className="oria-context-icon" aria-hidden="true">{option.icon}</span>
+                        <span className="oria-context-label">{t(`onboarding.context.options.${option.key}`)}</span>
+                        <span className="oria-context-check" aria-hidden="true">{isSelected ? '✓' : ''}</span>
+                      </button>
+                    );
+                  })}
+
+                  {/* Other — spans full row */}
+                  <button
+                    type="button"
+                    className={`oria-context-card other-card${otherSelected ? ' selected' : ''}`}
+                    onClick={() => toggle(OTHER_KEY)}
+                    aria-pressed={otherSelected}
+                  >
+                    <span className="oria-context-icon" aria-hidden="true">✍️</span>
+                    <span className="oria-context-label">{t('onboarding.context.options.other')}</span>
+                    <span className="oria-context-check" aria-hidden="true">{otherSelected ? '✓' : ''}</span>
+                  </button>
+                </section>
+
+                {otherSelected && (
+                  <textarea
+                    className="oria-context-other-textarea"
+                    value={otherText}
+                    onChange={e => setOtherText(e.target.value)}
+                    placeholder={t('onboarding.context.other_placeholder')}
+                    rows={3}
+                  />
+                )}
+              </>
             )}
 
             <div className="oria-context-actions">
@@ -506,7 +528,7 @@ export default function OnboardingContextFocus() {
                 type="button"
                 className="oria-context-continue"
                 disabled={!canContinue}
-                onClick={() => goNext(selected)}
+                onClick={handleContinue}
               >
                 {t('onboarding.context.continue')}
               </button>

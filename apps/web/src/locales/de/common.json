@@ -686,13 +686,16 @@
       "category_subtitle": "Wähle, was am besten passt — Oria richtet den nächsten Schritt danach aus.",
       "category_wealth": "Geld",
       "category_relationship": "Beziehungen",
+      "category_pressure": "Druck",
       "category_other": "Etwas anderes",
       "wealth_title": "Warum bleibt Geld nie hängen?",
       "wealth_subtitle": "Wähle, was am besten passt.",
       "relationship_title": "Was blockiert dich am meisten in Beziehungen?",
       "relationship_subtitle": "Wähle, was am besten passt.",
+      "pressure_title": "Was lastet gerade am meisten auf dir?",
+      "pressure_subtitle": "Wähle, was am besten passt.",
       "other_title": "Was sollte Oria noch wissen?",
-      "other_subtitle": "Wähle alles Zutreffende aus.",
+      "other_subtitle": "Sag es mit deinen eigenen Worten — wir geben unser Bestes, um zu verstehen.",
       "continue": "Weiter →",
       "skip": "Vorerst überspringen",
       "back": "← Zurück",
@@ -711,8 +714,14 @@
         "work_life_balance": "Work-Life-Balance",
         "retirement_next_chapter": "Ruhestand / nächstes Kapitel",
         "personal_reinvention": "Persönliche Neuerfindung",
-        "better_daily_decisions": "Bessere tägliche Entscheidungen"
-      }
+        "better_daily_decisions": "Bessere tägliche Entscheidungen",
+        "burnout_running_on_empty": "Halte mich schon lange über Wasser und bin am Limit",
+        "career_direction_unclear": "Unsicher, ob ich bleiben oder etwas ändern soll",
+        "caregiving_overload": "Zwischen der Pflege der Familie und allem anderen gefangen",
+        "high_stakes_decision_pressure": "Eine große Entscheidung lastet auf mir, und ich komme zu keinem Schluss",
+        "other": "Etwas anderes…"
+      },
+      "other_placeholder": "Hier eingeben…"
     }
   },
   "language_modal": {

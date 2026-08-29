@@ -686,13 +686,16 @@
       "category_subtitle": "Elige la que más se acerque — Oria adapta lo siguiente según tu elección.",
       "category_wealth": "Dinero",
       "category_relationship": "Relaciones",
+      "category_pressure": "Presión",
       "category_other": "Otra cosa",
       "wealth_title": "¿Por qué el dinero nunca se queda?",
       "wealth_subtitle": "Elige la opción más cercana.",
       "relationship_title": "¿Qué es lo que más te atasca en tus relaciones?",
       "relationship_subtitle": "Elige la opción más cercana.",
+      "pressure_title": "¿Qué es lo que más te pesa ahora mismo?",
+      "pressure_subtitle": "Elige la opción más cercana.",
       "other_title": "¿Qué más debería saber Oria?",
-      "other_subtitle": "Selecciona todo lo que aplique.",
+      "other_subtitle": "Cuéntanoslo con tus propias palabras — haremos lo posible por entender.",
       "continue": "Continuar →",
       "skip": "Omitir por ahora",
       "back": "← Atrás",
@@ -711,8 +714,14 @@
         "work_life_balance": "Equilibrio trabajo-vida",
         "retirement_next_chapter": "Jubilación / próximo capítulo",
         "personal_reinvention": "Reinvención personal",
-        "better_daily_decisions": "Mejores decisiones diarias"
-      }
+        "better_daily_decisions": "Mejores decisiones diarias",
+        "burnout_running_on_empty": "Llevo mucho tiempo aguantando y estoy al límite",
+        "career_direction_unclear": "No sé si quedarme o hacer un cambio",
+        "caregiving_overload": "Atrapado/a entre cuidar de mi familia y todo lo demás",
+        "high_stakes_decision_pressure": "Una decisión importante me pesa y no logro decidirme",
+        "other": "Otra cosa…"
+      },
+      "other_placeholder": "Escribe aquí…"
     }
   },
   "language_modal": {

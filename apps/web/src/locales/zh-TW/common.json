@@ -689,13 +689,16 @@
       "category_subtitle": "選一個最貼近的方向，Oria 會給你更精準的洞察。",
       "category_wealth": "金錢",
       "category_relationship": "感情",
+      "category_pressure": "壓力",
       "category_other": "其他",
       "wealth_title": "為什麼錢總是留不住？",
       "wealth_subtitle": "選出最貼近你現況的一項。",
       "relationship_title": "在感情裡，什麼最讓你卡住？",
       "relationship_subtitle": "選出最貼近你現況的一項。",
+      "pressure_title": "最近，是什麼壓得你喘不過氣？",
+      "pressure_subtitle": "選出最貼近你現況的一項。",
       "other_title": "還有什麼想讓 Oria 知道的？",
-      "other_subtitle": "可複選。",
+      "other_subtitle": "用你自己的話告訴我們，我們會盡力理解。",
       "continue": "繼續 →",
       "skip": "暫時跳過",
       "back": "← 返回",
@@ -708,6 +711,10 @@
         "repeating_wrong_type": "總是遇到不適合的人，一直重複同樣的模式",
         "hard_to_voice_feelings": "在關係裡很難說出真實的想法或需求",
         "unsure_stay_or_leave": "不確定該不該繼續這段感情",
+        "burnout_running_on_empty": "長期硬撐，感覺快撐不下去",
+        "career_direction_unclear": "不確定該留下還是該轉換跑道",
+        "caregiving_overload": "一邊照顧家人，一邊被工作和生活壓得喘不過氣",
+        "high_stakes_decision_pressure": "有一個重大決定壓在心上，遲遲無法下定",
         "career_change": "職涯轉變",
         "move_city_country": "搬到新城市／國家",
         "relationship_direction": "關係方向",
@@ -727,7 +734,7 @@
         "personal_growth": "個人成長",
         "other": "其他…"
       },
-      "other_placeholder": "想多說一點嗎？（選填）"
+      "other_placeholder": "在這裡輸入…"
     },
     "mbtiGate": {
       "title": "你已經知道自己的MBTI了嗎？",
