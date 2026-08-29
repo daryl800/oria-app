@@ -1,11 +1,16 @@
 // Stable internal key → display label mapping for context_focus options.
 // zh: used in Chinese prompts; en: used in all other language prompts.
 export const CONTEXT_FOCUS_LABELS: Record<string, { zh: string; en: string }> = {
-  // Current options — the 4 wealth-frustration entry points (onboarding step 1)
+  // Current options — the 4 wealth-frustration entry points (onboarding step 1, wealth category)
   earn_more_spend_more:        { zh: '賺得多，花得更快，存不下錢', en: "Earn a lot, spend faster, can't save" },
   income_bottleneck:           { zh: '非常拼命工作，但收入卡在瓶頸', en: 'Working incredibly hard, but income is bottlenecked' },
   intuitive_investing_risk:    { zh: '投資理財總是憑直覺，容易踩坑', en: 'Investing on intuition, constantly falling into traps' },
   job_no_financial_future:     { zh: '覺得現在的工作毫無「錢」途',   en: 'Feeling like the current job is a financial dead end' },
+  // Current options — the 4 relationship-frustration entry points (onboarding step 1, relationship category)
+  cant_move_on_breakup:        { zh: '分手了走不出來，一直卡在原地', en: "Went through a breakup and can't move on" },
+  repeating_wrong_type:        { zh: '總是遇到不適合的人，一直重複同樣的模式', en: 'Keep attracting the wrong type, the same pattern repeats' },
+  hard_to_voice_feelings:      { zh: '在關係裡很難說出真實的想法或需求', en: 'Hard to voice what I really feel or need in a relationship' },
+  unsure_stay_or_leave:        { zh: '不確定該不該繼續這段感情', en: 'Not sure whether to stay or leave this relationship' },
   // Legacy keys (backward compat — existing users who onboarded before the
   // wealth-first pivot keep their stored context_focus resolving to a label)
   career_growth_or_job_change: { zh: '職涯成長或轉職',     en: 'Career growth or job change' },
