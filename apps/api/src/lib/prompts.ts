@@ -603,6 +603,7 @@ export function dailyGuidancePrompt(
   const { gregorian } = getDateContext();
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
+  const contextFocusSection = getContextFocusSection(context_focus, lang, context_focus_other);
   const todayElement = STEM_ELEMENT[todayStem] ?? '土';
 
   return [
@@ -631,6 +632,7 @@ tactics（正好3項，每項1句，必須具體到「明天就能做」）：
   - 每項都是一個可執行的具體動作，不可是心態、觀察或情緒類語句
   - 至少1項要直接對應 leverage_point
   - 若命盤提供庫位（財庫）資料且今日或當前大運流年觸動沖開，其中1項優先點出這一點
+  - 若下方提供「用戶關注重點」，verdict 與 leverage_point 必須直接針對該重點回應，tactics 中至少1項要是能緩解該重點的具體動作——不可忽略此資訊、不可只給通用建議
   - 禁止句子：「保持信心」「相信自己」「靜觀其變」「注意機會」「調整心態」「保持努力」「等待時機」
   - 正確例子（3項成組）：
     1.「暫停一個人單打獨鬥的副業嘗試，找一個能補你執行力短板的合作對象」
@@ -672,7 +674,7 @@ ${SAFETY_CLAUSE}`,
 用戶命盤：
 ${baziCtx}
 ${mbtiCtx}
-
+${contextFocusSection ? `${contextFocusSection}\n` : ''}
 以JSON回應（所有文字欄位用繁體中文）：
 {
   "tactical_brief": {
