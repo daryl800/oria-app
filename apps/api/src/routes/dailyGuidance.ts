@@ -163,6 +163,7 @@ function getLuckyColor(stem: string, branch: string, dayMaster: string) {
 // Strip Plus-only fields for free users
 function trimGuidanceForFree(summary: any): any {
   const trimmed = { ...summary };
+  delete trimmed.tactical_brief;
   delete trimmed.personal_relation;
   delete trimmed.daily_question;
   delete trimmed.lucky_color;

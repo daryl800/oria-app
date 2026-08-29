@@ -15,6 +15,12 @@ interface Lesson {
   description: string;
 }
 
+interface TacticalBrief {
+  verdict: string;
+  leverage_point: string;
+  tactics: string[];
+}
+
 interface RelationSection {
   label: string;
   content: string;
@@ -66,6 +72,7 @@ interface DailySummary {
   ganzhi: string;
   stem_lesson: Lesson;
   branch_lesson: Lesson;
+  tactical_brief?: TacticalBrief;
   personal_relation?: PersonalRelation;
   daily_question?: DailyQuestion;
   lucky_color?: LuckyColor;
@@ -419,6 +426,62 @@ export default function DailyGuidance({ user, isPlus = false }: { user: User; is
           {summary.ganzhi}
         </span>
       </div>
+
+      {/* 今日戰術簡報 — verdict + leverage point + 3 tactics, the most important card on the page */}
+      {summary.tactical_brief ? (
+        <div className="oria-card" style={{
+          background: 'linear-gradient(135deg, rgba(201,168,76,0.10), rgba(17,26,50,0.92))',
+          border: '1px solid rgba(201,168,76,0.35)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            <span style={{ fontSize: 18, lineHeight: 1 }}>🎯</span>
+            <span style={sectionLabelStyle}>{t('daily.tactical_label')}</span>
+          </div>
+
+          <p style={{ fontSize: 19, fontWeight: 800, color: '#F8F3FF', lineHeight: 1.45, margin: '0 0 16px' }}>
+            {summary.tactical_brief.verdict}
+          </p>
+
+          <div style={{ paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.08)', marginBottom: 16 }}>
+            <span style={{
+              fontSize: 12, fontWeight: 800, letterSpacing: 0.8,
+              color: 'rgba(201,168,76,0.75)', textTransform: 'uppercase' as const,
+            }}>
+              {t('daily.tactical_leverage_label')}
+            </span>
+            <p style={{ ...bodyTextStyle, fontSize: 15, marginTop: 6 }}>
+              {summary.tactical_brief.leverage_point}
+            </p>
+          </div>
+
+          <div style={{ paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{
+              fontSize: 12, fontWeight: 800, letterSpacing: 0.8,
+              color: 'rgba(201,168,76,0.75)', textTransform: 'uppercase' as const,
+              marginBottom: 10, display: 'block',
+            }}>
+              {t('daily.tactical_steps_label')}
+            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {summary.tactical_brief.tactics.map((step, i) => (
+                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                  <span style={{
+                    flexShrink: 0, width: 22, height: 22, marginTop: 1, borderRadius: '50%',
+                    background: 'rgba(201,168,76,0.16)', border: '1px solid rgba(201,168,76,0.4)',
+                    color: '#C9A84C', fontSize: 12, fontWeight: 800,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {i + 1}
+                  </span>
+                  <p style={{ ...bodyTextStyle, fontSize: 15, margin: 0 }}>{step}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <LockedCard sectionLabel={t('daily.tactical_label')} lockedDesc={t('daily.locked_desc')} lockedButton={t('daily.locked_button')} onUpgrade={() => navigate('/upgrade')} />
+      )}
 
       {/* 今日天干 */}
       {summary.stem_lesson && (
