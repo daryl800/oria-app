@@ -359,7 +359,7 @@ export default function OnboardingMbtiGate() {
           <button
             type="button"
             className="oria-gate-back"
-            onClick={() => navigate('/onboarding/context')}
+            onClick={() => navigate('/')}
           >
             {t('onboarding.mbtiGate.back')}
           </button>

@@ -14,7 +14,7 @@ export default function Landing() {
 
   function startOnboarding() {
     setLeaving(true);
-    setTimeout(() => navigate('/onboarding/context'), 800);
+    setTimeout(() => navigate('/onboarding/mbti-gate'), 800);
   }
 
   return (

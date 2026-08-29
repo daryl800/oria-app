@@ -107,7 +107,7 @@ export default function OnboardingContextFocus() {
     const focus = values.filter(k => k !== OTHER_KEY);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(focus));
     localStorage.setItem('oria_context_focus_other', otherText.trim());
-    navigate('/onboarding/mbti-gate');
+    navigate('/onboarding/signup');
   }
 
   function handleContinue() {
@@ -502,7 +502,7 @@ export default function OnboardingContextFocus() {
               <button type="button" className="oria-context-skip" onClick={() => goNext([])}>
                 {t('onboarding.context.skip')}
               </button>
-              <button type="button" className="oria-context-back" onClick={() => navigate('/')}>
+              <button type="button" className="oria-context-back" onClick={() => navigate('/onboarding/bazi-preview')}>
                 {t('onboarding.context.back')}
               </button>
             </div>

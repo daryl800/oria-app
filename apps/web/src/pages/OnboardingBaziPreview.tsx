@@ -264,7 +264,7 @@ export default function OnboardingBaziPreview() {
 
       {/* CTA */}
       <button
-        onClick={() => navigate('/onboarding/signup')}
+        onClick={() => navigate('/onboarding/context')}
         style={{
           display: 'block', width: '100%',
           background: GOLD, border: 'none',
@@ -276,7 +276,7 @@ export default function OnboardingBaziPreview() {
           marginBottom: 12,
         }}
       >
-        {isZh ? '立即免費註冊 →' : 'Create free account →'}
+        {isZh ? '繼續 →' : 'Continue →'}
       </button>
 
       <button

@@ -331,7 +331,7 @@ export default function OnboardingMbti() {
               setCurrentIndex(prev => prev - 1);
               return;
             }
-            navigate('/onboarding/context');
+            navigate('/onboarding/mbti-gate');
           }}
           style={{
             background: 'none', border: 'none',
