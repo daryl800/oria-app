@@ -17,20 +17,29 @@ const CATEGORIES: { key: CategoryKey; icon: string }[] = [
 // All three categories are "pick your single most pressing one".
 const SINGLE_SELECT_CATEGORIES = new Set<CategoryKey>(['wealth', 'relationship', 'pressure']);
 
+// Each category mixes aspirational growth questions with deficit-framed pain
+// points -- not everyone arrives with a problem, some just want more. The
+// aspirational options come first in each list.
 const DETAIL_OPTIONS: Record<CategoryKey, { key: string; icon: string }[]> = {
   wealth: [
+    { key: 'become_wealthier', icon: '🌱' },
+    { key: 'catch_income_growth_timing', icon: '📈' },
     { key: 'earn_more_spend_more', icon: '💸' },
     { key: 'income_bottleneck', icon: '🧱' },
     { key: 'intuitive_investing_risk', icon: '📉' },
     { key: 'job_no_financial_future', icon: '🏢' },
   ],
   relationship: [
+    { key: 'find_more_suitable_partner', icon: '💞' },
+    { key: 'make_relationship_last_longer', icon: '🌿' },
     { key: 'cant_move_on_breakup', icon: '💔' },
     { key: 'repeating_wrong_type', icon: '🌀' },
     { key: 'hard_to_voice_feelings', icon: '🤐' },
     { key: 'unsure_stay_or_leave', icon: '❓' },
   ],
   pressure: [
+    { key: 'want_more_exciting_life', icon: '✨' },
+    { key: 'want_happier_easier_life', icon: '🌤️' },
     { key: 'burnout_running_on_empty', icon: '🔥' },
     { key: 'career_direction_unclear', icon: '🧭' },
     { key: 'caregiving_overload', icon: '🤲' },

@@ -16,6 +16,14 @@ export const CONTEXT_FOCUS_LABELS: Record<string, { zh: string; en: string }> = 
   career_direction_unclear:    { zh: '不確定該留下還是該轉換跑道', en: 'Not sure whether to stay or make a change' },
   caregiving_overload:         { zh: '一邊照顧家人，一邊被工作和生活壓得喘不過氣', en: 'Caught between caring for family and everything else' },
   high_stakes_decision_pressure: { zh: '有一個重大決定壓在心上，遲遲無法下定', en: "One big decision weighing on me, and I can't decide" },
+  // Current options — aspirational growth questions, one pair per category
+  // (not everyone arrives with a problem; some just want more)
+  become_wealthier:            { zh: '怎樣才能讓我更富有？', en: 'How can I become wealthier?' },
+  catch_income_growth_timing:  { zh: '怎樣抓住讓收入成長的時機？', en: 'How can I catch the right timing to grow my income?' },
+  find_more_suitable_partner:  { zh: '怎樣讓我遇見更合適的人？', en: 'How can I meet someone more right for me?' },
+  make_relationship_last_longer: { zh: '怎樣讓這段感情走得更長久、更穩定？', en: 'How can I make this relationship last longer and feel more stable?' },
+  want_more_exciting_life:     { zh: '怎樣讓我的人生更精彩？', en: 'How can I make my life more exciting?' },
+  want_happier_easier_life:    { zh: '怎樣讓我活得更開心、更輕鬆？', en: 'How can I live happier and lighter?' },
   // Legacy keys (backward compat — existing users who onboarded before the
   // wealth-first pivot keep their stored context_focus resolving to a label)
   career_growth_or_job_change: { zh: '職涯成長或轉職',     en: 'Career growth or job change' },
