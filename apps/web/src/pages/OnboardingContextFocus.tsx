@@ -32,7 +32,6 @@ const DETAIL_OPTIONS: Record<CategoryKey, { key: string; icon: string }[]> = {
     { key: 'unsure_stay_or_leave', icon: '❓' },
   ],
   other: [
-    { key: 'career_growth_or_job_change', icon: '💼' },
     { key: 'burnout_or_high_stress', icon: '🔥' },
     { key: 'relocating', icon: '✈️' },
     { key: 'new_parent', icon: '👶' },
