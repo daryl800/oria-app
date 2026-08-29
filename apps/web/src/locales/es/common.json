@@ -682,10 +682,10 @@
     },
     "context": {
       "step": "PASO 1 DE 4",
-      "category_title": "¿Qué situación estás enfrentando ahora mismo?",
+      "category_title": "¿Qué te gustaría explorar ahora?",
       "category_subtitle": "Elige la que más se acerque — Oria adapta lo siguiente según tu elección.",
-      "category_wealth": "Problemas de dinero",
-      "category_relationship": "Problemas de pareja",
+      "category_wealth": "Dinero",
+      "category_relationship": "Relaciones",
       "category_other": "Otra cosa",
       "wealth_title": "¿Por qué el dinero nunca se queda?",
       "wealth_subtitle": "Elige la opción más cercana.",

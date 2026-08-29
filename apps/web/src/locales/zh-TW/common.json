@@ -685,10 +685,10 @@
     },
     "context": {
       "step": "第 1 步，共 4 步",
-      "category_title": "你現在正面對的是哪一種狀況？",
+      "category_title": "你現在最想聊的是哪個方向？",
       "category_subtitle": "選一個最貼近的方向，Oria 會給你更精準的洞察。",
-      "category_wealth": "財務問題",
-      "category_relationship": "感情問題",
+      "category_wealth": "金錢",
+      "category_relationship": "感情",
       "category_other": "其他",
       "wealth_title": "為什麼錢總是留不住？",
       "wealth_subtitle": "選出最貼近你現況的一項。",

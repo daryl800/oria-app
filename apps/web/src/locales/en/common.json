@@ -734,10 +734,10 @@
     },
     "context": {
       "step": "STEP 1 OF 4",
-      "category_title": "What's the situation you're navigating right now?",
+      "category_title": "What would you like to explore right now?",
       "category_subtitle": "Pick whichever's closest — Oria tailors what comes next around it.",
-      "category_wealth": "Money problems",
-      "category_relationship": "Relationship problems",
+      "category_wealth": "Money",
+      "category_relationship": "Relationships",
       "category_other": "Something else",
       "wealth_title": "Why does money never stick?",
       "wealth_subtitle": "Pick the one that hits closest.",

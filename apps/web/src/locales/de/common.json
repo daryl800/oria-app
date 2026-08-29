@@ -682,10 +682,10 @@
     },
     "context": {
       "step": "SCHRITT 1 VON 4",
-      "category_title": "Mit welcher Situation beschäftigst du dich gerade?",
+      "category_title": "Was möchtest du gerade erkunden?",
       "category_subtitle": "Wähle, was am besten passt — Oria richtet den nächsten Schritt danach aus.",
-      "category_wealth": "Geldprobleme",
-      "category_relationship": "Beziehungsprobleme",
+      "category_wealth": "Geld",
+      "category_relationship": "Beziehungen",
       "category_other": "Etwas anderes",
       "wealth_title": "Warum bleibt Geld nie hängen?",
       "wealth_subtitle": "Wähle, was am besten passt.",

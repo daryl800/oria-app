@@ -682,10 +682,10 @@
     },
     "context": {
       "step": "ÉTAPE 1 SUR 4",
-      "category_title": "Quelle situation traverses-tu en ce moment ?",
+      "category_title": "Qu'aimerais-tu explorer en ce moment ?",
       "category_subtitle": "Choisis celle qui te correspond le plus — Oria adapte la suite en fonction.",
-      "category_wealth": "Problèmes d'argent",
-      "category_relationship": "Problèmes relationnels",
+      "category_wealth": "Argent",
+      "category_relationship": "Relations",
       "category_other": "Autre chose",
       "wealth_title": "Pourquoi l'argent ne reste-t-il jamais ?",
       "wealth_subtitle": "Choisis celle qui te correspond le plus.",

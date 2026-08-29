@@ -661,10 +661,10 @@
     },
     "context": {
       "step": "STEG 1 AV 4",
-      "category_title": "Vilken situation navigerar du just nu?",
+      "category_title": "Vad vill du utforska just nu?",
       "category_subtitle": "Välj det som stämmer bäst — Oria anpassar resten utifrån det.",
-      "category_wealth": "Pengaproblem",
-      "category_relationship": "Relationsproblem",
+      "category_wealth": "Pengar",
+      "category_relationship": "Relationer",
       "category_other": "Något annat",
       "wealth_title": "Varför försvinner pengarna alltid?",
       "wealth_subtitle": "Välj det som stämmer bäst.",

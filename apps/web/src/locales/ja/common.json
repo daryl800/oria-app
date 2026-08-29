@@ -661,10 +661,10 @@
     },
     "context": {
       "step": "ステップ1/4",
-      "category_title": "今、あなたが向き合っている状況は？",
+      "category_title": "今、一番話してみたいのはどの方向ですか？",
       "category_subtitle": "一番近いものを選んでください。Oria がその後の内容を調整します。",
-      "category_wealth": "お金の悩み",
-      "category_relationship": "恋愛・人間関係の悩み",
+      "category_wealth": "お金",
+      "category_relationship": "恋愛・人間関係",
       "category_other": "その他",
       "wealth_title": "なぜお金が貯まらないのか？",
       "wealth_subtitle": "一番近いものを選んでください。",
