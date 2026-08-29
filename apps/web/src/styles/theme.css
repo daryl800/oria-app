@@ -1307,7 +1307,7 @@ html[lang^="zh"] .oria-landing-title {
   margin-top: 20px;
   margin-bottom: 0;
   color: rgba(244, 239, 231, 0.75);
-  font-size: clamp(13px, 1.8vw, 15px);
+  font-size: clamp(15px, 2.1vw, 17px);
   line-height: 1.85;
   white-space: pre-line;
 }
@@ -1982,7 +1982,7 @@ html[lang^="zh"] .oria-home-primary-card h2 {
   }
 
   .oria-landing-supporting {
-    font-size: 17px;
+    font-size: 19px;
     max-width: 620px;
   }
 
