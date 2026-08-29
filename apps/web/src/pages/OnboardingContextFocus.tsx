@@ -6,16 +6,10 @@ const STORAGE_KEY = 'oria_context_focus';
 const OTHER_KEY = 'other';
 
 const CONTEXT_OPTIONS = [
-  { key: 'career_growth_or_job_change', icon: '💼' },
-  { key: 'burnout_or_high_stress',      icon: '🔥' },
-  { key: 'love_and_relationships',       icon: '❤️' },
-  { key: 'relocating',                   icon: '✈️' },
-  { key: 'new_parent',                   icon: '👶' },
-  { key: 'caring_for_parents',           icon: '🤲' },
-  { key: 'health_challenges',            icon: '🌿' },
-  { key: 'money_and_finances',           icon: '💰' },
-  { key: 'entrepreneurship',             icon: '🚀' },
-  { key: 'personal_growth',              icon: '🦋' },
+  { key: 'earn_more_spend_more',     icon: '💸' },
+  { key: 'income_bottleneck',        icon: '🧱' },
+  { key: 'intuitive_investing_risk', icon: '📉' },
+  { key: 'job_no_financial_future',  icon: '🏢' },
 ];
 
 export default function OnboardingContextFocus() {
@@ -38,11 +32,9 @@ export default function OnboardingContextFocus() {
   const canContinue = selected.length > 0;
 
   function toggle(key: string) {
-    setSelected(current =>
-      current.includes(key)
-        ? current.filter(item => item !== key)
-        : [...current, key],
-    );
+    // Single-select — "what's your MOST pressing frustration" is one answer,
+    // not a checklist. Tapping the same card again deselects it.
+    setSelected(current => (current[0] === key ? [] : [key]));
   }
 
   function goNext(values: string[]) {
