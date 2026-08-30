@@ -722,7 +722,8 @@
       "submit": "Reveal my full reading →",
       "location_helper": "Search your birth city (e.g. Hong Kong, Tokyo)",
       "location_required": "Please select your birth city from the list.",
-      "signature_hint": "Next, we need your birth details — this is your unique BaZi signature, one of over 510,000 possible combinations."
+      "signature_hint": "Next, we need your birth details — this is your unique BaZi signature, one of over 510,000 possible combinations.",
+      "back": "← Back"
     },
     "result": {
       "step": "Step 3 of 4",

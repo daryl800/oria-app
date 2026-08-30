@@ -670,7 +670,9 @@
       "saving": "Lecture de vos étoiles...",
       "submit": "Révéler ma lecture complète →",
       "location_helper": "Recherchez votre ville de naissance (ex. Paris, Lyon)",
-      "location_required": "Veuillez sélectionner votre ville de naissance dans la liste."
+      "location_required": "Veuillez sélectionner votre ville de naissance dans la liste.",
+      "signature_hint": "Ensuite, nous avons besoin de vos détails de naissance — c'est votre signature BaZi unique, l'une des plus de 510 000 combinaisons possibles.",
+      "back": "← Retour"
     },
     "result": {
       "step": "Étape 3 sur 4",

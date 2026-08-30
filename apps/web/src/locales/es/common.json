@@ -670,7 +670,9 @@
       "saving": "Leyendo tus estrellas...",
       "submit": "Revelar mi lectura completa →",
       "location_helper": "Busca tu ciudad natal (ej. Madrid, Ciudad de México)",
-      "location_required": "Por favor selecciona tu ciudad natal de la lista."
+      "location_required": "Por favor selecciona tu ciudad natal de la lista.",
+      "signature_hint": "A continuación, necesitamos tus datos de nacimiento — esta es tu firma BaZi única, una de más de 510.000 combinaciones posibles.",
+      "back": "← Atrás"
     },
     "result": {
       "step": "Paso 3 de 4",

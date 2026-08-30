@@ -649,7 +649,8 @@
       "submit": "Visa min fulla läsning →",
       "location_helper": "Sök din födelsestad (t.ex. Hongkong, Tokyo)",
       "location_required": "Välj din födelsestad från listan.",
-      "signature_hint": "Härnäst behöver vi dina födelsedetaljer — detta är din unika BaZi-signatur, en av över 510 000 möjliga kombinationer."
+      "signature_hint": "Härnäst behöver vi dina födelsedetaljer — detta är din unika BaZi-signatur, en av över 510 000 möjliga kombinationer.",
+      "back": "← Tillbaka"
     },
     "result": {
       "step": "Steg 3 av 4",

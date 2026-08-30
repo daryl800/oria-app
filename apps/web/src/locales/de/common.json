@@ -670,7 +670,9 @@
       "saving": "Deine Sterne werden gelesen...",
       "submit": "Mein vollständiges Ergebnis enthüllen →",
       "location_helper": "Suche deine Geburtsstadt (z.B. Berlin, Hamburg)",
-      "location_required": "Bitte wähle deine Geburtsstadt aus der Liste aus."
+      "location_required": "Bitte wähle deine Geburtsstadt aus der Liste aus.",
+      "signature_hint": "Als Nächstes brauchen wir deine Geburtsdetails — das ist deine einzigartige BaZi-Signatur, eine von über 510.000 möglichen Kombinationen.",
+      "back": "← Zurück"
     },
     "result": {
       "step": "Schritt 3 von 4",
