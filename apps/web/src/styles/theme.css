@@ -1306,7 +1306,7 @@ html[lang^="zh"] .oria-landing-title {
 .oria-landing-supporting {
   margin-top: 20px;
   margin-bottom: 0;
-  color: rgba(244, 239, 231, 0.75);
+  color: var(--oria-accent, #C9A84C);
   font-size: clamp(15px, 2.1vw, 17px);
   line-height: 1.85;
   white-space: pre-line;
@@ -1325,6 +1325,7 @@ html[lang^="zh"] .oria-landing-title {
   font-size: clamp(19px, 2.6vw, 23px);
   font-style: italic;
   line-height: 1.55;
+  letter-spacing: 0.06em;
 }
 
 .oria-landing-quote-original {
