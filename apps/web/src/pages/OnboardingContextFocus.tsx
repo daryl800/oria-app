@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { updateTempOnboardingContext } from '@/services/api';
 
 const STORAGE_KEY = 'oria_context_focus';
 const CATEGORY_KEY = 'oria_context_category';
@@ -103,11 +104,26 @@ export default function OnboardingContextFocus() {
     }
   }
 
-  function goNext(values: string[]) {
+  async function goNext(values: string[]) {
     const focus = values.filter(k => k !== OTHER_KEY);
+    const other = otherText.trim();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(focus));
-    localStorage.setItem('oria_context_focus_other', otherText.trim());
-    navigate('/onboarding/signup');
+    localStorage.setItem('oria_context_focus_other', other);
+
+    // Persist to the backend record — this is the only place the concern
+    // reaches the server (temp-save runs before this step in the current
+    // flow), so without it the answer would be silently lost on signup.
+    // Best-effort: a network hiccup here shouldn't block onboarding.
+    const token = sessionStorage.getItem('oria_onboarding_token');
+    if (token) {
+      try {
+        await updateTempOnboardingContext(token, focus, other || null);
+      } catch (e) {
+        console.error('Failed to persist concern to backend:', e);
+      }
+    }
+
+    navigate('/onboarding/bazi-preview');
   }
 
   function handleContinue() {
@@ -502,7 +518,7 @@ export default function OnboardingContextFocus() {
               <button type="button" className="oria-context-skip" onClick={() => goNext([])}>
                 {t('onboarding.context.skip')}
               </button>
-              <button type="button" className="oria-context-back" onClick={() => navigate('/onboarding/bazi-preview')}>
+              <button type="button" className="oria-context-back" onClick={() => navigate('/onboarding/bazi')}>
                 {t('onboarding.context.back')}
               </button>
             </div>

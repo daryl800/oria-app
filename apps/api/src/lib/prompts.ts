@@ -603,6 +603,52 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
   ];
 }
 
+// Short, cheap prompt for the pre-signup onboarding "teaser" — shown after
+// the user has entered MBTI + BaZi + their concern, but before they create
+// an account. Unlike profileSummaryPrompt (long, expensive, post-signup),
+// this is deliberately compact: 3 short fields, aimed at a fast/cheap model
+// (see llm.ts CHAINS.preview_teaser), and cached on the temp_onboarding_data
+// row so a page reload never triggers a second paid call.
+export function onboardingTeaserPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = [], context_focus_other?: string | null): Messages {
+  const baziCtx = getBaziContext(bazi);
+  const mbtiCtx = getMbtiContext(mbti);
+  const respondIn = getRespondIn(lang);
+  const langGuard = getLangGuard(lang);
+  const contextFocusSection = getContextFocusSection(context_focus, lang, context_focus_other);
+
+  return [
+    {
+      role: 'system',
+      content: `${langGuard}你是Oria的命盤解析師。這是用戶在註冊前看到的「預覽」，目的是讓用戶感覺「這說中了我」，進而想註冊看完整解析——但這不是硬廣告，內容必須真實、具體、根植於命盤事實。
+
+【風格】冷靜、有洞察力、像懂命理的朋友，不誇張、不算命腔、不做絕對預測。
+【嚴格禁止】不得使用「你註定」「一定會」「命中註定」等宿命語言；不得誇大或編造命盤中不存在的結構。
+${SAFETY_CLAUSE}`,
+    },
+    {
+      role: 'user',
+      content: `根據以下八字與MBTI資料，生成一段極簡短的「預覽解讀」，直接針對用戶的關注重點。
+
+${baziCtx}
+${mbtiCtx}
+${contextFocusSection ? `\n${contextFocusSection}` : '\n（用戶未提供具體關注重點，請根據命盤最突出的結構特徵發揮）'}
+
+要求：
+1. hook：1句話，具體點出命盤中一個實際存在的結構（例如日主強弱、某個十神、五行組合），讓用戶覺得「這真的在講我」，不可空泛
+2. insight：2-3句，直接回應用戶的關注重點（若有），具體到能讓人聯想到真實情境，語氣像朋友當面解釋，不是命理課本
+3. locked_teaser：1句話，具體描述完整解析裡還有什麼（例如「完整解析會告訴你這個模式在今年流年會怎麼變化」），製造好奇心，不可只寫「註冊解鎖更多」這種空話
+
+以JSON回應：
+{
+  "hook": "...",
+  "insight": "...",
+  "locked_teaser": "..."
+}
+只回傳JSON，總長度控制在150字以內。${respondIn}`,
+    },
+  ];
+}
+
 export function dailyGuidancePrompt(
   bazi: any,
   mbti: any,

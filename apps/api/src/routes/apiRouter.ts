@@ -4,7 +4,7 @@ import Paths from '@src/common/constants/Paths';
 import UserRoutes from './UserRoutes';
 import dailyGuidanceRouter from './dailyGuidance';
 import mottoTestRouter from './mottoTest';
-import profileRouter from './profile';
+import profileRouter, { getMbtiProfile } from './profile';
 import chatRouter from './chat';
 import debateRouter from './debate';
 import debateDemoRouter from './debateDemo';
@@ -14,6 +14,8 @@ import { supabase } from '../lib/supabase';
 import { isTrialActive } from '../lib/credits';
 import contactRouter from './contact';
 import billingRouter from './billing';
+import { complete, sanitizeLlmJson } from '../lib/llm';
+import { onboardingTeaserPrompt } from '../lib/prompts';
 
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL ?? 'http://localhost:5002';
 const PYTHON_TIMEOUT_MS = 30_000;
@@ -127,6 +129,121 @@ apiRouter.post('/profile/temp-preview', async (req: Request, res: Response) => {
       current_dayun: dayun?.current_dayun ?? null,
       mbti_type: temp.mbti_data?.mbti_type ?? null,
     });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// public onboarding concern update — persists context_focus/context_focus_other
+// onto an existing temp record. Needed because the onboarding flow now collects
+// the concern *after* temp-save has already run (MBTI -> BaZi -> Concern ->
+// Signup), so without this the concern answer only ever lived in localStorage
+// and never reached the backend record (silently lost on signup).
+apiRouter.post('/profile/temp-context', async (req: Request, res: Response) => {
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    const { token, context_focus, context_focus_other } = req.body;
+    if (!token) return res.status(400).json({ error: 'Missing token' });
+
+    const { data: temp, error: fetchError } = await supabase
+      .from('temp_onboarding_data')
+      .select('mbti_data')
+      .eq('token', token)
+      .gt('expires_at', new Date().toISOString())
+      .single();
+    if (fetchError || !temp) return res.status(404).json({ error: 'Token not found or expired' });
+
+    const updated_mbti_data = {
+      ...temp.mbti_data,
+      context_focus: context_focus ?? [],
+      context_focus_other: context_focus_other ?? null,
+    };
+    const { error: updateError } = await supabase
+      .from('temp_onboarding_data')
+      .update({ mbti_data: updated_mbti_data })
+      .eq('token', token);
+    if (updateError) throw new Error(updateError.message);
+
+    return res.json({ ok: true });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// public onboarding teaser — pre-signup personalized preview, generated once
+// via a cheap/fast LLM chain and cached on the temp record (see llm.ts
+// CHAINS.preview_teaser). Requires the concern to already be persisted via
+// /profile/temp-context for a fully tailored result, but degrades gracefully
+// (falls back to chart-only framing) if context_focus is empty.
+apiRouter.post('/profile/temp-teaser', async (req: Request, res: Response) => {
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ error: 'Missing token' });
+
+    const { data: temp, error } = await supabase
+      .from('temp_onboarding_data')
+      .select('bazi_data, mbti_data, lang, teaser_result')
+      .eq('token', token)
+      .gt('expires_at', new Date().toISOString())
+      .single();
+    if (error || !temp) return res.status(404).json({ error: 'Token not found or expired' });
+
+    if (temp.teaser_result) {
+      return res.json({ ...temp.teaser_result, cached: true });
+    }
+
+    const lang = temp.lang ?? 'en';
+    const bazi = temp.bazi_data;
+    const r = await pythonFetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...bazi, lang: 'en', is_male: bazi.is_male ?? true }),
+    });
+    if (!r.ok) throw new Error('BaZi calculation failed');
+    const { bazi: baziResult, dayun, advanced } = await r.json() as {
+      bazi: { day_master: string; five_elements_strength: Record<string, number> };
+      dayun: { current_dayun: unknown; dayuns?: unknown } | null;
+      advanced?: { ten_gods?: unknown; body_strength?: { classification?: string } & Record<string, unknown>; yong_ji_shen?: unknown };
+    };
+
+    const baziCtx = {
+      day_master: baziResult.day_master,
+      five_elements_strength: baziResult.five_elements_strength,
+      birth_date: `${bazi.year}-${String(bazi.month).padStart(2, '0')}-${String(bazi.day).padStart(2, '0')}`,
+      dayun: dayun ?? null,
+      ten_gods: advanced?.ten_gods ?? null,
+      body_strength: advanced?.body_strength?.classification ?? null,
+      body_strength_detail: advanced?.body_strength ?? null,
+      favorable_elements: advanced?.yong_ji_shen ?? null,
+    };
+
+    const mbtiType = temp.mbti_data?.mbti_type ?? null;
+    const mbtiProfile = mbtiType ? await getMbtiProfile(mbtiType, lang) : null;
+
+    const messages = onboardingTeaserPrompt(
+      baziCtx,
+      mbtiProfile,
+      lang,
+      temp.mbti_data?.context_focus ?? [],
+      temp.mbti_data?.context_focus_other ?? null,
+    );
+    const raw = await complete(messages, 'preview_teaser');
+    const clean = sanitizeLlmJson(raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim());
+    const teaser = JSON.parse(clean);
+
+    // Best-effort cache — don't fail the request if this write fails.
+    await supabase.from('temp_onboarding_data').update({ teaser_result: teaser }).eq('token', token);
+
+    return res.json({ ...teaser, cached: false });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }

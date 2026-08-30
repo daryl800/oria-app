@@ -21,7 +21,7 @@ const mbtiProfileCache = new Map<string, any>();
 // (e.g. React Strict Mode double-fire or tab duplication).
 const summaryInFlight = new Map<string, Promise<{ summary: any; cached: boolean }>>();
 
-async function getMbtiProfile(mbtiType: string, lang: string): Promise<any | null> {
+export async function getMbtiProfile(mbtiType: string, lang: string): Promise<any | null> {
   const key = `${mbtiType}:${lang}`;
   if (mbtiProfileCache.has(key)) return mbtiProfileCache.get(key);
   const controller = new AbortController();

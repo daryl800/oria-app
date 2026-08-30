@@ -134,7 +134,7 @@ const claude = anthropicProvider(
 
 // ── Named chains (primary → fallback) ────────────────────────────
 export type LLMChain =
-  | 'profile' | 'daily' | 'daily_premium' | 'chat'
+  | 'profile' | 'preview_teaser' | 'daily' | 'daily_premium' | 'chat'
   | 'debate_east_hunyuan' | 'debate_east_openai' | 'debate_east_gemini_lite' | 'debate_east_deepseek'
   | 'debate_west_openai'  | 'debate_west_hunyuan' | 'debate_west_gemini_lite' | 'debate_west_claude'
   | 'debate_synthesis'
@@ -143,6 +143,9 @@ export type LLMChain =
 
 const CHAINS: Record<LLMChain, readonly Provider[]> = {
   profile:               [chatgpt, deepseek, hunyuan],
+  // Pre-signup onboarding teaser: short output, cost-sensitive (anonymous
+  // traffic, no auth gate), so cheap/fast models only — no premium fallback.
+  preview_teaser:        [deepseek, chatgptMini],
   daily:                 [deepseek, chatgptMini],
   daily_premium:         [chatgpt, deepseek, chatgptMini],
   chat:                  [chatgpt, deepseek],

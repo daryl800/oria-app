@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getBaziPreview } from '@/services/api';
+import { getBaziPreview, getOnboardingTeaser } from '@/services/api';
 import PlanetLoader from '@/components/PlanetLoader';
 
 // ── Static mappings ───────────────────────────────────────────────
@@ -60,6 +60,12 @@ interface PreviewData {
   mbti_type: string | null;
 }
 
+interface TeaserData {
+  hook: string;
+  insight: string;
+  locked_teaser: string;
+}
+
 // ── Helpers ───────────────────────────────────────────────────────
 
 function ElementBars({ strengths }: { strengths: Record<string, number> }) {
@@ -106,6 +112,8 @@ export default function OnboardingBaziPreview() {
 
   const [data, setData] = useState<PreviewData | null>(null);
   const [error, setError] = useState('');
+  const [teaser, setTeaser] = useState<TeaserData | null>(null);
+  const [teaserLoading, setTeaserLoading] = useState(true);
 
   useEffect(() => {
     const token = sessionStorage.getItem('oria_onboarding_token');
@@ -114,6 +122,14 @@ export default function OnboardingBaziPreview() {
     getBaziPreview(token)
       .then(setData)
       .catch(() => setError('preview_failed'));
+
+    // Personalized teaser loads separately and never blocks the rest of the
+    // page — if it fails or times out, the deterministic preview above still
+    // works and the signup CTA is still reachable.
+    getOnboardingTeaser(token)
+      .then(setTeaser)
+      .catch(() => setTeaser(null))
+      .finally(() => setTeaserLoading(false));
   }, []);
 
   // ── Loading ──
@@ -238,6 +254,44 @@ export default function OnboardingBaziPreview() {
         </div>
       )}
 
+      {/* Personalized teaser — tailored to the concern the user just entered */}
+      {(teaserLoading || teaser) && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.04))',
+          border: `1px solid ${GOLD}55`,
+          borderRadius: 20, padding: '22px 20px',
+          marginBottom: 14,
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
+            {isZh ? '針對你的關注重點' : 'For your concern'}
+          </div>
+          {teaserLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 0' }}>
+              <span style={{
+                width: 14, height: 14, borderRadius: '50%',
+                border: '2px solid rgba(201,168,76,0.25)',
+                borderTopColor: GOLD,
+                animation: 'oriaTeaserSpin 0.8s linear infinite',
+                display: 'inline-block', flexShrink: 0,
+              }} />
+              <style>{`@keyframes oriaTeaserSpin { to { transform: rotate(360deg); } }`}</style>
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }}>
+                {isZh ? '正在為你解讀…' : 'Reading what this means for you…'}
+              </span>
+            </div>
+          ) : teaser ? (
+            <>
+              <p style={{ fontSize: 16, fontWeight: 700, color: '#F0EDE8', lineHeight: 1.55, margin: '0 0 10px' }}>
+                {teaser.hook}
+              </p>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
+                {teaser.insight}
+              </p>
+            </>
+          ) : null}
+        </div>
+      )}
+
       {/* Teaser / unlock block */}
       <div style={{
         background: 'rgba(255,255,255,0.04)',
@@ -246,9 +300,11 @@ export default function OnboardingBaziPreview() {
         marginBottom: 24,
       }}>
         <p style={{ fontSize: 15, fontWeight: 600, color: '#F0EDE8', lineHeight: 1.6, marginBottom: 16 }}>
-          {isZh
-            ? '你的命盤已經解讀完成。\n註冊後立即查看：'
-            : 'Your chart is ready.\nCreate your free account to unlock:'}
+          {teaser?.locked_teaser
+            ? teaser.locked_teaser
+            : (isZh
+              ? '你的命盤已經解讀完成。\n註冊後立即查看：'
+              : 'Your chart is ready.\nCreate your free account to unlock:')}
         </p>
         {[
           isZh ? '✓ 完整八字分析' : '✓ Full BaZi analysis',
@@ -264,7 +320,7 @@ export default function OnboardingBaziPreview() {
 
       {/* CTA */}
       <button
-        onClick={() => navigate('/onboarding/context')}
+        onClick={() => navigate('/onboarding/signup')}
         style={{
           display: 'block', width: '100%',
           background: GOLD, border: 'none',
