@@ -349,7 +349,16 @@
       "element_summary": "Din elementstruktur leds av {{topElement}}, vilket visar naturlig styrka i {{topTerm}}, medan {{weakestElement}} är svagare och kan behöva mer medveten balans.",
       "tension_two": "Din struktur betonar både {{top1}} och {{top2}}. Det skapar ofta spänning mellan fart och kontroll: du vill röra dig snabbt men också göra saker precist och rätt.",
       "tension_one": "Du tenderar att gå framåt genom {{top1}}, men kapaciteten kopplad till {{weakest}} för reflektion, upptag eller reglering kan vara mindre stark. Du kan röra dig snabbt utan att hinna bearbeta allt.",
-      "tension_balanced": "Din elementprofil är relativt balanserad, utan en överväldigande dominerande kraft. Fördelen är flexibilitet, men i viktiga ögonblick kan du behöva välja mer medvetet hur du vill agera."
+      "tension_balanced": "Din elementprofil är relativt balanserad, utan en överväldigande dominerande kraft. Fördelen är flexibilitet, men i viktiga ögonblick kan du behöva välja mer medvetet hur du vill agera.",
+      "wuxing_star": "Elementstjärnan",
+      "wuxing_star_caption": "Antalet är endast vägledande — tolka det tillsammans med hur varje element förhåller sig till din Day Master.",
+      "wuxing_relations": {
+        "same": "Samma som jag",
+        "generates_me": "Ger upphov till mig",
+        "i_generate": "Jag ger upphov till",
+        "controls_me": "Kontrollerar mig",
+        "i_control": "Jag kontrollerar"
+      }
     },
     "mbti": {
       "section": "MBTI-personlighet",
