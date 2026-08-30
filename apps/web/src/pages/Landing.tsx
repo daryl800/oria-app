@@ -133,23 +133,23 @@ export default function Landing() {
         </section>
         <section className="oria-landing-why">
           <h2 style={{
-            fontSize: 'clamp(15px, 4vw, 18px)',
+            fontSize: 'clamp(18px, 4.5vw, 22px)',
             fontWeight: 700,
             color: 'rgba(201,168,76,0.85)',
             letterSpacing: '0.04em',
-            marginBottom: 16,
+            marginBottom: 18,
             marginTop: 0,
           }}>
             {t('landing.why_title')}
           </h2>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
             {([
               { emoji: '☯', labelKey: 'why_bazi_label', textKey: 'why_bazi_text' },
               { emoji: '🧠', labelKey: 'why_mbti_label', textKey: 'why_mbti_text' },
             ] as const).map(({ emoji, labelKey, textKey }) => (
               <div key={labelKey} className="oria-landing-usecase-card" style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: 20, marginBottom: 8 }}>{emoji}</div>
+                <div style={{ fontSize: 24, marginBottom: 10 }}>{emoji}</div>
                 <div className="oria-landing-usecase-title">{t(`landing.${labelKey}`)}</div>
                 <div className="oria-landing-usecase-desc">{t(`landing.${textKey}`)}</div>
               </div>
@@ -157,9 +157,9 @@ export default function Landing() {
           </div>
 
           <p style={{
-            fontSize: 13,
-            color: 'rgba(255,255,255,0.5)',
-            lineHeight: 1.75,
+            fontSize: 'clamp(14px, 2vw, 16px)',
+            color: 'rgba(255,255,255,0.58)',
+            lineHeight: 1.8,
             margin: 0,
             fontStyle: 'italic',
           }}>

@@ -1288,8 +1288,8 @@ html[lang^="zh"] .oria-landing-title {
   max-width: 420px;
   margin: 12px auto 0;
   color: #8E879A;
-  font-size: 11px;
-  line-height: 1.7;
+  font-size: 13px;
+  line-height: 1.75;
   text-align: center;
   white-space: pre-line;
 }
@@ -1374,22 +1374,22 @@ html[lang^="zh"] .oria-landing-title {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(201, 168, 76, 0.13);
   border-radius: 16px;
-  padding: 16px 14px;
+  padding: 18px 16px;
   text-align: left;
 }
 
 .oria-landing-usecase-title {
   color: rgba(201, 168, 76, 0.88);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
 }
 
 .oria-landing-usecase-desc {
-  color: rgba(244, 239, 231, 0.62);
-  font-size: 12px;
-  line-height: 1.65;
+  color: rgba(244, 239, 231, 0.68);
+  font-size: 14px;
+  line-height: 1.7;
 }
 
 .oria-landing-actions {
@@ -2008,11 +2008,20 @@ html[lang^="zh"] .oria-home-primary-card h2 {
   }
 
   .oria-landing-usecase-card {
-    padding: 22px 18px;
+    padding: 24px 20px;
+  }
+
+  .oria-landing-usecase-title {
+    font-size: 17px;
+  }
+
+  .oria-landing-usecase-desc {
+    font-size: 15px;
   }
 
   .oria-landing-disclaimer {
     max-width: 640px;
+    font-size: 14px;
   }
 
   .oria-landing-footer {
