@@ -244,6 +244,36 @@ export async function getBaziPreview(token: string) {
   return res.json();
 }
 
+// Persists the onboarding concern (context_focus / context_focus_other) onto
+// an already-created temp_onboarding_data record. Needed because the concern
+// step now runs after temp-save, so without this call the concern only lives
+// in localStorage and never reaches the backend record or the real profile.
+export async function updateTempOnboardingContext(
+  token: string,
+  contextFocus: string[],
+  contextFocusOther: string | null,
+) {
+  const res = await fetch(`${API_URL}/api/profile/temp-context`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, context_focus: contextFocus, context_focus_other: contextFocusOther }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+// Pre-signup personalized teaser — short AI-generated preview tailored to
+// the user's concern, shown on the BaZi preview page before signup.
+export async function getOnboardingTeaser(token: string) {
+  const res = await fetch(`${API_URL}/api/profile/temp-teaser`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
 export async function saveTempOnboarding(
   mbtiData: any,
   baziData: any,
