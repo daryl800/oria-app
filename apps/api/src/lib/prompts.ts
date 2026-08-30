@@ -606,7 +606,7 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
 // Short, cheap prompt for the pre-signup onboarding "teaser" — shown after
 // the user has entered MBTI + BaZi + their concern, but before they create
 // an account. Unlike profileSummaryPrompt (long, expensive, post-signup),
-// this is deliberately compact: 3 short fields, aimed at a fast/cheap model
+// this is deliberately compact: 4 short fields, aimed at a fast/cheap model
 // (see llm.ts CHAINS.preview_teaser), and cached on the temp_onboarding_data
 // row so a page reload never triggers a second paid call.
 export function onboardingTeaserPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = [], context_focus_other?: string | null): Messages {
@@ -637,14 +637,16 @@ ${contextFocusSection ? `\n${contextFocusSection}` : '\n（用戶未提供具體
 1. hook：1句話，具體點出命盤中一個實際存在的結構（例如日主強弱、某個十神、五行組合），讓用戶覺得「這真的在講我」，不可空泛
 2. insight：2-3句，直接回應用戶的關注重點（若有），具體到能讓人聯想到真實情境，語氣像朋友當面解釋，不是命理課本
 3. locked_teaser：1句話，具體描述完整解析裡還有什麼（例如「完整解析會告訴你這個模式在今年流年會怎麼變化」），製造好奇心，不可只寫「註冊解鎖更多」這種空話
+4. strength_read：1-2句，把命盤中的「身強／身弱」判定翻譯成白話——這代表這個人平常做事、扛壓力、做決定時的傾向是什麼，不要出現「身強」「身弱」這種術語本身，直接講意思
 
 以JSON回應：
 {
   "hook": "...",
   "insight": "...",
-  "locked_teaser": "..."
+  "locked_teaser": "...",
+  "strength_read": "..."
 }
-只回傳JSON，總長度控制在150字以內。${respondIn}`,
+只回傳JSON，總長度控制在200字以內。${respondIn}`,
     },
   ];
 }

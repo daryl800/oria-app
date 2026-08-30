@@ -121,13 +121,24 @@ apiRouter.post('/profile/temp-preview', async (req: Request, res: Response) => {
       body: JSON.stringify({ ...bazi, lang: 'en', is_male: bazi.is_male ?? true }),
     });
     if (!r.ok) throw new Error('BaZi calculation failed');
-    const { bazi: baziResult, dayun } = await r.json() as { bazi: { day_master: string; five_elements_strength: Record<string, number> }; dayun: { current_dayun: unknown } | null };
+    const { bazi: baziResult, dayun, advanced } = await r.json() as {
+      bazi: { day_master: string; five_elements_strength: Record<string, number> };
+      dayun: { current_dayun: unknown } | null;
+      advanced?: { body_strength?: unknown; wealth_vault?: unknown; shen_sha?: unknown };
+    };
 
+    // body_strength / wealth_vault / shen_sha are already computed by this same
+    // /bazi/calculate call — surfacing them here costs nothing extra (no new
+    // LLM or API call) and lets the pre-signup preview show real chart-derived
+    // highlights instead of only the day master + five elements.
     return res.json({
       day_master: baziResult.day_master,
       five_elements_strength: baziResult.five_elements_strength,
       current_dayun: dayun?.current_dayun ?? null,
       mbti_type: temp.mbti_data?.mbti_type ?? null,
+      body_strength: advanced?.body_strength ?? null,
+      wealth_vault: advanced?.wealth_vault ?? null,
+      shen_sha: advanced?.shen_sha ?? null,
     });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });

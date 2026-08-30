@@ -53,18 +53,73 @@ interface DayunInfo {
   end_age: number;
 }
 
+interface BodyStrength {
+  classification: string; // 極強 | 身強 | 均衡 | 身弱 | 極弱
+}
+
+interface WealthVaultVault {
+  relation: string;
+  status: string; // closed | activated | disturbed | uncertain
+  favorability: string; // favorable | unfavorable | neutral | unknown
+  is_wealth_vault: boolean;
+}
+
+interface WealthVaultData {
+  wealth_relation_status: string; // none | no_wealth_vault | wealth_vault_inactive | wealth_vault_activated
+  vaults: WealthVaultVault[];
+}
+
+interface ShenShaStar {
+  key: string;
+}
+
+interface ShenShaData {
+  stars: ShenShaStar[];
+}
+
 interface PreviewData {
   day_master: string;
   five_elements_strength: Record<string, number>;
   current_dayun: DayunInfo | null;
   mbti_type: string | null;
+  body_strength: BodyStrength | null;
+  wealth_vault: WealthVaultData | null;
+  shen_sha: ShenShaData | null;
 }
 
 interface TeaserData {
   hook: string;
   insight: string;
   locked_teaser: string;
+  strength_read?: string;
 }
+
+// Compact labels for the "Chart Highlights" preview card. Not the full
+// interpretive copy shown post-signup (see Chart.tsx) — deliberately a
+// shorter, single-line version since this is a preview, not the full report.
+const BODY_STRENGTH_LABEL: Record<string, { zh: string; en: string }> = {
+  '極強': { zh: '極強', en: 'Very strong' },
+  '身強': { zh: '身強', en: 'Strong' },
+  '均衡': { zh: '均衡', en: 'Balanced' },
+  '身弱': { zh: '身弱', en: 'Gentle' },
+  '極弱': { zh: '極弱', en: 'Very gentle' },
+};
+
+const VAULT_STATUS_SHORT: Record<string, { zh: string; en: string }> = {
+  closed: { zh: '安靜期', en: 'Quiet phase' },
+  activated: { zh: '變化中', en: 'In flux' },
+  disturbed: { zh: '多重變化', en: 'Multiple shifts' },
+  uncertain: { zh: '狀態不明', en: 'Unclear' },
+};
+
+const SHEN_SHA_SHORT: Record<string, { zh: string; en: string; emoji: string }> = {
+  tianyi_guiren: { zh: '天乙貴人', en: 'Noble Helper', emoji: '🌟' },
+  wenchang: { zh: '文昌', en: 'Scholar Star', emoji: '📖' },
+  yima: { zh: '驛馬', en: 'Travel Horse', emoji: '🐎' },
+  taohua: { zh: '桃花', en: 'Peach Blossom', emoji: '🌸' },
+  huagai: { zh: '華蓋', en: 'Canopy', emoji: '🎨' },
+  jiangxing: { zh: '將星', en: 'General Star', emoji: '🎖️' },
+};
 
 // ── Helpers ───────────────────────────────────────────────────────
 
@@ -162,11 +217,22 @@ export default function OnboardingBaziPreview() {
     );
   }
 
-  const { day_master, five_elements_strength, current_dayun, mbti_type } = data;
+  const { day_master, five_elements_strength, current_dayun, mbti_type, body_strength, wealth_vault, shen_sha } = data;
   const stemZh = STEM_ZH[day_master] ?? day_master;
   const element = STEM_ELEMENT[day_master] ?? '';
   const elementZh = ELEMENT_ZH[element] ?? '';
   const trait = DAY_MASTER_TRAIT[day_master];
+
+  const strengthLabel = body_strength ? BODY_STRENGTH_LABEL[body_strength.classification] : null;
+
+  // Only surface a wealth-vault line when there's an actual positive finding —
+  // "no vault here" isn't interesting in a preview, so it's silently skipped.
+  const topVault = wealth_vault?.vaults?.find(v => v.is_wealth_vault) ?? null;
+  const showVaultLine = topVault && (wealth_vault!.wealth_relation_status === 'wealth_vault_activated' || wealth_vault!.wealth_relation_status === 'wealth_vault_inactive');
+
+  const topStar = shen_sha?.stars?.[0] ? SHEN_SHA_SHORT[shen_sha.stars[0].key] : null;
+
+  const hasHighlights = showVaultLine || topStar;
 
   // Retrieve MBTI from localStorage as fallback if backend didn't return it
   const mbti = mbti_type ?? (() => {
@@ -208,6 +274,88 @@ export default function OnboardingBaziPreview() {
           </p>
         )}
       </div>
+
+      {/* Body strength — deterministic classification + LLM plain-language read */}
+      {strengthLabel && (
+        <div className="oria-card" style={{ padding: '20px', marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: teaserLoading || teaser?.strength_read ? 12 : 0 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase' }}>
+              {isZh ? '身強身弱' : 'Your Baseline'}
+            </div>
+            <div style={{
+              fontSize: 13, fontWeight: 700, color: GOLD,
+              background: 'rgba(201,168,76,0.12)', border: `1px solid ${GOLD}40`,
+              borderRadius: 999, padding: '3px 12px',
+            }}>
+              {isZh ? strengthLabel.zh : strengthLabel.en}
+            </div>
+          </div>
+          {teaserLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 0' }}>
+              <span style={{
+                width: 12, height: 12, borderRadius: '50%',
+                border: '2px solid rgba(201,168,76,0.25)',
+                borderTopColor: GOLD,
+                animation: 'oriaTeaserSpin 0.8s linear infinite',
+                display: 'inline-block', flexShrink: 0,
+              }} />
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)' }}>
+                {isZh ? '正在解讀…' : 'Reading…'}
+              </span>
+            </div>
+          ) : teaser?.strength_read ? (
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
+              {teaser.strength_read}
+            </p>
+          ) : null}
+        </div>
+      )}
+
+      {/* Chart highlights — a couple of positive, concrete findings (wealth
+          vault status, a standout Shen Sha star) rather than the full
+          post-signup breakdown. Deliberately abbreviated: enough to feel
+          "wow, it read me" without giving away everything for free. */}
+      {hasHighlights && (
+        <div className="oria-card" style={{ padding: '20px', marginBottom: 14 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
+            {isZh ? '命盤亮點' : 'Chart Highlights'}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {showVaultLine && topVault && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>💰</span>
+                <div>
+                  <div style={{ fontSize: 14, color: '#F0EDE8', fontWeight: 600 }}>
+                    {isZh ? '財庫' : 'Wealth Vault'}
+                    {' · '}
+                    <span style={{ color: GOLD }}>
+                      {isZh ? VAULT_STATUS_SHORT[topVault.status]?.zh : VAULT_STATUS_SHORT[topVault.status]?.en}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                    {isZh ? '命盤中發現與財星相關的庫位' : 'A wealth-related vault was found in your chart'}
+                  </div>
+                </div>
+              </div>
+            )}
+            {topStar && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>{topStar.emoji}</span>
+                <div>
+                  <div style={{ fontSize: 14, color: '#F0EDE8', fontWeight: 600 }}>
+                    {isZh ? '神煞' : 'Shen Sha'}
+                    {' · '}
+                    <span style={{ color: GOLD }}>{isZh ? topStar.zh : topStar.en}</span>
+                  </div>
+                  <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                    {isZh ? '命盤中標註出的特質星' : 'A highlighted trait star in your chart'}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Five elements */}
       <div className="oria-card" style={{ padding: '20px', marginBottom: 14 }}>
