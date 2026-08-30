@@ -158,6 +158,7 @@ function ElementBars({ strengths }: { strengths: Record<string, number> }) {
 // ── Page ──────────────────────────────────────────────────────────
 
 const GOLD = '#C9A84C';
+const PREVIEW_SEEN_KEY = 'oria_preview_seen_token';
 
 export default function OnboardingBaziPreview() {
   const navigate = useNavigate();
@@ -169,13 +170,28 @@ export default function OnboardingBaziPreview() {
   const [error, setError] = useState('');
   const [teaser, setTeaser] = useState<TeaserData | null>(null);
   const [teaserLoading, setTeaserLoading] = useState(true);
+  // Gated to one free full view per token (see PREVIEW_SEEN_KEY below) — a
+  // second visit with the same token (reload, back-nav) shows a locked state
+  // instead of re-rendering the reading, matching FateMaster's "see it once,
+  // then register" pattern. Editing birth data issues a brand new token via
+  // temp-save, so that still gets a genuine fresh view.
+  const [alreadySeen, setAlreadySeen] = useState(false);
 
   useEffect(() => {
     const token = sessionStorage.getItem('oria_onboarding_token');
     if (!token) { navigate('/onboarding/bazi', { replace: true }); return; }
 
+    if (sessionStorage.getItem(PREVIEW_SEEN_KEY) === token) {
+      setAlreadySeen(true);
+      setTeaserLoading(false);
+      return;
+    }
+
     getBaziPreview(token)
-      .then(setData)
+      .then((d) => {
+        setData(d);
+        sessionStorage.setItem(PREVIEW_SEEN_KEY, token);
+      })
       .catch(() => setError('preview_failed'));
 
     // Personalized teaser loads separately and never blocks the rest of the
@@ -186,6 +202,45 @@ export default function OnboardingBaziPreview() {
       .catch(() => setTeaser(null))
       .finally(() => setTeaserLoading(false));
   }, []);
+
+  // ── Already seen this token once ──
+  if (alreadySeen) {
+    return (
+      <div className="oria-page oria-page-center" style={{ gap: 20, padding: '0 24px', textAlign: 'center' }}>
+        <div style={{ fontSize: 40 }}>🔒</div>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', margin: 0 }}>
+          {isZh ? '你已經看過這份預覽了' : "You've already seen this preview"}
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, lineHeight: 1.6, maxWidth: 340, margin: 0 }}>
+          {isZh ? '註冊帳號後可以隨時查看完整命盤，不再受限。' : 'Create your free account to view your full chart anytime, with no limits.'}
+        </p>
+        <button
+          onClick={() => navigate('/onboarding/signup')}
+          style={{
+            display: 'block', width: '100%', maxWidth: 340,
+            background: GOLD, border: 'none',
+            borderRadius: 999, padding: '16px',
+            fontSize: 16, fontWeight: 700,
+            color: '#fff', cursor: 'pointer',
+            fontFamily: 'inherit',
+            boxShadow: '0 4px 24px rgba(201,168,76,0.45)',
+          }}
+        >
+          {isZh ? '註冊解鎖 →' : 'Register to unlock →'}
+        </button>
+        <button
+          onClick={() => navigate('/onboarding/bazi')}
+          style={{
+            background: 'transparent', border: 'none',
+            fontSize: 14, color: 'rgba(255,255,255,0.4)',
+            cursor: 'pointer', fontFamily: 'inherit',
+          }}
+        >
+          {isZh ? '修改出生資料' : 'Edit birth data'}
+        </button>
+      </div>
+    );
+  }
 
   // ── Loading ──
   if (!data && !error) {
