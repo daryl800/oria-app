@@ -54,7 +54,7 @@ export default function Landing() {
                 letterSpacing: '0.08em',
                 color: 'rgba(200,173,82,0.55)',
                 lineHeight: 1.1,
-              }}>compass ai</div>
+              }}>compass</div>
             </div>
             <div style={{
               fontSize: 'clamp(10px, 1.5vw, 14px)',
