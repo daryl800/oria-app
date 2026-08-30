@@ -14,7 +14,7 @@ export default function Landing() {
 
   function startOnboarding() {
     setLeaving(true);
-    setTimeout(() => navigate('/onboarding/context'), 800);
+    setTimeout(() => navigate('/onboarding/mbti-gate'), 800);
   }
 
   return (
@@ -63,6 +63,14 @@ export default function Landing() {
           <p className="oria-landing-supporting">
             {t('landing.supporting')}
           </p>
+
+          <div className="oria-landing-quote">
+            <p className="oria-landing-quote-text">"{t('landing.quote_text')}"</p>
+            {t('landing.quote_original') && (
+              <p className="oria-landing-quote-original">{t('landing.quote_original')}</p>
+            )}
+            <p className="oria-landing-quote-author">{t('landing.quote_author')}</p>
+          </div>
 
           <div className="oria-landing-actions">
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, width: '100%' }}>

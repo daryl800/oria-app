@@ -328,6 +328,19 @@ export default function OnboardingBazi() {
           </button>
         </div>
 
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          style={{
+            display: 'block', margin: '18px auto 0',
+            border: 'none', background: 'transparent',
+            color: 'rgba(216, 180, 254, 0.42)',
+            fontFamily: 'inherit', fontSize: 15, cursor: 'pointer',
+          }}
+        >
+          {t('onboarding.bazi.back')}
+        </button>
+
         <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 16 }}>
           {t('disclaimer')}
         </p>

@@ -9,7 +9,7 @@ export default function OnboardingTransition() {
   const location = useLocation();
   const { t } = useTranslation();
   const [phase, setPhase] = useState(0);
-  const nextPath = (location.state as { nextPath?: string } | null)?.nextPath || '/onboarding/context';
+  const nextPath = (location.state as { nextPath?: string } | null)?.nextPath || '/onboarding/mbti-gate';
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 900);
