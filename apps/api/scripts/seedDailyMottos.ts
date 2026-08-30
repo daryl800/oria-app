@@ -37,8 +37,12 @@ function allGanzhi(): string[] {
 // "east" — both are real quotes originally in Chinese/Cantonese, just modern
 // figures rather than classical texts, same way the west side already mixes
 // ancient philosophers with modern figures like Steve Jobs. Each is pinned to
-// one specific ganzhi below (first 11 in cycle order — arbitrary but stable);
-// the LLM still writes the source context / explanation / ganzhi_connection
+// one specific ganzhi below (mostly the first 11 in cycle order, plus 丙子
+// standing in for 壬申 — 壬申 already had an organically-cached row from real
+// usage before this list existed, so Stephen Chow's quote was moved off it
+// rather than overwriting a live cache entry; see the safety check below for
+// what happens if this ever collides again). The LLM still writes the source
+// context / explanation / ganzhi_connection
 // for these, and independently picks a genuine, real counterpart quote for
 // the other side — only the quote text + source + original are fixed.
 const FIXED_MOTTOS: Record<string, FixedQuote> = {
@@ -50,7 +54,7 @@ const FIXED_MOTTOS: Record<string, FixedQuote> = {
   '己巳': { side: 'east', quote: '永不放棄，放棄是最大的失敗。', source: '馬雲' },
   '庚午': { side: 'west', quote: '你能做的最好投資，就是投資自己。', source: 'Warren Buffett', original: 'The best investment you can make is in yourself.' },
   '辛未': { side: 'west', quote: '盡你所能，多多投資自己。', source: 'Warren Buffett', original: 'Invest in as much of yourself as you can.' },
-  '壬申': { side: 'east', quote: '做人如果冇夢想，同條鹹魚有咩分別呀？', source: '周星馳（電影《少林足球》）' },
+  '丙子': { side: 'east', quote: '做人如果冇夢想，同條鹹魚有咩分別呀？', source: '周星馳（電影《少林足球》）' },
   '癸酉': { side: 'west', quote: '在完成之前，一切總看似不可能。', source: 'Nelson Mandela', original: "It always seems impossible until it's done." },
   '甲戌': { side: 'west', quote: '我懂得了，勇氣不是無所畏懼，而是戰勝恐懼。', source: 'Nelson Mandela', original: 'I learned that courage was not the absence of fear, but the triumph over it.' },
 };
@@ -80,7 +84,16 @@ async function main() {
           continue;
         }
         if (existing) {
-          console.log(`[${ganzhi}] already seeded, skipping`);
+          if (FIXED_MOTTOS[ganzhi]) {
+            // A curated quote is pinned here, but this ganzhi already has a
+            // row (e.g. from organic live usage before this list existed).
+            // Don't silently skip and lose the curated quote — surface it
+            // loudly so whoever runs this notices and can decide: clear that
+            // row and re-run, or reassign this quote to a free ganzhi.
+            console.warn(`[${ganzhi}] ⚠ has a curated quote pinned (${FIXED_MOTTOS[ganzhi].source}) but a row already exists here — skipped! Clear this row or reassign the quote to a different ganzhi.`);
+          } else {
+            console.log(`[${ganzhi}] already seeded, skipping`);
+          }
           results.skipped.push(ganzhi);
           continue;
         }
