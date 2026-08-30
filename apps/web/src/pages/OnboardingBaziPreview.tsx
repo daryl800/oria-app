@@ -121,7 +121,22 @@ const SHEN_SHA_SHORT: Record<string, { zh: string; en: string; emoji: string }> 
   jiangxing: { zh: '將星', en: 'General Star', emoji: '🎖️' },
 };
 
+// Per-sentence emoji cycles used to break long LLM paragraphs into scannable
+// chunks. Not meant to map precisely to sentence meaning — just enough visual
+// variety that a 2-4 sentence block doesn't read as one grey wall of text.
+const STRENGTH_READ_EMOJI = ['⚖️', '🌊', '💫'];
+
 // ── Helpers ───────────────────────────────────────────────────────
+
+// Splits an LLM-generated paragraph into individual sentences so it can be
+// rendered as short, scannable chunks instead of one dense block of text.
+function splitSentences(text?: string | null): string[] {
+  if (!text) return [];
+  return text
+    .split(/(?<=[。！？.!?])\s*/)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
 
 function ElementBars({ strengths }: { strengths: Record<string, number> }) {
   const order = ['Wood', 'Fire', 'Earth', 'Metal', 'Water'];
@@ -158,7 +173,14 @@ function ElementBars({ strengths }: { strengths: Record<string, number> }) {
 // ── Page ──────────────────────────────────────────────────────────
 
 const GOLD = '#C9A84C';
-const PREVIEW_SEEN_KEY = 'oria_preview_seen_token';
+// Browser-wide (localStorage, not per-token/session) flag: once any preview
+// has been shown in this browser, every subsequent visit is locked — even a
+// brand new token from restarting the onboarding flow from scratch (landing
+// page → MBTI → BaZi → concern) or from "Edit birth data". This closes the
+// loophole where a per-token gate let someone get unlimited free LLM-backed
+// previews just by starting over each time. Matches FateMaster's "see it
+// once, then register" behavior.
+const PREVIEW_SEEN_KEY = 'oria_preview_seen';
 
 export default function OnboardingBaziPreview() {
   const navigate = useNavigate();
@@ -170,18 +192,16 @@ export default function OnboardingBaziPreview() {
   const [error, setError] = useState('');
   const [teaser, setTeaser] = useState<TeaserData | null>(null);
   const [teaserLoading, setTeaserLoading] = useState(true);
-  // Gated to one free full view per token (see PREVIEW_SEEN_KEY below) — a
-  // second visit with the same token (reload, back-nav) shows a locked state
-  // instead of re-rendering the reading, matching FateMaster's "see it once,
-  // then register" pattern. Editing birth data issues a brand new token via
-  // temp-save, so that still gets a genuine fresh view.
+  // Gated to one free full view per browser, ever (see PREVIEW_SEEN_KEY
+  // above) — any later visit, including one with a brand new token, shows a
+  // locked state instead of re-rendering the reading.
   const [alreadySeen, setAlreadySeen] = useState(false);
 
   useEffect(() => {
     const token = sessionStorage.getItem('oria_onboarding_token');
     if (!token) { navigate('/onboarding/bazi', { replace: true }); return; }
 
-    if (sessionStorage.getItem(PREVIEW_SEEN_KEY) === token) {
+    if (localStorage.getItem(PREVIEW_SEEN_KEY) === '1') {
       setAlreadySeen(true);
       setTeaserLoading(false);
       return;
@@ -190,7 +210,7 @@ export default function OnboardingBaziPreview() {
     getBaziPreview(token)
       .then((d) => {
         setData(d);
-        sessionStorage.setItem(PREVIEW_SEEN_KEY, token);
+        localStorage.setItem(PREVIEW_SEEN_KEY, '1');
       })
       .catch(() => setError('preview_failed'));
 
@@ -295,11 +315,31 @@ export default function OnboardingBaziPreview() {
   })();
 
   return (
-    <div className="oria-page" style={{ padding: '24px 20px 48px', maxWidth: 520, margin: '0 auto' }}>
+    <div className="oria-page obp-page">
+      {/* Responsive layout: mobile keeps the original single-column ~520px
+          card feed; from 700px+ the container widens and paired cards
+          (Body Strength + Chart Highlights, Five Elements + Current Dayun)
+          sit side by side instead of stacking into one long mobile-style
+          scroll, so the page reads as a real desktop layout. */}
+      <style>{`
+        .obp-page { padding: 24px 20px 48px; }
+        .obp-container { max-width: 520px; margin: 0 auto; }
+        .obp-pair { display: flex; flex-direction: column; gap: 14px; margin-bottom: 14px; }
+        .obp-pair > * { margin-bottom: 0 !important; }
+        @media (min-width: 700px) {
+          .obp-page { padding: 44px 32px 64px; }
+          .obp-container { max-width: 760px; }
+          .obp-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        }
+        @media (min-width: 1100px) {
+          .obp-container { max-width: 900px; }
+        }
+      `}</style>
+      <div className="obp-container">
 
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 28 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 2, color: GOLD, textTransform: 'uppercase', marginBottom: 12 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 12 }}>
           {isZh ? '你的命盤初覽' : 'Your Chart Preview'}
         </div>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#F0EDE8', margin: 0, lineHeight: 1.3 }}>
@@ -314,7 +354,7 @@ export default function OnboardingBaziPreview() {
         borderRadius: 20, padding: '22px 20px',
         marginBottom: 14, textAlign: 'center',
       }}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 12 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase', marginBottom: 12 }}>
           {isZh ? '日主' : 'Day Master'}
         </div>
         <div style={{ fontSize: 64, fontWeight: 800, color: '#F0EDE8', lineHeight: 1, marginBottom: 6 }}>
@@ -330,11 +370,12 @@ export default function OnboardingBaziPreview() {
         )}
       </div>
 
+      <div className="obp-pair">
       {/* Body strength — deterministic classification + LLM plain-language read */}
       {strengthLabel && (
-        <div className="oria-card" style={{ padding: '20px', marginBottom: 14 }}>
+        <div className="oria-card" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: teaserLoading || teaser?.strength_read ? 12 : 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase' }}>
               {isZh ? '身強身弱' : 'Your Baseline'}
             </div>
             <div style={{
@@ -359,9 +400,18 @@ export default function OnboardingBaziPreview() {
               </span>
             </div>
           ) : teaser?.strength_read ? (
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
-              {teaser.strength_read}
-            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {splitSentences(teaser.strength_read).map((sentence, i) => (
+                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: 14, flexShrink: 0, lineHeight: 1.7 }}>
+                    {STRENGTH_READ_EMOJI[i % STRENGTH_READ_EMOJI.length]}
+                  </span>
+                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
+                    {sentence}
+                  </p>
+                </div>
+              ))}
+            </div>
           ) : null}
         </div>
       )}
@@ -371,8 +421,8 @@ export default function OnboardingBaziPreview() {
           post-signup breakdown. Deliberately abbreviated: enough to feel
           "wow, it read me" without giving away everything for free. */}
       {hasHighlights && (
-        <div className="oria-card" style={{ padding: '20px', marginBottom: 14 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
+        <div className="oria-card" style={{ padding: '20px' }}>
+          <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
             {isZh ? '命盤亮點' : 'Chart Highlights'}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -411,10 +461,12 @@ export default function OnboardingBaziPreview() {
           </div>
         </div>
       )}
+      </div>
 
+      <div className="obp-pair">
       {/* Five elements */}
-      <div className="oria-card" style={{ padding: '20px', marginBottom: 14 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 16 }}>
+      <div className="oria-card" style={{ padding: '20px' }}>
+        <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase', marginBottom: 16 }}>
           {isZh ? '五行分佈' : 'Five Elements'}
         </div>
         <ElementBars strengths={five_elements_strength} />
@@ -422,8 +474,8 @@ export default function OnboardingBaziPreview() {
 
       {/* Current Da Yun */}
       {current_dayun && (
-        <div className="oria-card" style={{ padding: '20px', marginBottom: 14 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
+        <div className="oria-card" style={{ padding: '20px' }}>
+          <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
             {isZh ? '當前大運' : 'Current Major Cycle'}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -445,6 +497,7 @@ export default function OnboardingBaziPreview() {
           </div>
         </div>
       )}
+      </div>
 
       {/* MBTI badge */}
       {mbti && (
@@ -465,7 +518,7 @@ export default function OnboardingBaziPreview() {
           borderRadius: 20, padding: '22px 20px',
           marginBottom: 14,
         }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
             {isZh ? '針對你的關注重點' : 'For your concern'}
           </div>
           {teaserLoading ? (
@@ -484,12 +537,25 @@ export default function OnboardingBaziPreview() {
             </div>
           ) : teaser ? (
             <>
-              <p style={{ fontSize: 16, fontWeight: 700, color: '#F0EDE8', lineHeight: 1.55, margin: '0 0 10px' }}>
-                {teaser.hook}
-              </p>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
-                {teaser.insight}
-              </p>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginBottom: 12 }}>
+                <span style={{ fontSize: 17, flexShrink: 0, lineHeight: 1.55 }}>🔮</span>
+                <p style={{ fontSize: 16, fontWeight: 700, color: '#F0EDE8', lineHeight: 1.55, margin: 0 }}>
+                  {teaser.hook}
+                </p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {splitSentences(teaser.insight).map((sentence, i, arr) => {
+                  const emoji = i === 0 ? '🔥' : i === arr.length - 1 ? '💡' : '🧠';
+                  return (
+                    <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                      <span style={{ fontSize: 15, flexShrink: 0, lineHeight: 1.7 }}>{emoji}</span>
+                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
+                        {sentence}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </>
           ) : null}
         </div>
@@ -525,14 +591,13 @@ export default function OnboardingBaziPreview() {
       <button
         onClick={() => navigate('/onboarding/signup')}
         style={{
-          display: 'block', width: '100%',
+          display: 'block', width: '100%', maxWidth: 480, margin: '0 auto 12px',
           background: GOLD, border: 'none',
           borderRadius: 999, padding: '16px',
           fontSize: 16, fontWeight: 700,
           color: '#fff', cursor: 'pointer',
           fontFamily: 'inherit',
           boxShadow: '0 4px 24px rgba(201,168,76,0.45)',
-          marginBottom: 12,
         }}
       >
         {isZh ? '繼續 →' : 'Continue →'}
@@ -541,7 +606,7 @@ export default function OnboardingBaziPreview() {
       <button
         onClick={() => navigate('/onboarding/bazi')}
         style={{
-          display: 'block', width: '100%',
+          display: 'block', width: '100%', maxWidth: 480, margin: '0 auto',
           background: 'transparent',
           border: '1px solid rgba(255,255,255,0.15)',
           borderRadius: 999, padding: '13px',
@@ -552,6 +617,7 @@ export default function OnboardingBaziPreview() {
         {isZh ? '修改出生資料' : 'Edit birth data'}
       </button>
 
+      </div>
     </div>
   );
 }
