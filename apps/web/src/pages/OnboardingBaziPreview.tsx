@@ -209,10 +209,10 @@ export default function OnboardingBaziPreview() {
       <div className="oria-page oria-page-center" style={{ gap: 20, padding: '0 24px', textAlign: 'center' }}>
         <div style={{ fontSize: 40 }}>🔒</div>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', margin: 0 }}>
-          {isZh ? '你已經看過這份預覽了' : "You've already seen this preview"}
+          {isZh ? '解鎖完整命盤解析' : 'Unlock Your Full Chart'}
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, lineHeight: 1.6, maxWidth: 340, margin: 0 }}>
-          {isZh ? '註冊帳號後可以隨時查看完整命盤，不再受限。' : 'Create your free account to view your full chart anytime, with no limits.'}
+          {isZh ? '登入或註冊帳號，繼續探索你的命盤。' : 'Sign in or register to keep exploring your chart.'}
         </p>
         <button
           onClick={() => navigate('/onboarding/signup')}
