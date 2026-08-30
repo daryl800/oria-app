@@ -7,15 +7,22 @@ const router = Router();
 // L1: process-level cache — avoids Supabase round-trip within same process run
 const mottoL1Cache = new Map<string, { east: object; west: object }>();
 
-function buildMottoPrompt(ganzhi: string): { role: string; content: string }[] {
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const day = now.getDate();
+// `dateContext` is optional so this can be reused by the one-off seed script
+// (scripts/seedDailyMottos.ts), which generates an entry for every one of the
+// 60 ganzhi values ahead of time and caches it in daily_mottos forever. Those
+// cached entries get served on arbitrary future dates, so baking in "today is
+// Aug 30" at generation time would read wrong months later — the seed script
+// omits it. The live per-request path (below) still passes today's date for
+// a touch of seasonal flavor on first-ever generation of a given ganzhi.
+export function buildMottoPrompt(ganzhi: string, dateContext?: string): { role: string; content: string }[] {
+  const intro = dateContext
+    ? `今天是${dateContext}，干支為${ganzhi}。`
+    : `干支為${ganzhi}。`;
 
   return [
     {
       role: 'user',
-      content: `今天是${month}月${day}日，干支為${ganzhi}。
+      content: `${intro}
 
 請各選一句名言：
 
@@ -62,7 +69,7 @@ function buildMottoPrompt(ganzhi: string): { role: string; content: string }[] {
   ];
 }
 
-function parseResult(raw: string): object {
+export function parseResult(raw: string): object {
   try {
     const clean = sanitizeLlmJson(
       raw.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/```$/, '').trim(),
@@ -94,8 +101,11 @@ router.get('/motto-test', async (req: Request, res: Response) => {
       return res.json({ east: stored.east, west: stored.west, cached: true });
     }
 
-    // Miss — call LLM
-    const messages = buildMottoPrompt(ganzhi) as any;
+    // Miss — call LLM. Live requests still pass today's date for a touch of
+    // seasonal flavor on the (now rare, post-seeding) first-ever generation.
+    const now = new Date();
+    const dateContext = `${now.getMonth() + 1}月${now.getDate()}日`;
+    const messages = buildMottoPrompt(ganzhi, dateContext) as any;
     const raw = await complete(messages, 'motto_test_hunyuan');
     const parsed = parseResult(raw) as any;
 
