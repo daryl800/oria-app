@@ -322,7 +322,16 @@
       "element_summary": "Deine Elementstruktur wird von {{topElement}} angeführt und zeigt natürliche Stärke in {{topTerm}}, während {{weakestElement}} vergleichsweise schwächer ist und möglicherweise mehr bewusste Balance erfordert.",
       "tension_two": "Deine Struktur betont sowohl {{top1}} als auch {{top2}}. Das erzeugt oft eine Spannung zwischen Schwung und Kontrolle: Du willst schnell vorankommen, aber auch, dass die Dinge präzise und richtig sind.",
       "tension_one": "Du neigst dazu, durch {{top1}} voranzukommen, aber die mit {{weakest}} verbundene Fähigkeit zur Reflexion, Aufnahme oder Regulierung ist möglicherweise nicht so stark. Du kannst schnell vorankommen, ohne alles vollständig zu verarbeiten.",
-      "tension_balanced": "Dein Elementprofil ist relativ ausgewogen, ohne eine überwältigend dominante Kraft. Der Vorteil ist Flexibilität, aber die Spannung besteht darin, dass du in wichtigen Momenten möglicherweise bewusst wählen musst, wie du handeln möchtest, anstatt dich auf ein natürliches Standardverhalten zu verlassen."
+      "tension_balanced": "Dein Elementprofil ist relativ ausgewogen, ohne eine überwältigend dominante Kraft. Der Vorteil ist Flexibilität, aber die Spannung besteht darin, dass du in wichtigen Momenten möglicherweise bewusst wählen musst, wie du handeln möchtest, anstatt dich auf ein natürliches Standardverhalten zu verlassen.",
+      "wuxing_star": "Elemente-Stern",
+      "wuxing_star_caption": "Die Anzahl dient nur als Orientierung — lies sie zusammen mit der Beziehung jedes Elements zu deinem Day Master.",
+      "wuxing_relations": {
+        "same": "Gleich wie ich",
+        "generates_me": "Erzeugt mich",
+        "i_generate": "Ich erzeuge",
+        "controls_me": "Kontrolliert mich",
+        "i_control": "Ich kontrolliere"
+      }
     },
     "mbti": {
       "section": "MBTI-Persönlichkeit",

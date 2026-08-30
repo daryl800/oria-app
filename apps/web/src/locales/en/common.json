@@ -373,7 +373,16 @@
       "element_summary": "Your elemental structure is led by {{topElement}}, showing natural strength in {{topTerm}}, while {{weakestElement}} is comparatively weaker and may require more conscious balancing.",
       "tension_two": "Your structure emphasizes both {{top1}} and {{top2}}. This often creates a tension between momentum and control: you want to move quickly, but also want things to be precise and right.",
       "tension_one": "You tend to move forward through {{top1}}, but the {{weakest}}-related capacity for reflection, absorption, or regulation may not be as strong. You may move fast without fully processing as you go.",
-      "tension_balanced": "Your elemental profile is relatively balanced, without one overwhelmingly dominant force. The advantage is flexibility, but the tension is that in important moments, you may need to consciously choose how you want to act rather than relying on one natural default."
+      "tension_balanced": "Your elemental profile is relatively balanced, without one overwhelmingly dominant force. The advantage is flexibility, but the tension is that in important moments, you may need to consciously choose how you want to act rather than relying on one natural default.",
+      "wuxing_star": "Five Element Star",
+      "wuxing_star_caption": "Counts are for reference only — read them together with how each element relates to your Day Master.",
+      "wuxing_relations": {
+        "same": "Same as me",
+        "generates_me": "Generates me",
+        "i_generate": "I generate",
+        "controls_me": "Controls me",
+        "i_control": "I control"
+      }
     },
     "mbti": {
       "section": "MBTI Personality",

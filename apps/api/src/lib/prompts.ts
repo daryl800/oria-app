@@ -603,6 +603,57 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
   ];
 }
 
+// Cheap prompt for the pre-signup onboarding "teaser" — shown after the user
+// has entered MBTI + BaZi + their concern, but before they create an account.
+// Unlike profileSummaryPrompt (long, expensive, post-signup), this stays a
+// single call aimed at a fast/cheap model (see llm.ts CHAINS.preview_teaser)
+// — 4 fields, but instructed to write substantially more per field (~450
+// char budget vs. the original ~200) since a single cheap call's cost is
+// dominated by input tokens, not output length, so this is a near-free way
+// to make the preview feel less thin. Cached on the temp_onboarding_data row
+// so a page reload never triggers a second paid call.
+export function onboardingTeaserPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = [], context_focus_other?: string | null): Messages {
+  const baziCtx = getBaziContext(bazi);
+  const mbtiCtx = getMbtiContext(mbti);
+  const respondIn = getRespondIn(lang);
+  const langGuard = getLangGuard(lang);
+  const contextFocusSection = getContextFocusSection(context_focus, lang, context_focus_other);
+
+  return [
+    {
+      role: 'system',
+      content: `${langGuard}你是Oria的命盤解析師。這是用戶在註冊前看到的「預覽」，目的是讓用戶感覺「這說中了我」，進而想註冊看完整解析——但這不是硬廣告，內容必須真實、具體、根植於命盤事實。
+
+【風格】冷靜、有洞察力、像懂命理的朋友，不誇張、不算命腔、不做絕對預測。
+【嚴格禁止】不得使用「你註定」「一定會」「命中註定」等宿命語言；不得誇大或編造命盤中不存在的結構。
+${SAFETY_CLAUSE}`,
+    },
+    {
+      role: 'user',
+      content: `根據以下八字與MBTI資料，生成一段簡短的「預覽解讀」，直接針對用戶的關注重點，必須是八字與MBTI的綜合解讀，不是兩份分開的分析。
+
+${baziCtx}
+${mbtiCtx}
+${contextFocusSection ? `\n${contextFocusSection}` : '\n（用戶未提供具體關注重點，請根據命盤最突出的結構特徵發揮）'}
+
+要求：
+1. hook：1句話，具體點出命盤中一個實際存在的結構（例如日主強弱、某個十神、五行組合），讓用戶覺得「這真的在講我」，不可空泛
+2. insight：4-5句，必須融合八字與MBTI兩者，分三層來寫——(a) 具體說明命盤結構「為什麼」會造成用戶關注重點中的處境（點名相關的十神、五行或格局）(b) 具體說明這個人的MBTI類型會讓這個處境實際「怎麼表現」在行為上（要點出具體的認知功能或傾向，例如內向直覺、外向思考等，不可只是重複打出MBTI四個字母，也絕對不能只寫「這與你的MBTI相符」「MBTI也顯示」這類空話）(c) 給出一個真實可行、不空泛的方向建議。語氣像朋友當面解釋，不是命理課本或人格測驗報告，避免重複同一件事
+3. locked_teaser：1句話，具體描述完整解析裡還有什麼（例如「完整解析會告訴你這個模式在今年流年會怎麼變化」），製造好奇心，不可只寫「註冊解鎖更多」這種空話
+4. strength_read：2-3句，把命盤中的「身強／身弱」判定翻譯成白話——這代表這個人平常做事、扛壓力、做決定時的傾向是什麼，並補一句這種傾向在什麼情境下是優勢、什麼情境下容易變成阻力，不要出現「身強」「身弱」這種術語本身，直接講意思
+
+以JSON回應：
+{
+  "hook": "...",
+  "insight": "...",
+  "locked_teaser": "...",
+  "strength_read": "..."
+}
+只回傳JSON，總長度控制在550字以內，寫得像真的看過這個人的命盤和MBTI在跟他說話，不要條列式、不要空話。${respondIn}`,
+    },
+  ];
+}
+
 export function dailyGuidancePrompt(
   bazi: any,
   mbti: any,

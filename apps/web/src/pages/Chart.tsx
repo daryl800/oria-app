@@ -8,6 +8,7 @@ import { normalizeLanguage, SUPPORTED_LANGUAGES } from '../lib/languages';
 import { getGeneratedLanguage, languageDisplayName } from '../lib/contentLanguage';
 import OriaLogo from '../components/OriaLogo';
 import PlanetLoader from '../components/PlanetLoader';
+import FiveElementStar from '../components/FiveElementStar';
 
 // Romanized to Chinese character mappings
 const GAN_CN: Record<string, string> = {
@@ -1108,13 +1109,29 @@ export default function Chart({ user, isPlus = false }: { user: User; isPlus?: b
             {showBaziDetails ? t('chart.bazi.deep_close') : t('chart.bazi.deep_open')}
           </button>
 
-          {/* Five Elements — stacked bar */}
+          {/* Five Elements — star chart + stacked bar */}
           <div>
             <div
               style={chartLabelStyle}
             >
-              ◎ {t('chart.bazi.five_elements')}
+              ◎ {t('chart.bazi.wuxing_star')}
             </div>
+
+            {bazi?.day_master && Object.keys(elements).length > 0 && (
+              <div
+                style={{
+                  padding: '18px 10px 4px',
+                  borderRadius: 16,
+                  ...chartPanelStyle,
+                  marginBottom: 14,
+                }}
+              >
+                <FiveElementStar
+                  strengths={elements as Record<string, number>}
+                  dayMasterElement={GAN_ELEMENT_EN[bazi.day_master] ?? ''}
+                />
+              </div>
+            )}
 
             {(() => {
               const total = Object.values(elements).reduce((a: any, b: any) => a + b, 0) as number;

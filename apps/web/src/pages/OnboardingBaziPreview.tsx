@@ -53,20 +53,90 @@ interface DayunInfo {
   end_age: number;
 }
 
+interface BodyStrength {
+  classification: string; // 極強 | 身強 | 均衡 | 身弱 | 極弱
+}
+
+interface WealthVaultVault {
+  relation: string;
+  status: string; // closed | activated | disturbed | uncertain
+  favorability: string; // favorable | unfavorable | neutral | unknown
+  is_wealth_vault: boolean;
+}
+
+interface WealthVaultData {
+  wealth_relation_status: string; // none | no_wealth_vault | wealth_vault_inactive | wealth_vault_activated
+  vaults: WealthVaultVault[];
+}
+
+interface ShenShaStar {
+  key: string;
+}
+
+interface ShenShaData {
+  stars: ShenShaStar[];
+}
+
 interface PreviewData {
   day_master: string;
   five_elements_strength: Record<string, number>;
   current_dayun: DayunInfo | null;
   mbti_type: string | null;
+  body_strength: BodyStrength | null;
+  wealth_vault: WealthVaultData | null;
+  shen_sha: ShenShaData | null;
 }
 
 interface TeaserData {
   hook: string;
   insight: string;
   locked_teaser: string;
+  strength_read?: string;
 }
 
+// Compact labels for the "Chart Highlights" preview card. Not the full
+// interpretive copy shown post-signup (see Chart.tsx) — deliberately a
+// shorter, single-line version since this is a preview, not the full report.
+const BODY_STRENGTH_LABEL: Record<string, { zh: string; en: string }> = {
+  '極強': { zh: '極強', en: 'Very strong' },
+  '身強': { zh: '身強', en: 'Strong' },
+  '均衡': { zh: '均衡', en: 'Balanced' },
+  '身弱': { zh: '身弱', en: 'Gentle' },
+  '極弱': { zh: '極弱', en: 'Very gentle' },
+};
+
+const VAULT_STATUS_SHORT: Record<string, { zh: string; en: string }> = {
+  closed: { zh: '安靜期', en: 'Quiet phase' },
+  activated: { zh: '變化中', en: 'In flux' },
+  disturbed: { zh: '多重變化', en: 'Multiple shifts' },
+  uncertain: { zh: '狀態不明', en: 'Unclear' },
+};
+
+const SHEN_SHA_SHORT: Record<string, { zh: string; en: string; emoji: string }> = {
+  tianyi_guiren: { zh: '天乙貴人', en: 'Noble Helper', emoji: '🌟' },
+  wenchang: { zh: '文昌', en: 'Scholar Star', emoji: '📖' },
+  yima: { zh: '驛馬', en: 'Travel Horse', emoji: '🐎' },
+  taohua: { zh: '桃花', en: 'Peach Blossom', emoji: '🌸' },
+  huagai: { zh: '華蓋', en: 'Canopy', emoji: '🎨' },
+  jiangxing: { zh: '將星', en: 'General Star', emoji: '🎖️' },
+};
+
+// Per-sentence emoji cycles used to break long LLM paragraphs into scannable
+// chunks. Not meant to map precisely to sentence meaning — just enough visual
+// variety that a 2-4 sentence block doesn't read as one grey wall of text.
+const STRENGTH_READ_EMOJI = ['⚖️', '🌊', '💫'];
+
 // ── Helpers ───────────────────────────────────────────────────────
+
+// Splits an LLM-generated paragraph into individual sentences so it can be
+// rendered as short, scannable chunks instead of one dense block of text.
+function splitSentences(text?: string | null): string[] {
+  if (!text) return [];
+  return text
+    .split(/(?<=[。！？.!?])\s*/)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
 
 function ElementBars({ strengths }: { strengths: Record<string, number> }) {
   const order = ['Wood', 'Fire', 'Earth', 'Metal', 'Water'];
@@ -103,6 +173,14 @@ function ElementBars({ strengths }: { strengths: Record<string, number> }) {
 // ── Page ──────────────────────────────────────────────────────────
 
 const GOLD = '#C9A84C';
+// Browser-wide (localStorage, not per-token/session) flag: once any preview
+// has been shown in this browser, every subsequent visit is locked — even a
+// brand new token from restarting the onboarding flow from scratch (landing
+// page → MBTI → BaZi → concern) or from "Edit birth data". This closes the
+// loophole where a per-token gate let someone get unlimited free LLM-backed
+// previews just by starting over each time. Matches FateMaster's "see it
+// once, then register" behavior.
+const PREVIEW_SEEN_KEY = 'oria_preview_seen';
 
 export default function OnboardingBaziPreview() {
   const navigate = useNavigate();
@@ -114,13 +192,26 @@ export default function OnboardingBaziPreview() {
   const [error, setError] = useState('');
   const [teaser, setTeaser] = useState<TeaserData | null>(null);
   const [teaserLoading, setTeaserLoading] = useState(true);
+  // Gated to one free full view per browser, ever (see PREVIEW_SEEN_KEY
+  // above) — any later visit, including one with a brand new token, shows a
+  // locked state instead of re-rendering the reading.
+  const [alreadySeen, setAlreadySeen] = useState(false);
 
   useEffect(() => {
     const token = sessionStorage.getItem('oria_onboarding_token');
     if (!token) { navigate('/onboarding/bazi', { replace: true }); return; }
 
+    if (localStorage.getItem(PREVIEW_SEEN_KEY) === '1') {
+      setAlreadySeen(true);
+      setTeaserLoading(false);
+      return;
+    }
+
     getBaziPreview(token)
-      .then(setData)
+      .then((d) => {
+        setData(d);
+        localStorage.setItem(PREVIEW_SEEN_KEY, '1');
+      })
       .catch(() => setError('preview_failed'));
 
     // Personalized teaser loads separately and never blocks the rest of the
@@ -131,6 +222,45 @@ export default function OnboardingBaziPreview() {
       .catch(() => setTeaser(null))
       .finally(() => setTeaserLoading(false));
   }, []);
+
+  // ── Already seen this token once ──
+  if (alreadySeen) {
+    return (
+      <div className="oria-page oria-page-center" style={{ gap: 20, padding: '0 24px', textAlign: 'center' }}>
+        <div style={{ fontSize: 40 }}>🔒</div>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', margin: 0 }}>
+          {isZh ? '解鎖完整命盤解析' : 'Unlock Your Full Chart'}
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, lineHeight: 1.6, maxWidth: 340, margin: 0 }}>
+          {isZh ? '登入或註冊帳號，繼續探索你的命盤。' : 'Sign in or register to keep exploring your chart.'}
+        </p>
+        <button
+          onClick={() => navigate('/onboarding/signup')}
+          style={{
+            display: 'block', width: '100%', maxWidth: 340,
+            background: GOLD, border: 'none',
+            borderRadius: 999, padding: '16px',
+            fontSize: 16, fontWeight: 700,
+            color: '#fff', cursor: 'pointer',
+            fontFamily: 'inherit',
+            boxShadow: '0 4px 24px rgba(201,168,76,0.45)',
+          }}
+        >
+          {isZh ? '註冊解鎖 →' : 'Register to unlock →'}
+        </button>
+        <button
+          onClick={() => navigate('/onboarding/bazi')}
+          style={{
+            background: 'transparent', border: 'none',
+            fontSize: 14, color: 'rgba(255,255,255,0.4)',
+            cursor: 'pointer', fontFamily: 'inherit',
+          }}
+        >
+          {isZh ? '修改出生資料' : 'Edit birth data'}
+        </button>
+      </div>
+    );
+  }
 
   // ── Loading ──
   if (!data && !error) {
@@ -162,11 +292,22 @@ export default function OnboardingBaziPreview() {
     );
   }
 
-  const { day_master, five_elements_strength, current_dayun, mbti_type } = data;
+  const { day_master, five_elements_strength, current_dayun, mbti_type, body_strength, wealth_vault, shen_sha } = data;
   const stemZh = STEM_ZH[day_master] ?? day_master;
   const element = STEM_ELEMENT[day_master] ?? '';
   const elementZh = ELEMENT_ZH[element] ?? '';
   const trait = DAY_MASTER_TRAIT[day_master];
+
+  const strengthLabel = body_strength ? BODY_STRENGTH_LABEL[body_strength.classification] : null;
+
+  // Only surface a wealth-vault line when there's an actual positive finding —
+  // "no vault here" isn't interesting in a preview, so it's silently skipped.
+  const topVault = wealth_vault?.vaults?.find(v => v.is_wealth_vault) ?? null;
+  const showVaultLine = topVault && (wealth_vault!.wealth_relation_status === 'wealth_vault_activated' || wealth_vault!.wealth_relation_status === 'wealth_vault_inactive');
+
+  const topStar = shen_sha?.stars?.[0] ? SHEN_SHA_SHORT[shen_sha.stars[0].key] : null;
+
+  const hasHighlights = showVaultLine || topStar;
 
   // Retrieve MBTI from localStorage as fallback if backend didn't return it
   const mbti = mbti_type ?? (() => {
@@ -174,11 +315,31 @@ export default function OnboardingBaziPreview() {
   })();
 
   return (
-    <div className="oria-page" style={{ padding: '24px 20px 48px', maxWidth: 520, margin: '0 auto' }}>
+    <div className="oria-page obp-page">
+      {/* Responsive layout: mobile keeps the original single-column ~520px
+          card feed; from 700px+ the container widens and paired cards
+          (Body Strength + Chart Highlights, Five Elements + Current Dayun)
+          sit side by side instead of stacking into one long mobile-style
+          scroll, so the page reads as a real desktop layout. */}
+      <style>{`
+        .obp-page { padding: 24px 20px 48px; }
+        .obp-container { max-width: 520px; margin: 0 auto; }
+        .obp-pair { display: flex; flex-direction: column; gap: 14px; margin-bottom: 14px; }
+        .obp-pair > * { margin-bottom: 0 !important; }
+        @media (min-width: 700px) {
+          .obp-page { padding: 44px 32px 64px; }
+          .obp-container { max-width: 760px; }
+          .obp-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        }
+        @media (min-width: 1100px) {
+          .obp-container { max-width: 900px; }
+        }
+      `}</style>
+      <div className="obp-container">
 
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 28 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 2, color: GOLD, textTransform: 'uppercase', marginBottom: 12 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 12 }}>
           {isZh ? '你的命盤初覽' : 'Your Chart Preview'}
         </div>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#F0EDE8', margin: 0, lineHeight: 1.3 }}>
@@ -193,7 +354,7 @@ export default function OnboardingBaziPreview() {
         borderRadius: 20, padding: '22px 20px',
         marginBottom: 14, textAlign: 'center',
       }}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 12 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase', marginBottom: 12 }}>
           {isZh ? '日主' : 'Day Master'}
         </div>
         <div style={{ fontSize: 64, fontWeight: 800, color: '#F0EDE8', lineHeight: 1, marginBottom: 6 }}>
@@ -209,9 +370,103 @@ export default function OnboardingBaziPreview() {
         )}
       </div>
 
+      <div className="obp-pair">
+      {/* Body strength — deterministic classification + LLM plain-language read */}
+      {strengthLabel && (
+        <div className="oria-card" style={{ padding: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: teaserLoading || teaser?.strength_read ? 12 : 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase' }}>
+              {isZh ? '身強身弱' : 'Your Baseline'}
+            </div>
+            <div style={{
+              fontSize: 13, fontWeight: 700, color: GOLD,
+              background: 'rgba(201,168,76,0.12)', border: `1px solid ${GOLD}40`,
+              borderRadius: 999, padding: '3px 12px',
+            }}>
+              {isZh ? strengthLabel.zh : strengthLabel.en}
+            </div>
+          </div>
+          {teaserLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 0' }}>
+              <span style={{
+                width: 12, height: 12, borderRadius: '50%',
+                border: '2px solid rgba(201,168,76,0.25)',
+                borderTopColor: GOLD,
+                animation: 'oriaTeaserSpin 0.8s linear infinite',
+                display: 'inline-block', flexShrink: 0,
+              }} />
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)' }}>
+                {isZh ? '正在解讀…' : 'Reading…'}
+              </span>
+            </div>
+          ) : teaser?.strength_read ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {splitSentences(teaser.strength_read).map((sentence, i) => (
+                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: 14, flexShrink: 0, lineHeight: 1.7 }}>
+                    {STRENGTH_READ_EMOJI[i % STRENGTH_READ_EMOJI.length]}
+                  </span>
+                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
+                    {sentence}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      )}
+
+      {/* Chart highlights — a couple of positive, concrete findings (wealth
+          vault status, a standout Shen Sha star) rather than the full
+          post-signup breakdown. Deliberately abbreviated: enough to feel
+          "wow, it read me" without giving away everything for free. */}
+      {hasHighlights && (
+        <div className="oria-card" style={{ padding: '20px' }}>
+          <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
+            {isZh ? '命盤亮點' : 'Chart Highlights'}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {showVaultLine && topVault && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>💰</span>
+                <div>
+                  <div style={{ fontSize: 14, color: '#F0EDE8', fontWeight: 600 }}>
+                    {isZh ? '財庫' : 'Wealth Vault'}
+                    {' · '}
+                    <span style={{ color: GOLD }}>
+                      {isZh ? VAULT_STATUS_SHORT[topVault.status]?.zh : VAULT_STATUS_SHORT[topVault.status]?.en}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                    {isZh ? '命盤中發現與財星相關的庫位' : 'A wealth-related vault was found in your chart'}
+                  </div>
+                </div>
+              </div>
+            )}
+            {topStar && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>{topStar.emoji}</span>
+                <div>
+                  <div style={{ fontSize: 14, color: '#F0EDE8', fontWeight: 600 }}>
+                    {isZh ? '神煞' : 'Shen Sha'}
+                    {' · '}
+                    <span style={{ color: GOLD }}>{isZh ? topStar.zh : topStar.en}</span>
+                  </div>
+                  <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                    {isZh ? '命盤中標註出的特質星' : 'A highlighted trait star in your chart'}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      </div>
+
+      <div className="obp-pair">
       {/* Five elements */}
-      <div className="oria-card" style={{ padding: '20px', marginBottom: 14 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 16 }}>
+      <div className="oria-card" style={{ padding: '20px' }}>
+        <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase', marginBottom: 16 }}>
           {isZh ? '五行分佈' : 'Five Elements'}
         </div>
         <ElementBars strengths={five_elements_strength} />
@@ -219,8 +474,8 @@ export default function OnboardingBaziPreview() {
 
       {/* Current Da Yun */}
       {current_dayun && (
-        <div className="oria-card" style={{ padding: '20px', marginBottom: 14 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
+        <div className="oria-card" style={{ padding: '20px' }}>
+          <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
             {isZh ? '當前大運' : 'Current Major Cycle'}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -242,6 +497,7 @@ export default function OnboardingBaziPreview() {
           </div>
         </div>
       )}
+      </div>
 
       {/* MBTI badge */}
       {mbti && (
@@ -262,7 +518,7 @@ export default function OnboardingBaziPreview() {
           borderRadius: 20, padding: '22px 20px',
           marginBottom: 14,
         }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.2, color: GOLD, textTransform: 'uppercase', marginBottom: 14 }}>
             {isZh ? '針對你的關注重點' : 'For your concern'}
           </div>
           {teaserLoading ? (
@@ -281,12 +537,25 @@ export default function OnboardingBaziPreview() {
             </div>
           ) : teaser ? (
             <>
-              <p style={{ fontSize: 16, fontWeight: 700, color: '#F0EDE8', lineHeight: 1.55, margin: '0 0 10px' }}>
-                {teaser.hook}
-              </p>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
-                {teaser.insight}
-              </p>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginBottom: 12 }}>
+                <span style={{ fontSize: 17, flexShrink: 0, lineHeight: 1.55 }}>🔮</span>
+                <p style={{ fontSize: 16, fontWeight: 700, color: '#F0EDE8', lineHeight: 1.55, margin: 0 }}>
+                  {teaser.hook}
+                </p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {splitSentences(teaser.insight).map((sentence, i, arr) => {
+                  const emoji = i === 0 ? '🔥' : i === arr.length - 1 ? '💡' : '🧠';
+                  return (
+                    <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                      <span style={{ fontSize: 15, flexShrink: 0, lineHeight: 1.7 }}>{emoji}</span>
+                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
+                        {sentence}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </>
           ) : null}
         </div>
@@ -322,14 +591,13 @@ export default function OnboardingBaziPreview() {
       <button
         onClick={() => navigate('/onboarding/signup')}
         style={{
-          display: 'block', width: '100%',
+          display: 'block', width: '100%', maxWidth: 480, margin: '0 auto 12px',
           background: GOLD, border: 'none',
           borderRadius: 999, padding: '16px',
           fontSize: 16, fontWeight: 700,
           color: '#fff', cursor: 'pointer',
           fontFamily: 'inherit',
           boxShadow: '0 4px 24px rgba(201,168,76,0.45)',
-          marginBottom: 12,
         }}
       >
         {isZh ? '繼續 →' : 'Continue →'}
@@ -338,7 +606,7 @@ export default function OnboardingBaziPreview() {
       <button
         onClick={() => navigate('/onboarding/bazi')}
         style={{
-          display: 'block', width: '100%',
+          display: 'block', width: '100%', maxWidth: 480, margin: '0 auto',
           background: 'transparent',
           border: '1px solid rgba(255,255,255,0.15)',
           borderRadius: 999, padding: '13px',
@@ -349,6 +617,7 @@ export default function OnboardingBaziPreview() {
         {isZh ? '修改出生資料' : 'Edit birth data'}
       </button>
 
+      </div>
     </div>
   );
 }

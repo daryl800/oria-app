@@ -322,7 +322,16 @@
       "element_summary": "Votre structure élémentaire est dominée par {{topElement}}, montrant une force naturelle en {{topTerm}}, tandis que {{weakestElement}} est comparativement plus faible et peut nécessiter un équilibrage plus conscient.",
       "tension_two": "Votre structure met en avant à la fois {{top1}} et {{top2}}. Cela crée souvent une tension entre l'élan et le contrôle : vous voulez avancer vite, mais aussi que les choses soient précises et justes.",
       "tension_one": "Vous avez tendance à avancer à travers {{top1}}, mais la capacité liée à {{weakest}} — réflexion, absorption ou régulation — peut ne pas être aussi forte. Vous pouvez aller vite sans tout assimiler au fur et à mesure.",
-      "tension_balanced": "Votre profil élémentaire est relativement équilibré, sans force écrasante. L'avantage est la flexibilité, mais la tension est que dans les moments importants, vous devrez peut-être choisir consciemment comment vous souhaitez agir plutôt que de vous fier à un comportement naturel par défaut."
+      "tension_balanced": "Votre profil élémentaire est relativement équilibré, sans force écrasante. L'avantage est la flexibilité, mais la tension est que dans les moments importants, vous devrez peut-être choisir consciemment comment vous souhaitez agir plutôt que de vous fier à un comportement naturel par défaut.",
+      "wuxing_star": "Étoile des éléments",
+      "wuxing_star_caption": "Les quantités sont indicatives — à lire avec la relation de chaque élément à ton Day Master.",
+      "wuxing_relations": {
+        "same": "Identique à moi",
+        "generates_me": "Me génère",
+        "i_generate": "Je génère",
+        "controls_me": "Me contrôle",
+        "i_control": "Je contrôle"
+      }
     },
     "mbti": {
       "section": "Personnalité MBTI",

@@ -322,7 +322,16 @@
       "element_summary": "Tu estructura elemental está liderada por {{topElement}}, mostrando fortaleza natural en {{topTerm}}, mientras que {{weakestElement}} es comparativamente más débil.",
       "tension_two": "Tu estructura enfatiza tanto {{top1}} como {{top2}}. Esto suele crear una tensión entre el momentum y el control.",
       "tension_one": "Tiendes a avanzar a través de {{top1}}, pero la capacidad relacionada con {{weakest}} puede no ser tan fuerte.",
-      "tension_balanced": "Tu perfil elemental es relativamente equilibrado, sin una fuerza abrumadoramente dominante."
+      "tension_balanced": "Tu perfil elemental es relativamente equilibrado, sin una fuerza abrumadoramente dominante.",
+      "wuxing_star": "Estrella de los elementos",
+      "wuxing_star_caption": "Las cantidades son solo orientativas — interprétalas junto con la relación de cada elemento con tu Day Master.",
+      "wuxing_relations": {
+        "same": "Igual que yo",
+        "generates_me": "Me genera",
+        "i_generate": "Yo genero",
+        "controls_me": "Me controla",
+        "i_control": "Yo controlo"
+      }
     },
     "mbti": {
       "section": "Personalidad MBTI",
