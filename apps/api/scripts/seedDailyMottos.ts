@@ -20,7 +20,7 @@
  */
 import { complete } from '@src/lib/llm';
 import { supabase } from '@src/lib/supabase';
-import { buildMottoPrompt, parseResult } from '@src/routes/mottoTest';
+import { buildMottoPrompt, buildFixedSideMottoPrompt, parseResult, FixedQuote } from '@src/routes/mottoTest';
 
 const GAN_CN = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
 const ZHI_CN = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
@@ -31,6 +31,29 @@ const ZHI_CN = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '
 function allGanzhi(): string[] {
   return Array.from({ length: 60 }, (_, i) => GAN_CN[i % 10] + ZHI_CN[i % 12]);
 }
+
+// Curated quotes requested to be guaranteed into the pool (not left to the
+// LLM's own judgment/randomness). Jack Ma and Stephen Chow are grouped as
+// "east" — both are real quotes originally in Chinese/Cantonese, just modern
+// figures rather than classical texts, same way the west side already mixes
+// ancient philosophers with modern figures like Steve Jobs. Each is pinned to
+// one specific ganzhi below (first 11 in cycle order — arbitrary but stable);
+// the LLM still writes the source context / explanation / ganzhi_connection
+// for these, and independently picks a genuine, real counterpart quote for
+// the other side — only the quote text + source + original are fixed.
+const FIXED_MOTTOS: Record<string, FixedQuote> = {
+  '甲子': { side: 'west', quote: '你的時間有限，不要浪費在過別人的人生上。', source: 'Steve Jobs', original: "Your time is limited. Don't waste it living someone else's life." },
+  '乙丑': { side: 'west', quote: '成就偉大事業的唯一方法，就是熱愛你所做的事。', source: 'Steve Jobs', original: 'The only way to do great work is to love what you do.' },
+  '丙寅': { side: 'west', quote: '當一件事情足夠重要時，即使勝算不高，你也會去做。', source: 'Elon Musk', original: "When something is important enough, you do it even if the odds are not in your favor." },
+  '丁卯': { side: 'west', quote: '失敗是一種選擇。如果事情從未失敗過，代表你的創新還不夠。', source: 'Elon Musk', original: 'Failure is an option. If things are not failing, you are not innovating enough.' },
+  '戊辰': { side: 'east', quote: '今天很殘酷，明天更殘酷，後天很美好，但絕大部分人都死在明天晚上，看不到後天的太陽。', source: '馬雲' },
+  '己巳': { side: 'east', quote: '永不放棄，放棄是最大的失敗。', source: '馬雲' },
+  '庚午': { side: 'west', quote: '你能做的最好投資，就是投資自己。', source: 'Warren Buffett', original: 'The best investment you can make is in yourself.' },
+  '辛未': { side: 'west', quote: '盡你所能，多多投資自己。', source: 'Warren Buffett', original: 'Invest in as much of yourself as you can.' },
+  '壬申': { side: 'east', quote: '做人如果冇夢想，同條鹹魚有咩分別呀？', source: '周星馳（電影《少林足球》）' },
+  '癸酉': { side: 'west', quote: '在完成之前，一切總看似不可能。', source: 'Nelson Mandela', original: "It always seems impossible until it's done." },
+  '甲戌': { side: 'west', quote: '我懂得了，勇氣不是無所畏懼，而是戰勝恐懼。', source: 'Nelson Mandela', original: 'I learned that courage was not the absence of fear, but the triumph over it.' },
+};
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -65,7 +88,8 @@ async function main() {
 
       // No dateContext passed — this entry gets cached forever and reused on
       // arbitrary future dates, so it shouldn't be pinned to today's date.
-      const messages = buildMottoPrompt(ganzhi) as any;
+      const fixed = FIXED_MOTTOS[ganzhi];
+      const messages = (fixed ? buildFixedSideMottoPrompt(ganzhi, fixed) : buildMottoPrompt(ganzhi)) as any;
       const raw = await complete(messages, 'motto_test_hunyuan');
       const parsed = parseResult(raw) as any;
 
@@ -73,6 +97,18 @@ async function main() {
         console.error(`[${ganzhi}] generation failed or malformed:`, JSON.stringify(parsed).slice(0, 200));
         results.failed.push(ganzhi);
         continue;
+      }
+
+      // Belt-and-suspenders: even though the prompt says not to alter the
+      // fixed side's quote, force our authoritative text back in so a stray
+      // LLM rewrite can never silently drift from the approved wording.
+      if (fixed) {
+        parsed[fixed.side] = {
+          ...parsed[fixed.side],
+          quote: fixed.quote,
+          source: fixed.source,
+          ...(fixed.original ? { original: fixed.original } : {}),
+        };
       }
 
       const { error: upsertError } = await supabase
