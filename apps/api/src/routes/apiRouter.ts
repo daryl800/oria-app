@@ -112,7 +112,11 @@ apiRouter.post('/profile/temp-preview', async (req: Request, res: Response) => {
       .gt('expires_at', new Date().toISOString())
       .single();
 
-    if (error || !temp) return res.status(404).json({ error: 'Token not found or expired' });
+    if (error) {
+      console.error('[temp-preview] Supabase query failed:', error.message, error.details ?? '');
+      return res.status(500).json({ error: 'Preview lookup failed', detail: error.message });
+    }
+    if (!temp) return res.status(404).json({ error: 'Token not found or expired' });
 
     const bazi = temp.bazi_data;
     const r = await pythonFetch(`${ANALYSIS_SERVICE_URL}/bazi/calculate`, {
@@ -166,7 +170,11 @@ apiRouter.post('/profile/temp-context', async (req: Request, res: Response) => {
       .eq('token', token)
       .gt('expires_at', new Date().toISOString())
       .single();
-    if (fetchError || !temp) return res.status(404).json({ error: 'Token not found or expired' });
+    if (fetchError) {
+      console.error('[temp-context] Supabase query failed:', fetchError.message, fetchError.details ?? '');
+      return res.status(500).json({ error: 'Context update lookup failed', detail: fetchError.message });
+    }
+    if (!temp) return res.status(404).json({ error: 'Token not found or expired' });
 
     const updated_mbti_data = {
       ...temp.mbti_data,
@@ -206,7 +214,15 @@ apiRouter.post('/profile/temp-teaser', async (req: Request, res: Response) => {
       .eq('token', token)
       .gt('expires_at', new Date().toISOString())
       .single();
-    if (error || !temp) return res.status(404).json({ error: 'Token not found or expired' });
+    if (error) {
+      // Distinguish real query failures (bad column, RLS, etc.) from a
+      // genuinely missing/expired token — the generic 404 below was masking
+      // real errors (e.g. teaser_result column not yet migrated) behind a
+      // misleading "token not found" message.
+      console.error('[temp-teaser] Supabase query failed:', error.message, error.details ?? '');
+      return res.status(500).json({ error: 'Preview lookup failed', detail: error.message });
+    }
+    if (!temp) return res.status(404).json({ error: 'Token not found or expired' });
 
     if (temp.teaser_result) {
       return res.json({ ...temp.teaser_result, cached: true });
