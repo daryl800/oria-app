@@ -603,12 +603,15 @@ ${contextFocusSection ? `\n${contextFocusSection}` : ''}
   ];
 }
 
-// Short, cheap prompt for the pre-signup onboarding "teaser" — shown after
-// the user has entered MBTI + BaZi + their concern, but before they create
-// an account. Unlike profileSummaryPrompt (long, expensive, post-signup),
-// this is deliberately compact: 4 short fields, aimed at a fast/cheap model
-// (see llm.ts CHAINS.preview_teaser), and cached on the temp_onboarding_data
-// row so a page reload never triggers a second paid call.
+// Cheap prompt for the pre-signup onboarding "teaser" — shown after the user
+// has entered MBTI + BaZi + their concern, but before they create an account.
+// Unlike profileSummaryPrompt (long, expensive, post-signup), this stays a
+// single call aimed at a fast/cheap model (see llm.ts CHAINS.preview_teaser)
+// — 4 fields, but instructed to write substantially more per field (~450
+// char budget vs. the original ~200) since a single cheap call's cost is
+// dominated by input tokens, not output length, so this is a near-free way
+// to make the preview feel less thin. Cached on the temp_onboarding_data row
+// so a page reload never triggers a second paid call.
 export function onboardingTeaserPrompt(bazi: any, mbti: any, lang: string = 'en', context_focus: string[] = [], context_focus_other?: string | null): Messages {
   const baziCtx = getBaziContext(bazi);
   const mbtiCtx = getMbtiContext(mbti);
@@ -635,9 +638,9 @@ ${contextFocusSection ? `\n${contextFocusSection}` : '\n（用戶未提供具體
 
 要求：
 1. hook：1句話，具體點出命盤中一個實際存在的結構（例如日主強弱、某個十神、五行組合），讓用戶覺得「這真的在講我」，不可空泛
-2. insight：2-3句，直接回應用戶的關注重點（若有），具體到能讓人聯想到真實情境，語氣像朋友當面解釋，不是命理課本
+2. insight：4-5句，分兩層來寫——先具體說明命盤結構「為什麼」會造成用戶關注重點中的處境（點名相關的十神、五行或格局），再給出一個真實可行、不空泛的方向建議，語氣像朋友當面解釋，不是命理課本，避免重複同一件事
 3. locked_teaser：1句話，具體描述完整解析裡還有什麼（例如「完整解析會告訴你這個模式在今年流年會怎麼變化」），製造好奇心，不可只寫「註冊解鎖更多」這種空話
-4. strength_read：1-2句，把命盤中的「身強／身弱」判定翻譯成白話——這代表這個人平常做事、扛壓力、做決定時的傾向是什麼，不要出現「身強」「身弱」這種術語本身，直接講意思
+4. strength_read：2-3句，把命盤中的「身強／身弱」判定翻譯成白話——這代表這個人平常做事、扛壓力、做決定時的傾向是什麼，並補一句這種傾向在什麼情境下是優勢、什麼情境下容易變成阻力，不要出現「身強」「身弱」這種術語本身，直接講意思
 
 以JSON回應：
 {
@@ -646,7 +649,7 @@ ${contextFocusSection ? `\n${contextFocusSection}` : '\n（用戶未提供具體
   "locked_teaser": "...",
   "strength_read": "..."
 }
-只回傳JSON，總長度控制在200字以內。${respondIn}`,
+只回傳JSON，總長度控制在450字以內，寫得像真的看過這個人的命盤在跟他說話，不要條列式、不要空話。${respondIn}`,
     },
   ];
 }
