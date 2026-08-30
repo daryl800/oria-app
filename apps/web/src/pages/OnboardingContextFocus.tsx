@@ -147,7 +147,7 @@ export default function OnboardingContextFocus() {
 
         .oria-context-step {
           color: rgba(216, 180, 254, 0.55);
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 700;
           letter-spacing: 0.18em;
           text-transform: uppercase;
@@ -168,7 +168,7 @@ export default function OnboardingContextFocus() {
           margin: 0 auto 10px;
           max-width: 560px;
           color: rgba(255, 255, 255, 0.66);
-          font-size: 16px;
+          font-size: 18px;
           line-height: 1.7;
         }
 
@@ -190,7 +190,7 @@ export default function OnboardingContextFocus() {
           gap: 14px;
           margin: 28px 0 18px;
           color: rgba(216, 180, 254, 0.4);
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 700;
           letter-spacing: 0.1em;
           text-transform: uppercase;
@@ -206,7 +206,7 @@ export default function OnboardingContextFocus() {
 
         .oria-context-other-inline-label {
           margin: 0 0 4px;
-          font-size: 15px;
+          font-size: 18px;
           color: rgba(255, 255, 255, 0.7);
         }
 
@@ -231,7 +231,7 @@ export default function OnboardingContextFocus() {
         }
 
         .oria-context-category-card {
-          min-height: 140px;
+          min-height: 150px;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -258,11 +258,11 @@ export default function OnboardingContextFocus() {
         }
 
         .oria-context-category-icon {
-          font-size: 30px;
+          font-size: 36px;
         }
 
         .oria-context-category-label {
-          font-size: 16px;
+          font-size: 21px;
           font-weight: 700;
           color: rgba(255, 255, 255, 0.9);
         }
@@ -301,7 +301,7 @@ export default function OnboardingContextFocus() {
         }
 
         .oria-context-label {
-          font-size: 17px;
+          font-size: 19px;
           line-height: 1.35;
           font-weight: 600;
           color: rgba(255, 255, 255, 0.88);
@@ -337,7 +337,7 @@ export default function OnboardingContextFocus() {
           background: rgba(21, 9, 39, 0.72);
           color: #EFE7FF;
           font-family: var(--oria-font);
-          font-size: 15px;
+          font-size: 17px;
           line-height: 1.6;
           resize: vertical;
           min-height: 88px;
@@ -370,7 +370,7 @@ export default function OnboardingContextFocus() {
           color: #FFFFFF;
           background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(216, 180, 254, 0.22));
           box-shadow: 0 18px 44px rgba(2, 0, 16, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-          font-size: 16px;
+          font-size: 18px;
           font-weight: 800;
           font-family: var(--oria-font);
           cursor: pointer;
@@ -393,7 +393,7 @@ export default function OnboardingContextFocus() {
           background: transparent;
           color: rgba(216, 180, 254, 0.42);
           font-family: var(--oria-font);
-          font-size: 15px;
+          font-size: 16px;
           cursor: pointer;
         }
 
@@ -417,7 +417,7 @@ export default function OnboardingContextFocus() {
             font-size: clamp(28px, 8.5vw, 38px);
           }
           .oria-context-subtitle {
-            font-size: 14px;
+            font-size: 16px;
           }
           .oria-context-grid,
           .oria-context-category-grid {
@@ -440,12 +440,12 @@ export default function OnboardingContextFocus() {
             grid-column: unset;
           }
           .oria-context-icon {
-            width: 46px;
-            height: 46px;
-            font-size: 22px;
+            width: 48px;
+            height: 48px;
+            font-size: 24px;
           }
           .oria-context-label {
-            font-size: 16px;
+            font-size: 18px;
           }
           .oria-context-actions {
             margin-top: 36px;
