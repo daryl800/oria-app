@@ -33,19 +33,29 @@ export default function Landing() {
       <div className="oria-landing-overlay animate-fade-in">
         <section className="oria-landing-focus">
           <div className="mb-6 text-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-            <div style={{
-              fontFamily: "'Nunito', 'Avenir Next', 'Inter', sans-serif",
-              fontWeight: 700,
-              fontSize: 'clamp(28px, 8vw, 64px)',
-              letterSpacing: '0.1em',
-              background: 'linear-gradient(90deg, #c8ad52 0%, #f1ecdf 50%, #c9b8ee 100%)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              color: 'transparent',
-              lineHeight: 1.1,
-              paddingRight: '0.1em',
-            }}>oria</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', flexWrap: 'wrap' as const, columnGap: '0.2em' }}>
+              <div style={{
+                fontFamily: "'Nunito', 'Avenir Next', 'Inter', sans-serif",
+                fontWeight: 700,
+                fontSize: 'clamp(28px, 8vw, 64px)',
+                letterSpacing: '0.1em',
+                background: 'linear-gradient(90deg, #c8ad52 0%, #f1ecdf 50%, #c9b8ee 100%)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                color: 'transparent',
+                lineHeight: 1.1,
+                paddingRight: '0.1em',
+              }}>oria</div>
+              <div style={{
+                fontFamily: "'Nunito', 'Avenir Next', 'Inter', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(13px, 3vw, 26px)',
+                letterSpacing: '0.08em',
+                color: 'rgba(200,173,82,0.55)',
+                lineHeight: 1.1,
+              }}>compass</div>
+            </div>
             <div style={{
               fontSize: 'clamp(10px, 1.5vw, 14px)',
               letterSpacing: '0.2em',
