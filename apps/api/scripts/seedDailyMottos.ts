@@ -20,7 +20,7 @@
  */
 import { complete } from '@src/lib/llm';
 import { supabase } from '@src/lib/supabase';
-import { buildMottoPrompt, buildFixedSideMottoPrompt, parseResult, FixedQuote } from '@src/routes/mottoTest';
+import { buildMottoPrompt, buildFixedSideMottoPrompt, parseResult, FixedQuote, CURATED_QUOTES } from '@src/routes/mottoTest';
 
 const GAN_CN = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
 const ZHI_CN = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
@@ -32,32 +32,18 @@ function allGanzhi(): string[] {
   return Array.from({ length: 60 }, (_, i) => GAN_CN[i % 10] + ZHI_CN[i % 12]);
 }
 
-// Curated quotes requested to be guaranteed into the pool (not left to the
-// LLM's own judgment/randomness). Jack Ma and Stephen Chow are grouped as
-// "east" — both are real quotes originally in Chinese/Cantonese, just modern
-// figures rather than classical texts, same way the west side already mixes
-// ancient philosophers with modern figures like Steve Jobs. Each is pinned to
-// one specific ganzhi below (mostly the first 11 in cycle order, plus 丙子
-// standing in for 壬申 — 壬申 already had an organically-cached row from real
-// usage before this list existed, so Stephen Chow's quote was moved off it
-// rather than overwriting a live cache entry; see the safety check below for
-// what happens if this ever collides again). The LLM still writes the source
-// context / explanation / ganzhi_connection
-// for these, and independently picks a genuine, real counterpart quote for
-// the other side — only the quote text + source + original are fixed.
-const FIXED_MOTTOS: Record<string, FixedQuote> = {
-  '甲子': { side: 'west', quote: '你的時間有限，不要浪費在過別人的人生上。', source: 'Steve Jobs', original: "Your time is limited. Don't waste it living someone else's life." },
-  '乙丑': { side: 'west', quote: '成就偉大事業的唯一方法，就是熱愛你所做的事。', source: 'Steve Jobs', original: 'The only way to do great work is to love what you do.' },
-  '丙寅': { side: 'west', quote: '當一件事情足夠重要時，即使勝算不高，你也會去做。', source: 'Elon Musk', original: "When something is important enough, you do it even if the odds are not in your favor." },
-  '丁卯': { side: 'west', quote: '失敗是一種選擇。如果事情從未失敗過，代表你的創新還不夠。', source: 'Elon Musk', original: 'Failure is an option. If things are not failing, you are not innovating enough.' },
-  '戊辰': { side: 'east', quote: '今天很殘酷，明天更殘酷，後天很美好，但絕大部分人都死在明天晚上，看不到後天的太陽。', source: '馬雲' },
-  '己巳': { side: 'east', quote: '永不放棄，放棄是最大的失敗。', source: '馬雲' },
-  '庚午': { side: 'west', quote: '你能做的最好投資，就是投資自己。', source: 'Warren Buffett', original: 'The best investment you can make is in yourself.' },
-  '辛未': { side: 'west', quote: '盡你所能，多多投資自己。', source: 'Warren Buffett', original: 'Invest in as much of yourself as you can.' },
-  '丙子': { side: 'east', quote: '做人如果冇夢想，同條鹹魚有咩分別呀？', source: '周星馳（電影《少林足球》）' },
-  '癸酉': { side: 'west', quote: '在完成之前，一切總看似不可能。', source: 'Nelson Mandela', original: "It always seems impossible until it's done." },
-  '甲戌': { side: 'west', quote: '我懂得了，勇氣不是無所畏懼，而是戰勝恐懼。', source: 'Nelson Mandela', original: 'I learned that courage was not the absence of fear, but the triumph over it.' },
-};
+// Ganzhi assignment for each of the 11 CURATED_QUOTES (mottoTest.ts), in the
+// same order as that array — mostly the first 11 in cycle order, except 丙子
+// stands in for 壬申 at index 8 (Stephen Chow's slot), since 壬申 already had
+// an organically-cached row from real usage before this list existed, so it
+// was moved off rather than overwriting a live cache entry. The quote text
+// itself lives only in CURATED_QUOTES (mottoTest.ts) — this is just the
+// pin-to-ganzhi mapping, so the two stay in sync automatically.
+const FIXED_MOTTO_GANZHI = ['甲子', '乙丑', '丙寅', '丁卯', '戊辰', '己巳', '庚午', '辛未', '丙子', '癸酉', '甲戌'];
+
+const FIXED_MOTTOS: Record<string, FixedQuote> = Object.fromEntries(
+  FIXED_MOTTO_GANZHI.map((ganzhi, i) => [ganzhi, CURATED_QUOTES[i]]),
+);
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
