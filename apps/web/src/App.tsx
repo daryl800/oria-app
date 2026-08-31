@@ -211,7 +211,7 @@ export default function App() {
       )}
       <AppShell user={user} isPlus={isPlus} planInterval={planInterval} creditBalance={creditBalance} creditResetDate={creditResetDate}>
         <Routes>
-          <Route path="/" element={!user ? <Landing /> : <Navigate to="/chart" />} />
+          <Route path="/" element={!user ? <Landing /> : <Navigate to="/daily" />} />
           <Route path="/onboarding/start" element={<OnboardingTransition />} />
           <Route path="/onboarding/transition" element={<OnboardingTransition />} />
           <Route path="/onboarding/context" element={<OnboardingContextFocus />} />
@@ -222,7 +222,7 @@ export default function App() {
           <Route path="/onboarding/result" element={<OnboardingResult />} />
           <Route path="/onboarding/bazi" element={<OnboardingBazi />} />
           <Route path="/onboarding/bazi-preview" element={<OnboardingBaziPreview />} />
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/chart" />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to="/daily" />} />
 
           <Route path="/home" element={!user ? <Navigate to="/" /> : <Home user={user} />} />
           <Route path="/chart" element={!user ? <Navigate to="/" /> : <Chart user={user} isPlus={isPlus} />} />

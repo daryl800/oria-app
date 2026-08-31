@@ -30,14 +30,20 @@ export default function Login({
   const [showPassword, setShowPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
-  async function transferOnboardingToken() {
+  // Returns true if there was a pending onboarding token to transfer (i.e.
+  // this sign-in is completing a fresh MBTI/BaZi/concern funnel, whether for
+  // a brand-new account or an existing one redoing onboarding) — used to
+  // decide whether to land on the chart page or the regular daily hub.
+  async function transferOnboardingToken(): Promise<boolean> {
     const token = sessionStorage.getItem('oria_onboarding_token');
-    if (!token) return;
+    if (!token) return false;
     try {
       await transferTempOnboarding(token);
       sessionStorage.removeItem('oria_onboarding_token');
+      return true;
     } catch (e) {
       console.error('Transfer failed:', e);
+      return false;
     }
   }
 
@@ -97,8 +103,11 @@ export default function Login({
         setLoading(false);
         return;
       }
-      await transferOnboardingToken();
-      navigate('/chart');
+      // Land fresh onboarding data (new or existing account) on the chart
+      // page so it's the first thing they see; a plain returning sign-in
+      // with nothing pending goes straight to the daily hub instead.
+      const hadPendingOnboarding = await transferOnboardingToken();
+      navigate(hadPendingOnboarding ? '/chart' : '/daily');
     }
     setLoading(false);
   }

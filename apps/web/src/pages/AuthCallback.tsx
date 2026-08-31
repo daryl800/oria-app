@@ -17,6 +17,13 @@ export default function AuthCallback() {
 
       const params = new URLSearchParams(window.location.search);
       const token = params.get('token') || sessionStorage.getItem('oria_onboarding_token');
+      // Presence of a pending onboarding token means this callback is
+      // completing a fresh MBTI/BaZi/concern funnel (email confirmation
+      // click or Google OAuth signup right after registering) — land on the
+      // chart page so their fresh reading is the first thing they see. No
+      // token means a plain returning login (Google OAuth or a confirmation
+      // link with nothing pending) — go straight to the daily hub instead.
+      const hadPendingOnboarding = !!token;
 
       if (token) {
         setStatus('Saving your profile...');
@@ -36,7 +43,7 @@ export default function AuthCallback() {
         .filter(k => k.startsWith('oria_chart'))
         .forEach(k => sessionStorage.removeItem(k));
 
-      navigate('/chart', { replace: true });
+      navigate(hadPendingOnboarding ? '/chart' : '/daily', { replace: true });
     }
 
     // Check immediately — OAuth redirect may have already established a session
